@@ -1,0 +1,21 @@
+{
+  "features": [
+    "bp_systolic",
+    "bp_diastolic",
+    "weight_kg",
+    "temperature_c",
+    "pulse",
+    "gestational_week",
+    "symptom_count",
+    "has_headache",
+    "has_dizziness",
+    "has_swelling",
+    "has_blurred_vision",
+    "has_nausea",
+    "visit_frequency_delta"
+  ],
+  "n_estimators": 200,
+  "max_depth": 6,
+  "training_samples": 5000,
+  "accuracy": 0.937
+}

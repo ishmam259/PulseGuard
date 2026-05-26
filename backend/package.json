@@ -1,0 +1,23 @@
+{
+  "name": "pulseguard-api",
+  "version": "1.0.0",
+  "description": "PulseGuard AI Backend — Express API Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "migrate": "node db/migrate.js",
+    "seed": "node db/migrate.js --seed"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.0",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.2",
+    "zod": "^3.25.17"
+  }
+}

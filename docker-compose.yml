@@ -1,0 +1,51 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: pulseguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wirelight
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pulseguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:wirelight@db:5432/pulseguard
+      JWT_SECRET: pulseguard_jwt_secret_2026
+      JWT_REFRESH_SECRET: pulseguard_refresh_secret_2026
+      AI_WORKER_URL: http://ai-worker:8000
+      PORT: 5000
+      NODE_ENV: production
+
+  ai-worker:
+    build: ./ai
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:wirelight@db:5432/pulseguard
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  pg_data:
