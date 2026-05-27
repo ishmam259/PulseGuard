@@ -1,14 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
 import { patientNavItems } from '../../data/navItems'
+import * as api from '../../services/api'
 
 export default function Emergency() {
   const { connectivity } = useApp()
   const [gps, setGps] = useState(null)
   const [loadingGps, setLoadingGps] = useState(false)
   const [alertSent, setAlertSent] = useState(false)
-  const [statusText, setStatusText] = useState('Offline Mode Active')
+  const [statusText, setStatusText] = useState(
+    connectivity === 'online' ? 'PulseGuard Security System: Ready' : 'Offline Mode Active'
+  )
+
+  useEffect(() => {
+    setStatusText(
+      connectivity === 'online'
+        ? alertSent
+          ? 'SOS Dispatched — Help is on the way!'
+          : 'PulseGuard Security System: Ready'
+        : 'Offline Mode Active'
+    )
+  }, [connectivity, alertSent])
 
   const handleShareGps = () => {
     if (!navigator.geolocation) {
@@ -31,14 +44,54 @@ export default function Emergency() {
     )
   }
 
-  const handleSOS = () => {
-    setAlertSent(true)
-    // In a real application, we would post this SOS alert to /api/alerts or send via WebSocket.
-    // For the demo, we show a success state and play an alert indicator.
-    setTimeout(() => {
-      alert('SOS alert dispatched to all nearby health workers and village clinic!')
-    }, 100)
+  const handleSOS = async () => {
+    setLoadingGps(true)
+    let coords = gps
+
+    if (!coords && navigator.geolocation) {
+      try {
+        coords = await new Promise((resolve) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords
+              const newGps = { lat: latitude, lng: longitude }
+              setGps(newGps)
+              resolve(newGps)
+            },
+            (error) => {
+              console.warn('Geolocation failed:', error.message)
+              resolve(null)
+            },
+            { timeout: 4000 }
+          )
+        })
+      } catch (err) {
+        console.warn('Geolocation promise error:', err)
+      }
+    }
+
+    setLoadingGps(false)
+
+    try {
+      const alertData = {
+        latitude: coords ? coords.lat : null,
+        longitude: coords ? coords.lng : null,
+        message: 'SOS Emergency Alert triggered from Patient Portal.',
+      }
+
+      const result = await api.createAlert(alertData)
+      if (result.ok) {
+        setAlertSent(true)
+        setStatusText('SOS Dispatched — Help is on the way!')
+      } else {
+        alert('Failed to send SOS: ' + (result.error || 'Unknown error'))
+      }
+    } catch (err) {
+      console.error('SOS dispatch error:', err)
+      alert('Failed to send SOS alert. Please try again.')
+    }
   }
+
 
   return (
     <MobileLayout

@@ -36,6 +36,8 @@ app.use('/api/auth', require('./routes/auth'))
 app.use('/api/patients', require('./routes/patients'))
 app.use('/api/sync', require('./routes/sync'))
 app.use('/api/ai', require('./routes/ai'))
+app.use('/api/alerts', require('./routes/alerts'))
+
 
 // ── Health check ──
 app.get('/api/health', (req, res) => {

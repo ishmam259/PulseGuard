@@ -185,7 +185,31 @@ export async function aiSummary(patientId) {
   return res.ok ? await res.json() : null
 }
 
+// ── Alerts API ──
+
+export async function createAlert(data) {
+  const res = await apiFetch('/alerts', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function getAlerts() {
+  const res = await apiFetch('/alerts')
+  return res.ok ? (await res.json()).alerts : []
+}
+
+export async function resolveAlert(id, status) {
+  const res = await apiFetch(`/alerts/${id}/resolve`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
 // ── WebSocket ──
+
 
 export function connectWebSocket(onMessage) {
   if (!accessToken) return null

@@ -96,3 +96,21 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 -- Vector index for RAG - Commented out for environment compatibility if pgvector is not installed
 -- CREATE INDEX IF NOT EXISTS idx_guideline_embeddings ON guideline_chunks
 --   USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+
+-- SOS alerts
+CREATE TABLE IF NOT EXISTS alerts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID REFERENCES patients(id) ON DELETE CASCADE,
+  patient_name TEXT NOT NULL,
+  latitude NUMERIC(10, 8),
+  longitude NUMERIC(11, 8),
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'resolved', 'dismissed')),
+  message TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  resolved_at TIMESTAMPTZ,
+  resolved_by UUID REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
+CREATE INDEX IF NOT EXISTS idx_alerts_patient ON alerts(patient_id);
+

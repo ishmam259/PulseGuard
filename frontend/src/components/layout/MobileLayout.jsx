@@ -1,9 +1,22 @@
+import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 
 export default function MobileLayout({ title, status, banner, children, navItems }) {
-  const { connectivity, toggleConnectivity, currentUser, logout } = useApp()
+  const { connectivity, toggleConnectivity, currentUser, logout, notifications } = useApp()
   const navigate = useNavigate()
+  const [activeToast, setActiveToast] = useState(null)
+
+  useEffect(() => {
+    // Show active SOS alert toast only for workers and admins
+    if (currentUser?.role === 'worker' || currentUser?.role === 'admin') {
+      const unreadSOS = notifications.find((n) => n.type === 'emergency' && !n.read)
+      if (unreadSOS) {
+        setActiveToast(unreadSOS)
+      }
+    }
+  }, [notifications, currentUser])
+
   const initials = currentUser ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??'
 
   const currentStatus = status || connectivity
@@ -11,6 +24,14 @@ export default function MobileLayout({ title, status, banner, children, navItems
   const handleLogout = () => {
     logout()
     navigate('/')
+  }
+
+  const handleAlertsClick = () => {
+    if (currentUser?.role === 'worker' || currentUser?.role === 'admin') {
+      navigate('/worker/alerts')
+    } else {
+      navigate('/patient/alerts')
+    }
   }
 
   return (
@@ -82,7 +103,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
               {currentStatus === 'offline' && 'Offline'}
               {currentStatus === 'syncing' && 'Syncing'}
             </span>
-            <button className="icon-btn" style={{ fontSize: '11px', width: 'auto', padding: '0 8px' }}>Alerts</button>
+            <button className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '11px', width: 'auto', padding: '0 8px' }}>Alerts</button>
             <div className="avatar">{initials}</div>
           </div>
         </header>
@@ -104,10 +125,80 @@ export default function MobileLayout({ title, status, banner, children, navItems
               {currentStatus === 'offline' && 'Offline'}
               {currentStatus === 'syncing' && 'Syncing'}
             </span>
-            <button className="icon-btn" style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
+            <button className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
             <div className="avatar">{initials}</div>
           </div>
         </header>
+
+        {/* ── Real-time SOS Toast Banner ── */}
+        {activeToast && (
+          <div
+            className="emergency-toast"
+            style={{
+              background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
+              boxShadow: '0 4px 20px rgba(239, 68, 68, 0.4)',
+              padding: '1rem',
+              borderRadius: '8px',
+              margin: '0 1.5rem 1.5rem 1.5rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              border: '1px solid #fca5a5',
+              zIndex: 1000,
+              position: 'relative',
+              animation: 'fadeIn 0.3s ease-out'
+            }}
+          >
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '1.2rem', animation: 'pulse 1s infinite' }}>🚨</span>
+                <strong style={{ color: '#fff', fontSize: '1rem' }}>{activeToast.title}</strong>
+              </div>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#fee2e2' }}>
+                {activeToast.message}
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginLeft: '12px' }}>
+              <button
+                className="btn btn--primary"
+                style={{
+                  background: '#fff',
+                  color: '#ef4444',
+                  fontSize: '0.8rem',
+                  padding: '6px 12px',
+                  fontWeight: 'bold',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  setActiveToast(null)
+                  // Mark read
+                  activeToast.read = true
+                  navigate('/worker/alerts')
+                }}
+              >
+                Respond
+              </button>
+              <button
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#fff',
+                  fontSize: '1.2rem',
+                  cursor: 'pointer',
+                  padding: '0 4px'
+                }}
+                onClick={() => {
+                  setActiveToast(null)
+                  activeToast.read = true
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ── Optional Status Banner ── */}
         {banner && (
@@ -123,6 +214,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
             )}
           </section>
         )}
+
 
         {/* ── Main Content Area ── */}
         <main className="content-area animate-fade-in">{children}</main>

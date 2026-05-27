@@ -35,22 +35,42 @@ export function AppProvider({ children }) {
     const result = await api.login({ email, password })
     if (result.ok) {
       setCurrentUser(result.user)
-      // Connect WebSocket for real-time alerts
-      api.connectWebSocket((data) => {
-        if (data.type === 'risk_alert') {
-          addNotification({
-            id: Date.now(),
-            type: 'emergency',
-            title: 'High Risk Alert',
-            message: `Risk score: ${data.risk_score}`,
-            time: 'Just now',
-            read: false,
-          })
-        }
-      })
     }
     return result
-  }, [addNotification])
+  }, [])
+
+  // Manage WebSocket connection for real-time notifications
+  useEffect(() => {
+    if (!currentUser) return
+
+    const ws = api.connectWebSocket((data) => {
+      if (data.type === 'risk_alert') {
+        addNotification({
+          id: Date.now(),
+          type: 'risk',
+          title: 'High Risk Alert',
+          message: data.message || `Risk score: ${data.risk_score}`,
+          time: 'Just now',
+          read: false,
+        })
+      } else if (data.type === 'sos_alert') {
+        addNotification({
+          id: data.id || Date.now(),
+          type: 'emergency',
+          title: `🚨 SOS: ${data.patient_name}`,
+          message: data.message || 'Emergency SOS dispatched!',
+          time: 'Just now',
+          read: false,
+          latitude: data.latitude,
+          longitude: data.longitude,
+        })
+      }
+    })
+
+    return () => {
+      if (ws) ws.close()
+    }
+  }, [currentUser, addNotification])
 
   // Real register
   const register = useCallback(async (data) => {
@@ -62,6 +82,7 @@ export function AppProvider({ children }) {
   }, [])
 
   const logout = useCallback(() => {
+
     api.clearTokens()
     setCurrentUser(null)
     setNotifications([])
