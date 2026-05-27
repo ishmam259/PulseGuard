@@ -1,4 +1,4 @@
-# PulseGuard AI — Project Walkthrough & Run Guide
+~# PulseGuard AI — Project Walkthrough & Run Guide
 
 This walkthrough provides comprehensive instructions to run, configure, and verify the **PulseGuard AI** application stack, which comprises:
 1. **Frontend**: React + Vite SPA (Vanilla CSS, styled with CarePulse dark-emerald aesthetics).
