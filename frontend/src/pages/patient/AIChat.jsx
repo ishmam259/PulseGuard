@@ -80,7 +80,7 @@ export default function AIChat() {
           <div ref={bottomRef} />
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ margin: '1.5rem 0' }}>
           <div className="input-row">
             <input
               type="text"
@@ -98,7 +98,7 @@ export default function AIChat() {
           </div>
         </form>
 
-        <div className="chip-row">
+        <div className="chip-row" style={{ marginTop: '1rem' }}>
           {quickChips.map((chip) => (
             <button
               key={chip}

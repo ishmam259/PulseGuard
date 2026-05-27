@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 
 const sidebarLinks = [
@@ -10,8 +10,14 @@ const sidebarLinks = [
 ]
 
 export default function AdminLayout({ title, children }) {
-  const { connectivity, currentUser } = useApp()
+  const { connectivity, currentUser, logout } = useApp()
+  const navigate = useNavigate()
   const initials = currentUser ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AD'
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   return (
     <div className="admin-shell">
@@ -33,6 +39,31 @@ export default function AdminLayout({ title, children }) {
               <span>{link.label}</span>
             </NavLink>
           ))}
+          <button
+            onClick={handleLogout}
+            className="sidebar-logout-btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              color: '#ef4444',
+              background: 'transparent',
+              border: 'none',
+              textAlign: 'left',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+              width: '100%',
+              marginTop: '12px'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+          >
+            <span>Logout</span>
+          </button>
         </nav>
 
         {/* ── Sidebar Info Card ── */}

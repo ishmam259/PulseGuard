@@ -63,77 +63,77 @@ export default function Profile() {
     >
       <div className="animate-fade-in">
         {/* Profile Card */}
-        <div className="card profile-card" style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-          <div className="avatar large" style={{ margin: '0 auto 1rem auto', width: '80px', height: '80px', fontSize: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gradient-primary)', color: 'white', borderRadius: '50%' }}>
+        <div className="card profile-card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
+          <div className="avatar large" style={{ margin: '0 auto 1.25rem auto', width: '88px', height: '88px', fontSize: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gradient-primary)', color: 'white', borderRadius: '50%', boxShadow: '0 0 24px rgba(36, 174, 124, 0.3)' }}>
             {getInitials(currentUser?.name)}
           </div>
-          <h2 className="text-gradient">{currentUser?.name || 'User Profile'}</h2>
-          <p className="muted" style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>
-            {currentUser?.role || 'Guest'} Role
+          <h2 className="text-gradient" style={{ fontSize: '1.6rem', marginBottom: '0.25rem' }}>{currentUser?.name || 'User Profile'}</h2>
+          <p className="muted" style={{ textTransform: 'capitalize', fontWeight: '600', fontSize: '0.9rem' }}>
+            {currentUser?.role || 'Guest'}
           </p>
           {isPatient && patient && (
-            <p className="muted" style={{ fontSize: '0.85rem' }}>Patient ID: PG-{patient.id.slice(0, 8).toUpperCase()}</p>
+            <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>Patient ID: PG-{patient.id.slice(0, 8).toUpperCase()}</p>
           )}
           {isWorker && (
-            <p className="muted" style={{ fontSize: '0.85rem' }}>Health Worker ID: HW-{currentUser?.id.slice(0, 8).toUpperCase()}</p>
+            <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>Health Worker ID: HW-{currentUser?.id.slice(0, 8).toUpperCase()}</p>
           )}
         </div>
 
         {/* Details based on Role */}
-        <div className="card" style={{ marginTop: '1rem' }}>
-          <h3>Profile Details</h3>
+        <div className="card" style={{ marginTop: '1.25rem', padding: '1.5rem' }}>
+          <h3 style={{ marginBottom: '0.25rem' }}>Profile Details</h3>
           {loading ? (
             <p className="muted text-center" style={{ padding: '1rem 0' }}>Loading profile details...</p>
           ) : isPatient && patient ? (
-            <div className="summary-grid">
-              <div className="kpi-card">
-                <span className="muted">Pregnancy Week</span>
-                <span className="kpi">{patient.gestational_week || 'N/A'}</span>
+            <div className="profile-details-grid">
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Pregnancy Week</span>
+                <span className="profile-detail-value--accent">{patient.gestational_week || 'N/A'}</span>
               </div>
-              <div className="kpi-card">
-                <span className="muted">Risk Level</span>
-                <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.5rem' }}>
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Risk Level</span>
+                <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.25rem', alignSelf: 'flex-start' }}>
                   {patient.risk_level || 'Low'}
                 </span>
               </div>
-              <div className="kpi-card">
-                <span className="muted">Village</span>
-                <span className="kpi">{patient.village || 'N/A'}</span>
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Village</span>
+                <span className="profile-detail-value">{patient.village || 'N/A'}</span>
               </div>
-              <div className="kpi-card">
-                <span className="muted">Email</span>
-                <span className="kpi" style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}>{currentUser?.email || 'N/A'}</span>
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Email</span>
+                <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
               </div>
             </div>
           ) : isWorker ? (
-            <div className="summary-grid">
-              <div className="kpi-card">
-                <span className="muted">Assigned Patients</span>
-                <span className="kpi">{patientCount}</span>
+            <div className="profile-details-grid">
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Assigned Patients</span>
+                <span className="profile-detail-value--accent">{patientCount}</span>
               </div>
-              <div className="kpi-card">
-                <span className="muted">Email</span>
-                <span className="kpi" style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}>{currentUser?.email || 'N/A'}</span>
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Email</span>
+                <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
               </div>
             </div>
           ) : (
-            <div className="summary-grid">
-              <div className="kpi-card">
-                <span className="muted">System Role</span>
-                <span className="kpi">Administrator</span>
+            <div className="profile-details-grid">
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">System Role</span>
+                <span className="profile-detail-value">Administrator</span>
               </div>
-              <div className="kpi-card">
-                <span className="muted">Email</span>
-                <span className="kpi" style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}>{currentUser?.email || 'N/A'}</span>
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Email</span>
+                <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
               </div>
             </div>
           )}
         </div>
 
         {/* Actions */}
-        <div className="button-row" style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn--secondary" style={{ flex: 1 }}>Edit Profile</button>
-          <button className="btn btn--ghost" onClick={handleLogout} style={{ flex: 1 }}>Logout</button>
+        <div className="profile-actions">
+          <button className="btn btn--secondary">Edit Profile</button>
+          <button className="btn btn--ghost" onClick={handleLogout}>Logout</button>
         </div>
       </div>
     </MobileLayout>
