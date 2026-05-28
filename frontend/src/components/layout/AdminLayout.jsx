@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext'
 
 const sidebarLinks = [
   { label: 'Dashboard', to: '/admin', icon: '' },
+  { label: 'Users', to: '/admin/users', icon: '' },
   { label: 'Patients', to: '/admin/patients', icon: '' },
   { label: 'Analytics', to: '/admin/analytics', icon: '' },
   { label: 'Reports', to: '/admin/reports', icon: '' },

@@ -226,8 +226,29 @@ export async function resolveAlert(id, status) {
   return { ok: res.ok, ...(await res.json()) }
 }
 
-// ── WebSocket ──
+// ── Users (Admin) ──
 
+export async function getUsers() {
+  const res = await apiFetch('/users')
+  return res.ok ? await res.json() : []
+}
+
+export async function createUser(data) {
+  const res = await apiFetch('/users', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function deleteUser(id) {
+  const res = await apiFetch(`/users/${id}`, {
+    method: 'DELETE',
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+// ── WebSocket ──
 
 export function connectWebSocket(onMessage) {
   if (!accessToken) return null

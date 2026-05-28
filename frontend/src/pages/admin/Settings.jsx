@@ -1,4 +1,5 @@
 import AdminLayout from '../../components/layout/AdminLayout'
+import { useNavigate } from 'react-router-dom'
 
 const settingsCards = [
   {
@@ -8,6 +9,7 @@ const settingsCards = [
     description: 'Manage health workers, patients, and admin accounts. Assign roles and configure permissions.',
     buttonText: 'Manage Users',
     buttonClass: 'btn--primary',
+    path: '/admin/users'
   },
   {
     id: 'set-2',
@@ -36,8 +38,14 @@ const settingsCards = [
 ]
 
 export default function Settings() {
-  const handleFeatureAlert = (title) => {
-    alert(`Feature Coming Soon!\nThe "${title}" configuration panel is disabled for this hackathon demo version.`)
+  const navigate = useNavigate()
+  
+  const handleAction = (card) => {
+    if (card.path) {
+      navigate(card.path)
+    } else {
+      alert(`Feature Coming Soon!\nThe "${card.title}" configuration panel is disabled for this hackathon demo version.`)
+    }
   }
 
   return (
@@ -51,7 +59,7 @@ export default function Settings() {
             <button
               className={`btn ${card.buttonClass}`}
               type="button"
-              onClick={() => handleFeatureAlert(card.title)}
+              onClick={() => handleAction(card)}
             >
               {card.buttonText}
             </button>

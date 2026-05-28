@@ -22,9 +22,6 @@ export default function Splash() {
           <Link to="/role" className="btn btn--primary btn--large" style={{ textAlign: 'center' }}>
             Get Started →
           </Link>
-          <Link to="/patient/emergency" className="btn btn--danger btn--large" style={{ textAlign: 'center' }}>
-            Emergency SOS Access
-          </Link>
         </div>
 
         <p className="muted" style={{ marginTop: '4rem', fontSize: '12px' }}>

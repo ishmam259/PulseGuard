@@ -37,6 +37,7 @@ app.use('/api/patients', require('./routes/patients'))
 app.use('/api/sync', require('./routes/sync'))
 app.use('/api/ai', require('./routes/ai'))
 app.use('/api/alerts', require('./routes/alerts'))
+app.use('/api/users', require('./routes/users'))
 
 
 // ── Health check ──
