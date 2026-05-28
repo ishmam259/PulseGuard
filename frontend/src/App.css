@@ -1504,7 +1504,7 @@ select.input option {
 
   /* Make grid containers and KPI layout look spacious on desktop */
   .grid.two {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .summary-grid {
