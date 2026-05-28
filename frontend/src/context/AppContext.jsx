@@ -104,6 +104,7 @@ export function AppProvider({ children }) {
   const value = {
     connectivity,
     currentUser,
+    setCurrentUser,
     loading,
     login,
     register,

@@ -94,9 +94,19 @@ router.get('/:id', async (req, res) => {
 })
 
 // PUT /api/patients/:id — Update patient profile
-router.put('/:id', requireRole('worker', 'admin'), async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
+    if (req.user.role === 'patient') {
+      const patientCheck = await pool.query('SELECT user_id FROM patients WHERE id = $1', [req.params.id])
+      if (patientCheck.rows.length === 0 || patientCheck.rows[0].user_id !== req.user.id) {
+        return res.status(403).json({ error: 'Access denied' })
+      }
+    } else if (req.user.role !== 'worker' && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' })
+    }
+
     const data = patientSchema.partial().parse(req.body)
+
     const fields = []
     const values = []
     let idx = 1

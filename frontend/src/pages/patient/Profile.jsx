@@ -6,11 +6,24 @@ import * as api from '../../services/api'
 import { patientNavItems, workerNavItems } from '../../data/navItems'
 
 export default function Profile() {
-  const { currentUser, logout, connectivity } = useApp()
+  const { currentUser, setCurrentUser, logout, connectivity } = useApp()
   const navigate = useNavigate()
   const [patient, setPatient] = useState(null)
   const [patientCount, setPatientCount] = useState(0)
   const [loading, setLoading] = useState(true)
+
+  // Editing state
+  const [isEditing, setIsEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    village: '',
+    gestational_week: '',
+  })
 
   useEffect(() => {
     async function loadProfileData() {
@@ -49,6 +62,72 @@ export default function Profile() {
       .toUpperCase()
   }
 
+  const handleStartEdit = () => {
+    setEditForm({
+      name: currentUser?.name || '',
+      email: currentUser?.email || '',
+      phone: currentUser?.phone || '',
+      village: patient?.village || '',
+      gestational_week: patient?.gestational_week || '',
+    })
+    setIsEditing(true)
+    setError('')
+    setSuccess('')
+  }
+
+  const handleChange = (field) => (e) => {
+    setEditForm((prev) => ({ ...prev, [field]: e.target.value }))
+  }
+
+  const handleSaveProfile = async () => {
+    if (!editForm.name.trim()) {
+      setError('Name is required')
+      return
+    }
+
+    setSaving(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      // 1. Update user profile (name, email, phone)
+      const userRes = await api.updateProfile({
+        name: editForm.name,
+        email: editForm.email,
+        phone: editForm.phone,
+      })
+
+      if (!userRes.ok) {
+        throw new Error(userRes.error || 'Failed to update user profile details')
+      }
+
+      // 2. If patient, update patient details (village, gestational_week)
+      if (isPatient && patient) {
+        const patientRes = await api.updatePatient(patient.id, {
+          village: editForm.village,
+          gestational_week: editForm.gestational_week ? parseInt(editForm.gestational_week) : null,
+        })
+
+        if (!patientRes.ok) {
+          throw new Error(patientRes.error || 'Failed to update patient details')
+        }
+
+        // Update local patient state
+        setPatient(patientRes.patient)
+      }
+
+      // 3. Update current user in context
+      setCurrentUser(userRes.user)
+
+      setSuccess('Profile updated successfully!')
+      setIsEditing(false)
+    } catch (err) {
+      setError(err.message || 'An error occurred while saving profile.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const isPatient = currentUser?.role === 'patient'
   const isWorker = currentUser?.role === 'worker'
   const isAdmin = currentUser?.role === 'admin'
@@ -62,6 +141,37 @@ export default function Profile() {
       navItems={navItems}
     >
       <div className="animate-fade-in">
+        {/* Alerts */}
+        {error && (
+          <div
+            className="alert-panel"
+            style={{
+              background: 'rgba(239,68,68,0.1)',
+              borderColor: 'rgba(239,68,68,0.3)',
+              marginBottom: '1rem',
+              padding: '0.75rem',
+              borderRadius: '6px',
+            }}
+          >
+            <strong style={{ color: '#ef4444' }}>{error}</strong>
+          </div>
+        )}
+
+        {success && (
+          <div
+            className="alert-panel"
+            style={{
+              background: 'rgba(16,185,129,0.1)',
+              borderColor: 'rgba(16,185,129,0.3)',
+              marginBottom: '1rem',
+              padding: '0.75rem',
+              borderRadius: '6px',
+            }}
+          >
+            <strong style={{ color: 'var(--color-success)' }}>{success}</strong>
+          </div>
+        )}
+
         {/* Profile Card */}
         <div className="card profile-card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
           <div className="avatar large" style={{ margin: '0 auto 1.25rem auto', width: '88px', height: '88px', fontSize: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gradient-primary)', color: 'white', borderRadius: '50%', boxShadow: '0 0 24px rgba(36, 174, 124, 0.3)' }}>
@@ -79,61 +189,175 @@ export default function Profile() {
           )}
         </div>
 
-        {/* Details based on Role */}
+        {/* Details or Edit Form based on state */}
         <div className="card" style={{ marginTop: '1.25rem', padding: '1.5rem' }}>
-          <h3 style={{ marginBottom: '0.25rem' }}>Profile Details</h3>
+          <h3 style={{ marginBottom: '0.25rem' }}>{isEditing ? 'Edit Profile' : 'Profile Details'}</h3>
+          
           {loading ? (
             <p className="muted text-center" style={{ padding: '1rem 0' }}>Loading profile details...</p>
-          ) : isPatient && patient ? (
-            <div className="profile-details-grid">
-              <div className="profile-detail-card">
-                <span className="profile-detail-label">Pregnancy Week</span>
-                <span className="profile-detail-value--accent">{patient.gestational_week || 'N/A'}</span>
-              </div>
-              <div className="profile-detail-card">
-                <span className="profile-detail-label">Risk Level</span>
-                <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.25rem', alignSelf: 'flex-start' }}>
-                  {patient.risk_level || 'Low'}
-                </span>
-              </div>
-              <div className="profile-detail-card">
-                <span className="profile-detail-label">Village</span>
-                <span className="profile-detail-value">{patient.village || 'N/A'}</span>
-              </div>
-              <div className="profile-detail-card">
-                <span className="profile-detail-label">Email</span>
-                <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
-              </div>
-            </div>
-          ) : isWorker ? (
-            <div className="profile-details-grid">
-              <div className="profile-detail-card">
-                <span className="profile-detail-label">Assigned Patients</span>
-                <span className="profile-detail-value--accent">{patientCount}</span>
-              </div>
-              <div className="profile-detail-card">
-                <span className="profile-detail-label">Email</span>
-                <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
-              </div>
+          ) : isEditing ? (
+            /* ── Edit Profile Form ── */
+            <div className="form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+              <label>
+                Full Name *
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    className="input"
+                    value={editForm.name}
+                    onChange={handleChange('name')}
+                    placeholder="Enter your name"
+                  />
+                </div>
+              </label>
+              <label>
+                Email Address
+                <div className="input-wrapper">
+                  <input
+                    type="email"
+                    className="input"
+                    value={editForm.email}
+                    onChange={handleChange('email')}
+                    placeholder="e.g. name@domain.com"
+                  />
+                </div>
+              </label>
+              <label>
+                Phone Number
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    className="input"
+                    value={editForm.phone}
+                    onChange={handleChange('phone')}
+                    placeholder="e.g. +880123456789"
+                  />
+                </div>
+              </label>
+
+              {isPatient && patient && (
+                <>
+                  <label>
+                    Village Clinic Area
+                    <div className="input-wrapper">
+                      <input
+                        type="text"
+                        className="input"
+                        value={editForm.village}
+                        onChange={handleChange('village')}
+                        placeholder="e.g. Village A"
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Gestational Pregnancy Week
+                    <div className="input-wrapper">
+                      <input
+                        type="number"
+                        className="input"
+                        value={editForm.gestational_week}
+                        onChange={handleChange('gestational_week')}
+                        placeholder="e.g. 24"
+                        min="1"
+                        max="45"
+                      />
+                    </div>
+                  </label>
+                </>
+              )}
             </div>
           ) : (
-            <div className="profile-details-grid">
-              <div className="profile-detail-card">
-                <span className="profile-detail-label">System Role</span>
-                <span className="profile-detail-value">Administrator</span>
+            /* ── Profile Details View ── */
+            isPatient && patient ? (
+              <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">Pregnancy Week</span>
+                  <span className="profile-detail-value--accent">{patient.gestational_week || 'N/A'}</span>
+                </div>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">Risk Level</span>
+                  <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.25rem', alignSelf: 'flex-start' }}>
+                    {patient.risk_level || 'Low'}
+                  </span>
+                </div>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">Village</span>
+                  <span className="profile-detail-value">{patient.village || 'N/A'}</span>
+                </div>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">Phone</span>
+                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+                </div>
+                <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
+                  <span className="profile-detail-label">Email</span>
+                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+                </div>
               </div>
-              <div className="profile-detail-card">
-                <span className="profile-detail-label">Email</span>
-                <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+            ) : isWorker ? (
+              <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">Assigned Patients</span>
+                  <span className="profile-detail-value--accent">{patientCount}</span>
+                </div>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">Phone</span>
+                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+                </div>
+                <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
+                  <span className="profile-detail-label">Email</span>
+                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">System Role</span>
+                  <span className="profile-detail-value">Administrator</span>
+                </div>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">Phone</span>
+                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+                </div>
+                <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
+                  <span className="profile-detail-label">Email</span>
+                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+                </div>
+              </div>
+            )
           )}
         </div>
 
         {/* Actions */}
-        <div className="profile-actions">
-          <button className="btn btn--secondary">Edit Profile</button>
-          <button className="btn btn--ghost" onClick={handleLogout}>Logout</button>
+        <div className="profile-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+          {isEditing ? (
+            <>
+              <button
+                className="btn btn--primary"
+                style={{ flex: 1 }}
+                onClick={handleSaveProfile}
+                disabled={saving}
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                className="btn btn--secondary"
+                style={{ flex: 1 }}
+                onClick={() => setIsEditing(false)}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="btn btn--secondary" style={{ flex: 1 }} onClick={handleStartEdit}>
+                Edit Profile
+              </button>
+              <button className="btn btn--ghost" style={{ flex: 1 }} onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
     </MobileLayout>

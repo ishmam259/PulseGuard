@@ -134,6 +134,38 @@ router.get('/me', authenticate, async (req, res) => {
   }
 })
 
+// PUT /api/auth/profile — Update user profile
+router.put('/profile', authenticate, async (req, res) => {
+  try {
+    const { name, email, phone } = req.body
+
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required' })
+    }
+
+    const result = await pool.query(
+      `UPDATE users
+       SET name = $1, email = $2, phone = $3, updated_at = now()
+       WHERE id = $4
+       RETURNING id, name, email, phone, role`,
+      [name, email || null, phone || null, req.user.id]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    res.json({ user: result.rows[0] })
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'User with this email or phone already exists' })
+    }
+    console.error('Update profile error:', err)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+
 function generateAccessToken(user) {
   return jwt.sign(
     { id: user.id, name: user.name, role: user.role },

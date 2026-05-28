@@ -103,6 +103,15 @@ export async function getMe() {
   return res.ok ? (await res.json()).user : null
 }
 
+export async function updateProfile(data) {
+  const res = await apiFetch('/auth/profile', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+
 // ── Patients API ──
 
 export async function getPatients() {
@@ -122,6 +131,15 @@ export async function createPatient(data) {
   })
   return { ok: res.ok, ...(await res.json()) }
 }
+
+export async function updatePatient(id, data) {
+  const res = await apiFetch(`/patients/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
 
 export async function addVitals(patientId, data) {
   const res = await apiFetch(`/patients/${patientId}/vitals`, {
