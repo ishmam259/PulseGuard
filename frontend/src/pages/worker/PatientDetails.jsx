@@ -54,7 +54,7 @@ export default function PatientDetails() {
   if (loading) {
     return (
       <MobileLayout title="Patient Details" navItems={workerNavItems}>
-        <p className="muted" style={{ textAlign: 'center', padding: '3rem 0' }}>Loading patient...</p>
+        <p className="muted" style={{ textAlign: 'center', padding: '3rem 0' }}>Loading patient…</p>
       </MobileLayout>
     )
   }
@@ -136,7 +136,7 @@ export default function PatientDetails() {
                 <strong>High Risk Alert</strong>
                 <p className="muted">
                   Patient shows elevated BP ({latestVitals?.bp_systolic}/{latestVitals?.bp_diastolic}).
-                  Risk score: {(riskScore * 100).toFixed(0)}% — recommend immediate clinical referral.
+                  Risk score: {(riskScore * 100).toFixed(0)}%; recommend immediate clinical referral.
                 </p>
               </div>
             )}
@@ -217,7 +217,7 @@ export default function PatientDetails() {
                 <h4> Risk Factors</h4>
                 <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
                   {aiResult.factors.map((f, i) => (
-                    <li key={i}>{f}</li>
+                    <li key={`factor-${i}-${f}`}>{f}</li>
                   ))}
                 </ul>
               </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 export function useConnectivity() {
-  const [status, setStatus] = useState('online') // online | offline | syncing
+  const [status, setStatus] = useState(() => navigator.onLine ? 'online' : 'offline') // online | offline | syncing
   const [lastSync, setLastSync] = useState('Just now')
 
   useEffect(() => {
@@ -10,10 +10,6 @@ export function useConnectivity() {
 
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
-
-    if (!navigator.onLine) {
-      setStatus('offline')
-    }
 
     return () => {
       window.removeEventListener('online', handleOnline)

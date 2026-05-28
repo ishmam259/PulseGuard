@@ -13,7 +13,7 @@ const workerNavItems = [
 
 export default function SyncCenter() {
   const { connectivity } = useApp()
-  const [conflicts, setConflicts] = useState([])
+  const [conflicts, setConflicts] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [resolving, setResolving] = useState(null)
 
@@ -21,7 +21,7 @@ export default function SyncCenter() {
     loadConflicts()
   }, [])
 
-  const loadConflicts = async () => {
+  async function loadConflicts() {
     const data = await api.getConflicts()
     setConflicts(data)
     setLoading(false)
@@ -43,7 +43,7 @@ export default function SyncCenter() {
       banner={{
         tone: connectivity === 'online' ? 'online' : 'offline',
         title: 'Sync Status',
-        message: connectivity === 'online' ? 'Connected to server' : 'Offline — data will sync when connected',
+        message: connectivity === 'online' ? 'Connected to server' : 'Offline; data will sync when connected',
         action: { label: 'Refresh', onClick: loadConflicts },
       }}
       navItems={workerNavItems}
@@ -58,8 +58,8 @@ export default function SyncCenter() {
         </div>
         <div className="sync-stat">
           <p className="muted">Conflicts</p>
-          <div className="kpi" style={{ background: 'linear-gradient(135deg, #ef4444, #f87171)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            {conflicts.length}
+          <div className="kpi" style={{ color: '#ef4444' }}>
+            {conflicts ? conflicts.length : 0}
           </div>
         </div>
       </div>
@@ -83,11 +83,11 @@ export default function SyncCenter() {
 
       {/* Conflicts */}
       <section className="card conflict-card animate-fade-in" style={{ animationDelay: '160ms' }}>
-        <h3>Conflicts ({conflicts.length})</h3>
+        <h3>Conflicts ({conflicts ? conflicts.length : 0})</h3>
         {loading ? (
-          <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>Loading conflicts...</p>
-        ) : conflicts.length === 0 ? (
-          <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>No conflicts — all data is in sync</p>
+          <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>Loading conflicts…</p>
+        ) : !conflicts || conflicts.length === 0 ? (
+          <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>No conflicts; all data is in sync</p>
         ) : (
           <div className="list">
             {conflicts.map((conflict) => (

@@ -11,7 +11,7 @@ const workerNavItems = [
 ]
 
 export default function AIAnalysis() {
-  const [patients, setPatients] = useState([])
+  const [patients, setPatients] = useState(undefined)
   const [selectedPatient, setSelectedPatient] = useState('')
   const [prediction, setPrediction] = useState(null)
   const [summary, setSummary] = useState(null)
@@ -31,7 +31,7 @@ export default function AIAnalysis() {
     setPrediction(null)
     setSummary(null)
 
-    const patient = patients.find(p => p.id === selectedPatient)
+    const patient = (patients || []).find(p => p.id === selectedPatient)
 
     // Get latest vitals for prediction
     const patientData = await api.getPatient(selectedPatient)
@@ -56,7 +56,7 @@ export default function AIAnalysis() {
     setAnalyzing(false)
   }
 
-  const selectedName = patients.find(p => p.id === selectedPatient)?.name || 'Select a patient'
+  const selectedName = (patients || []).find(p => p.id === selectedPatient)?.name || 'Select a patient'
 
   return (
     <MobileLayout title="AI Analysis" navItems={workerNavItems}>
@@ -66,21 +66,21 @@ export default function AIAnalysis() {
           <label>
             Select Patient
             <select className="input" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)}>
-              <option value="">Choose patient...</option>
-              {patients.map(p => (
-                <option key={p.id} value={p.id}>{p.name} — Week {p.gestational_week || '?'}</option>
+              <option value="">Choose patient…</option>
+              {(patients || []).map(p => (
+                <option key={p.id} value={p.id}>{p.name}, Week {p.gestational_week || '?'}</option>
               ))}
             </select>
           </label>
         </div>
-        <button className="btn btn--primary" onClick={handleAnalyze} disabled={!selectedPatient || analyzing}>
-          {analyzing ? 'Analyzing...' : 'Run AI Analysis'}
+        <button type="button" className="btn btn--primary" onClick={handleAnalyze} disabled={!selectedPatient || analyzing}>
+          {analyzing ? 'Analyzing…' : 'Run AI Analysis'}
         </button>
       </section>
 
       {prediction && (
         <section className="card animate-fade-in" style={{ animationDelay: '80ms' }}>
-          <h3>Risk Prediction — {selectedName}</h3>
+          <h3>Risk Prediction: {selectedName}</h3>
           <div className="card-row">
             <div>
               <p className="muted">Risk Score</p>
@@ -110,7 +110,7 @@ export default function AIAnalysis() {
             <div style={{ marginTop: '1rem' }}>
               <p className="muted">Contributing Factors:</p>
               <div className="chip-row">
-                {prediction.factors.map((f, i) => <span key={i} className="chip">{f}</span>)}
+                {prediction.factors.map((f) => <span key={f} className="chip">{f}</span>)}
               </div>
             </div>
           )}
@@ -129,7 +129,7 @@ export default function AIAnalysis() {
             <div style={{ marginTop: '1rem' }}>
               <h4>Recommendations</h4>
               <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
-                {summary.recommendations.map((r, i) => <li key={i}>{r}</li>)}
+                {summary.recommendations.map((r) => <li key={r}>{r}</li>)}
               </ul>
             </div>
           )}

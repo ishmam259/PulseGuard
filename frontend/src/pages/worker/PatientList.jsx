@@ -14,7 +14,7 @@ const workerNavItems = [
 const filters = ['All', 'High Risk', 'Moderate', 'Low Risk']
 
 export default function PatientList() {
-  const [patients, setPatients] = useState([])
+  const [patients, setPatients] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('All')
   const [search, setSearch] = useState('')
@@ -28,7 +28,7 @@ export default function PatientList() {
     load()
   }, [])
 
-  const filtered = patients.filter((p) => {
+  const filtered = (patients || []).filter((p) => {
     const matchesSearch =
       (p.name || '').toLowerCase().includes(search.toLowerCase()) ||
       (p.village || '').toLowerCase().includes(search.toLowerCase())
@@ -48,7 +48,8 @@ export default function PatientList() {
       <section className="animate-fade-in">
         <input
           className="input"
-          placeholder="Search patient by name or village..."
+          placeholder="Search patient by name or village…"
+          aria-label="Search patient by name or village"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -57,13 +58,15 @@ export default function PatientList() {
       {/* ── Filter Chips ── */}
       <div className="chip-row animate-fade-in">
         {filters.map((f) => (
-          <span
+          <button
+            type="button"
             key={f}
             className={`chip${activeFilter === f ? ' active' : ''}`}
             onClick={() => setActiveFilter(f)}
+            style={{ font: 'inherit', color: 'inherit' }}
           >
             {f}
-          </span>
+          </button>
         ))}
       </div>
 
@@ -75,7 +78,7 @@ export default function PatientList() {
         </div>
         <div className="list stagger">
           {loading ? (
-            <p className="muted" style={{ textAlign: 'center', padding: '2rem 0' }}>Loading patients...</p>
+            <p className="muted" style={{ textAlign: 'center', padding: '2rem 0' }}>Loading patients…</p>
           ) : filtered.map((patient) => (
             <div className="list-item" key={patient.id}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

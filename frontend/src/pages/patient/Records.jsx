@@ -4,7 +4,7 @@ import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 
 export default function Records() {
-  const [patient, setPatient] = useState(null)
+  const [patient, setPatient] = useState(undefined)
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -45,14 +45,14 @@ export default function Records() {
           <div className="card-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 className="text-gradient">Your Records</h3>
             {patient && history.length > 0 && (
-              <button className="btn btn--secondary btn--small" onClick={handleExport}>
+              <button type="button" className="btn btn--secondary btn--small" onClick={handleExport}>
                 ⬇️ Export CSV
               </button>
             )}
           </div>
 
           {loading ? (
-            <p className="muted text-center" style={{ padding: '2rem 0' }}>Loading records...</p>
+            <p className="muted text-center" style={{ padding: '2rem 0' }}>Loading records…</p>
           ) : history.length === 0 ? (
             <p className="muted text-center" style={{ padding: '2rem 0' }}>No records recorded yet.</p>
           ) : (

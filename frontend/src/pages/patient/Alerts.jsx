@@ -56,7 +56,7 @@ export default function Alerts() {
                       <strong>{alert.title}</strong>
                     </div>
                     <p className="muted" style={{ fontSize: '0.9rem', margin: '0.25rem 0' }}>{alert.message}</p>
-                    <span className="muted" style={{ fontSize: '0.75rem' }}>{alert.time}</span>
+                    <span className="muted" style={{ fontSize: '0.8rem' }}>{alert.time}</span>
                   </div>
                   <span className={`badge badge--${sev.badge}`} style={{ alignSelf: 'flex-start' }}>
                     {alert.type}

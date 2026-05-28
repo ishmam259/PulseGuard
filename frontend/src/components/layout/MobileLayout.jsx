@@ -9,11 +9,17 @@ export default function MobileLayout({ title, status, banner, children, navItems
 
   useEffect(() => {
     // Show active SOS alert toast only for workers and admins
+    let timer
     if (currentUser?.role === 'worker' || currentUser?.role === 'admin') {
       const unreadSOS = notifications.find((n) => n.type === 'emergency' && !n.read)
       if (unreadSOS) {
-        setActiveToast(unreadSOS)
+        timer = setTimeout(() => {
+          setActiveToast(unreadSOS)
+        }, 0)
       }
+    }
+    return () => {
+      if (timer) clearTimeout(timer)
     }
   }, [notifications, currentUser])
 
@@ -56,27 +62,13 @@ export default function MobileLayout({ title, status, banner, children, navItems
               </NavLink>
             ))}
             <button
+              type="button"
               onClick={handleLogout}
-              className="desktop-sidebar-logout-btn"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '12px 16px',
-                borderRadius: '8px',
-                color: '#ef4444',
-                background: 'transparent',
-                border: 'none',
-                textAlign: 'left',
-                fontWeight: '600',
-                fontSize: '14px',
-                cursor: 'pointer',
-                transition: 'background 0.2s',
-                width: '100%',
-                marginTop: 'auto'
-              }}
+              className="desktop-sidebar-logout-btn mobile-layout-logout-btn"
               onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
               onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+              onFocus={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
+              onBlur={(e) => e.currentTarget.style.background = 'transparent'}
             >
               <span>Logout</span>
             </button>
@@ -93,17 +85,18 @@ export default function MobileLayout({ title, status, banner, children, navItems
           </div>
           <div className="top-center">{title}</div>
           <div className="top-actions">
-            <span
+            <button
+              type="button"
               className={`badge badge--${currentStatus}`}
               onClick={toggleConnectivity}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
               title="Click to toggle connectivity state"
             >
               {currentStatus === 'online' && 'Online'}
               {currentStatus === 'offline' && 'Offline'}
               {currentStatus === 'syncing' && 'Syncing'}
-            </span>
-            <button className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '11px', width: 'auto', padding: '0 8px' }}>Alerts</button>
+            </button>
+            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}>Alerts</button>
             <div className="avatar">{initials}</div>
           </div>
         </header>
@@ -112,20 +105,21 @@ export default function MobileLayout({ title, status, banner, children, navItems
         <header className="desktop-header">
           <div>
             <h1 className="page-title">{title}</h1>
-            <p className="muted">PulseGuard AI — {currentUser?.role === 'worker' ? 'Maternal Health Worker Portal' : 'Patient Portal'}</p>
+            <p className="muted">PulseGuard AI: {currentUser?.role === 'worker' ? 'Maternal Health Worker Portal' : 'Patient Portal'}</p>
           </div>
           <div className="top-actions">
-            <span
+            <button
+              type="button"
               className={`badge badge--${currentStatus}`}
               onClick={toggleConnectivity}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
               title="Click to toggle connectivity state"
             >
               {currentStatus === 'online' && 'Online'}
               {currentStatus === 'offline' && 'Offline'}
               {currentStatus === 'syncing' && 'Syncing'}
-            </span>
-            <button className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
+            </button>
+            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
             <div className="avatar">{initials}</div>
           </div>
         </header>
@@ -133,21 +127,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
         {/* ── Real-time SOS Toast Banner ── */}
         {activeToast && (
           <div
-            className="emergency-toast"
-            style={{
-              background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
-              boxShadow: '0 4px 20px rgba(239, 68, 68, 0.4)',
-              padding: '1rem',
-              borderRadius: '8px',
-              margin: '0 1.5rem 1.5rem 1.5rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              border: '1px solid #fca5a5',
-              zIndex: 1000,
-              position: 'relative',
-              animation: 'fadeIn 0.3s ease-out'
-            }}
+            className="emergency-toast mobile-layout-emergency-toast"
           >
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -160,27 +140,18 @@ export default function MobileLayout({ title, status, banner, children, navItems
             </div>
             <div style={{ display: 'flex', gap: '8px', marginLeft: '12px' }}>
               <button
-                className="btn btn--primary"
-                style={{
-                  background: '#fff',
-                  color: '#ef4444',
-                  fontSize: '0.8rem',
-                  padding: '6px 12px',
-                  fontWeight: 'bold',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
+                type="button"
+                className="btn btn--primary mobile-layout-respond-btn"
                 onClick={() => {
                   setActiveToast(null)
                   // Mark read
-                  activeToast.read = true
                   navigate('/worker/alerts')
                 }}
               >
                 Respond
               </button>
               <button
+                type="button"
                 style={{
                   background: 'transparent',
                   border: 'none',
@@ -190,8 +161,8 @@ export default function MobileLayout({ title, status, banner, children, navItems
                   padding: '0 4px'
                 }}
                 onClick={() => {
+                  setActiveToast((prev) => prev ? { ...prev, read: true } : null)
                   setActiveToast(null)
-                  activeToast.read = true
                 }}
               >
                 ✕
@@ -205,10 +176,10 @@ export default function MobileLayout({ title, status, banner, children, navItems
           <section className={`status-banner status-banner--${banner.tone}`} style={{ marginBottom: '1.5rem' }}>
             <div>
               <strong>{banner.title || 'Status'}</strong>
-              <span className="muted"> — {banner.message}</span>
+              <span className="muted"> &ndash; {banner.message}</span>
             </div>
             {banner.action && (
-              <button className="btn btn--ghost" onClick={banner.action.onClick}>
+              <button type="button" className="btn btn--ghost" onClick={banner.action.onClick}>
                 {banner.action.label}
               </button>
             )}

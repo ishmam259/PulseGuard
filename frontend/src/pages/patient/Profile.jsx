@@ -174,7 +174,7 @@ export default function Profile() {
 
         {/* Profile Card */}
         <div className="card profile-card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
-          <div className="avatar large" style={{ margin: '0 auto 1.25rem auto', width: '88px', height: '88px', fontSize: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gradient-primary)', color: 'white', borderRadius: '50%', boxShadow: '0 0 24px rgba(36, 174, 124, 0.3)' }}>
+          <div className="avatar large profile-modal-overlay">
             {getInitials(currentUser?.name)}
           </div>
           <h2 className="text-gradient" style={{ fontSize: '1.6rem', marginBottom: '0.25rem' }}>{currentUser?.name || 'User Profile'}</h2>
@@ -194,7 +194,7 @@ export default function Profile() {
           <h3 style={{ marginBottom: '0.25rem' }}>{isEditing ? 'Edit Profile' : 'Profile Details'}</h3>
           
           {loading ? (
-            <p className="muted text-center" style={{ padding: '1rem 0' }}>Loading profile details...</p>
+            <p className="muted text-center" style={{ padding: '1rem 0' }}>Loading profile details…</p>
           ) : isEditing ? (
             /* ── Edit Profile Form ── */
             <div className="form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
@@ -328,7 +328,7 @@ export default function Profile() {
                 <div className="profile-detail-card" style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-start' }}>
                   <span className="profile-detail-label">Profile Status</span>
                   <span className="profile-detail-value">Pending Registration Completion</span>
-                  <button 
+                  <button type="button"
                     className="btn btn--primary btn--sm" 
                     style={{ marginTop: '0.5rem', fontSize: '0.85rem', padding: '8px 16px' }}
                     onClick={() => navigate('/patient/onboarding')}
@@ -354,6 +354,7 @@ export default function Profile() {
           {isEditing ? (
             <>
               <button
+                type="button"
                 className="btn btn--primary"
                 style={{ flex: 1 }}
                 onClick={handleSaveProfile}
@@ -362,6 +363,7 @@ export default function Profile() {
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
               <button
+                type="button"
                 className="btn btn--secondary"
                 style={{ flex: 1 }}
                 onClick={() => setIsEditing(false)}
@@ -372,10 +374,10 @@ export default function Profile() {
             </>
           ) : (
             <>
-              <button className="btn btn--secondary" style={{ flex: 1 }} onClick={handleStartEdit}>
+              <button type="button" className="btn btn--secondary" style={{ flex: 1 }} onClick={handleStartEdit}>
                 Edit Profile
               </button>
-              <button className="btn btn--ghost" style={{ flex: 1 }} onClick={handleLogout}>
+              <button type="button" className="btn btn--ghost" style={{ flex: 1 }} onClick={handleLogout}>
                 Logout
               </button>
             </>

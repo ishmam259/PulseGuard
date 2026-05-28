@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
 import { patientNavItems } from '../../data/navItems'
@@ -9,19 +9,14 @@ export default function Emergency() {
   const [gps, setGps] = useState(null)
   const [loadingGps, setLoadingGps] = useState(false)
   const [alertSent, setAlertSent] = useState(false)
-  const [statusText, setStatusText] = useState(
-    connectivity === 'online' ? 'PulseGuard Security System: Ready' : 'Offline Mode Active'
-  )
 
-  useEffect(() => {
-    setStatusText(
-      connectivity === 'online'
-        ? alertSent
-          ? 'SOS Dispatched — Help is on the way!'
-          : 'PulseGuard Security System: Ready'
-        : 'Offline Mode Active'
-    )
-  }, [connectivity, alertSent])
+  const statusText = connectivity === 'online'
+    ? alertSent
+      ? 'SOS Dispatched: Help is on the way!'
+      : gps
+        ? `GPS Coordinates: ${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`
+        : 'PulseGuard Security System: Ready'
+    : 'Offline Mode Active'
 
   const handleShareGps = () => {
     if (!navigator.geolocation) {
@@ -33,7 +28,6 @@ export default function Emergency() {
       (position) => {
         const { latitude, longitude } = position.coords
         setGps({ lat: latitude, lng: longitude })
-        setStatusText(`GPS Coordinates: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`)
         setLoadingGps(false)
       },
       (error) => {
@@ -82,7 +76,6 @@ export default function Emergency() {
       const result = await api.createAlert(alertData)
       if (result.ok) {
         setAlertSent(true)
-        setStatusText('SOS Dispatched — Help is on the way!')
       } else {
         alert('Failed to send SOS: ' + (result.error || 'Unknown error'))
       }
@@ -110,6 +103,7 @@ export default function Emergency() {
           </p>
 
           <button
+            type="button"
             className={`sos-btn ${alertSent ? '' : 'animate-pulse'}`}
             style={{
               background: alertSent ? '#10b981' : 'linear-gradient(135deg, #ef4444, #b91c1c)',
@@ -121,10 +115,10 @@ export default function Emergency() {
           </button>
 
           <div className="button-row" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '2rem' }}>
-            <button className="btn btn--secondary btn--large" onClick={handleShareGps} disabled={loadingGps}>
-              {loadingGps ? 'Fetching Location...' : 'Share GPS Location'}
+            <button type="button" className="btn btn--secondary btn--large" onClick={handleShareGps} disabled={loadingGps}>
+              {loadingGps ? 'Fetching Location…' : 'Share GPS Location'}
             </button>
-            <button className="btn btn--secondary btn--large" onClick={handleSOS}>
+            <button type="button" className="btn btn--secondary btn--large" onClick={handleSOS}>
               Notify Health Worker
             </button>
             <a href="tel:999" className="btn btn--primary btn--large text-center" style={{ textDecoration: 'none' }}>

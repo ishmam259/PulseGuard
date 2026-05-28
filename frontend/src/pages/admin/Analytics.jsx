@@ -5,7 +5,7 @@ import RiskDistributionChart from '../../components/charts/RiskDistributionChart
 import * as api from '../../services/api'
 
 export default function Analytics() {
-  const [patients, setPatients] = useState([])
+  const [patients, setPatients] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [region, setRegion] = useState('All Regions')
   const [riskType, setRiskType] = useState('All Types')
@@ -26,7 +26,7 @@ export default function Analytics() {
 
   // Filter patients based on selected filters
   const getFilteredPatients = () => {
-    let result = [...patients]
+    let result = [...(patients || [])]
 
     if (region !== 'All Regions') {
       result = result.filter(
@@ -89,7 +89,7 @@ export default function Analytics() {
 
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem' }}>
-          <p className="muted">Loading analytical datasets...</p>
+          <p className="muted">Loading analytical datasets…</p>
         </div>
       ) : (
         <>
@@ -109,7 +109,7 @@ export default function Analytics() {
           <section className="card animate-fade-in" style={{ animationDelay: '240ms', marginBottom: 'var(--spacing-5)' }}>
             <h3>AI Model Performance</h3>
             <p className="muted" style={{ marginBottom: 'var(--spacing-4)' }}>
-              XGBoost risk prediction model — last updated May 25, 2026
+              XGBoost risk prediction model, last updated May 25, 2026
             </p>
             <div className="summary-grid">
               <div className="kpi-card">

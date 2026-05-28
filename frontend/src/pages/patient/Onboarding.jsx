@@ -67,7 +67,7 @@ export default function Onboarding() {
           style={{
             background: 'linear-gradient(135deg, rgba(36,174,124,0.14), rgba(121,181,236,0.08))',
             border: '1px solid rgba(36,174,124,0.25)',
-            borderLeft: '5px solid var(--color-primary)',
+            boxShadow: 'inset 3px 0 0 var(--color-primary)',
             padding: '2rem 1.5rem',
             marginBottom: '1.5rem',
           }}

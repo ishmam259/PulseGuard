@@ -1,11 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import * as api from '../services/api'
 
 const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
-  const [connectivity, setConnectivity] = useState('online')
-  const [currentUser, setCurrentUser] = useState(null)
+  const [connectivity, setConnectivity] = useState(navigator.onLine ? 'online' : 'offline')
+  const [currentUser, setCurrentUser] = useState(undefined)
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -94,7 +95,6 @@ export function AppProvider({ children }) {
     const handleOffline = () => setConnectivity('offline')
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
-    setConnectivity(navigator.onLine ? 'online' : 'offline')
     return () => {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
@@ -123,5 +123,3 @@ export function useApp() {
   }
   return context
 }
-
-export default AppContext

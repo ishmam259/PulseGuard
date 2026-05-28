@@ -22,7 +22,7 @@ export default function Patients() {
     loadPatients()
   }, [])
 
-  const loadPatients = async () => {
+  async function loadPatients() {
     setLoading(true)
     try {
       const data = await api.getPatients()
@@ -91,6 +91,7 @@ export default function Patients() {
         <input
           className="input"
           placeholder="Search patients by name, village, or ID..."
+          aria-label="Search patients by name, village, or ID"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ maxWidth: '400px' }}
@@ -103,7 +104,7 @@ export default function Patients() {
       {/* Patients Table */}
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem' }}>
-          <p className="muted">Loading patients list...</p>
+          <p className="muted">Loading patients list…</p>
         </div>
       ) : (
         <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
@@ -137,7 +138,7 @@ export default function Patients() {
                         <div className="avatar">{getInitials(patient.name)}</div>
                         <div>
                           <strong>{patient.name}</strong>
-                          <p className="muted" style={{ fontSize: '11px' }}>{patient.village || 'N/A'}</p>
+                          <p className="muted" style={{ fontSize: '12px' }}>{patient.village || 'N/A'}</p>
                         </div>
                       </div>
                     </td>
@@ -156,7 +157,7 @@ export default function Patients() {
                         <button
                           className="btn btn--secondary"
                           type="button"
-                          style={{ padding: '4px 10px', fontSize: '11px' }}
+                          style={{ padding: '4px 10px', fontSize: '12px' }}
                           onClick={() => navigate(`/worker/patient/${patient.id}`)}
                         >
                           View Details
@@ -191,7 +192,7 @@ export default function Patients() {
 
       {/* Add Patient Modal */}
       {showModal && (
-        <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+        <div className="modal-backdrop admin-patient-modal-overlay">
           <div className="card animate-fade-in" style={{ width: '100%', maxWidth: '500px', padding: '2rem' }}>
             <h3>Create Patient Profile</h3>
             {error && (

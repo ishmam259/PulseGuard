@@ -42,13 +42,13 @@ export default function Dashboard() {
       <div className="animate-fade-in">
         {loading ? (
           <div className="card text-center" style={{ padding: '2rem' }}>
-            <p className="muted animate-pulse">Loading health profile...</p>
+            <p className="muted animate-pulse">Loading health profile…</p>
           </div>
         ) : !patient ? (
           <div className="card" style={{
             background: 'linear-gradient(135deg, rgba(36,174,124,0.12), rgba(121,181,236,0.06))',
             border: '1px solid rgba(36,174,124,0.3)',
-            borderLeft: '5px solid var(--color-primary)',
+            boxShadow: 'inset 3px 0 0 var(--color-primary)',
             padding: '2rem 1.5rem',
             textAlign: 'center',
           }}>
@@ -58,6 +58,7 @@ export default function Dashboard() {
               Your account is ready! Complete your pregnancy profile to unlock vitals tracking, AI health checks, and personalised guidance.
             </p>
             <button
+              type="button"
               className="btn btn--primary btn--large"
               onClick={() => navigate('/patient/onboarding')}
             >
@@ -101,7 +102,7 @@ export default function Dashboard() {
             <p className="muted">Personalized meal guide</p>
           </Link>
           <Link to="/patient/emergency" className="card action-card alert stagger" style={{ animationDelay: '0.3s' }}>
-            <svg style={{ width: '40px', height: '40px', color: 'var(--color-danger)', marginBottom: '4px', animation: 'pulse 1.5s infinite' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg style={{ width: '40px', height: '40px', color: 'var(--color-danger)', marginBottom: '4px', animation: 'pulse 0.9s infinite' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <h4>Emergency SOS</h4>

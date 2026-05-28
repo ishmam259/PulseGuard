@@ -16,18 +16,17 @@ export default function WorkerAlerts() {
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
 
-  async function loadAlerts() {
-    try {
-      const data = await api.getAlerts()
-      setAlerts(data)
-    } catch (err) {
-      console.error('Failed to load alerts:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
+    async function loadAlerts() {
+      try {
+        const data = await api.getAlerts()
+        setAlerts(data)
+      } catch (err) {
+        console.error('Failed to load alerts:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
     loadAlerts()
   }, [])
 
@@ -71,7 +70,7 @@ export default function WorkerAlerts() {
           </div>
 
           {loading ? (
-            <p className="muted text-center animate-pulse" style={{ padding: '2rem 0' }}>Loading alerts...</p>
+            <p className="muted text-center animate-pulse" style={{ padding: '2rem 0' }}>Loading alerts…</p>
           ) : activeAlerts.length === 0 ? (
             <div className="text-center" style={{ padding: '2rem 0' }}>
               <p className="muted">🎉 All quiet. No pending emergency alerts.</p>
@@ -80,24 +79,14 @@ export default function WorkerAlerts() {
             <div className="list stagger">
               {activeAlerts.map((alert) => (
                 <div
-                  className="list-item"
+                  className="list-item sos-alert-card"
                   key={alert.id}
-                  style={{
-                    borderLeft: '4px solid var(--color-danger)',
-                    backgroundColor: 'rgba(239, 68, 68, 0.05)',
-                    padding: '1.25rem',
-                    borderRadius: '8px',
-                    marginBottom: '1rem',
-                    flexDirection: 'column',
-                    alignItems: 'stretch',
-                    gap: '12px'
-                  }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
                       <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: 0 }}>{alert.patient_name}</h4>
                       <p className="muted" style={{ fontSize: '0.85rem', marginTop: '4px' }}>
-                        {alert.village || 'No village recorded'} • Week {alert.gestational_week || '—'}
+                        {alert.village || 'No village recorded'} • Week {alert.gestational_week || '-'}
                       </p>
                     </div>
                     {alert.risk_level && (
@@ -132,6 +121,7 @@ export default function WorkerAlerts() {
 
                   <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
                     <button
+                      type="button"
                       className="btn btn--primary"
                       style={{ flex: 1, padding: '10px', background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', color: '#fff' }}
                       onClick={() => handleResolve(alert.id, 'resolved')}
@@ -139,6 +129,7 @@ export default function WorkerAlerts() {
                       Mark Resolved
                     </button>
                     <button
+                      type="button"
                       className="btn btn--secondary"
                       style={{ flex: 1, padding: '10px' }}
                       onClick={() => handleResolve(alert.id, 'dismissed')}
@@ -169,7 +160,7 @@ export default function WorkerAlerts() {
                   key={alert.id}
                   style={{
                     opacity: 0.75,
-                    borderLeft: '4px solid var(--color-border)',
+                    boxShadow: 'inset 3px 0 0 var(--color-border)',
                     padding: '12px 16px',
                     borderRadius: '6px',
                     marginBottom: '8px'
@@ -178,7 +169,7 @@ export default function WorkerAlerts() {
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <strong style={{ color: '#fff' }}>{alert.patient_name}</strong>
-                      <span className={`badge badge--${alert.status === 'resolved' ? 'online' : 'offline'}`} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
+                      <span className={`badge badge--${alert.status === 'resolved' ? 'online' : 'offline'}`} style={{ fontSize: '0.75rem', padding: '2px 6px' }}>
                         {alert.status.toUpperCase()}
                       </span>
                     </div>

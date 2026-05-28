@@ -8,7 +8,7 @@ const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
 
 export default function AIChat() {
   const [messages, setMessages] = useState(
-    initialMessages.map((m) => ({ ...m }))
+    () => initialMessages.map((m) => ({ ...m }))
   )
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -86,10 +86,11 @@ export default function AIChat() {
               type="text"
               className="input"
               placeholder="Describe your symptoms..."
+              aria-label="Describe your symptoms"
               value={input}
               onChange={(e) => setInput(e.target.value)}
             />
-            <button type="button" className="icon-btn" title="Voice input">
+            <button type="button" className="icon-btn" title="Voice input" aria-label="Voice input">
               
             </button>
             <button type="submit" className="btn btn--primary">
@@ -101,6 +102,7 @@ export default function AIChat() {
         <div className="chip-row" style={{ marginTop: '1rem' }}>
           {quickChips.map((chip) => (
             <button
+              type="button"
               key={chip}
               className="chip"
               onClick={() => sendMessage(chip)}

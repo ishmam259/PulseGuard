@@ -6,7 +6,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 
 export default function Dashboard() {
-  const { connectivity, notifications } = useApp()
+  const { notifications } = useApp()
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -79,7 +79,7 @@ export default function Dashboard() {
       {/* KPI Row */}
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem', marginBottom: 'var(--spacing-4)' }}>
-          <p className="muted">Loading administrative statistics...</p>
+          <p className="muted">Loading administrative statistics…</p>
         </div>
       ) : (
         <section className="kpi-row stagger">
@@ -145,7 +145,7 @@ export default function Dashboard() {
                 <p className="muted">{alert.message}</p>
               </div>
               <div className="inline-actions">
-                <span className="muted" style={{ fontSize: '11px', whiteSpace: 'nowrap' }}>{alert.time}</span>
+                <span className="muted" style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>{alert.time}</span>
               </div>
             </div>
           ))}

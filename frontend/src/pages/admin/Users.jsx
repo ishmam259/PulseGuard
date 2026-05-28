@@ -23,7 +23,7 @@ export default function Users() {
     loadUsers()
   }, [])
 
-  const loadUsers = async () => {
+  async function loadUsers() {
     setLoading(true)
     try {
       const data = await api.getUsers()
@@ -87,7 +87,7 @@ export default function Users() {
       } else {
         alert(res.error || 'Failed to delete user')
       }
-    } catch (err) {
+    } catch {
       alert('Connection failed')
     }
   }
@@ -111,6 +111,7 @@ export default function Users() {
         <input
           className="input"
           placeholder="Search users by name, email, phone, or role..."
+          aria-label="Search users by name, email, phone, or role"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ maxWidth: '400px' }}
@@ -123,7 +124,7 @@ export default function Users() {
       {/* Users Table */}
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem' }}>
-          <p className="muted">Loading users list...</p>
+          <p className="muted">Loading users list…</p>
         </div>
       ) : (
         <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
@@ -180,7 +181,7 @@ export default function Users() {
                         <button
                           className="btn btn--secondary"
                           type="button"
-                          style={{ padding: '4px 10px', fontSize: '11px', color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)' }}
+                          style={{ padding: '4px 10px', fontSize: '12px', color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)' }}
                           onClick={() => handleDeleteUser(user.id, user.name)}
                         >
                           Delete
@@ -215,7 +216,7 @@ export default function Users() {
 
       {/* Add User Modal */}
       {showModal && (
-        <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+        <div className="modal-backdrop">
           <div className="card animate-fade-in" style={{ width: '100%', maxWidth: '500px', padding: '2rem' }}>
             <h3>Create User Account</h3>
             {error && (

@@ -28,7 +28,7 @@ export default function VitalsEntry() {
       const data = await api.getPatients()
       setPatients(data)
       if (patientId) setSelectedPatient(patientId)
-      else if (data.length > 0 && !selectedPatient) setSelectedPatient(data[0].id)
+      else if (data.length > 0) setSelectedPatient(prev => prev || data[0].id)
     }
     load()
   }, [patientId])
@@ -51,7 +51,7 @@ export default function VitalsEntry() {
         weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : undefined,
         pulse: form.pulse ? parseInt(form.pulse) : undefined,
         temperature_c: form.temperature_c ? parseFloat(form.temperature_c) : undefined,
-        symptoms: form.symptoms ? form.symptoms.split(',').map(s => s.trim()).filter(Boolean) : [],
+        symptoms: form.symptoms ? form.symptoms.split(',').flatMap(s => s.trim() ? [s.trim()] : []) : [],
       }
       const res = await api.addVitals(selectedPatient, vitalsData)
       if (res.ok) {
@@ -82,9 +82,9 @@ export default function VitalsEntry() {
             Patient
             <div className="input-wrapper">
               <select className="input" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)}>
-                <option value="">Select patient...</option>
+                <option value="">Select patient…</option>
                 {patients.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name} — Week {p.gestational_week || '?'}</option>
+                  <option key={p.id} value={p.id}>{p.name}, Week {p.gestational_week || '?'}</option>
                 ))}
               </select>
             </div>
@@ -131,7 +131,7 @@ export default function VitalsEntry() {
           <div className="alert-panel" style={{ background: 'rgba(16,185,129,0.1)', borderColor: 'rgba(16,185,129,0.3)', marginTop: '1rem' }}>
             <strong style={{ color: 'var(--color-success)' }}>Vitals saved successfully</strong>
             <p className="muted">
-              Risk Score: {((result.riskScore || 0) * 100).toFixed(0)}% — Level: {result.riskLevel || 'low'}
+              Risk Score: {((result.riskScore || 0) * 100).toFixed(0)}% | Level: {result.riskLevel || 'low'}
             </p>
           </div>
         )}

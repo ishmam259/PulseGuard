@@ -1597,3 +1597,112 @@ select.input option {
   font-size: 0.95rem;
 }
 
+/* ── MobileLayout: Logout Button ── */
+.mobile-layout-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #ef4444;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  margin-top: auto;
+}
+
+/* ── MobileLayout: Emergency Toast ── */
+.mobile-layout-emergency-toast {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 0 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #fca5a5;
+  z-index: 50;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ── MobileLayout: Respond Button ── */
+.mobile-layout-respond-btn {
+  background: #fff;
+  color: #ef4444;
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+/* ── Admin Sidebar Logout Button ── */
+.admin-sidebar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #ef4444;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  margin-top: 12px;
+}
+
+/* ── Profile Avatar (extracted inline style) ── */
+.profile-modal-overlay {
+  margin: 0 auto 1.25rem auto;
+  width: 88px;
+  height: 88px;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 24px rgba(36, 174, 124, 0.3);
+}
+
+/* ── Modal Backdrop Overlay (extracted inline style) ── */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+/* ── Worker Active SOS Alert Card (extracted inline style) ── */
+.sos-alert-card {
+  box-shadow: inset 3px 0 0 var(--color-danger);
+  background-color: rgba(239, 68, 68, 0.05);
+  padding: 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+

@@ -43,6 +43,7 @@ export default function Nutrition() {
         <div className="chip-row" style={{ marginBottom: '1.5rem', overflowX: 'auto', whiteSpace: 'nowrap' }}>
           {tags.map((tag) => (
             <button
+              type="button"
               key={tag}
               className={`chip ${selectedTag === tag ? 'active' : ''}`}
               onClick={() => setSelectedTag(tag)}

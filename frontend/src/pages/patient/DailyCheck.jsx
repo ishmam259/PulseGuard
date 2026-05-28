@@ -70,23 +70,23 @@ export default function DailyCheck() {
       weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : undefined,
       temperature_c: form.temperature_c ? parseFloat(form.temperature_c) : undefined,
       pulse: form.pulse ? parseInt(form.pulse) : undefined,
-      symptoms: form.symptoms ? form.symptoms.split(',').map((s) => s.trim()).filter(Boolean) : [],
+      symptoms: form.symptoms ? form.symptoms.split(',').flatMap((s) => { const trimmed = s.trim(); return trimmed ? [trimmed] : []; }) : [],
     }
 
     if (connectivity === 'offline' || isOfflineExplicit) {
       // Save to local offline queue
       try {
-        const queue = JSON.parse(localStorage.getItem('pg_offline_queue') || '[]')
+        const queue = JSON.parse(localStorage.getItem('pg_offline_queue:v1') || '[]')
         queue.push({
           patient_id: patient.id,
           type: 'vitals',
           data: payload,
           local_timestamp: new Date().toISOString(),
         })
-        localStorage.setItem('pg_offline_queue', JSON.stringify(queue))
+        localStorage.setItem('pg_offline_queue:v1', JSON.stringify(queue))
         setSuccess('Saved to offline queue successfully! It will sync when connection is restored.')
         setForm({ bp: '', weight_kg: '', temperature_c: '', symptoms: '', pulse: '' })
-      } catch (err) {
+      } catch {
         setError('Failed to save data locally.')
       }
       return
@@ -101,7 +101,7 @@ export default function DailyCheck() {
       } else {
         setError(res.error || 'Failed to save daily check details.')
       }
-    } catch (err) {
+    } catch {
       setError('Network request failed. Please try saving offline instead.')
     } finally {
       setSaving(false)
@@ -123,13 +123,13 @@ export default function DailyCheck() {
       <div className="animate-fade-in">
         {loading ? (
           <div className="card text-center" style={{ padding: '2rem' }}>
-            <p className="muted animate-pulse">Loading daily health check form...</p>
+            <p className="muted animate-pulse">Loading daily health check form…</p>
           </div>
         ) : !patient ? (
           <div className="card" style={{
             background: 'linear-gradient(135deg, rgba(36,174,124,0.12), rgba(121,181,236,0.06))',
             border: '1px solid rgba(36,174,124,0.3)',
-            borderLeft: '5px solid var(--color-primary)',
+            boxShadow: 'inset 3px 0 0 var(--color-primary)',
             padding: '2rem 1.5rem',
             textAlign: 'center',
           }}>
@@ -139,6 +139,7 @@ export default function DailyCheck() {
               You need to complete your pregnancy profile before recording vitals.
             </p>
             <button
+              type="button"
               className="btn btn--primary"
               onClick={() => navigate('/patient/onboarding')}
             >
@@ -149,7 +150,7 @@ export default function DailyCheck() {
           <div className="card">
             <h3 className="text-gradient">Record Today's Vitals</h3>
             <p className="muted">
-              {currentDateStr} — Pregnancy Week {patient.gestational_week || 'N/A'}
+              {currentDateStr}, Pregnancy Week {patient.gestational_week || 'N/A'}
             </p>
 
             {error && (
@@ -249,6 +250,7 @@ export default function DailyCheck() {
 
             <div className="button-row" style={{ marginTop: '1.5rem' }}>
               <button
+                type="button"
                 className="btn btn--primary"
                 onClick={() => handleSave(false)}
                 disabled={saving}
@@ -256,6 +258,7 @@ export default function DailyCheck() {
                 {saving ? 'Saving...' : 'Save'}
               </button>
               <button
+                type="button"
                 className="btn btn--secondary"
                 onClick={() => handleSave(true)}
               >

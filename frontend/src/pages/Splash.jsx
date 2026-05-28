@@ -24,7 +24,7 @@ export default function Splash() {
           </Link>
         </div>
 
-        <p className="muted" style={{ marginTop: '4rem', fontSize: '12px' }}>
+        <p className="muted" style={{ marginTop: '4rem', fontSize: '12px' }} suppressHydrationWarning>
           &copy; {new Date().getFullYear()} PulseGuard AI. All rights reserved.
         </p>
       </div>

@@ -12,7 +12,7 @@ const workerNavItems = [
 ]
 
 export default function WorkerDashboard() {
-  const [patients, setPatients] = useState([])
+  const [patients, setPatients] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -25,8 +25,8 @@ export default function WorkerDashboard() {
     load()
   }, [])
 
-  const highRisk = patients.filter(p => p.risk_level === 'high').length
-  const total = patients.length
+  const highRisk = (patients || []).filter(p => p.risk_level === 'high').length
+  const total = (patients || []).length
 
   return (
     <MobileLayout
@@ -62,7 +62,7 @@ export default function WorkerDashboard() {
           <div className="stat-card bg-cancelled">
             <div className="stat-card-header">
               <img src="/assets/icons/cancelled.svg" alt="cancelled" className="stat-card-icon" />
-              <h2 className="stat-card-count">{loading ? '—' : patients.filter(p => p.risk_level === 'moderate').length}</h2>
+              <h2 className="stat-card-count">{loading ? '—' : (patients || []).filter(p => p.risk_level === 'moderate').length}</h2>
             </div>
             <p className="stat-card-label">Moderate Risk Cases</p>
           </div>
@@ -70,7 +70,7 @@ export default function WorkerDashboard() {
           <div className="stat-card bg-appointments" style={{ borderBottomColor: '#24AE7C' }}>
             <div className="stat-card-header">
               <img src="/assets/icons/check-circle.svg" alt="low risk" className="stat-card-icon" />
-              <h2 className="stat-card-count">{loading ? '—' : patients.filter(p => p.risk_level === 'low').length}</h2>
+              <h2 className="stat-card-count">{loading ? '—' : (patients || []).filter(p => p.risk_level === 'low').length}</h2>
             </div>
             <p className="stat-card-label">Low Risk Cases</p>
           </div>
@@ -103,8 +103,8 @@ export default function WorkerDashboard() {
         </div>
         <div className="list stagger">
           {loading ? (
-            <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>Loading...</p>
-          ) : patients.filter(p => p.risk_level === 'high').map((patient) => (
+            <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>Loading…</p>
+          ) : (patients || []).flatMap((patient) => patient.risk_level === 'high' ? [(
             <div className="list-item" key={patient.id}>
               <div>
                 <strong>{patient.name}</strong>
@@ -121,7 +121,7 @@ export default function WorkerDashboard() {
                 </Link>
               </div>
             </div>
-          ))}
+          )] : [])}
           {!loading && highRisk === 0 && (
             <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>No high risk patients</p>
           )}

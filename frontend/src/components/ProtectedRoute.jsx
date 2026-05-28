@@ -8,7 +8,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: '#94a3b8' }}>
         <div className="animate-fade-in">
-          <p style={{ fontSize: '1.2rem' }}>Loading...</p>
+          <p style={{ fontSize: '1.2rem' }}>Loading…</p>
         </div>
       </div>
     )

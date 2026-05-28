@@ -41,27 +41,13 @@ export default function AdminLayout({ title, children }) {
             </NavLink>
           ))}
           <button
+            type="button"
             onClick={handleLogout}
-            className="sidebar-logout-btn"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              color: '#ef4444',
-              background: 'transparent',
-              border: 'none',
-              textAlign: 'left',
-              fontWeight: '600',
-              fontSize: '14px',
-              cursor: 'pointer',
-              transition: 'background 0.2s',
-              width: '100%',
-              marginTop: '12px'
-            }}
+            className="sidebar-logout-btn admin-sidebar"
             onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
             onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+            onFocus={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
+            onBlur={(e) => e.currentTarget.style.background = 'transparent'}
           >
             <span>Logout</span>
           </button>
@@ -72,7 +58,7 @@ export default function AdminLayout({ title, children }) {
           <p className="muted" style={{ fontSize: '0.75rem' }}>
             PulseGuard AI v1.0.0
           </p>
-          <p className="muted" style={{ fontSize: '0.7rem' }}>
+          <p className="muted" style={{ fontSize: '0.75rem' }}>
             Offline-First Maternal Healthcare
           </p>
         </div>
@@ -83,7 +69,7 @@ export default function AdminLayout({ title, children }) {
         <header className="admin-header">
           <div>
             <h1 className="page-title">{title || 'Dashboard'}</h1>
-            <p className="muted">PulseGuard AI — Admin Console</p>
+            <p className="muted">PulseGuard AI, Admin Console</p>
           </div>
           <div className="top-actions">
             <span className={`badge badge--${connectivity}`}>
@@ -91,7 +77,7 @@ export default function AdminLayout({ title, children }) {
               {connectivity === 'offline' && 'Offline'}
               {connectivity === 'syncing' && 'Syncing'}
             </span>
-            <button className="icon-btn" style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
+            <button type="button" className="icon-btn" style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
             <div className="avatar">{initials}</div>
           </div>
         </header>
