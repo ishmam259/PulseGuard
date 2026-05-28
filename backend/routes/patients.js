@@ -73,13 +73,18 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Patient not found' })
     }
 
+    const patient = patientResult.rows[0]
+    if (req.user.role === 'patient' && patient.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied' })
+    }
+
     const vitalsResult = await pool.query(
       `SELECT * FROM vitals WHERE patient_id = $1 ORDER BY recorded_at DESC LIMIT 1`,
       [req.params.id]
     )
 
     res.json({
-      patient: patientResult.rows[0],
+      patient,
       latestVitals: vitalsResult.rows[0] || null,
     })
   } catch (err) {
@@ -129,8 +134,17 @@ router.put('/:id', requireRole('worker', 'admin'), async (req, res) => {
 })
 
 // POST /api/patients/:id/vitals — Add vitals entry
-router.post('/:id/vitals', requireRole('worker', 'admin'), async (req, res) => {
+router.post('/:id/vitals', async (req, res) => {
   try {
+    if (req.user.role === 'patient') {
+      const patientCheck = await pool.query('SELECT user_id FROM patients WHERE id = $1', [req.params.id])
+      if (patientCheck.rows.length === 0 || patientCheck.rows[0].user_id !== req.user.id) {
+        return res.status(403).json({ error: 'Access denied' })
+      }
+    } else if (req.user.role !== 'worker' && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' })
+    }
+
     const data = vitalsSchema.parse(req.body)
 
     // Fetch patient's gestational week for AI prediction
@@ -211,6 +225,15 @@ router.post('/:id/vitals', requireRole('worker', 'admin'), async (req, res) => {
 // GET /api/patients/:id/history — Full vitals history
 router.get('/:id/history', async (req, res) => {
   try {
+    if (req.user.role === 'patient') {
+      const patientCheck = await pool.query('SELECT user_id FROM patients WHERE id = $1', [req.params.id])
+      if (patientCheck.rows.length === 0 || patientCheck.rows[0].user_id !== req.user.id) {
+        return res.status(403).json({ error: 'Access denied' })
+      }
+    } else if (req.user.role !== 'worker' && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied' })
+    }
+
     const result = await pool.query(
       `SELECT v.*, u.name as recorded_by_name FROM vitals v
        LEFT JOIN users u ON u.id = v.recorded_by
