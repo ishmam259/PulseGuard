@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
@@ -6,6 +7,7 @@ import { patientNavItems } from '../../data/navItems'
 
 export default function DailyCheck() {
   const { connectivity } = useApp()
+  const navigate = useNavigate()
   const [patient, setPatient] = useState(null)
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({
@@ -117,21 +119,37 @@ export default function DailyCheck() {
       title="Daily Health Check"
       status={connectivity}
       navItems={patientNavItems}
-      banner={{
-        tone: connectivity === 'online' ? 'online' : 'offline',
-        message: connectivity === 'online' ? 'Connected to PulseGuard' : 'Offline — offline queue active',
-      }}
     >
       <div className="animate-fade-in">
         {loading ? (
           <div className="card text-center" style={{ padding: '2rem' }}>
             <p className="muted animate-pulse">Loading daily health check form...</p>
           </div>
+        ) : !patient ? (
+          <div className="card" style={{
+            background: 'linear-gradient(135deg, rgba(36,174,124,0.12), rgba(121,181,236,0.06))',
+            border: '1px solid rgba(36,174,124,0.3)',
+            borderLeft: '5px solid var(--color-primary)',
+            padding: '2rem 1.5rem',
+            textAlign: 'center',
+          }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📋</div>
+            <h3 style={{ marginBottom: '0.5rem' }}>Profile Setup Required</h3>
+            <p className="muted" style={{ marginBottom: '1.5rem', lineHeight: 1.6 }}>
+              You need to complete your pregnancy profile before recording vitals.
+            </p>
+            <button
+              className="btn btn--primary"
+              onClick={() => navigate('/patient/onboarding')}
+            >
+              Complete My Profile
+            </button>
+          </div>
         ) : (
           <div className="card">
             <h3 className="text-gradient">Record Today's Vitals</h3>
             <p className="muted">
-              {currentDateStr} {patient ? `— Pregnancy Week ${patient.gestational_week || 'N/A'}` : ''}
+              {currentDateStr} — Pregnancy Week {patient.gestational_week || 'N/A'}
             </p>
 
             {error && (

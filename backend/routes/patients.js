@@ -40,14 +40,43 @@ router.get('/', async (req, res) => {
 })
 
 // POST /api/patients — Create patient
-router.post('/', requireRole('worker', 'admin'), async (req, res) => {
+// Workers/admins create profiles for others; patients can create their own
+router.post('/', async (req, res) => {
+  const { role, id: userId } = req.user
+
+  // Only worker, admin, or patient can create a patient profile
+  if (role !== 'worker' && role !== 'admin' && role !== 'patient') {
+    return res.status(403).json({ error: 'Forbidden' })
+  }
+
   try {
     const data = patientSchema.parse(req.body)
+
+    let assigned_worker, user_id
+
+    if (role === 'patient') {
+      // A patient can only create their own profile
+      user_id = userId
+      assigned_worker = null
+    } else {
+      // Worker or admin creates for someone else
+      assigned_worker = data.assigned_worker || userId
+      user_id = data.user_id || null
+    }
+
+    // Prevent duplicate patient profiles for the same user_id
+    if (user_id) {
+      const existing = await pool.query('SELECT id FROM patients WHERE user_id = $1', [user_id])
+      if (existing.rows.length > 0) {
+        return res.status(409).json({ error: 'A patient profile already exists for this user.' })
+      }
+    }
+
     const result = await pool.query(
       `INSERT INTO patients (name, age, village, gestational_week, assigned_worker, user_id)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [data.name, data.age, data.village, data.gestational_week, data.assigned_worker || req.user.id, data.user_id || null]
+      [data.name, data.age, data.village, data.gestational_week, assigned_worker, user_id]
     )
     res.status(201).json({ patient: result.rows[0] })
   } catch (err) {

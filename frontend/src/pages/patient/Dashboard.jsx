@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
@@ -7,6 +7,7 @@ import { patientNavItems } from '../../data/navItems'
 
 export default function Dashboard() {
   const { currentUser, connectivity } = useApp()
+  const navigate = useNavigate()
   const [patient, setPatient] = useState(null)
   const [latestVitals, setLatestVitals] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -37,10 +38,6 @@ export default function Dashboard() {
       title="Dashboard"
       status={connectivity}
       navItems={patientNavItems}
-      banner={{
-        tone: connectivity === 'online' ? 'online' : 'offline',
-        message: connectivity === 'online' ? 'Connected — data synced' : 'Offline mode active'
-      }}
     >
       <div className="animate-fade-in">
         {loading ? (
@@ -48,11 +45,24 @@ export default function Dashboard() {
             <p className="muted animate-pulse">Loading health profile...</p>
           </div>
         ) : !patient ? (
-          <div className="card greeting-card">
-            <h2>Hello, {currentUser?.name || 'Mother'}</h2>
-            <p className="muted" style={{ marginTop: '0.5rem' }}>
-              Welcome to PulseGuard! Your digital pregnancy profile is being set up. Please consult your health worker to complete your registration.
+          <div className="card" style={{
+            background: 'linear-gradient(135deg, rgba(36,174,124,0.12), rgba(121,181,236,0.06))',
+            border: '1px solid rgba(36,174,124,0.3)',
+            borderLeft: '5px solid var(--color-primary)',
+            padding: '2rem 1.5rem',
+            textAlign: 'center',
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>🌿</div>
+            <h2 style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>Welcome, {currentUser?.name?.split(' ')[0] || 'Mother'}!</h2>
+            <p className="muted" style={{ marginBottom: '1.5rem', lineHeight: 1.6 }}>
+              Your account is ready! Complete your pregnancy profile to unlock vitals tracking, AI health checks, and personalised guidance.
             </p>
+            <button
+              className="btn btn--primary btn--large"
+              onClick={() => navigate('/patient/onboarding')}
+            >
+              ✓ Complete My Profile
+            </button>
           </div>
         ) : (
           <div className="card greeting-card">

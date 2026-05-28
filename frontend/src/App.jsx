@@ -17,6 +17,7 @@ import EmergencySOS from './pages/patient/Emergency'
 import PatientRecords from './pages/patient/Records'
 import PatientAlerts from './pages/patient/Alerts'
 import PatientProfile from './pages/patient/Profile'
+import PatientOnboarding from './pages/patient/Onboarding'
 
 // Worker pages
 import WorkerDashboard from './pages/worker/Dashboard'
@@ -48,6 +49,7 @@ function App() {
 
         {/* Patient — protected */}
         <Route path="/patient/dashboard" element={<ProtectedRoute allowedRoles={['patient']}><PatientDashboard /></ProtectedRoute>} />
+        <Route path="/patient/onboarding" element={<ProtectedRoute allowedRoles={['patient']}><PatientOnboarding /></ProtectedRoute>} />
         <Route path="/patient/ai-chat" element={<ProtectedRoute allowedRoles={['patient']}><PatientChat /></ProtectedRoute>} />
         <Route path="/patient/daily-check" element={<ProtectedRoute allowedRoles={['patient']}><DailyHealthCheck /></ProtectedRoute>} />
         <Route path="/patient/nutrition" element={<ProtectedRoute allowedRoles={['patient']}><NutritionPlan /></ProtectedRoute>} />

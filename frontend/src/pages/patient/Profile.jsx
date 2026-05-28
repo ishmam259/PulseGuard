@@ -308,7 +308,7 @@ export default function Profile() {
                   <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
                 </div>
               </div>
-            ) : (
+            ) : isAdmin ? (
               <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
                 <div className="profile-detail-card">
                   <span className="profile-detail-label">System Role</span>
@@ -319,6 +319,28 @@ export default function Profile() {
                   <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
                 </div>
                 <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
+                  <span className="profile-detail-label">Email</span>
+                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
+                <div className="profile-detail-card" style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-start' }}>
+                  <span className="profile-detail-label">Profile Status</span>
+                  <span className="profile-detail-value">Pending Registration Completion</span>
+                  <button 
+                    className="btn btn--primary btn--sm" 
+                    style={{ marginTop: '0.5rem', fontSize: '0.85rem', padding: '8px 16px' }}
+                    onClick={() => navigate('/patient/onboarding')}
+                  >
+                    Complete Registration
+                  </button>
+                </div>
+                <div className="profile-detail-card">
+                  <span className="profile-detail-label">Phone</span>
+                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+                </div>
+                <div className="profile-detail-card">
                   <span className="profile-detail-label">Email</span>
                   <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
                 </div>
