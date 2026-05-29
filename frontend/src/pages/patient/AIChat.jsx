@@ -3,6 +3,7 @@ import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
 import { chatMessages as initialMessages } from '../../data/mockData'
 import { patientNavItems } from '../../data/navItems'
+import ReactMarkdown from 'react-markdown';
 
 const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
 
@@ -65,7 +66,7 @@ export default function AIChat() {
         <div className="card chat-card">
           {messages.map((msg) => (
             <div key={msg.id} className={`chat-bubble ${msg.role}`}>
-              {msg.text}
+              <ReactMarkdown>{msg.text}</ReactMarkdown>
             </div>
           ))}
           {isTyping && (
