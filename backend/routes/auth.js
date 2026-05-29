@@ -67,6 +67,11 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' })
     }
 
+    // Enforce role match: users can only log in through their own role portal
+    if (data.role && user.role !== data.role) {
+      return res.status(403).json({ error: `This account is registered as "${user.role}". Please use the correct login portal.` })
+    }
+
     const token = generateAccessToken(user)
     const refreshToken = await createRefreshToken(user.id)
 

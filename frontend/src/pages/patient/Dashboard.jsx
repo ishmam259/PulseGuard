@@ -15,14 +15,10 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadPatientData() {
       try {
-        const patients = await api.getPatients()
-        if (patients && patients.length > 0) {
-          const mainPatient = patients[0]
-          const details = await api.getPatient(mainPatient.id)
-          if (details) {
-            setPatient(details.patient)
-            setLatestVitals(details.latestVitals)
-          }
+        const data = await api.getMyPatientProfile()
+        if (data && data.patient) {
+          setPatient(data.patient)
+          setLatestVitals(data.latestVitals)
         }
       } catch (err) {
         console.error('Failed to load patient dashboard data:', err)

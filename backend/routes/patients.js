@@ -23,6 +23,40 @@ router.get('/', async (req, res) => {
   }
 })
 
+// GET /api/patients/my-profile — Get current patient's profile from patients table
+// Must be defined BEFORE /:id to avoid being captured by the param route
+router.get('/my-profile', async (req, res) => {
+  try {
+    if (req.user.role !== 'patient') {
+      return res.status(403).json({ error: 'Only patients can access this endpoint' })
+    }
+
+    const result = await pool.query(
+      'SELECT * FROM patients WHERE user_id = $1',
+      [req.user.id]
+    )
+
+    if (result.rows.length === 0) {
+      return res.json({ patient: null, latestVitals: null })
+    }
+
+    const patient = result.rows[0]
+
+    const vitalsResult = await pool.query(
+      'SELECT * FROM vitals WHERE patient_id = $1 ORDER BY recorded_at DESC LIMIT 1',
+      [patient.id]
+    )
+
+    res.json({
+      patient,
+      latestVitals: vitalsResult.rows[0] || null,
+    })
+  } catch (err) {
+    console.error('Get my-profile error:', err)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 // POST /api/patients — Create patient
 // Workers/admins create profiles for others; patients can create their own
 router.post('/', async (req, res) => {
