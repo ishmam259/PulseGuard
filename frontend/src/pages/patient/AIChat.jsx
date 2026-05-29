@@ -8,9 +8,12 @@ import ReactMarkdown from 'react-markdown';
 const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
 
 export default function AIChat() {
+  /** For initial messages use this 
   const [messages, setMessages] = useState(
     () => initialMessages.map((m) => ({ ...m }))
-  )
+  )*/
+
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const bottomRef = useRef(null)
