@@ -10,6 +10,8 @@ from typing import Optional
 import sys
 import os
 
+from external.adapters.openrouter_model import OpenRouterModel
+
 # Add parent directory for model imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -103,46 +105,12 @@ async def chat(req: ChatRequest):
     """AI symptom checker — returns mock responses (Ollama integration placeholder)."""
     message = req.message.lower()
 
-    # Symptom-aware mock responses
-    if "headache" in message or "head" in message:
-        response = (
-            "Headaches during pregnancy can indicate several conditions:\n\n"
-            "• Tension headache — from stress, fatigue, or dehydration\n"
-            "• Preeclampsia — if accompanied by high blood pressure or visual changes\n"
-            "• Hormonal changes — common in early pregnancy\n\n"
-            "💡 Drink water, rest, and check your blood pressure. "
-            "Contact your health worker if the headache is severe or persistent."
-        )
-    elif "dizzy" in message or "faint" in message:
-        response = (
-            "Dizziness may indicate:\n\n"
-            "• Low blood pressure\n"
-            "• Dehydration — drink at least 8 glasses of water daily\n"
-            "• Anemia — iron deficiency is common in pregnancy\n\n"
-            "💡 Sit down when feeling dizzy. Avoid standing up quickly. "
-            "Report this to your health worker."
-        )
-    elif "swelling" in message or "edema" in message:
-        response = (
-            "Swelling during pregnancy:\n\n"
-            "• Mild swelling in feet/ankles is normal, especially in later weeks\n"
-            "• Sudden swelling in face or hands may indicate preeclampsia\n"
-            "• Combined with high BP and headache = seek immediate care\n\n"
-            "💡 Elevate your feet, reduce salt intake, and report sudden swelling immediately."
-        )
-    else:
-        response = (
-            "Thank you for sharing your symptoms. Here are general recommendations:\n\n"
-            "• Monitor your symptoms over the next 24 hours\n"
-            "• Stay hydrated and rest when possible\n"
-            "• Record any changes in your Daily Health Check\n"
-            "• Contact your health worker if symptoms worsen\n\n"
-            "💡 Your health worker will review this at your next visit."
-        )
+    model = OpenRouterModel()
+    response = model.ask(message)
 
     return {
         "response": response,
-        "model": "mock_llm",
+        "model": "openrouter_llem",
         "language": req.language,
         "offline_capable": True,
     }
