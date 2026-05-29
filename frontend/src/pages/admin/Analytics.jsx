@@ -5,7 +5,7 @@ import RiskDistributionChart from '../../components/charts/RiskDistributionChart
 import * as api from '../../services/api'
 
 export default function Analytics() {
-  const [patients, setPatients] = useState(undefined)
+  const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
   const [region, setRegion] = useState('All Regions')
   const [riskType, setRiskType] = useState('All Types')
