@@ -4,4 +4,5 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 COPY . .
 EXPOSE 5000
-CMD ["node", "server.js"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
