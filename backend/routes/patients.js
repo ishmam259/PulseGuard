@@ -13,7 +13,23 @@ router.get('/', async (req, res) => {
   try {
     let query, params
 
-    query = `SELECT * FROM users WHERE ROLE='patient';`
+    if (req.user.role === 'admin') {
+      query = `SELECT p.*, u.name as worker_name FROM patients p
+               LEFT JOIN users u ON u.id = p.assigned_worker
+               ORDER BY p.risk_score DESC, p.last_updated DESC`
+      params = []
+    } else if (req.user.role === 'worker') {
+      query = `SELECT p.*, u.name as worker_name FROM patients p
+               LEFT JOIN users u ON u.id = p.assigned_worker
+               WHERE p.assigned_worker = $1
+               ORDER BY p.risk_score DESC, p.last_updated DESC`
+      params = [req.user.id]
+    } else {
+      query = `SELECT p.*, u.name as worker_name FROM patients p
+               LEFT JOIN users u ON u.id = p.assigned_worker
+               WHERE p.user_id = $1`
+      params = [req.user.id]
+    }
 
     const result = await pool.query(query, params)
     res.json({ patients: result.rows })
@@ -76,7 +92,9 @@ router.post('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const patientResult = await pool.query(
-      `SELECT * FROM users WHERE role='patient' AND id=$1`,
+      `SELECT p.*, u.name as worker_name FROM patients p
+       LEFT JOIN users u ON u.id = p.assigned_worker
+       WHERE p.id = $1`,
       [req.params.id]
     )
 
