@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from typing import Optional
 import sys
 import os
+import json
 
 from external.adapters.openrouter_model import OpenRouterModel
 
@@ -33,6 +34,13 @@ app.add_middleware(
 
 # ── Models ──
 
+class XGBoostResult(BaseModel):
+    risk_score: float                
+    risk_level: str                   
+    preeclampsia_flag: bool           
+    model: str                         
+    factors: list[str]
+
 class PredictRequest(BaseModel):
     bp_systolic: int
     bp_diastolic: int
@@ -51,6 +59,8 @@ class ChatRequest(BaseModel):
 
 class SummaryRequest(BaseModel):
     patient_id: str
+    symptoms: PredictRequest
+    result: XGBoostResult
 
 
 # ── Startup ──
@@ -119,24 +129,54 @@ async def chat(req: ChatRequest):
 @app.post("/ai/summary")
 async def summary(req: SummaryRequest):
     """Generate longitudinal patient summary — RAG placeholder."""
-    return {
-        "summary": (
-            "Patient shows a consistent upward trend in blood pressure over the past 3 weeks "
-            "(118 → 130 → 140 mmHg systolic). Combined with reported headaches and current "
-            "gestational week, this pattern warrants close monitoring for preeclampsia. "
-            "Weight gain is within normal range. Iron-rich diet adherence appears suboptimal "
-            "based on reported fatigue symptoms."
-        ),
+
+    model = OpenRouterModel()
+    prompt = f"""
+    PATIENTS INFORMATION THAT WAS PROVIDED TO XGBOOST MODEL:
+    BP SYSTOLIC: {req.symptoms.bp_systolic}
+    BP_DIASTOLIC: {req.symptoms.bp_diastolic}
+    WEIGHT_KG: {req.symptoms.weight_kg}
+    TEMPERATURE_CELCIUS: {req.symptoms.temperature_c}
+    PULSE: {req.symptoms.pulse}
+    GESTATIONAL WEEK: {req.symptoms.gestational_week}
+    SYMPTOMS: {", ".join(req.symptoms.symptoms)}
+    VISIT FREQUENCY_DELTA: {req.symptoms.visit_frequency_delta}
+
+    RESULT PREDICTED BY XGBOOST: {req.result}
+
+    You must provide output in the following format
+    """ + """
+    {
+        "summary": "<your summary goes here>",
         "recommendations": [
-            "Schedule clinic visit for comprehensive BP assessment and urinalysis",
-            "Increase iron-rich foods (lentils, spinach, eggs)",
-            "Monitor for warning signs: severe headache, visual changes, upper abdominal pain",
-            "Consider increasing visit frequency to every 3 days until BP stabilizes",
-            "Aspirin prophylaxis consideration after clinical consultation",
+            "<your recommendation 1>",
+            "<your recommendation 2>",
+            ...
         ],
-        "data_points_analyzed": 7,
-        "model": "mock_rag",
-        "sources": ["WHO Maternal Health Guidelines 2024", "Bangladesh DGHS Protocol"],
+        "data_points_analyzed": <number>,
+        "sources": [
+            "WHO Maternal Health Guidelines 2024",
+            "Bangladesh DGHS Protocol"
+            <.. The above sources should be based on your response if you use any source. otherwise empty array ..>
+        ]
+    }
+
+    you should say 'you' instead of 'the patient' in your response, because it will be read by the patient
+    you must provide single JSON with no leading or following text. not even ``` before and after. plain parsable JSON
+    """
+
+    response = model.ask(prompt)
+
+    print(f"\n\n\nResponse: {response}\n\n\n")
+
+    response_json = json.loads(response)
+
+    return {
+        "summary": response_json["summary"],
+        "recommendations": response_json["recommendations"],
+        "data_points_analyzed": response_json["data_points_analyzed"],
+        "model": "openrouter_llm",
+        "sources": response_json["sources"],
     }
 
 

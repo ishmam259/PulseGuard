@@ -200,11 +200,19 @@ export async function aiPredict(vitals) {
   return res.ok ? await res.json() : null
 }
 
-export async function aiSummary(patientId) {
+export async function aiSummary(patientId, result, symptoms) {
   const res = await apiFetch('/ai/summary', {
     method: 'POST',
-    body: JSON.stringify({ patient_id: patientId }),
+    body: JSON.stringify({ patient_id: patientId, result: result, symptoms: symptoms }),
   })
+
+  if (!res.ok) {
+    // This will print the exact Pydantic validation error to your browser console!
+    const errorDetails = await res.json();
+    console.error("FastAPI Validation Error:", JSON.stringify(errorDetails, null, 2));
+    return null;
+  }
+  
   return res.ok ? await res.json() : null
 }
 

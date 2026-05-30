@@ -37,8 +37,9 @@ export default function AIAnalysis() {
     const patientData = await api.getPatient(selectedPatient)
     const vitals = patientData?.latestVitals
 
+    let pred;
     if (vitals) {
-      const pred = await api.aiPredict({
+      pred = await api.aiPredict({
         bp_systolic: vitals.bp_systolic,
         bp_diastolic: vitals.bp_diastolic,
         weight_kg: vitals.weight_kg,
@@ -51,7 +52,17 @@ export default function AIAnalysis() {
     }
 
     // Get AI summary
-    const sum = await api.aiSummary(selectedPatient)
+    const sum = await api.aiSummary(selectedPatient, pred, {
+      bp_systolic: parseInt(vitals.bp_systolic),
+      bp_diastolic: parseInt(vitals.bp_diastolic),
+      weight_kg: parseFloat(vitals.weight_kg) || 60.0,
+      temperature_c: parseFloat(vitals.temperature_c) || 36.7,
+      pulse: parseInt(vitals.pulse) || 78,
+      gestational_week: parseInt(patient?.gestational_week) || 24,
+      symptoms: vitals.symptoms || [],
+      visit_frequency_delta: parseFloat(vitals.visit_frequency_delta) || 7.0
+    });
+
     setSummary(sum)
     setAnalyzing(false)
   }

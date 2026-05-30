@@ -97,7 +97,7 @@ router.post('/predict', async (req, res) => {
 // POST /api/ai/summary — Longitudinal AI summary (online only)
 router.post('/summary', async (req, res) => {
   try {
-    const { patient_id } = req.body
+    const { patient_id, result, symptoms } = req.body
     if (!patient_id) {
       return res.status(400).json({ error: 'patient_id is required' })
     }
@@ -108,10 +108,14 @@ router.post('/summary', async (req, res) => {
       const aiResponse = await fetch(`${aiUrl}/ai/summary`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ patient_id: scrubPII(patient_id) }),
+        body: JSON.stringify({ patient_id: scrubPII(patient_id), result, symptoms }),
       })
       if (aiResponse.ok) {
         return res.json(await aiResponse.json())
+      } else {
+        const errorDetails = await aiResponse.json();
+        console.error("FastAPI Validation Error:", JSON.stringify(errorDetails, null, 2));
+        //return null;
       }
     } catch {
       // Fallback
