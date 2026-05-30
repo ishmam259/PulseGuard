@@ -41,6 +41,58 @@ const riskColors = {
   low: { bg: 'rgba(36,174,124,0.12)', border: 'rgba(36,174,124,0.35)', text: '#24AE7C', badge: 'badge--low' },
 }
 
+function InputRow({ label, min, max, step = 1, unit = '', value, onChange }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', padding: '0.75rem 0', borderBottom: '1px solid var(--color-border)' }}>
+      <div style={{ flex: 1 }}>
+        <p style={{ fontWeight: 600, fontSize: '14px', marginBottom: '2px' }}>{label}</p>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={onChange}
+          style={{ width: '100%', accentColor: 'var(--color-primary)', marginTop: '4px' }}
+        />
+      </div>
+      <label style={{
+        minWidth: '72px',
+        textAlign: 'center',
+        background: 'var(--color-bg-accent)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius-md)',
+        padding: '6px 8px',
+        fontWeight: 700,
+        fontSize: '15px',
+        color: 'var(--color-primary)',
+        fontVariantNumeric: 'tabular-nums',
+      }}>
+        <input
+          type="number"
+          className="aiconfig-value-input"
+          aria-label={label}
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={onChange}
+          style={{
+            width: unit ? '56px' : '100%',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--color-primary)',
+            font: 'inherit',
+            textAlign: 'center',
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        />
+        {unit}
+      </label>
+    </div>
+  )
+}
+
 export default function AIConfig() {
   const navigate = useNavigate()
   const [config, setConfig] = useState(DEFAULTS)
@@ -102,37 +154,6 @@ export default function AIConfig() {
   const { level: previewRisk, reason: previewReason } = classifyPreview(config, preview)
   const riskStyle = riskColors[previewRisk]
 
-  const InputRow = ({ label, field, min, max, step = 1, unit = '' }) => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', padding: '0.75rem 0', borderBottom: '1px solid var(--color-border)' }}>
-      <div style={{ flex: 1 }}>
-        <p style={{ fontWeight: 600, fontSize: '14px', marginBottom: '2px' }}>{label}</p>
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={config[field]}
-          onChange={handleChange(field)}
-          style={{ width: '100%', accentColor: 'var(--color-primary)', marginTop: '4px' }}
-        />
-      </div>
-      <div style={{
-        minWidth: '72px',
-        textAlign: 'center',
-        background: 'var(--color-bg-accent)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius-md)',
-        padding: '6px 10px',
-        fontWeight: 700,
-        fontSize: '15px',
-        color: 'var(--color-primary)',
-        fontVariantNumeric: 'tabular-nums',
-      }}>
-        {config[field]}{unit}
-      </div>
-    </div>
-  )
-
   return (
     <AdminLayout title="AI Configuration">
       <style>{`
@@ -152,6 +173,15 @@ export default function AIConfig() {
         }
         .guide-item:last-child {
           border-bottom: none;
+        }
+        .aiconfig-value-input::-webkit-outer-spin-button,
+        .aiconfig-value-input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        .aiconfig-value-input {
+          appearance: textfield;
+          -moz-appearance: textfield;
         }
         @media (max-width: 1080px) {
           .aiconfig-grid {
@@ -195,10 +225,10 @@ export default function AIConfig() {
                 <p className="muted" style={{ marginBottom: '1rem', fontSize: '13px' }}>
                   Used by the heuristic engine when the AI worker is offline. Readings above the <strong>High</strong> threshold are immediately flagged.
                 </p>
-                <InputRow label="High Risk — Systolic (mmHg)" field="high_bp_systolic" min={120} max={180} />
-                <InputRow label="High Risk — Diastolic (mmHg)" field="high_bp_diastolic" min={70} max={130} />
-                <InputRow label="Moderate Risk — Systolic (mmHg)" field="moderate_bp_systolic" min={110} max={160} />
-                <InputRow label="Moderate Risk — Diastolic (mmHg)" field="moderate_bp_diastolic" min={60} max={120} />
+                <InputRow label="High Risk — Systolic (mmHg)" min={120} max={180} value={config.high_bp_systolic} onChange={handleChange('high_bp_systolic')} />
+                <InputRow label="High Risk — Diastolic (mmHg)" min={70} max={130} value={config.high_bp_diastolic} onChange={handleChange('high_bp_diastolic')} />
+                <InputRow label="Moderate Risk — Systolic (mmHg)" min={110} max={160} value={config.moderate_bp_systolic} onChange={handleChange('moderate_bp_systolic')} />
+                <InputRow label="Moderate Risk — Diastolic (mmHg)" min={60} max={120} value={config.moderate_bp_diastolic} onChange={handleChange('moderate_bp_diastolic')} />
               </div>
 
               {/* Risk Score Cutoffs */}
@@ -207,9 +237,9 @@ export default function AIConfig() {
                 <p className="muted" style={{ marginBottom: '1rem', fontSize: '13px' }}>
                   Applied when the AI worker returns a numerical score (0.0 – 1.0). Scores above the <strong>High</strong> cutoff broadcast a real-time alert.
                 </p>
-                <InputRow label="High Risk Cutoff" field="high_risk_cutoff" min={0.5} max={0.95} step={0.05} />
-                <InputRow label="Moderate Risk Cutoff" field="moderate_risk_cutoff" min={0.2} max={0.7} step={0.05} />
-                <InputRow label="Alert Broadcast Threshold" field="alert_threshold" min={0.5} max={0.95} step={0.05} />
+                <InputRow label="High Risk Cutoff" min={0.5} max={0.95} step={0.05} value={config.high_risk_cutoff} onChange={handleChange('high_risk_cutoff')} />
+                <InputRow label="Moderate Risk Cutoff" min={0.2} max={0.7} step={0.05} value={config.moderate_risk_cutoff} onChange={handleChange('moderate_risk_cutoff')} />
+                <InputRow label="Alert Broadcast Threshold" min={0.5} max={0.95} step={0.05} value={config.alert_threshold} onChange={handleChange('alert_threshold')} />
               </div>
             </div>
 

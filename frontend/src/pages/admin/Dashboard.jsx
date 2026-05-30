@@ -6,7 +6,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 
 export default function Dashboard() {
-  const { notifications } = useApp()
+  const { currentUser, notifications } = useApp()
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -76,6 +76,18 @@ export default function Dashboard() {
 
   return (
     <AdminLayout title="Dashboard">
+      <div className="card greeting-card" style={{ marginBottom: 'var(--spacing-4)' }}>
+        <h2>Hello, {currentUser?.name || 'Admin'}</h2>
+        <p className="muted">
+          {loading
+            ? 'Loading the PulseGuard system overview...'
+            : `You are monitoring ${totalPatients} patients across ${getRegionInfo().labels.length} regions with ${highRiskCases} high risk ${highRiskCases === 1 ? 'case' : 'cases'}.`}
+        </p>
+        <span className="badge badge--online" style={{ marginTop: '0.5rem' }}>
+          Admin Console
+        </span>
+      </div>
+
       {/* KPI Row */}
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem', marginBottom: 'var(--spacing-4)' }}>

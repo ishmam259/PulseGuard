@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import MobileLayout from '../../components/layout/MobileLayout'
-import * as api from '../../services/api'
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import MobileLayout from '../../components/layout/MobileLayout';
+import { useApp } from '../../context/AppContext';
+import * as api from '../../services/api';
 
 const workerNavItems = [
   { label: 'Home', to: '/worker/dashboard', icon: '' },
@@ -9,24 +10,27 @@ const workerNavItems = [
   { label: 'AI', to: '/worker/ai-analysis', icon: '' },
   { label: 'Sync', to: '/worker/sync', icon: '' },
   { label: 'Profile', to: '/worker/profile', icon: '' },
-]
+];
 
 export default function WorkerDashboard() {
-  const [patients, setPatients] = useState(undefined)
-  const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
+  const { currentUser } = useApp();
+  const [patients, setPatients] = useState(undefined);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
-      const data = await api.getPatients()
-      setPatients(data)
-      setLoading(false)
-    }
-    load()
-  }, [])
+      const data = await api.getPatients();
+      setPatients(data);
+      setLoading(false);
+    };
+    load();
+  }, []);
 
-  const highRisk = (patients || []).filter(p => p.risk_level === 'high').length
-  const total = (patients || []).length
+  const highRisk = (patients || []).filter(
+    (p) => p.risk_level === 'high',
+  ).length;
+  const total = (patients || []).length;
 
   return (
     <MobileLayout
@@ -40,12 +44,32 @@ export default function WorkerDashboard() {
       navItems={workerNavItems}
     >
       {/* ── KPI Section ── */}
-      <section className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
+      <section
+        className="animate-fade-in"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--spacing-3)',
+        }}
+      >
+        <div className="card greeting-card">
+          <h2>Hello, {currentUser?.name || 'Health Worker'}</h2>
+          <p className="muted">
+            {loading
+              ? 'Loading your assigned patient overview...'
+              : `You have ${total} patients assigned, including ${highRisk} high risk ${highRisk === 1 ? 'case' : 'cases'} today.`}
+          </p>
+        </div>
+
         <h3>Today's KPIs</h3>
         <div className="kpi-row">
           <div className="stat-card bg-appointments">
             <div className="stat-card-header">
-              <img src="/assets/icons/appointments.svg" alt="appointments" className="stat-card-icon" />
+              <img
+                src="/assets/icons/appointments.svg"
+                alt="appointments"
+                className="stat-card-icon"
+              />
               <h2 className="stat-card-count">{loading ? '—' : total}</h2>
             </div>
             <p className="stat-card-label">Total Patients</p>
@@ -53,7 +77,11 @@ export default function WorkerDashboard() {
 
           <div className="stat-card bg-pending">
             <div className="stat-card-header">
-              <img src="/assets/icons/pending.svg" alt="pending" className="stat-card-icon" />
+              <img
+                src="/assets/icons/pending.svg"
+                alt="pending"
+                className="stat-card-icon"
+              />
               <h2 className="stat-card-count">{loading ? '—' : highRisk}</h2>
             </div>
             <p className="stat-card-label">High Risk Cases</p>
@@ -61,16 +89,37 @@ export default function WorkerDashboard() {
 
           <div className="stat-card bg-cancelled">
             <div className="stat-card-header">
-              <img src="/assets/icons/cancelled.svg" alt="cancelled" className="stat-card-icon" />
-              <h2 className="stat-card-count">{loading ? '—' : (patients || []).filter(p => p.risk_level === 'moderate').length}</h2>
+              <img
+                src="/assets/icons/cancelled.svg"
+                alt="cancelled"
+                className="stat-card-icon"
+              />
+              <h2 className="stat-card-count">
+                {loading
+                  ? '—'
+                  : (patients || []).filter((p) => p.risk_level === 'moderate')
+                      .length}
+              </h2>
             </div>
             <p className="stat-card-label">Moderate Risk Cases</p>
           </div>
 
-          <div className="stat-card bg-appointments" style={{ borderBottomColor: '#24AE7C' }}>
+          <div
+            className="stat-card bg-appointments"
+            style={{ borderBottomColor: '#24AE7C' }}
+          >
             <div className="stat-card-header">
-              <img src="/assets/icons/check-circle.svg" alt="low risk" className="stat-card-icon" />
-              <h2 className="stat-card-count">{loading ? '—' : (patients || []).filter(p => p.risk_level === 'low').length}</h2>
+              <img
+                src="/assets/icons/check-circle.svg"
+                alt="low risk"
+                className="stat-card-icon"
+              />
+              <h2 className="stat-card-count">
+                {loading
+                  ? '—'
+                  : (patients || []).filter((p) => p.risk_level === 'low')
+                      .length}
+              </h2>
             </div>
             <p className="stat-card-label">Low Risk Cases</p>
           </div>
@@ -103,30 +152,50 @@ export default function WorkerDashboard() {
         </div>
         <div className="list stagger">
           {loading ? (
-            <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>Loading…</p>
-          ) : (patients || []).flatMap((patient) => patient.risk_level === 'high' ? [(
-            <div className="list-item" key={patient.id}>
-              <div>
-                <strong>{patient.name}</strong>
-                <p className="muted">
-                  Week {patient.gestational_week || '—'} • {patient.village || 'Unknown'}
-                </p>
-              </div>
-              <div className="inline-actions">
-                <span className="badge badge--high">
-                  {((patient.risk_score || 0) * 100).toFixed(0)}%
-                </span>
-                <Link className="btn btn--secondary" to={`/worker/patient/${patient.id}`}>
-                  View
-                </Link>
-              </div>
-            </div>
-          )] : [])}
+            <p
+              className="muted"
+              style={{ textAlign: 'center', padding: '1rem 0' }}
+            >
+              Loading…
+            </p>
+          ) : (
+            (patients || []).flatMap((patient) =>
+              patient.risk_level === 'high'
+                ? [
+                    <div className="list-item" key={patient.id}>
+                      <div>
+                        <strong>{patient.name}</strong>
+                        <p className="muted">
+                          Week {patient.gestational_week || '—'} •{' '}
+                          {patient.village || 'Unknown'}
+                        </p>
+                      </div>
+                      <div className="inline-actions">
+                        <span className="badge badge--high">
+                          {((patient.risk_score || 0) * 100).toFixed(0)}%
+                        </span>
+                        <Link
+                          className="btn btn--secondary"
+                          to={`/worker/patient/${patient.id}`}
+                        >
+                          View
+                        </Link>
+                      </div>
+                    </div>,
+                  ]
+                : [],
+            )
+          )}
           {!loading && highRisk === 0 && (
-            <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>No high risk patients</p>
+            <p
+              className="muted"
+              style={{ textAlign: 'center', padding: '1rem 0' }}
+            >
+              No high risk patients
+            </p>
           )}
         </div>
       </section>
     </MobileLayout>
-  )
+  );
 }
