@@ -29,6 +29,7 @@ services:
       AI_WORKER_URL: http://ai-worker:8000
       PORT: 5000
       NODE_ENV: production
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
 
   ai-worker:
     build: ./ai
