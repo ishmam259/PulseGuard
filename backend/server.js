@@ -15,6 +15,8 @@ if(process.env.CORS_ALLOWED_ORIGIN) {
   CORS_ORIGINS.push(`http://{CORS_ALLOWED_ORIGIN}:3000`);
 }
 
+console.log('Allowed CORS origins: ', CORS_ORIGINS);
+
 // ── Middleware ──
 app.use(cors({
   origin: CORS_ORIGINS,
