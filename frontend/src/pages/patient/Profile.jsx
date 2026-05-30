@@ -29,10 +29,9 @@ export default function Profile() {
     async function loadProfileData() {
       try {
         if (currentUser?.role === 'patient') {
-          const patients = await api.getPatients()
-          if (patients && patients.length > 0) {
-            const details = await api.getPatient(patients[0].id)
-            if (details) setPatient(details.patient)
+          const data = await api.getMyPatientProfile()
+          if (data && data.patient) {
+            setPatient(data.patient)
           }
         } else if (currentUser?.role === 'worker') {
           const patients = await api.getPatients()
