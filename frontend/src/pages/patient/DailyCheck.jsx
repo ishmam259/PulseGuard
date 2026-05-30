@@ -93,7 +93,7 @@ export default function DailyCheck() {
       try {
         const queue = JSON.parse(localStorage.getItem('pg_offline_queue:v1') || '[]')
         queue.push({
-          patient_id: patient.id,
+          patient_id: patient.patient.id,
           type: 'vitals',
           data: payload,
           local_timestamp: new Date().toISOString(),
@@ -109,7 +109,7 @@ export default function DailyCheck() {
 
     setSaving(true)
     try {
-      const res = await api.addVitals(patient.id, payload)
+      const res = await api.addVitals(patient.patient.id, payload)
       if (res.ok) {
         setSuccess(`Daily check recorded! Risk status: ${res.riskLevel || 'low'}`)
         setForm({ bp: '', weight_kg: '', temperature_c: '', symptoms: '', pulse: '' })
