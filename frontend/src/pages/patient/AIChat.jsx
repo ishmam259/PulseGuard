@@ -4,6 +4,7 @@ import * as api from '../../services/api'
 import { chatMessages as initialMessages } from '../../data/mockData'
 import { patientNavItems } from '../../data/navItems'
 import ReactMarkdown from 'react-markdown';
+import $ from '../../config/strings'
 
 const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
 
@@ -61,7 +62,7 @@ export default function AIChat() {
 
   return (
     <MobileLayout
-      title="AI Symptom Checker"
+      title={$("AI_SYMPTOM_CHECKER", "bn")}
       status="online"
       navItems={patientNavItems}
     >
