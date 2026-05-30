@@ -24,9 +24,11 @@ export default function DailyCheck() {
   useEffect(() => {
     async function loadPatient() {
       try {
-        const patients = await api.getPatients()
-        if (patients && patients.length > 0) {
-          setPatient(patients[0])
+        const patient = await api.getMyPatientProfile();
+        console.log(patient);
+        //alert(patients.length)
+        if (patient) {
+          setPatient(patient)
         }
       } catch (err) {
         console.error('Failed to load patient for daily check:', err)
@@ -150,7 +152,7 @@ export default function DailyCheck() {
           <div className="card">
             <h3 className="text-gradient">Record Today's Vitals</h3>
             <p className="muted">
-              {currentDateStr}, Pregnancy Week {patient.gestational_week || 'N/A'}
+              {currentDateStr}, Pregnancy Week {patient.patient.gestational_week || 'N/A'}
             </p>
 
             {error && (
