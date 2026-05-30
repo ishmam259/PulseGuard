@@ -1,5 +1,6 @@
 import { Bar } from 'react-chartjs-2'
 import { regionData as defaultData } from '../../data/mockData'
+import { useLocale } from '../../context/LocaleContext'
 
 const options = {
   responsive: true,
@@ -33,13 +34,14 @@ const options = {
 }
 
 export default function RegionChart({ regionInfo }) {
+  const { t } = useLocale()
   const source = regionInfo || defaultData
 
   const data = {
     labels: source.labels,
     datasets: [
       {
-        label: 'Total Patients',
+        label: t('CHART_TOTAL_PATIENTS'),
         data: source.patients,
         backgroundColor: [
           'rgba(20, 184, 166, 0.8)',
@@ -53,7 +55,7 @@ export default function RegionChart({ regionInfo }) {
         borderRadius: 6,
       },
       {
-        label: 'High Risk',
+        label: t('CHART_HIGH_RISK'),
         data: source.highRisk,
         backgroundColor: 'rgba(239, 68, 68, 0.7)',
         borderColor: '#ef4444',

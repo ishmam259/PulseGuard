@@ -2,22 +2,29 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
-
-const filters = ['All', 'High Risk', 'Moderate', 'Low Risk']
+import { useLocale } from '../../context/LocaleContext'
 
 export default function PatientList() {
+  const { t } = useLocale()
   const [patients, setPatients] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('All')
   const [search, setSearch] = useState('')
+
+  const workerNavItems = [
+    { label: t('NAV_HOME'), to: '/worker/dashboard', icon: '' },
+    { label: t('NAV_PATIENTS'), to: '/worker/patients', icon: '' },
+    { label: t('NAV_AI'), to: '/worker/ai-analysis', icon: '' },
+    { label: t('NAV_SYNC'), to: '/worker/sync', icon: '' },
+    { label: t('NAV_PROFILE'), to: '/worker/profile', icon: '' },
+  ]
+
+  const filterItems = [
+    { key: 'All', label: t('FILTER_ALL') },
+    { key: 'High Risk', label: t('HIGH_RISK') },
+    { key: 'Moderate', label: t('MODERATE_RISK') },
+    { key: 'Low Risk', label: t('LOW_RISK') },
+  ]
 
   useEffect(() => {
     const load = async () => {
@@ -43,13 +50,13 @@ export default function PatientList() {
   const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??'
 
   return (
-    <MobileLayout title="Patient List" navItems={workerNavItems}>
+    <MobileLayout title={t('PATIENT_LIST_TITLE')} navItems={workerNavItems}>
       {/* ── Search ── */}
       <section className="animate-fade-in">
         <input
           className="input"
-          placeholder="Search patient by name or village…"
-          aria-label="Search patient by name or village"
+          placeholder={t('PATIENT_LIST_SEARCH_PLACEHOLDER')}
+          aria-label={t('PATIENT_LIST_SEARCH_PLACEHOLDER')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -57,15 +64,15 @@ export default function PatientList() {
 
       {/* ── Filter Chips ── */}
       <div className="chip-row animate-fade-in">
-        {filters.map((f) => (
+        {filterItems.map((f) => (
           <button
             type="button"
-            key={f}
-            className={`chip${activeFilter === f ? ' active' : ''}`}
-            onClick={() => setActiveFilter(f)}
+            key={f.key}
+            className={`chip${activeFilter === f.key ? ' active' : ''}`}
+            onClick={() => setActiveFilter(f.key)}
             style={{ font: 'inherit', color: 'inherit' }}
           >
-            {f}
+            {f.label}
           </button>
         ))}
       </div>
@@ -73,12 +80,12 @@ export default function PatientList() {
       {/* ── Patient List ── */}
       <section className="card animate-fade-in">
         <div className="section-header">
-          <h3>Patients</h3>
-          <span className="muted">{filtered.length} results</span>
+          <h3>{t('PATIENT_LIST_HEADING')}</h3>
+          <span className="muted">{filtered.length} {t('PATIENT_LIST_RESULTS')}</span>
         </div>
         <div className="list stagger">
           {loading ? (
-            <p className="muted" style={{ textAlign: 'center', padding: '2rem 0' }}>Loading patients…</p>
+            <p className="muted" style={{ textAlign: 'center', padding: '2rem 0' }}>{t('PATIENT_LIST_LOADING')}</p>
           ) : filtered.map((patient) => (
             <div className="list-item" key={patient.id}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -86,23 +93,23 @@ export default function PatientList() {
                 <div>
                   <strong>{patient.name}</strong>
                   <p className="muted">
-                    Week {patient.gestational_week || '—'} • {patient.village || 'Unknown'}
+                    {t('WEEK')} {patient.gestational_week || '—'} • {patient.village || t('UNKNOWN')}
                   </p>
                 </div>
               </div>
               <div className="inline-actions">
                 <span className={`badge badge--${patient.risk_level || 'low'}`}>
-                  {(patient.risk_level || 'low').charAt(0).toUpperCase() + (patient.risk_level || 'low').slice(1)}
+                  {t('RISK_' + (patient.risk_level || 'low').toUpperCase())}
                 </span>
                 <Link className="btn btn--secondary" to={`/worker/patient/${patient.id}`}>
-                  View
+                  {t('VIEW')}
                 </Link>
               </div>
             </div>
           ))}
           {!loading && filtered.length === 0 && (
             <p className="muted" style={{ textAlign: 'center', padding: '2rem 0' }}>
-              No patients match your search.
+              {t('PATIENT_LIST_NO_MATCH')}
             </p>
           )}
         </div>

@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
+import { useLocale } from '../../context/LocaleContext'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 
 export default function Onboarding() {
   const { currentUser } = useApp()
+  const { t } = useLocale()
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
@@ -26,13 +28,13 @@ export default function Onboarding() {
     setError('')
 
     if (!form.gestational_week) {
-      setError('Please enter your current gestational week.')
+      setError(t('ONBOARDING_ERROR_WEEK_REQUIRED'))
       return
     }
 
     const week = parseInt(form.gestational_week)
     if (isNaN(week) || week < 1 || week > 45) {
-      setError('Gestational week must be between 1 and 45.')
+      setError(t('ONBOARDING_ERROR_WEEK_RANGE'))
       return
     }
 
@@ -46,20 +48,20 @@ export default function Onboarding() {
       })
 
       if (!res.ok) {
-        throw new Error(res.error || 'Failed to create patient profile.')
+        throw new Error(res.error || t('ONBOARDING_ERROR_CREATE_FAILED'))
       }
 
       // Profile created — go to dashboard
       navigate('/patient/dashboard')
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.')
+      setError(err.message || t('ONBOARDING_ERROR_GENERIC'))
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <MobileLayout title="Set Up Profile" navItems={patientNavItems}>
+    <MobileLayout title={t('ONBOARDING_PAGE_TITLE')} navItems={patientNavItems}>
       <div className="animate-fade-in">
         {/* Hero Card */}
         <div
@@ -74,18 +76,18 @@ export default function Onboarding() {
         >
           <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🌿</div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-            Welcome, {currentUser?.name?.split(' ')[0]}!
+            {t('ONBOARDING_WELCOME', { name: currentUser?.name?.split(' ')[0] })}
           </h2>
           <p className="muted" style={{ lineHeight: 1.6 }}>
-            To get started with PulseGuard, we need a few details to set up your maternal health profile. This will unlock vitals tracking, AI health checks, and personalised guidance.
+            {t('ONBOARDING_WELCOME_DESC')}
           </p>
         </div>
 
         {/* Form Card */}
         <div className="card" style={{ padding: '1.75rem 1.5rem' }}>
-          <h3 style={{ marginBottom: '0.25rem' }}>Medical Profile Setup</h3>
+          <h3 style={{ marginBottom: '0.25rem' }}>{t('ONBOARDING_FORM_HEADING')}</h3>
           <p className="muted" style={{ marginBottom: '1.5rem', fontSize: '13px' }}>
-            All fields marked <span style={{ color: 'var(--color-primary)' }}>*</span> are required.
+            {t('ONBOARDING_REQUIRED_NOTE')}
           </p>
 
           {error && (
@@ -105,7 +107,7 @@ export default function Onboarding() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Gestational Week */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-              Current Pregnancy Week <span style={{ color: 'var(--color-primary)' }}>*</span>
+              {t('ONBOARDING_WEEK_LABEL')} <span style={{ color: 'var(--color-primary)' }}>*</span>
               <div className="input-wrapper">
                 <input
                   id="gestational_week"
@@ -113,20 +115,20 @@ export default function Onboarding() {
                   className="input"
                   value={form.gestational_week}
                   onChange={handleChange('gestational_week')}
-                  placeholder="e.g. 24"
+                  placeholder={t('ONBOARDING_WEEK_PLACEHOLDER')}
                   min="1"
                   max="45"
                   required
                 />
               </div>
               <span style={{ fontSize: '12px', color: 'var(--color-muted)', fontWeight: 400 }}>
-                Enter a value between 1 and 45.
+                {t('ONBOARDING_WEEK_HINT')}
               </span>
             </label>
 
             {/* Age */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-              Your Age
+              {t('ONBOARDING_AGE_LABEL')}
               <div className="input-wrapper">
                 <input
                   id="age"
@@ -134,7 +136,7 @@ export default function Onboarding() {
                   className="input"
                   value={form.age}
                   onChange={handleChange('age')}
-                  placeholder="e.g. 26"
+                  placeholder={t('ONBOARDING_AGE_PLACEHOLDER')}
                   min="10"
                   max="60"
                 />
@@ -143,7 +145,7 @@ export default function Onboarding() {
 
             {/* Village */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-              Village / Clinic Area
+              {t('ONBOARDING_VILLAGE_LABEL')}
               <div className="input-wrapper">
                 <input
                   id="village"
@@ -151,7 +153,7 @@ export default function Onboarding() {
                   className="input"
                   value={form.village}
                   onChange={handleChange('village')}
-                  placeholder="e.g. Kurigram Village A"
+                  placeholder={t('ONBOARDING_VILLAGE_PLACEHOLDER')}
                 />
               </div>
             </label>
@@ -163,7 +165,7 @@ export default function Onboarding() {
               disabled={saving}
               style={{ marginTop: '0.5rem' }}
             >
-              {saving ? 'Setting up profile…' : '✓ Complete Registration'}
+              {saving ? t('ONBOARDING_SAVING') : t('ONBOARDING_SUBMIT')}
             </button>
           </form>
         </div>

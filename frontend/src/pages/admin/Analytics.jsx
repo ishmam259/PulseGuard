@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useLocale } from '../../context/LocaleContext'
 import AdminLayout from '../../components/layout/AdminLayout'
 import RiskTrendChart from '../../components/charts/RiskTrendChart'
 import RiskDistributionChart from '../../components/charts/RiskDistributionChart'
 import * as api from '../../services/api'
 
 export default function Analytics() {
+  const { t } = useLocale()
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
   const [region, setRegion] = useState('All Regions')
@@ -62,13 +64,13 @@ export default function Analytics() {
   const regionsList = getRegionsList()
 
   return (
-    <AdminLayout title="AI Analytics">
+    <AdminLayout title={t('ANALYTICS_TITLE')}>
       {/* Filters */}
       <section className="filters animate-fade-in" style={{ display: 'flex', gap: '1.5rem', marginBottom: '1.5rem' }}>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
-          Region
+          {t('ANALYTICS_REGION')}
           <select className="input" value={region} onChange={(e) => setRegion(e.target.value)}>
-            <option value="All Regions">All Regions</option>
+            <option value="All Regions">{t('ANALYTICS_ALL_REGIONS')}</option>
             {regionsList.map((r) => (
               <option key={r} value={r}>
                 {r}
@@ -77,55 +79,55 @@ export default function Analytics() {
           </select>
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
-          Risk Condition
+          {t('ANALYTICS_RISK_CONDITION')}
           <select className="input" value={riskType} onChange={(e) => setRiskType(e.target.value)}>
-            <option value="All Types">All Conditions</option>
-            <option value="Preeclampsia">Preeclampsia</option>
-            <option value="Anemia">Anemia</option>
-            <option value="Gestational Diabetes">Gestational Diabetes</option>
+            <option value="All Types">{t('ANALYTICS_ALL_CONDITIONS')}</option>
+            <option value="Preeclampsia">{t('ANALYTICS_PREECLAMPSIA')}</option>
+            <option value="Anemia">{t('ANALYTICS_ANEMIA')}</option>
+            <option value="Gestational Diabetes">{t('ANALYTICS_GESTATIONAL_DIABETES')}</option>
           </select>
         </label>
       </section>
 
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem' }}>
-          <p className="muted">Loading analytical datasets…</p>
+          <p className="muted">{t('ANALYTICS_LOADING')}</p>
         </div>
       ) : (
         <>
           {/* Charts */}
           <section className="grid two" style={{ marginBottom: 'var(--spacing-5)' }}>
             <div className="card animate-fade-in" style={{ animationDelay: '80ms' }}>
-              <h3>Risk Distribution</h3>
+              <h3>{t('ANALYTICS_RISK_DISTRIBUTION')}</h3>
               <RiskDistributionChart distributionData={distributionData} />
             </div>
             <div className="card animate-fade-in" style={{ animationDelay: '160ms' }}>
-              <h3>Risk Trends Over Time</h3>
+              <h3>{t('ANALYTICS_RISK_TRENDS')}</h3>
               <RiskTrendChart />
             </div>
           </section>
 
           {/* AI Model Performance */}
           <section className="card animate-fade-in" style={{ animationDelay: '240ms', marginBottom: 'var(--spacing-5)' }}>
-            <h3>AI Model Performance</h3>
+            <h3>{t('ANALYTICS_MODEL_PERFORMANCE')}</h3>
             <p className="muted" style={{ marginBottom: 'var(--spacing-4)' }}>
-              XGBoost risk prediction model, last updated May 25, 2026
+              {t('ANALYTICS_MODEL_DESC')}
             </p>
             <div className="summary-grid">
               <div className="kpi-card">
-                <span className="muted">Accuracy</span>
+                <span className="muted">{t('ANALYTICS_ACCURACY')}</span>
                 <span className="kpi" style={{ color: 'var(--color-success)' }}>94.2%</span>
               </div>
               <div className="kpi-card">
-                <span className="muted">Precision</span>
+                <span className="muted">{t('ANALYTICS_PRECISION')}</span>
                 <span className="kpi" style={{ color: 'var(--color-success)' }}>91.8%</span>
               </div>
               <div className="kpi-card">
-                <span className="muted">Recall</span>
+                <span className="muted">{t('ANALYTICS_RECALL')}</span>
                 <span className="kpi" style={{ color: 'var(--color-primary)' }}>89.5%</span>
               </div>
               <div className="kpi-card">
-                <span className="muted">F1 Score</span>
+                <span className="muted">{t('ANALYTICS_F1_SCORE')}</span>
                 <span className="kpi" style={{ color: 'var(--color-primary)' }}>90.6%</span>
               </div>
             </div>
@@ -133,28 +135,28 @@ export default function Analytics() {
 
           {/* Risk Breakdown */}
           <section className="card animate-fade-in" style={{ animationDelay: '320ms' }}>
-            <h3>Prediction Breakdown</h3>
+            <h3>{t('ANALYTICS_PREDICTION_BREAKDOWN')}</h3>
             <div className="list stagger" style={{ marginTop: '1rem' }}>
               <div className="list-item">
                 <div>
-                  <strong>Preeclampsia Risk</strong>
-                  <p className="muted">{highCount} critical cases currently monitored</p>
+                  <strong>{t('ANALYTICS_PREECLAMPSIA_RISK')}</strong>
+                  <p className="muted">{t('ANALYTICS_CRITICAL_CASES', { count: highCount })}</p>
                 </div>
-                <span className="badge badge--high">Critical</span>
+                <span className="badge badge--high">{t('ANALYTICS_BADGE_CRITICAL')}</span>
               </div>
               <div className="list-item">
                 <div>
-                  <strong>Moderate Risk Cases</strong>
-                  <p className="muted">{moderateCount} patients requiring routine follow-ups</p>
+                  <strong>{t('MODERATE_RISK')}</strong>
+                  <p className="muted">{t('ANALYTICS_MODERATE_CASES', { count: moderateCount })}</p>
                 </div>
-                <span className="badge badge--moderate">Moderate</span>
+                <span className="badge badge--moderate">{t('ANALYTICS_BADGE_MODERATE')}</span>
               </div>
               <div className="list-item">
                 <div>
-                  <strong>Low Risk Cases</strong>
-                  <p className="muted">{lowCount} patients within normal thresholds</p>
+                  <strong>{t('LOW_RISK')}</strong>
+                  <p className="muted">{t('ANALYTICS_LOW_CASES', { count: lowCount })}</p>
                 </div>
-                <span className="badge badge--online">Normal</span>
+                <span className="badge badge--online">{t('ANALYTICS_BADGE_NORMAL')}</span>
               </div>
             </div>
           </section>

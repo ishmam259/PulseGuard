@@ -1,14 +1,21 @@
 import { useState, useRef, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
-import { chatMessages as initialMessages } from '../../data/mockData'
+// import { chatMessages as initialMessages } from '../../data/mockData'
 import { patientNavItems } from '../../data/navItems'
 import ReactMarkdown from 'react-markdown';
-import $ from '../../config/strings'
+import { useLocale } from '../../context/LocaleContext'
 
-const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
+const quickChips = [
+  { id: 'Headache', labelKey: 'AICHAT_CHIP_HEADACHE' },
+  { id: 'Fever', labelKey: 'AICHAT_CHIP_FEVER' },
+  { id: 'Dizziness', labelKey: 'AICHAT_CHIP_DIZZINESS' },
+  { id: 'Nausea', labelKey: 'AICHAT_CHIP_NAUSEA' },
+  { id: 'Swelling', labelKey: 'AICHAT_CHIP_SWELLING' }
+]
 
 export default function AIChat() {
+  const { t } = useLocale()
   /** For initial messages use this 
   const [messages, setMessages] = useState(
     () => initialMessages.map((m) => ({ ...m }))
@@ -39,7 +46,7 @@ export default function AIChat() {
       const aiMsg = {
         id: `m-${Date.now()}-ai`,
         role: 'ai',
-        text: response.response || response.reply || 'Sorry, I couldn\'t process that request.',
+        text: response.response || response.reply || t('AICHAT_FALLBACK_RESPONSE'),
       }
       setMessages((prev) => [...prev, aiMsg])
     } catch (err) {
@@ -47,7 +54,7 @@ export default function AIChat() {
       const aiMsg = {
         id: `m-${Date.now()}-ai`,
         role: 'ai',
-        text: 'Sorry, the AI service is currently offline or unreachable. Please try again later.',
+        text: t('AICHAT_SERVICE_OFFLINE'),
       }
       setMessages((prev) => [...prev, aiMsg])
     } finally {
@@ -62,7 +69,7 @@ export default function AIChat() {
 
   return (
     <MobileLayout
-      title={$("AI_SYMPTOM_CHECKER", "bn")}
+      title={t('AI_SYMPTOM_CHECKER')}
       status="online"
       navItems={patientNavItems}
     >
@@ -90,16 +97,16 @@ export default function AIChat() {
             <input
               type="text"
               className="input"
-              placeholder="Describe your symptoms..."
-              aria-label="Describe your symptoms"
+              placeholder={t('AICHAT_INPUT_PLACEHOLDER')}
+              aria-label={t('AICHAT_INPUT_PLACEHOLDER')}
               value={input}
               onChange={(e) => setInput(e.target.value)}
             />
-            <button type="button" className="icon-btn" title="Voice input" aria-label="Voice input">
+            <button type="button" className="icon-btn" title={t('AICHAT_VOICE_INPUT')} aria-label={t('AICHAT_VOICE_INPUT')}>
               
             </button>
             <button type="submit" className="btn btn--primary">
-              Send
+              {t('AICHAT_SEND')}
             </button>
           </div>
         </form>
@@ -108,11 +115,11 @@ export default function AIChat() {
           {quickChips.map((chip) => (
             <button
               type="button"
-              key={chip}
+              key={chip.id}
               className="chip"
-              onClick={() => sendMessage(chip)}
+              onClick={() => sendMessage(t(chip.labelKey))}
             >
-              {chip}
+              {t(chip.labelKey)}
             </button>
           ))}
         </div>

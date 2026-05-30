@@ -2,19 +2,21 @@ import { useState, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
+import { useLocale } from '../../context/LocaleContext'
 
 export default function WorkerAlerts() {
   const { connectivity } = useApp()
+  const { t } = useLocale()
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
+
+  const workerNavItems = [
+    { label: t('NAV_HOME'), to: '/worker/dashboard', icon: '' },
+    { label: t('NAV_PATIENTS'), to: '/worker/patients', icon: '' },
+    { label: t('NAV_AI'), to: '/worker/ai-analysis', icon: '' },
+    { label: t('NAV_SYNC'), to: '/worker/sync', icon: '' },
+    { label: t('NAV_PROFILE'), to: '/worker/profile', icon: '' },
+  ]
 
   useEffect(() => {
     async function loadAlerts() {
@@ -39,7 +41,7 @@ export default function WorkerAlerts() {
           prev.map((alert) => (alert.id === id ? { ...alert, ...result.alert } : alert))
         )
       } else {
-        alert('Failed to update alert: ' + (result.error || 'Unknown error'))
+        alert(t('WORKER_ALERTS_FAILED_UPDATE') + ' ' + (result.error || t('EMERGENCY_UNKNOWN_ERROR')))
       }
     } catch (err) {
       console.error('Resolve error:', err)
@@ -51,7 +53,7 @@ export default function WorkerAlerts() {
 
   return (
     <MobileLayout
-      title="Alerts Center"
+      title={t('WORKER_ALERTS_TITLE')}
       status={connectivity}
       navItems={workerNavItems}
     >
@@ -62,18 +64,18 @@ export default function WorkerAlerts() {
           <div className="section-header" style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
             <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span className="animate-pulse" style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-danger)' }}></span>
-              Active Emergency SOS
+              {t('WORKER_ALERTS_ACTIVE_SOS')}
             </h3>
             <span className="badge badge--high" style={{ padding: '4px 10px' }}>
-              {activeAlerts.length} Active
+              {activeAlerts.length} {t('WORKER_ALERTS_ACTIVE_BADGE')}
             </span>
           </div>
 
           {loading ? (
-            <p className="muted text-center animate-pulse" style={{ padding: '2rem 0' }}>Loading alerts…</p>
+            <p className="muted text-center animate-pulse" style={{ padding: '2rem 0' }}>{t('WORKER_ALERTS_LOADING')}</p>
           ) : activeAlerts.length === 0 ? (
             <div className="text-center" style={{ padding: '2rem 0' }}>
-              <p className="muted">🎉 All quiet. No pending emergency alerts.</p>
+              <p className="muted">{t('WORKER_ALERTS_ALL_QUIET')}</p>
             </div>
           ) : (
             <div className="list stagger">
@@ -86,7 +88,7 @@ export default function WorkerAlerts() {
                     <div>
                       <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: 0 }}>{alert.patient_name}</h4>
                       <p className="muted" style={{ fontSize: '0.85rem', marginTop: '4px' }}>
-                        {alert.village || 'No village recorded'} • Week {alert.gestational_week || '-'}
+                        {alert.village || t('WORKER_ALERTS_NO_VILLAGE')} • {t('WEEK')} {alert.gestational_week || '-'}
                       </p>
                     </div>
                     {alert.risk_level && (
@@ -101,20 +103,20 @@ export default function WorkerAlerts() {
                       "{alert.message}"
                     </p>
                     <span className="muted" style={{ fontSize: '0.75rem', display: 'block', marginTop: '4px' }}>
-                      Triggered: {new Date(alert.created_at).toLocaleString()}
+                      {t('WORKER_ALERTS_TRIGGERED')} {new Date(alert.created_at).toLocaleString()}
                     </span>
                   </div>
 
                   {alert.latitude && alert.longitude && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
-                      <span style={{ color: 'var(--color-primary-light)' }}>📍 Location Shared:</span>
+                      <span style={{ color: 'var(--color-primary-light)' }}>{t('WORKER_ALERTS_LOCATION_SHARED')}</span>
                       <a
                         href={`https://www.google.com/maps?q=${alert.latitude},${alert.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ color: 'var(--color-secondary)', textDecoration: 'underline', fontWeight: 'bold' }}
                       >
-                        Open in Google Maps ({Number(alert.latitude).toFixed(5)}, {Number(alert.longitude).toFixed(5)})
+                        {t('WORKER_ALERTS_OPEN_MAPS')} ({Number(alert.latitude).toFixed(5)}, {Number(alert.longitude).toFixed(5)})
                       </a>
                     </div>
                   )}
@@ -126,7 +128,7 @@ export default function WorkerAlerts() {
                       style={{ flex: 1, padding: '10px', background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', color: '#fff' }}
                       onClick={() => handleResolve(alert.id, 'resolved')}
                     >
-                      Mark Resolved
+                      {t('WORKER_ALERTS_MARK_RESOLVED')}
                     </button>
                     <button
                       type="button"
@@ -134,7 +136,7 @@ export default function WorkerAlerts() {
                       style={{ flex: 1, padding: '10px' }}
                       onClick={() => handleResolve(alert.id, 'dismissed')}
                     >
-                      Dismiss
+                      {t('WORKER_ALERTS_DISMISS')}
                     </button>
                   </div>
                 </div>
@@ -146,12 +148,12 @@ export default function WorkerAlerts() {
         {/* Historical Resolved Alerts */}
         <section className="card">
           <div className="section-header" style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
-            <h3>Resolved Alerts History</h3>
-            <span className="muted">{resolvedAlerts.length} total</span>
+            <h3>{t('WORKER_ALERTS_RESOLVED_HEADING')}</h3>
+            <span className="muted">{resolvedAlerts.length} {t('WORKER_ALERTS_TOTAL')}</span>
           </div>
 
           {loading ? null : resolvedAlerts.length === 0 ? (
-            <p className="muted text-center" style={{ padding: '1rem 0' }}>No history of resolved alerts.</p>
+            <p className="muted text-center" style={{ padding: '1rem 0' }}>{t('WORKER_ALERTS_NO_RESOLVED')}</p>
           ) : (
             <div className="list stagger">
               {resolvedAlerts.map((alert) => (
@@ -177,7 +179,7 @@ export default function WorkerAlerts() {
                       {alert.message}
                     </p>
                     <span className="muted" style={{ fontSize: '0.75rem' }}>
-                      Resolved: {new Date(alert.resolved_at || alert.created_at).toLocaleString()}
+                      {t('WORKER_ALERTS_RESOLVED_LABEL')} {new Date(alert.resolved_at || alert.created_at).toLocaleString()}
                     </span>
                   </div>
                 </div>

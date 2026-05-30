@@ -2,19 +2,21 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
+import { useLocale } from '../../context/LocaleContext'
 
 export default function WorkerDashboard() {
+  const { t } = useLocale()
   const [patients, setPatients] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+
+  const workerNavItems = [
+    { label: t('NAV_HOME'), to: '/worker/dashboard', icon: '' },
+    { label: t('NAV_PATIENTS'), to: '/worker/patients', icon: '' },
+    { label: t('NAV_AI'), to: '/worker/ai-analysis', icon: '' },
+    { label: t('NAV_SYNC'), to: '/worker/sync', icon: '' },
+    { label: t('NAV_PROFILE'), to: '/worker/profile', icon: '' },
+  ]
 
   useEffect(() => {
     const load = async () => {
@@ -30,25 +32,25 @@ export default function WorkerDashboard() {
 
   return (
     <MobileLayout
-      title="Health Worker"
+      title={t('WORKER_DASHBOARD_TITLE')}
       banner={{
         tone: 'syncing',
-        title: 'Sync Center',
-        message: `${total} patients assigned`,
-        action: { label: 'Open Sync', onClick: () => navigate('/worker/sync') },
+        title: t('WORKER_BANNER_TITLE'),
+        message: t('WORKER_BANNER_PATIENTS_ASSIGNED', { count: total }),
+        action: { label: t('WORKER_BANNER_OPEN_SYNC'), onClick: () => navigate('/worker/sync') },
       }}
       navItems={workerNavItems}
     >
       {/* ── KPI Section ── */}
       <section className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
-        <h3>Today's KPIs</h3>
+        <h3>{t('WORKER_TODAYS_KPIS')}</h3>
         <div className="kpi-row">
           <div className="stat-card bg-appointments">
             <div className="stat-card-header">
               <img src="/assets/icons/appointments.svg" alt="appointments" className="stat-card-icon" />
               <h2 className="stat-card-count">{loading ? '—' : total}</h2>
             </div>
-            <p className="stat-card-label">Total Patients</p>
+            <p className="stat-card-label">{t('WORKER_TOTAL_PATIENTS')}</p>
           </div>
 
           <div className="stat-card bg-pending">
@@ -56,7 +58,7 @@ export default function WorkerDashboard() {
               <img src="/assets/icons/pending.svg" alt="pending" className="stat-card-icon" />
               <h2 className="stat-card-count">{loading ? '—' : highRisk}</h2>
             </div>
-            <p className="stat-card-label">High Risk Cases</p>
+            <p className="stat-card-label">{t('WORKER_HIGH_RISK_CASES')}</p>
           </div>
 
           <div className="stat-card bg-cancelled">
@@ -64,7 +66,7 @@ export default function WorkerDashboard() {
               <img src="/assets/icons/cancelled.svg" alt="cancelled" className="stat-card-icon" />
               <h2 className="stat-card-count">{loading ? '—' : (patients || []).filter(p => p.risk_level === 'moderate').length}</h2>
             </div>
-            <p className="stat-card-label">Moderate Risk Cases</p>
+            <p className="stat-card-label">{t('WORKER_MODERATE_RISK_CASES')}</p>
           </div>
 
           <div className="stat-card bg-appointments" style={{ borderBottomColor: '#24AE7C' }}>
@@ -72,7 +74,7 @@ export default function WorkerDashboard() {
               <img src="/assets/icons/check-circle.svg" alt="low risk" className="stat-card-icon" />
               <h2 className="stat-card-count">{loading ? '—' : (patients || []).filter(p => p.risk_level === 'low').length}</h2>
             </div>
-            <p className="stat-card-label">Low Risk Cases</p>
+            <p className="stat-card-label">{t('WORKER_LOW_RISK_CASES')}</p>
           </div>
         </div>
       </section>
@@ -80,17 +82,17 @@ export default function WorkerDashboard() {
       {/* ── Quick Actions ── */}
       <section className="animate-fade-in">
         <div className="section-header">
-          <h3>Quick Actions</h3>
+          <h3>{t('WORKER_QUICK_ACTIONS')}</h3>
         </div>
         <div className="grid three">
           <Link className="card action-card" to="/worker/patients">
-            Patient List
+            {t('WORKER_PATIENT_LIST_LINK')}
           </Link>
           <Link className="card action-card" to="/worker/ai-analysis">
-            AI Assistant
+            {t('WORKER_AI_ASSISTANT_LINK')}
           </Link>
           <Link className="card action-card" to="/worker/sync">
-            Sync Center
+            {t('WORKER_SYNC_CENTER_LINK')}
           </Link>
         </div>
       </section>
@@ -98,18 +100,18 @@ export default function WorkerDashboard() {
       {/* ── High Risk Patients ── */}
       <section className="card animate-fade-in">
         <div className="section-header">
-          <h3>High Risk Patients</h3>
-          <span className="muted">{highRisk} patients</span>
+          <h3>{t('WORKER_HIGH_RISK_HEADING')}</h3>
+          <span className="muted">{t('WORKER_PATIENTS_COUNT', { count: highRisk })}</span>
         </div>
         <div className="list stagger">
           {loading ? (
-            <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>Loading…</p>
+            <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>{t('LOADING')}</p>
           ) : (patients || []).flatMap((patient) => patient.risk_level === 'high' ? [(
             <div className="list-item" key={patient.id}>
               <div>
                 <strong>{patient.name}</strong>
                 <p className="muted">
-                  Week {patient.gestational_week || '—'} • {patient.village || 'Unknown'}
+                  {t('WEEK')} {patient.gestational_week || '—'} • {patient.village || t('UNKNOWN')}
                 </p>
               </div>
               <div className="inline-actions">
@@ -117,13 +119,13 @@ export default function WorkerDashboard() {
                   {((patient.risk_score || 0) * 100).toFixed(0)}%
                 </span>
                 <Link className="btn btn--secondary" to={`/worker/patient/${patient.id}`}>
-                  View
+                  {t('VIEW')}
                 </Link>
               </div>
             </div>
           )] : [])}
           {!loading && highRisk === 0 && (
-            <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>No high risk patients</p>
+            <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>{t('WORKER_NO_HIGH_RISK')}</p>
           )}
         </div>
       </section>

@@ -1,15 +1,15 @@
 export const patientNavItems = [
-  { label: 'Home', to: '/patient/dashboard', icon: '' },
-  { label: 'AI Chat', to: '/patient/ai-chat', icon: '' },
-  { label: 'Health', to: '/patient/daily-check', icon: '' },
-  { label: 'Alerts', to: '/patient/alerts', icon: '' },
-  { label: 'Profile', to: '/patient/profile', icon: '' },
+  { label: 'NAV_HOME', to: '/patient/dashboard', icon: '' },
+  { label: 'NAV_AI_CHAT', to: '/patient/ai-chat', icon: '' },
+  { label: 'NAV_HEALTH', to: '/patient/daily-check', icon: '' },
+  { label: 'NAV_ALERTS', to: '/patient/alerts', icon: '' },
+  { label: 'NAV_PROFILE', to: '/patient/profile', icon: '' },
 ]
 
 export const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
+  { label: 'NAV_HOME', to: '/worker/dashboard', icon: '' },
+  { label: 'NAV_PATIENTS', to: '/worker/patients', icon: '' },
+  { label: 'NAV_AI', to: '/worker/ai-analysis', icon: '' },
+  { label: 'NAV_SYNC', to: '/worker/sync', icon: '' },
+  { label: 'NAV_PROFILE', to: '/worker/profile', icon: '' },
 ]

@@ -178,16 +178,16 @@ This document lists the exact responses and selections for all fields in the **B
 ## 🔗 Tab 3: Links
 
 ### 🎥 YouTube Video (Pitch / Demo Video Link)
-* **URL:** *(Insert your recorded video link)*
-* **Access Note:** `3-minute structured video pitch and system walkthrough.`
+* **URL:** `https://youtu.be/placeholder-demo`
+* **Access Note:** `3-minute structured video pitch and system walkthrough based on video_script.md.`
 
 ### 💻 GitHub Repo (GitHub URL)
-* **URL:** *(Insert your GitHub repository link)*
+* **URL:** `https://github.com/ishmam259/PulseGuard`
 * **Access Note:** `Complete source repository including backend API, Vite React frontend, and FastAPI AI worker.`
 
 ### 🌐 Live Demo Link (Valid URL)
-* **URL:** *(Insert deployed live URL or state 'Running locally under Docker Compose for judging' if offline)*
-* **Access Note:** `Seeded accounts: Admin (admin@pulseguard.ai / password), Health Worker (karim@worker.pg / password).`
+* **URL:** `http://localhost:3000`
+* **Access Note:** `Running locally under Docker Compose for judging. Seeded accounts: Admin (admin@pulseguard.ai / password), Health Worker (karim@worker.pg / password).`
 
 ### 🎨 Figma / Design Link (Valid URL)
 * **URL:** `https://www.figma.com/design/kWioE0fyIqd6pbWIZfOcEM/Healthcare-System?node-id=0-1&p=f&t=0FjVQjYscUmo3fhz-0`

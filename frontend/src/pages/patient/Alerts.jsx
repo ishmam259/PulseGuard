@@ -1,4 +1,5 @@
 import { useApp } from '../../context/AppContext'
+import { useLocale } from '../../context/LocaleContext'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { patientNavItems } from '../../data/navItems'
 
@@ -11,22 +12,23 @@ const severityMap = {
 
 export default function Alerts() {
   const { notifications, connectivity } = useApp()
+  const { t } = useLocale()
 
   // Default demo alerts if no real WebSocket alerts are present
   const displayAlerts = notifications.length > 0 ? notifications : [
     {
       id: 1,
       type: 'info',
-      title: 'Welcome to PulseGuard',
-      message: 'Monitor your blood pressure daily and stay connected with your healthcare worker.',
-      time: 'Just now',
+      title: t('PATIENT_ALERTS_WELCOME_TITLE'),
+      message: t('PATIENT_ALERTS_WELCOME_MSG'),
+      time: t('JUST_NOW'),
       read: true
     },
     {
       id: 2,
       type: 'sync',
-      title: 'Sync Complete',
-      message: 'All your offline health logs have been safely backed up to the server.',
+      title: t('PATIENT_ALERTS_SYNC_TITLE'),
+      message: t('PATIENT_ALERTS_SYNC_MSG'),
       time: '1 hour ago',
       read: true
     }
@@ -34,13 +36,13 @@ export default function Alerts() {
 
   return (
     <MobileLayout
-      title="Alerts"
+      title={t('PATIENT_ALERTS_TITLE')}
       status={connectivity}
       navItems={patientNavItems}
     >
       <div className="animate-fade-in">
         <div className="card">
-          <h3 className="text-gradient">Notifications</h3>
+          <h3 className="text-gradient">{t('PATIENT_ALERTS_NOTIFICATIONS')}</h3>
           <div className="list" style={{ marginTop: '1rem' }}>
             {displayAlerts.map((alert, i) => {
               const sev = severityMap[alert.type] || severityMap.info

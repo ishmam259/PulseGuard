@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
+import { useLocale } from '../../context/LocaleContext'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 
 export default function Records() {
+  const { t } = useLocale()
   const [patient, setPatient] = useState(undefined)
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
@@ -36,25 +38,25 @@ export default function Records() {
 
   return (
     <MobileLayout
-      title="Medical Records"
+      title={t('RECORDS_PAGE_TITLE')}
       status="online"
       navItems={patientNavItems}
     >
       <div className="animate-fade-in">
         <div className="card">
           <div className="card-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 className="text-gradient">Your Records</h3>
+            <h3 className="text-gradient">{t('RECORDS_HEADING')}</h3>
             {patient && history.length > 0 && (
               <button type="button" className="btn btn--secondary btn--small" onClick={handleExport}>
-                ⬇️ Export CSV
+                {t('RECORDS_EXPORT')}
               </button>
             )}
           </div>
 
           {loading ? (
-            <p className="muted text-center" style={{ padding: '2rem 0' }}>Loading records…</p>
+            <p className="muted text-center" style={{ padding: '2rem 0' }}>{t('RECORDS_LOADING')}</p>
           ) : history.length === 0 ? (
-            <p className="muted text-center" style={{ padding: '2rem 0' }}>No records recorded yet.</p>
+            <p className="muted text-center" style={{ padding: '2rem 0' }}>{t('RECORDS_NO_RECORDS')}</p>
           ) : (
             <div className="list" style={{ marginTop: '1rem' }}>
               {history.map((rec, i) => (
@@ -71,18 +73,18 @@ export default function Records() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                     <div>
                       <span style={{ marginRight: '0.5rem' }}></span>
-                      <strong>BP: {rec.bp_systolic}/{rec.bp_diastolic} mmHg</strong>
+                      <strong>{t('RECORDS_BP_LABEL')}: {rec.bp_systolic}/{rec.bp_diastolic} mmHg</strong>
                     </div>
                     <span className={`badge badge--${(rec.risk_level || 'low').toLowerCase()}`}>
                       {rec.risk_level || 'low'}
                     </span>
                   </div>
                   <div className="muted" style={{ fontSize: '0.85rem' }}>
-                    <span>Weight: {rec.weight_kg ? `${rec.weight_kg} kg` : 'N/A'}</span>
+                    <span>{t('RECORDS_WEIGHT_LABEL')}: {rec.weight_kg ? `${rec.weight_kg} kg` : t('FALLBACK_NA')}</span>
                     <span style={{ margin: '0 0.5rem' }}>•</span>
-                    <span>Temp: {rec.temperature_c ? `${rec.temperature_c} °C` : 'N/A'}</span>
+                    <span>{t('RECORDS_TEMP_LABEL')}: {rec.temperature_c ? `${rec.temperature_c} °C` : t('FALLBACK_NA')}</span>
                     <span style={{ margin: '0 0.5rem' }}>•</span>
-                    <span>Pulse: {rec.pulse ? `${rec.pulse} bpm` : 'N/A'}</span>
+                    <span>{t('RECORDS_PULSE_LABEL')}: {rec.pulse ? `${rec.pulse} bpm` : t('FALLBACK_NA')}</span>
                   </div>
                   {rec.symptoms && rec.symptoms.length > 0 && (
                     <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>

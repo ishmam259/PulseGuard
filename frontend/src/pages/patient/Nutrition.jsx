@@ -1,11 +1,19 @@
 import { useState } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
+import { useLocale } from '../../context/LocaleContext'
 import { nutritionData } from '../../data/mockData'
 import { patientNavItems } from '../../data/navItems'
 
 export default function Nutrition() {
+  const { t } = useLocale()
   const [selectedTag, setSelectedTag] = useState('All')
-  const tags = ['All', 'Iron Rich', 'Protein', 'Calcium', 'Vitamins']
+  const tags = [
+    { id: 'All', labelKey: 'NUTRITION_TAG_ALL' },
+    { id: 'Iron Rich', labelKey: 'NUTRITION_TAG_IRON_RICH' },
+    { id: 'Protein', labelKey: 'NUTRITION_TAG_PROTEIN' },
+    { id: 'Calcium', labelKey: 'NUTRITION_TAG_CALCIUM' },
+    { id: 'Vitamins', labelKey: 'NUTRITION_TAG_VITAMINS' }
+  ]
 
   const filterRecommended = (foods, tag) => {
     if (tag === 'All') return foods
@@ -34,7 +42,7 @@ export default function Nutrition() {
 
   return (
     <MobileLayout
-      title="Nutrition Guide"
+      title={t('NUTRITION_PAGE_TITLE')}
       status="online"
       navItems={patientNavItems}
     >
@@ -44,21 +52,21 @@ export default function Nutrition() {
           {tags.map((tag) => (
             <button
               type="button"
-              key={tag}
-              className={`chip ${selectedTag === tag ? 'active' : ''}`}
-              onClick={() => setSelectedTag(tag)}
+              key={tag.id}
+              className={`chip ${selectedTag === tag.id ? 'active' : ''}`}
+              onClick={() => setSelectedTag(tag.id)}
             >
-              {tag}
+              {t(tag.labelKey)}
             </button>
           ))}
         </div>
 
         {/* Recommended Foods */}
         <div className="card stagger" style={{ animationDelay: '0s' }}>
-          <h3 className="text-gradient">Recommended Foods</h3>
-          <p className="muted">Essential nutrients for your pregnancy</p>
+          <h3 className="text-gradient">{t('NUTRITION_RECOMMENDED_HEADING')}</h3>
+          <p className="muted">{t('NUTRITION_RECOMMENDED_DESC')}</p>
           {recommendedFoods.length === 0 ? (
-            <p className="muted" style={{ marginTop: '1rem' }}>No recommended foods match the selected filter.</p>
+            <p className="muted" style={{ marginTop: '1rem' }}>{t('NUTRITION_NO_RECOMMENDED')}</p>
           ) : (
             <div className="pill-list" style={{ marginTop: '1rem' }}>
               {recommendedFoods.map((food) => (
@@ -72,8 +80,8 @@ export default function Nutrition() {
 
         {/* Foods to Avoid */}
         <div className="card stagger" style={{ animationDelay: '0.1s' }}>
-          <h3 className="text-gradient">Foods to Avoid</h3>
-          <p className="muted">Minimize risk during pregnancy</p>
+          <h3 className="text-gradient">{t('NUTRITION_AVOID_HEADING')}</h3>
+          <p className="muted">{t('NUTRITION_AVOID_DESC')}</p>
           <div className="pill-list" style={{ marginTop: '1rem' }}>
             {nutritionData.avoid.map((food) => (
               <span key={food.name} className="pill warning" title={food.reason}>
@@ -85,10 +93,10 @@ export default function Nutrition() {
 
         {/* Local Affordable Foods */}
         <div className="card stagger" style={{ animationDelay: '0.2s' }}>
-          <h3 className="text-gradient">Local Affordable Foods</h3>
-          <p className="muted">Nutritious options available in your region</p>
+          <h3 className="text-gradient">{t('NUTRITION_LOCAL_HEADING')}</h3>
+          <p className="muted">{t('NUTRITION_LOCAL_DESC')}</p>
           {localFoods.length === 0 ? (
-            <p className="muted" style={{ marginTop: '1rem' }}>No local foods match the selected filter.</p>
+            <p className="muted" style={{ marginTop: '1rem' }}>{t('NUTRITION_NO_LOCAL')}</p>
           ) : (
             <div className="pill-list" style={{ marginTop: '1rem' }}>
               {localFoods.map((food) => (

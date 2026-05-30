@@ -1,5 +1,6 @@
 import { Line } from 'react-chartjs-2'
 import { riskTrendData as defaultData } from '../../data/mockData'
+import { useLocale } from '../../context/LocaleContext'
 
 const options = {
   responsive: true,
@@ -33,13 +34,14 @@ const options = {
 }
 
 export default function RiskTrendChart({ trendData }) {
+  const { t } = useLocale()
   const source = trendData || defaultData
 
   const data = {
     labels: source.labels,
     datasets: [
       {
-        label: 'High Risk',
+        label: t('CHART_HIGH_RISK'),
         data: source.high,
         borderColor: '#ef4444',
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -49,7 +51,7 @@ export default function RiskTrendChart({ trendData }) {
         pointHoverRadius: 6,
       },
       {
-        label: 'Moderate Risk',
+        label: t('CHART_MODERATE_RISK'),
         data: source.moderate,
         borderColor: '#f59e0b',
         backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -59,7 +61,7 @@ export default function RiskTrendChart({ trendData }) {
         pointHoverRadius: 6,
       },
       {
-        label: 'Low Risk',
+        label: t('CHART_LOW_RISK'),
         data: source.low,
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',

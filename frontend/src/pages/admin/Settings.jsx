@@ -1,55 +1,57 @@
+import { useLocale } from '../../context/LocaleContext'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useNavigate } from 'react-router-dom'
 
-const settingsCards = [
-  {
-    id: 'set-1',
-    icon: '',
-    title: 'User Management',
-    description: 'Manage health workers, patients, and admin accounts. Assign roles and configure permissions.',
-    buttonText: 'Manage Users',
-    buttonClass: 'btn--primary',
-    path: '/admin/users'
-  },
-  {
-    id: 'set-2',
-    icon: '',
-    title: 'AI Configuration',
-    description: 'Set risk prediction thresholds, model selection (XGBoost/Llama 3), and alert sensitivity levels.',
-    buttonText: 'Configure AI',
-    buttonClass: 'btn--primary',
-  },
-  {
-    id: 'set-3',
-    icon: '',
-    title: 'Offline & Sync Settings',
-    description: 'Configure sync frequency, conflict resolution mode (auto-merge vs manual), and storage limits.',
-    buttonText: 'Update Settings',
-    buttonClass: 'btn--secondary',
-  },
-  {
-    id: 'set-4',
-    icon: '',
-    title: 'Language Settings',
-    description: 'Configure Bengali and English language support. Set default language for AI responses.',
-    buttonText: 'Manage Languages',
-    buttonClass: 'btn--secondary',
-  },
-]
-
 export default function Settings() {
+  const { t } = useLocale()
   const navigate = useNavigate()
+  
+  const settingsCards = [
+    {
+      id: 'set-1',
+      icon: '',
+      title: t('SETTINGS_USER_MANAGEMENT'),
+      description: t('SETTINGS_USER_MANAGEMENT_DESC'),
+      buttonText: t('SETTINGS_MANAGE_USERS'),
+      buttonClass: 'btn--primary',
+      path: '/admin/users'
+    },
+    {
+      id: 'set-2',
+      icon: '',
+      title: t('SETTINGS_AI_CONFIG'),
+      description: t('SETTINGS_AI_CONFIG_DESC'),
+      buttonText: t('SETTINGS_CONFIGURE_AI'),
+      buttonClass: 'btn--primary',
+    },
+    {
+      id: 'set-3',
+      icon: '',
+      title: t('SETTINGS_OFFLINE_SYNC'),
+      description: t('SETTINGS_OFFLINE_SYNC_DESC'),
+      buttonText: t('SETTINGS_UPDATE'),
+      buttonClass: 'btn--secondary',
+    },
+    {
+      id: 'set-4',
+      icon: '',
+      title: t('SETTINGS_LANGUAGE'),
+      description: t('SETTINGS_LANGUAGE_DESC'),
+      buttonText: t('SETTINGS_MANAGE_LANGUAGES'),
+      buttonClass: 'btn--secondary',
+    },
+  ]
   
   const handleAction = (card) => {
     if (card.path) {
       navigate(card.path)
     } else {
-      alert(`Feature Coming Soon!\nThe "${card.title}" configuration panel is disabled for this hackathon demo version.`)
+      alert(t('SETTINGS_COMING_SOON', { title: card.title }))
     }
   }
 
   return (
-    <AdminLayout title="Settings">
+    <AdminLayout title={t('SETTINGS_TITLE')}>
       <section className="grid two stagger">
         {settingsCards.map((card, i) => (
           <div className="card animate-fade-in" key={card.id} style={{ animationDelay: `${i * 80}ms` }}>
@@ -69,23 +71,23 @@ export default function Settings() {
 
       {/* System Info */}
       <section className="card animate-fade-in" style={{ animationDelay: '320ms', marginTop: 'var(--spacing-5)' }}>
-        <h3>System Information</h3>
+        <h3>{t('SETTINGS_SYSTEM_INFO')}</h3>
         <div className="summary-grid" style={{ marginTop: 'var(--spacing-4)' }}>
           <div>
-            <p className="muted">Version</p>
-            <strong>PulseGuard v1.0.0</strong>
+            <p className="muted">{t('SETTINGS_VERSION')}</p>
+            <strong>{t('SETTINGS_VERSION_VALUE')}</strong>
           </div>
           <div>
-            <p className="muted">Stack</p>
-            <strong>PERN + Python AI</strong>
+            <p className="muted">{t('SETTINGS_STACK')}</p>
+            <strong>{t('SETTINGS_STACK_VALUE')}</strong>
           </div>
           <div>
-            <p className="muted">AI Models</p>
-            <strong>Llama 3 + XGBoost</strong>
+            <p className="muted">{t('SETTINGS_AI_MODELS')}</p>
+            <strong>{t('SETTINGS_AI_MODELS_VALUE')}</strong>
           </div>
           <div>
-            <p className="muted">Database</p>
-            <strong>PostgreSQL + pgvector</strong>
+            <p className="muted">{t('SETTINGS_DATABASE')}</p>
+            <strong>{t('SETTINGS_DATABASE_VALUE')}</strong>
           </div>
         </div>
       </section>

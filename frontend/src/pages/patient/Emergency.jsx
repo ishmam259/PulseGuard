@@ -1,26 +1,28 @@
 import { useState } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
+import { useLocale } from '../../context/LocaleContext'
 import { patientNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
 
 export default function Emergency() {
   const { connectivity } = useApp()
+  const { t } = useLocale()
   const [gps, setGps] = useState(null)
   const [loadingGps, setLoadingGps] = useState(false)
   const [alertSent, setAlertSent] = useState(false)
 
   const statusText = connectivity === 'online'
     ? alertSent
-      ? 'SOS Dispatched: Help is on the way!'
+      ? t('EMERGENCY_DISPATCHED')
       : gps
-        ? `GPS Coordinates: ${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`
-        : 'PulseGuard Security System: Ready'
-    : 'Offline Mode Active'
+        ? t('EMERGENCY_GPS_COORDS', { lat: gps.lat.toFixed(5), lng: gps.lng.toFixed(5) })
+        : t('EMERGENCY_SYSTEM_READY')
+    : t('EMERGENCY_OFFLINE_ACTIVE')
 
   const handleShareGps = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser')
+      alert(t('EMERGENCY_GEO_NOT_SUPPORTED'))
       return
     }
     setLoadingGps(true)
@@ -32,7 +34,7 @@ export default function Emergency() {
       },
       (error) => {
         console.error(error)
-        alert('Unable to retrieve location. Please make sure location access is enabled.')
+        alert(t('EMERGENCY_GEO_FAILED'))
         setLoadingGps(false)
       }
     )
@@ -70,36 +72,36 @@ export default function Emergency() {
       const alertData = {
         latitude: coords ? coords.lat : null,
         longitude: coords ? coords.lng : null,
-        message: 'SOS Emergency Alert triggered from Patient Portal.',
+        message: t('EMERGENCY_SOS_MESSAGE'),
       }
 
       const result = await api.createAlert(alertData)
       if (result.ok) {
         setAlertSent(true)
       } else {
-        alert('Failed to send SOS: ' + (result.error || 'Unknown error'))
+        alert(t('EMERGENCY_SEND_FAILED', { error: result.error || t('EMERGENCY_UNKNOWN_ERROR') }))
       }
     } catch (err) {
       console.error('SOS dispatch error:', err)
-      alert('Failed to send SOS alert. Please try again.')
+      alert(t('EMERGENCY_SEND_FAILED_GENERIC'))
     }
   }
 
 
   return (
     <MobileLayout
-      title="Emergency SOS"
+      title={t('EMERGENCY_PAGE_TITLE')}
       status={connectivity}
       navItems={patientNavItems}
     >
       <div className="animate-fade-in">
         <div className="card emergency-card">
-          <h2>Emergency Alert</h2>
+          <h2>{t('EMERGENCY_ALERT_HEADING')}</h2>
           <p className="muted" style={{ fontWeight: 'bold', color: 'var(--color-danger)' }}>
             {statusText}
           </p>
           <p className="muted" style={{ margin: '1rem 0' }}>
-            Press the SOS button to alert nearby health workers and emergency services. Your GPS location will be shared automatically.
+            {t('EMERGENCY_INSTRUCTIONS')}
           </p>
 
           <button
@@ -111,18 +113,18 @@ export default function Emergency() {
             }}
             onClick={handleSOS}
           >
-            {alertSent ? 'SENT' : 'SOS'}
+            {alertSent ? t('EMERGENCY_SOS_BTN_SENT') : t('EMERGENCY_SOS_BTN')}
           </button>
 
           <div className="button-row" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '2rem' }}>
             <button type="button" className="btn btn--secondary btn--large" onClick={handleShareGps} disabled={loadingGps}>
-              {loadingGps ? 'Fetching Location…' : 'Share GPS Location'}
+              {loadingGps ? t('EMERGENCY_FETCHING_LOCATION') : t('EMERGENCY_SHARE_GPS')}
             </button>
             <button type="button" className="btn btn--secondary btn--large" onClick={handleSOS}>
-              Notify Health Worker
+              {t('EMERGENCY_NOTIFY_WORKER')}
             </button>
             <a href="tel:999" className="btn btn--primary btn--large text-center" style={{ textDecoration: 'none' }}>
-              Call Emergency Services
+              {t('EMERGENCY_CALL_SERVICES')}
             </a>
           </div>
         </div>

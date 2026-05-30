@@ -1,10 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import * as api from '../services/api'
+import { useLocale } from './LocaleContext'
 
 const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
+  const { t } = useLocale()
   const [connectivity, setConnectivity] = useState(navigator.onLine ? 'online' : 'offline')
   const [currentUser, setCurrentUser] = useState(undefined)
   const [notifications, setNotifications] = useState([])
@@ -49,18 +51,18 @@ export function AppProvider({ children }) {
         addNotification({
           id: Date.now(),
           type: 'risk',
-          title: 'High Risk Alert',
-          message: data.message || `Risk score: ${data.risk_score}`,
-          time: 'Just now',
+          title: t('NOTIF_HIGH_RISK_TITLE'),
+          message: data.message || t('NOTIF_RISK_MESSAGE', { score: data.risk_score }),
+          time: t('JUST_NOW'),
           read: false,
         })
       } else if (data.type === 'sos_alert') {
         addNotification({
           id: data.id || Date.now(),
           type: 'emergency',
-          title: `🚨 SOS: ${data.patient_name}`,
-          message: data.message || 'Emergency SOS dispatched!',
-          time: 'Just now',
+          title: `${t('NOTIF_SOS_PREFIX')} ${data.patient_name}`,
+          message: data.message || t('NOTIF_SOS_MESSAGE'),
+          time: t('JUST_NOW'),
           read: false,
           latitude: data.latitude,
           longitude: data.longitude,
@@ -71,7 +73,7 @@ export function AppProvider({ children }) {
     return () => {
       if (ws) ws.close()
     }
-  }, [currentUser, addNotification])
+  }, [currentUser, addNotification, t])
 
   // Real register
   const register = useCallback(async (data) => {

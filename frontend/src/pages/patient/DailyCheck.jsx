@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
+import { useLocale } from '../../context/LocaleContext'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 
 export default function DailyCheck() {
   const { connectivity } = useApp()
+  const { t } = useLocale()
   const navigate = useNavigate()
   const [patient, setPatient] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -48,12 +50,12 @@ export default function DailyCheck() {
     setSuccess('')
 
     if (!patient) {
-      setError('No patient profile found. Please register first.')
+      setError(t('DAILY_ERROR_NO_PATIENT'))
       return
     }
 
     if (!form.bp) {
-      setError('Blood pressure is required (e.g. 120/80).')
+      setError(t('DAILY_ERROR_BP_REQUIRED'))
       return
     }
 
@@ -62,19 +64,19 @@ export default function DailyCheck() {
     const diastolic = parseInt(bpParts[1])
 
     if (isNaN(systolic) || isNaN(diastolic)) {
-      setError('Please enter blood pressure in the format "systolic/diastolic" (e.g. 120/80)')
+      setError(t('DAILY_ERROR_BP_FORMAT'))
       return
     }
 
     if(systolic < 40 || systolic > 300 || diastolic < 30 || diastolic > 230) {
-      setError('Invalid BP. Out of range');
+      setError(t('DAILY_ERROR_BP_RANGE'));
       return;
     }
 
     if(form.pulse) {
       let pulse = parseInt(form.pulse);
       if(pulse < 30 || pulse > 250) {
-        setError('Invalid pulse. Out of range');
+        setError(t('DAILY_ERROR_PULSE_RANGE'));
         return;
       }
     }
@@ -99,10 +101,10 @@ export default function DailyCheck() {
           local_timestamp: new Date().toISOString(),
         })
         localStorage.setItem('pg_offline_queue:v1', JSON.stringify(queue))
-        setSuccess('Saved to offline queue successfully! It will sync when connection is restored.')
+        setSuccess(t('DAILY_SUCCESS_OFFLINE'))
         setForm({ bp: '', weight_kg: '', temperature_c: '', symptoms: '', pulse: '' })
       } catch {
-        setError('Failed to save data locally.')
+        setError(t('DAILY_ERROR_LOCAL_SAVE'))
       }
       return
     }
@@ -111,13 +113,18 @@ export default function DailyCheck() {
     try {
       const res = await api.addVitals(patient.patient.id, payload)
       if (res.ok) {
-        setSuccess(`Daily check recorded! Risk status: ${res.riskLevel || 'low'}`)
+        const riskVal = (res.riskLevel || 'low').toLowerCase() === 'high'
+          ? t('RISK_HIGH')
+          : (res.riskLevel || 'low').toLowerCase() === 'moderate'
+          ? t('RISK_MODERATE')
+          : t('RISK_LOW')
+        setSuccess(t('DAILY_SUCCESS_RECORDED', { riskLevel: riskVal }))
         setForm({ bp: '', weight_kg: '', temperature_c: '', symptoms: '', pulse: '' })
       } else {
-        setError(res.error || 'Failed to save daily check details.')
+        setError(res.error || t('DAILY_ERROR_SAVE_FAILED'))
       }
     } catch {
-      setError('Network request failed. Please try saving offline instead.')
+      setError(t('DAILY_ERROR_NETWORK'))
     } finally {
       setSaving(false)
     }
@@ -131,14 +138,14 @@ export default function DailyCheck() {
 
   return (
     <MobileLayout
-      title="Daily Health Check"
+      title={t('DAILY_PAGE_TITLE')}
       status={connectivity}
       navItems={patientNavItems}
     >
       <div className="animate-fade-in">
         {loading ? (
           <div className="card text-center" style={{ padding: '2rem' }}>
-            <p className="muted animate-pulse">Loading daily health check form…</p>
+            <p className="muted animate-pulse">{t('DAILY_LOADING')}</p>
           </div>
         ) : !patient ? (
           <div className="card" style={{
@@ -149,23 +156,23 @@ export default function DailyCheck() {
             textAlign: 'center',
           }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📋</div>
-            <h3 style={{ marginBottom: '0.5rem' }}>Profile Setup Required</h3>
+            <h3 style={{ marginBottom: '0.5rem' }}>{t('DAILY_PROFILE_REQUIRED')}</h3>
             <p className="muted" style={{ marginBottom: '1.5rem', lineHeight: 1.6 }}>
-              You need to complete your pregnancy profile before recording vitals.
+              {t('DAILY_PROFILE_REQUIRED_DESC')}
             </p>
             <button
               type="button"
               className="btn btn--primary"
               onClick={() => navigate('/patient/onboarding')}
             >
-              Complete My Profile
+              {t('DAILY_COMPLETE_PROFILE')}
             </button>
           </div>
         ) : (
           <div className="card">
-            <h3 className="text-gradient">Record Today's Vitals</h3>
+            <h3 className="text-gradient">{t('DAILY_RECORD_HEADING')}</h3>
             <p className="muted">
-              {currentDateStr}, Pregnancy Week {patient.patient.gestational_week || 'N/A'}
+              {currentDateStr}, {t('DASHBOARD_PREGNANCY_WEEK')} <strong>{patient.patient.gestational_week || t('FALLBACK_NA')}</strong>
             </p>
 
             {error && (
@@ -200,24 +207,24 @@ export default function DailyCheck() {
 
             <div className="form-grid">
               <label>
-                Blood Pressure (mmHg) *
+                {t('DAILY_BP_LABEL')}
                 <div className="input-wrapper">
                   <input
                     type="text"
                     className="input"
-                    placeholder="e.g. 120/80"
+                    placeholder={t('DAILY_BP_PLACEHOLDER')}
                     value={form.bp}
                     onChange={handleChange('bp')}
                   />
                 </div>
               </label>
               <label>
-                Weight (kg)
+                {t('DAILY_WEIGHT_LABEL')}
                 <div className="input-wrapper">
                   <input
                     type="number"
                     className="input"
-                    placeholder="e.g. 62"
+                    placeholder={t('DAILY_WEIGHT_PLACEHOLDER')}
                     step="0.1"
                     value={form.weight_kg}
                     onChange={handleChange('weight_kg')}
@@ -225,12 +232,12 @@ export default function DailyCheck() {
                 </div>
               </label>
               <label>
-                Temperature (°C)
+                {t('DAILY_TEMP_LABEL')}
                 <div className="input-wrapper">
                   <input
                     type="number"
                     className="input"
-                    placeholder="e.g. 36.8"
+                    placeholder={t('DAILY_TEMP_PLACEHOLDER')}
                     step="0.1"
                     value={form.temperature_c}
                     onChange={handleChange('temperature_c')}
@@ -238,24 +245,24 @@ export default function DailyCheck() {
                 </div>
               </label>
               <label>
-                Pulse (bpm)
+                {t('DAILY_PULSE_LABEL')}
                 <div className="input-wrapper">
                   <input
                     type="number"
                     className="input"
-                    placeholder="e.g. 75"
+                    placeholder={t('DAILY_PULSE_PLACEHOLDER')}
                     value={form.pulse}
                     onChange={handleChange('pulse')}
                   />
                 </div>
               </label>
               <label>
-                Symptoms (comma-separated)
+                {t('DAILY_SYMPTOMS_LABEL')}
                 <div className="input-wrapper">
                   <input
                     type="text"
                     className="input"
-                    placeholder="e.g. Headache, Nausea"
+                    placeholder={t('DAILY_SYMPTOMS_PLACEHOLDER')}
                     value={form.symptoms}
                     onChange={handleChange('symptoms')}
                   />
@@ -270,14 +277,14 @@ export default function DailyCheck() {
                 onClick={() => handleSave(false)}
                 disabled={saving}
               >
-                {saving ? 'Saving...' : 'Save'}
+                {saving ? t('DAILY_SAVING') : t('SAVE')}
               </button>
               <button
                 type="button"
                 className="btn btn--secondary"
                 onClick={() => handleSave(true)}
               >
-                Save Offline
+                {t('DAILY_SAVE_OFFLINE')}
               </button>
             </div>
           </div>

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useLocale } from '../../context/LocaleContext'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
 
 export default function Patients() {
+  const { t } = useLocale()
   const navigate = useNavigate()
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
@@ -42,7 +44,7 @@ export default function Patients() {
     e.preventDefault()
     setError('')
     if (!form.name) {
-      setError('Name is required')
+      setError(t('ADMIN_PATIENTS_NAME_REQUIRED'))
       return
     }
     setSaving(true)
@@ -59,10 +61,10 @@ export default function Patients() {
         setForm({ name: '', age: '', village: '', gestational_week: '' })
         loadPatients()
       } else {
-        setError(res.error || 'Failed to create patient')
+        setError(res.error || t('ADMIN_PATIENTS_CREATE_FAILED'))
       }
     } catch {
-      setError('Connection failed. Please try again.')
+      setError(t('ERROR_CONNECTION_FAILED'))
     } finally {
       setSaving(false)
     }
@@ -85,46 +87,46 @@ export default function Patients() {
   }
 
   return (
-    <AdminLayout title="Patient Management">
+    <AdminLayout title={t('ADMIN_PATIENTS_TITLE')}>
       {/* Header Actions */}
       <div className="card-row animate-fade-in" style={{ marginTop: 0, marginBottom: 'var(--spacing-4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <input
           className="input"
-          placeholder="Search patients by name, village, or ID..."
+          placeholder={t('ADMIN_PATIENTS_SEARCH')}
           aria-label="Search patients by name, village, or ID"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ maxWidth: '400px' }}
         />
         <button className="btn btn--primary" type="button" onClick={() => setShowModal(true)}>
-          + Add Patient
+          {t('ADMIN_PATIENTS_ADD')}
         </button>
       </div>
 
       {/* Patients Table */}
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem' }}>
-          <p className="muted">Loading patients list…</p>
+          <p className="muted">{t('ADMIN_PATIENTS_LOADING')}</p>
         </div>
       ) : (
         <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
           <table className="table">
             <thead>
               <tr>
-                <th>Patient ID</th>
-                <th>Name</th>
-                <th>Risk Level</th>
-                <th>Week</th>
-                <th>Assigned Worker</th>
-                <th>Last Updated</th>
-                <th>Actions</th>
+                <th>{t('TABLE_PATIENT_ID')}</th>
+                <th>{t('TABLE_NAME')}</th>
+                <th>{t('TABLE_RISK_LEVEL')}</th>
+                <th>{t('TABLE_WEEK')}</th>
+                <th>{t('TABLE_ASSIGNED_WORKER')}</th>
+                <th>{t('TABLE_LAST_UPDATED')}</th>
+                <th>{t('TABLE_ACTIONS')}</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan="7" style={{ textAlign: 'center', color: 'var(--color-muted)', padding: '2rem' }}>
-                    No patients found matching the criteria.
+                    {t('ADMIN_PATIENTS_EMPTY')}
                   </td>
                 </tr>
               ) : (
@@ -138,7 +140,7 @@ export default function Patients() {
                         <div className="avatar">{getInitials(patient.name)}</div>
                         <div>
                           <strong>{patient.name}</strong>
-                          <p className="muted" style={{ fontSize: '12px' }}>{patient.village || 'N/A'}</p>
+                          <p className="muted" style={{ fontSize: '12px' }}>{patient.village || t('FALLBACK_NA')}</p>
                         </div>
                       </div>
                     </td>
@@ -147,8 +149,8 @@ export default function Patients() {
                         {patient.risk_level || 'low'}
                       </span>
                     </td>
-                    <td>{patient.gestational_week || 'N/A'}</td>
-                    <td>{patient.worker_name || 'Unassigned'}</td>
+                    <td>{patient.gestational_week || t('FALLBACK_NA')}</td>
+                    <td>{patient.worker_name || t('UNASSIGNED')}</td>
                     <td style={{ color: 'var(--color-muted)' }}>
                       {new Date(patient.last_updated).toLocaleDateString()}
                     </td>
@@ -160,7 +162,7 @@ export default function Patients() {
                           style={{ padding: '4px 10px', fontSize: '12px' }}
                           onClick={() => navigate(`/worker/patient/${patient.id}`)}
                         >
-                          View Details
+                          {t('ADMIN_PATIENTS_VIEW_DETAILS')}
                         </button>
                       </div>
                     </td>
@@ -175,16 +177,16 @@ export default function Patients() {
       {/* Summary */}
       {!loading && (
         <div className="card-row" style={{ marginTop: 'var(--spacing-4)' }}>
-          <p className="muted">Showing {filtered.length} of {patients.length} patients</p>
+          <p className="muted">{t('ADMIN_PATIENTS_SHOWING', { filtered: filtered.length, total: patients.length })}</p>
           <div className="chip-row">
             <span className="chip" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
-              High Risk: {patients.filter((p) => p.risk_level === 'high').length}
+              {t('CHIP_HIGH_RISK', { count: patients.filter((p) => p.risk_level === 'high').length })}
             </span>
             <span className="chip" style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b' }}>
-              Moderate: {patients.filter((p) => p.risk_level === 'moderate').length}
+              {t('CHIP_MODERATE', { count: patients.filter((p) => p.risk_level === 'moderate').length })}
             </span>
             <span className="chip" style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--color-success)' }}>
-              Low: {patients.filter((p) => p.risk_level === 'low').length}
+              {t('CHIP_LOW', { count: patients.filter((p) => p.risk_level === 'low').length })}
             </span>
           </div>
         </div>
@@ -194,7 +196,7 @@ export default function Patients() {
       {showModal && (
         <div className="modal-backdrop admin-patient-modal-overlay">
           <div className="card animate-fade-in" style={{ width: '100%', maxWidth: '500px', padding: '2rem' }}>
-            <h3>Create Patient Profile</h3>
+            <h3>{t('ADMIN_PATIENTS_CREATE_TITLE')}</h3>
             {error && (
               <div className="alert-panel" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)', margin: '1rem 0' }}>
                 <strong style={{ color: '#ef4444' }}>{error}</strong>
@@ -203,28 +205,28 @@ export default function Patients() {
             <form onSubmit={handleCreatePatient} style={{ marginTop: '1rem' }}>
               <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
                 <label>
-                  Full Name *
-                  <input className="input" placeholder="Amina Rahman" value={form.name} onChange={handleInputChange('name')} required />
+                  {t('ADMIN_PATIENTS_LABEL_NAME')}
+                  <input className="input" placeholder={t('ADMIN_PATIENTS_PLACEHOLDER_NAME')} value={form.name} onChange={handleInputChange('name')} required />
                 </label>
                 <label>
-                  Age (years)
+                  {t('ADMIN_PATIENTS_LABEL_AGE')}
                   <input className="input" type="number" placeholder="25" value={form.age} onChange={handleInputChange('age')} />
                 </label>
                 <label>
-                  Village
-                  <input className="input" placeholder="Kurigram Village A" value={form.village} onChange={handleInputChange('village')} />
+                  {t('ADMIN_PATIENTS_LABEL_VILLAGE')}
+                  <input className="input" placeholder={t('ADMIN_PATIENTS_PLACEHOLDER_VILLAGE')} value={form.village} onChange={handleInputChange('village')} />
                 </label>
                 <label>
-                  Gestational Week
+                  {t('ADMIN_PATIENTS_LABEL_GESTATIONAL')}
                   <input className="input" type="number" placeholder="24" value={form.gestational_week} onChange={handleInputChange('gestational_week')} />
                 </label>
               </div>
               <div className="button-row" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                 <button className="btn btn--secondary" type="button" onClick={() => setShowModal(false)}>
-                  Cancel
+                  {t('CANCEL')}
                 </button>
                 <button className="btn btn--primary" type="submit" disabled={saving}>
-                  {saving ? 'Creating...' : 'Create'}
+                  {saving ? t('ADMIN_PATIENTS_CREATING') : t('ADMIN_PATIENTS_CREATE')}
                 </button>
               </div>
             </form>

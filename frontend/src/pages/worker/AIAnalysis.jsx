@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
+import { useLocale } from '../../context/LocaleContext'
 
 export default function AIAnalysis() {
+  const { t } = useLocale()
   const [patients, setPatients] = useState(undefined)
   const [selectedPatient, setSelectedPatient] = useState('')
   const [prediction, setPrediction] = useState(null)
   const [summary, setSummary] = useState(null)
   const [analyzing, setAnalyzing] = useState(false)
+
+  const workerNavItems = [
+    { label: t('NAV_HOME'), to: '/worker/dashboard', icon: '' },
+    { label: t('NAV_PATIENTS'), to: '/worker/patients', icon: '' },
+    { label: t('NAV_AI'), to: '/worker/ai-analysis', icon: '' },
+    { label: t('NAV_SYNC'), to: '/worker/sync', icon: '' },
+    { label: t('NAV_PROFILE'), to: '/worker/profile', icon: '' },
+  ]
 
   useEffect(() => {
     const load = async () => {
@@ -56,34 +58,34 @@ export default function AIAnalysis() {
     setAnalyzing(false)
   }
 
-  const selectedName = (patients || []).find(p => p.id === selectedPatient)?.name || 'Select a patient'
+  const selectedName = (patients || []).find(p => p.id === selectedPatient)?.name || t('AI_SELECT_PATIENT_FALLBACK')
 
   return (
-    <MobileLayout title="AI Analysis" navItems={workerNavItems}>
+    <MobileLayout title={t('AI_PAGE_TITLE')} navItems={workerNavItems}>
       <section className="card animate-fade-in">
-        <h3>AI Risk Assessment</h3>
+        <h3>{t('AI_RISK_ASSESSMENT_HEADING')}</h3>
         <div className="form-grid" style={{ marginBottom: '1rem' }}>
           <label>
-            Select Patient
+            {t('AI_SELECT_PATIENT_LABEL')}
             <select className="input" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)}>
-              <option value="">Choose patient…</option>
+              <option value="">{t('AI_CHOOSE_PATIENT')}</option>
               {(patients || []).map(p => (
-                <option key={p.id} value={p.id}>{p.name}, Week {p.gestational_week || '?'}</option>
+                <option key={p.id} value={p.id}>{p.name}, {t('WEEK')} {p.gestational_week || '?'}</option>
               ))}
             </select>
           </label>
         </div>
         <button type="button" className="btn btn--primary" onClick={handleAnalyze} disabled={!selectedPatient || analyzing}>
-          {analyzing ? 'Analyzing…' : 'Run AI Analysis'}
+          {analyzing ? t('AI_ANALYZING') : t('AI_RUN_ANALYSIS')}
         </button>
       </section>
 
       {prediction && (
         <section className="card animate-fade-in" style={{ animationDelay: '80ms' }}>
-          <h3>Risk Prediction: {selectedName}</h3>
+          <h3>{t('AI_RISK_PREDICTION')} {selectedName}</h3>
           <div className="card-row">
             <div>
-              <p className="muted">Risk Score</p>
+              <p className="muted">{t('AI_RISK_SCORE')}</p>
               <div className="kpi" style={{
                 color: prediction.risk_score >= 0.7 ? '#ef4444' : prediction.risk_score >= 0.3 ? '#f59e0b' : '#10b981'
               }}>
@@ -91,7 +93,7 @@ export default function AIAnalysis() {
               </div>
             </div>
             <span className={`badge badge--${prediction.risk_level}`}>
-              {prediction.risk_level.charAt(0).toUpperCase() + prediction.risk_level.slice(1)} Risk
+              {t('RISK_' + prediction.risk_level.toUpperCase())} {t('RISK_SUFFIX')}
             </span>
           </div>
           <div className="progress" style={{ marginTop: '1rem' }}>
@@ -102,32 +104,32 @@ export default function AIAnalysis() {
           </div>
           {prediction.preeclampsia_flag && (
             <div className="alert-panel" style={{ marginTop: '1rem' }}>
-              <strong style={{ color: '#ef4444' }}>Preeclampsia Flag</strong>
-              <p className="muted">AI model has flagged potential preeclampsia risk.</p>
+              <strong style={{ color: '#ef4444' }}>{t('AI_PREECLAMPSIA_FLAG')}</strong>
+              <p className="muted">{t('AI_PREECLAMPSIA_FLAG_DESC')}</p>
             </div>
           )}
           {prediction.factors?.length > 0 && (
             <div style={{ marginTop: '1rem' }}>
-              <p className="muted">Contributing Factors:</p>
+              <p className="muted">{t('AI_CONTRIBUTING_FACTORS')}</p>
               <div className="chip-row">
                 {prediction.factors.map((f) => <span key={f} className="chip">{f}</span>)}
               </div>
             </div>
           )}
-          <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>Model: {prediction.model}</p>
+          <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>{t('AI_MODEL_LABEL')} {prediction.model}</p>
         </section>
       )}
 
       {summary && (
         <section className="card animate-fade-in" style={{ animationDelay: '160ms' }}>
-          <h3>Longitudinal Summary</h3>
+          <h3>{t('AI_LONGITUDINAL_SUMMARY')}</h3>
           <div className="alert-panel">
-            <strong>AI Assessment</strong>
+            <strong>{t('AI_ASSESSMENT')}</strong>
             <p className="muted">{summary.summary}</p>
           </div>
           {summary.recommendations?.length > 0 && (
             <div style={{ marginTop: '1rem' }}>
-              <h4>Recommendations</h4>
+              <h4>{t('AI_RECOMMENDATIONS')}</h4>
               <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
                 {summary.recommendations.map((r) => <li key={r}>{r}</li>)}
               </ul>
@@ -135,7 +137,7 @@ export default function AIAnalysis() {
           )}
           {summary.sources && (
             <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
-              Sources: {summary.sources.join(', ')}
+              {t('AI_SOURCES')} {summary.sources.join(', ')}
             </p>
           )}
         </section>

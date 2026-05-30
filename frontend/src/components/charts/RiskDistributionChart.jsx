@@ -1,4 +1,5 @@
 import { Doughnut } from 'react-chartjs-2'
+import { useLocale } from '../../context/LocaleContext'
 
 const options = {
   responsive: true,
@@ -24,10 +25,11 @@ const options = {
 }
 
 export default function RiskDistributionChart({ distributionData }) {
+  const { t } = useLocale()
   const values = distributionData || [47, 62, 248]
 
   const data = {
-    labels: ['High Risk', 'Moderate Risk', 'Low Risk'],
+    labels: [t('CHART_HIGH_RISK'), t('CHART_MODERATE_RISK'), t('CHART_LOW_RISK')],
     datasets: [
       {
         data: values,

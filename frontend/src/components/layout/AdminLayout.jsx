@@ -1,17 +1,20 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import { useLocale } from '../../context/LocaleContext'
+import LanguageToggle from '../LanguageToggle'
 
 const sidebarLinks = [
-  { label: 'Dashboard', to: '/admin', icon: '' },
-  { label: 'Users', to: '/admin/users', icon: '' },
-  { label: 'Patients', to: '/admin/patients', icon: '' },
-  { label: 'Analytics', to: '/admin/analytics', icon: '' },
-  { label: 'Reports', to: '/admin/reports', icon: '' },
-  { label: 'Settings', to: '/admin/settings', icon: '' },
+  { key: 'SIDEBAR_DASHBOARD', to: '/admin', icon: '' },
+  { key: 'SIDEBAR_USERS', to: '/admin/users', icon: '' },
+  { key: 'SIDEBAR_PATIENTS', to: '/admin/patients', icon: '' },
+  { key: 'SIDEBAR_ANALYTICS', to: '/admin/analytics', icon: '' },
+  { key: 'SIDEBAR_REPORTS', to: '/admin/reports', icon: '' },
+  { key: 'SIDEBAR_SETTINGS', to: '/admin/settings', icon: '' },
 ]
 
 export default function AdminLayout({ title, children }) {
   const { connectivity, currentUser, logout } = useApp()
+  const { t } = useLocale()
   const navigate = useNavigate()
   const initials = currentUser ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AD'
 
@@ -26,7 +29,7 @@ export default function AdminLayout({ title, children }) {
       <aside className="sidebar">
         <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-          <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
+          <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>{t('BRAND_NAME')}</span>
         </div>
 
         <nav className="sidebar-nav">
@@ -37,7 +40,7 @@ export default function AdminLayout({ title, children }) {
               end={link.to === '/admin'}
               className={({ isActive }) => (isActive ? 'active' : '')}
             >
-              <span>{link.label}</span>
+              <span>{t(link.key)}</span>
             </NavLink>
           ))}
           <button
@@ -49,17 +52,20 @@ export default function AdminLayout({ title, children }) {
             onFocus={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
             onBlur={(e) => e.currentTarget.style.background = 'transparent'}
           >
-            <span>Logout</span>
+            <span>{t('LOGOUT')}</span>
           </button>
         </nav>
 
         {/* ── Sidebar Info Card ── */}
         <div className="info-card">
+          <div style={{ marginBottom: '8px' }}>
+            <LanguageToggle />
+          </div>
           <p className="muted" style={{ fontSize: '0.75rem' }}>
-            PulseGuard AI v1.0.0
+            {t('ADMIN_SIDEBAR_VERSION')}
           </p>
           <p className="muted" style={{ fontSize: '0.75rem' }}>
-            Offline-First Maternal Healthcare
+            {t('ADMIN_SIDEBAR_TAGLINE')}
           </p>
         </div>
       </aside>
@@ -68,16 +74,16 @@ export default function AdminLayout({ title, children }) {
       <div className="admin-content">
         <header className="admin-header">
           <div>
-            <h1 className="page-title">{title || 'Dashboard'}</h1>
-            <p className="muted">PulseGuard AI, Admin Console</p>
+            <h1 className="page-title">{title || t('ADMIN_DASHBOARD_TITLE')}</h1>
+            <p className="muted">{t('ADMIN_SUBTITLE')}</p>
           </div>
           <div className="top-actions">
             <span className={`badge badge--${connectivity}`}>
-              {connectivity === 'online' && 'Online'}
-              {connectivity === 'offline' && 'Offline'}
-              {connectivity === 'syncing' && 'Syncing'}
+              {connectivity === 'online' && t('ONLINE')}
+              {connectivity === 'offline' && t('OFFLINE')}
+              {connectivity === 'syncing' && t('SYNCING')}
             </span>
-            <button type="button" className="icon-btn" style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
+            <button type="button" className="icon-btn" style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>{t('ALERTS')}</button>
             <div className="avatar">{initials}</div>
           </div>
         </header>

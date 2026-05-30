@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import { useLocale } from '../../context/LocaleContext'
+import LanguageToggle from '../LanguageToggle'
 
 export default function MobileLayout({ title, status, banner, children, navItems }) {
   const { connectivity, toggleConnectivity, currentUser, logout, notifications } = useApp()
+  const { t } = useLocale()
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
 
@@ -47,7 +50,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
         <aside className="desktop-sidebar">
           <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
             <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
+            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>{t('BRAND_NAME')}</span>
           </div>
 
           <nav className="desktop-sidebar-nav">
@@ -58,7 +61,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
                 className={({ isActive }) => (isActive ? 'active' : '')}
               >
                 <span>{item.icon}</span>
-                <span>{item.label}</span>
+                <span>{t(item.label)}</span>
               </NavLink>
             ))}
             <button
@@ -70,7 +73,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
               onFocus={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
               onBlur={(e) => e.currentTarget.style.background = 'transparent'}
             >
-              <span>Logout</span>
+              <span>{t('LOGOUT')}</span>
             </button>
           </nav>
         </aside>
@@ -85,18 +88,19 @@ export default function MobileLayout({ title, status, banner, children, navItems
           </div>
           <div className="top-center">{title}</div>
           <div className="top-actions">
+            <LanguageToggle />
             <button
               type="button"
               className={`badge badge--${currentStatus}`}
               onClick={toggleConnectivity}
               style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
-              title="Click to toggle connectivity state"
+              title={t('TOGGLE_CONNECTIVITY')}
             >
-              {currentStatus === 'online' && 'Online'}
-              {currentStatus === 'offline' && 'Offline'}
-              {currentStatus === 'syncing' && 'Syncing'}
+              {currentStatus === 'online' && t('ONLINE')}
+              {currentStatus === 'offline' && t('OFFLINE')}
+              {currentStatus === 'syncing' && t('SYNCING')}
             </button>
-            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}>Alerts</button>
+            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}>{t('ALERTS')}</button>
             <div className="avatar">{initials}</div>
           </div>
         </header>
@@ -105,22 +109,23 @@ export default function MobileLayout({ title, status, banner, children, navItems
         <header className="desktop-header">
           <div>
             <h1 className="page-title">{title}</h1>
-            <p className="muted">PulseGuard AI: {currentUser?.role === 'worker' ? 'Maternal Health Worker Portal' : 'Patient Portal'}</p>
+            <p className="muted">{t('MOBILE_SUBTITLE_PREFIX')} {currentUser?.role === 'worker' ? t('MOBILE_SUBTITLE_WORKER') : t('MOBILE_SUBTITLE_PATIENT')}</p>
           </div>
           <div className="top-actions">
+            <LanguageToggle />
             <button
               type="button"
               className={`badge badge--${currentStatus}`}
               onClick={toggleConnectivity}
               style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
-              title="Click to toggle connectivity state"
+              title={t('TOGGLE_CONNECTIVITY')}
             >
-              {currentStatus === 'online' && 'Online'}
-              {currentStatus === 'offline' && 'Offline'}
-              {currentStatus === 'syncing' && 'Syncing'}
+              {currentStatus === 'online' && t('ONLINE')}
+              {currentStatus === 'offline' && t('OFFLINE')}
+              {currentStatus === 'syncing' && t('SYNCING')}
             </button>
-            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
-            <NavLink to={navItems.filter(item => item.label == 'Profile')[0].to}>
+            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>{t('ALERTS')}</button>
+            <NavLink to={navItems.find(item => item.label === 'NAV_PROFILE' || item.to.includes('profile'))?.to || '#'}>
               <div className="avatar">{initials}</div>
             </NavLink> 
           </div>
@@ -150,7 +155,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
                   navigate('/worker/alerts')
                 }}
               >
-                Respond
+                {t('RESPOND')}
               </button>
               <button
                 type="button"
@@ -177,7 +182,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
         {banner && (
           <section className={`status-banner status-banner--${banner.tone}`} style={{ marginBottom: '1.5rem' }}>
             <div>
-              <strong>{banner.title || 'Status'}</strong>
+              <strong>{banner.title || t('BANNER_DEFAULT_TITLE')}</strong>
               <span className="muted"> &ndash; {banner.message}</span>
             </div>
             {banner.action && (
@@ -202,7 +207,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
                 className={({ isActive }) => (isActive ? 'active' : '')}
               >
                 <span>{item.icon}</span>
-                <span>{item.label}</span>
+                <span>{t(item.label)}</span>
               </NavLink>
             ))}
           </nav>

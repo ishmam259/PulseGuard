@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
+import { useLocale } from '../../context/LocaleContext'
 import * as api from '../../services/api'
 import { patientNavItems, workerNavItems } from '../../data/navItems'
 
 export default function Profile() {
   const { currentUser, setCurrentUser, logout, connectivity } = useApp()
+  const { t } = useLocale()
   const navigate = useNavigate()
   const [patient, setPatient] = useState(null)
   const [patientCount, setPatientCount] = useState(0)
@@ -81,7 +83,7 @@ export default function Profile() {
 
   const handleSaveProfile = async () => {
     if (!editForm.name.trim()) {
-      setError('Name is required')
+      setError(t('PROFILE_ERROR_NAME_REQUIRED'))
       return
     }
 
@@ -98,7 +100,7 @@ export default function Profile() {
       })
 
       if (!userRes.ok) {
-        throw new Error(userRes.error || 'Failed to update user profile details')
+        throw new Error(userRes.error || t('PROFILE_ERROR_UPDATE_USER'))
       }
 
       // 2. If patient, update patient details (village, gestational_week)
@@ -109,7 +111,7 @@ export default function Profile() {
         })
 
         if (!patientRes.ok) {
-          throw new Error(patientRes.error || 'Failed to update patient details')
+          throw new Error(patientRes.error || t('PROFILE_ERROR_UPDATE_PATIENT'))
         }
 
         // Update local patient state
@@ -119,10 +121,10 @@ export default function Profile() {
       // 3. Update current user in context
       setCurrentUser(userRes.user)
 
-      setSuccess('Profile updated successfully!')
+      setSuccess(t('PROFILE_SUCCESS_UPDATED'))
       setIsEditing(false)
     } catch (err) {
-      setError(err.message || 'An error occurred while saving profile.')
+      setError(err.message || t('PROFILE_ERROR_GENERIC'))
     } finally {
       setSaving(false)
     }
@@ -136,7 +138,7 @@ export default function Profile() {
 
   return (
     <MobileLayout
-      title="Profile"
+      title={t('PROFILE_PAGE_TITLE')}
       status={connectivity}
       navItems={navItems}
     >
@@ -177,60 +179,60 @@ export default function Profile() {
           <div className="avatar large profile-modal-overlay">
             {getInitials(currentUser?.name)}
           </div>
-          <h2 className="text-gradient" style={{ fontSize: '1.6rem', marginBottom: '0.25rem' }}>{currentUser?.name || 'User Profile'}</h2>
+          <h2 className="text-gradient" style={{ fontSize: '1.6rem', marginBottom: '0.25rem' }}>{currentUser?.name || t('PROFILE_FALLBACK_NAME')}</h2>
           <p className="muted" style={{ textTransform: 'capitalize', fontWeight: '600', fontSize: '0.9rem' }}>
-            {currentUser?.role || 'Guest'}
+            {currentUser?.role || t('ROLE_GUEST')}
           </p>
           {isPatient && patient && (
-            <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>Patient ID: PG-{patient.id.slice(0, 8).toUpperCase()}</p>
+            <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>{t('PROFILE_PATIENT_ID', { id: 'PG-' + patient.id.slice(0, 8).toUpperCase() })}</p>
           )}
           {isWorker && (
-            <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>Health Worker ID: HW-{currentUser?.id.slice(0, 8).toUpperCase()}</p>
+            <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>{t('PROFILE_WORKER_ID', { id: 'HW-' + currentUser?.id.slice(0, 8).toUpperCase() })}</p>
           )}
         </div>
 
         {/* Details or Edit Form based on state */}
         <div className="card" style={{ marginTop: '1.25rem', padding: '1.5rem' }}>
-          <h3 style={{ marginBottom: '0.25rem' }}>{isEditing ? 'Edit Profile' : 'Profile Details'}</h3>
+          <h3 style={{ marginBottom: '0.25rem' }}>{isEditing ? t('PROFILE_EDIT_HEADING') : t('PROFILE_DETAILS_HEADING')}</h3>
           
           {loading ? (
-            <p className="muted text-center" style={{ padding: '1rem 0' }}>Loading profile details…</p>
+            <p className="muted text-center" style={{ padding: '1rem 0' }}>{t('PROFILE_LOADING')}</p>
           ) : isEditing ? (
             /* ── Edit Profile Form ── */
             <div className="form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
               <label>
-                Full Name *
+                {t('PROFILE_FULL_NAME_LABEL')} *
                 <div className="input-wrapper">
                   <input
                     type="text"
                     className="input"
                     value={editForm.name}
                     onChange={handleChange('name')}
-                    placeholder="Enter your name"
+                    placeholder={t('PROFILE_NAME_PLACEHOLDER')}
                   />
                 </div>
               </label>
               <label>
-                Email Address
+                {t('PROFILE_EMAIL_LABEL')}
                 <div className="input-wrapper">
                   <input
                     type="email"
                     className="input"
                     value={editForm.email}
                     onChange={handleChange('email')}
-                    placeholder="e.g. name@domain.com"
+                    placeholder={t('PROFILE_EMAIL_PLACEHOLDER')}
                   />
                 </div>
               </label>
               <label>
-                Phone Number
+                {t('PROFILE_PHONE_LABEL')}
                 <div className="input-wrapper">
                   <input
                     type="text"
                     className="input"
                     value={editForm.phone}
                     onChange={handleChange('phone')}
-                    placeholder="e.g. +880123456789"
+                    placeholder={t('PROFILE_PHONE_PLACEHOLDER')}
                   />
                 </div>
               </label>
@@ -238,26 +240,26 @@ export default function Profile() {
               {isPatient && patient && (
                 <>
                   <label>
-                    Village Clinic Area
+                    {t('PROFILE_VILLAGE_LABEL')}
                     <div className="input-wrapper">
                       <input
                         type="text"
                         className="input"
                         value={editForm.village}
                         onChange={handleChange('village')}
-                        placeholder="e.g. Village A"
+                        placeholder={t('PROFILE_VILLAGE_PLACEHOLDER')}
                       />
                     </div>
                   </label>
                   <label>
-                    Gestational Pregnancy Week
+                    {t('PROFILE_GESTATIONAL_WEEK_LABEL')}
                     <div className="input-wrapper">
                       <input
                         type="number"
                         className="input"
                         value={editForm.gestational_week}
                         onChange={handleChange('gestational_week')}
-                        placeholder="e.g. 24"
+                        placeholder={t('PROFILE_GESTATIONAL_WEEK_PLACEHOLDER')}
                         min="1"
                         max="45"
                       />
@@ -271,78 +273,78 @@ export default function Profile() {
             isPatient && patient ? (
               <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Pregnancy Week</span>
-                  <span className="profile-detail-value--accent">{patient.gestational_week || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_PREGNANCY_WEEK')}</span>
+                  <span className="profile-detail-value--accent">{patient.gestational_week || t('FALLBACK_NA')}</span>
                 </div>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Risk Level</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_RISK_LEVEL')}</span>
                   <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.25rem', alignSelf: 'flex-start' }}>
-                    {patient.risk_level || 'Low'}
+                    {patient.risk_level || t('RISK_LOW')}
                   </span>
                 </div>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Village</span>
-                  <span className="profile-detail-value">{patient.village || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_VILLAGE')}</span>
+                  <span className="profile-detail-value">{patient.village || t('FALLBACK_NA')}</span>
                 </div>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Phone</span>
-                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_PHONE')}</span>
+                  <span className="profile-detail-value">{currentUser?.phone || t('FALLBACK_NA')}</span>
                 </div>
                 <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
-                  <span className="profile-detail-label">Email</span>
-                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_EMAIL')}</span>
+                  <span className="profile-detail-value--muted">{currentUser?.email || t('FALLBACK_NA')}</span>
                 </div>
               </div>
             ) : isWorker ? (
               <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Assigned Patients</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_ASSIGNED_PATIENTS')}</span>
                   <span className="profile-detail-value--accent">{patientCount}</span>
                 </div>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Phone</span>
-                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_PHONE')}</span>
+                  <span className="profile-detail-value">{currentUser?.phone || t('FALLBACK_NA')}</span>
                 </div>
                 <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
-                  <span className="profile-detail-label">Email</span>
-                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_EMAIL')}</span>
+                  <span className="profile-detail-value--muted">{currentUser?.email || t('FALLBACK_NA')}</span>
                 </div>
               </div>
             ) : isAdmin ? (
               <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">System Role</span>
-                  <span className="profile-detail-value">Administrator</span>
+                  <span className="profile-detail-label">{t('PROFILE_ADMIN_SYSTEM_ROLE')}</span>
+                  <span className="profile-detail-value">{t('ROLE_ADMIN')}</span>
                 </div>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Phone</span>
-                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_PHONE')}</span>
+                  <span className="profile-detail-value">{currentUser?.phone || t('FALLBACK_NA')}</span>
                 </div>
                 <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
-                  <span className="profile-detail-label">Email</span>
-                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_EMAIL')}</span>
+                  <span className="profile-detail-value--muted">{currentUser?.email || t('FALLBACK_NA')}</span>
                 </div>
               </div>
             ) : (
               <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
                 <div className="profile-detail-card" style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-start' }}>
-                  <span className="profile-detail-label">Profile Status</span>
-                  <span className="profile-detail-value">Pending Registration Completion</span>
+                  <span className="profile-detail-label">{t('PROFILE_STATUS_LABEL')}</span>
+                  <span className="profile-detail-value">{t('PROFILE_STATUS_PENDING')}</span>
                   <button type="button"
                     className="btn btn--primary btn--sm" 
                     style={{ marginTop: '0.5rem', fontSize: '0.85rem', padding: '8px 16px' }}
                     onClick={() => navigate('/patient/onboarding')}
                   >
-                    Complete Registration
+                    {t('PROFILE_COMPLETE_REGISTRATION')}
                   </button>
                 </div>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Phone</span>
-                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_PHONE')}</span>
+                  <span className="profile-detail-value">{currentUser?.phone || t('FALLBACK_NA')}</span>
                 </div>
                 <div className="profile-detail-card">
-                  <span className="profile-detail-label">Email</span>
-                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+                  <span className="profile-detail-label">{t('PROFILE_DETAIL_EMAIL')}</span>
+                  <span className="profile-detail-value--muted">{currentUser?.email || t('FALLBACK_NA')}</span>
                 </div>
               </div>
             )
@@ -360,7 +362,7 @@ export default function Profile() {
                 onClick={handleSaveProfile}
                 disabled={saving}
               >
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? t('PROFILE_SAVING') : t('PROFILE_SAVE_CHANGES')}
               </button>
               <button
                 type="button"
@@ -369,16 +371,16 @@ export default function Profile() {
                 onClick={() => setIsEditing(false)}
                 disabled={saving}
               >
-                Cancel
+                {t('CANCEL')}
               </button>
             </>
           ) : (
             <>
               <button type="button" className="btn btn--secondary" style={{ flex: 1 }} onClick={handleStartEdit}>
-                Edit Profile
+                {t('PROFILE_EDIT_BTN')}
               </button>
               <button type="button" className="btn btn--ghost" style={{ flex: 1 }} onClick={handleLogout}>
-                Logout
+                {t('LOGOUT')}
               </button>
             </>
           )}

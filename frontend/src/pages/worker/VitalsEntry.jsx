@@ -2,18 +2,12 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
+import { useLocale } from '../../context/LocaleContext'
 
 export default function VitalsEntry() {
   const { patientId } = useParams()
   const navigate = useNavigate()
+  const { t } = useLocale()
   const [patients, setPatients] = useState([])
   const [selectedPatient, setSelectedPatient] = useState(patientId || '')
   const [form, setForm] = useState({
@@ -22,6 +16,14 @@ export default function VitalsEntry() {
   const [result, setResult] = useState(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+
+  const workerNavItems = [
+    { label: t('NAV_HOME'), to: '/worker/dashboard', icon: '' },
+    { label: t('NAV_PATIENTS'), to: '/worker/patients', icon: '' },
+    { label: t('NAV_AI'), to: '/worker/ai-analysis', icon: '' },
+    { label: t('NAV_SYNC'), to: '/worker/sync', icon: '' },
+    { label: t('NAV_PROFILE'), to: '/worker/profile', icon: '' },
+  ]
 
   useEffect(() => {
     const load = async () => {
@@ -40,7 +42,7 @@ export default function VitalsEntry() {
   const handleSave = async () => {
     setError('')
     if (!selectedPatient || !form.bp_systolic || !form.bp_diastolic) {
-      setError('Please select a patient and enter BP readings')
+      setError(t('VITALS_VALIDATION_ERROR'))
       return
     }
     setSaving(true)
@@ -58,18 +60,18 @@ export default function VitalsEntry() {
         setResult(res)
         setForm({ bp_systolic: '', bp_diastolic: '', weight_kg: '', pulse: '', temperature_c: '', symptoms: '' })
       } else {
-        setError(res.error || 'Failed to save vitals')
+        setError(res.error || t('VITALS_SAVE_FAILED'))
       }
     } catch {
-      setError('Connection failed. Please try again.')
+      setError(t('ERROR_CONNECTION_FAILED'))
     }
     setSaving(false)
   }
 
   return (
-    <MobileLayout title="Record Vitals" navItems={workerNavItems}>
+    <MobileLayout title={t('VITALS_PAGE_TITLE')} navItems={workerNavItems}>
       <section className="card animate-fade-in">
-        <h3>Vitals Input</h3>
+        <h3>{t('VITALS_INPUT_HEADING')}</h3>
 
         {error && (
           <div className="alert-panel" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)', marginBottom: '1rem' }}>
@@ -79,70 +81,70 @@ export default function VitalsEntry() {
 
         <div className="form-grid">
           <label>
-            Patient
+            {t('VITALS_PATIENT_LABEL')}
             <div className="input-wrapper">
               <select className="input" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)}>
-                <option value="">Select patient…</option>
+                <option value="">{t('VITALS_SELECT_PATIENT')}</option>
                 {patients.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}, Week {p.gestational_week || '?'}</option>
+                  <option key={p.id} value={p.id}>{p.name}, {t('WEEK')} {p.gestational_week || '?'}</option>
                 ))}
               </select>
             </div>
           </label>
           <label>
-            BP Systolic (mmHg) *
+            {t('VITALS_BP_SYSTOLIC_LABEL')}
             <div className="input-wrapper">
-              <input className="input" type="number" placeholder="120" value={form.bp_systolic} onChange={handleChange('bp_systolic')} />
+              <input className="input" type="number" placeholder={t('VITALS_BP_SYSTOLIC_PLACEHOLDER')} value={form.bp_systolic} onChange={handleChange('bp_systolic')} />
             </div>
           </label>
           <label>
-            BP Diastolic (mmHg) *
+            {t('VITALS_BP_DIASTOLIC_LABEL')}
             <div className="input-wrapper">
-              <input className="input" type="number" placeholder="80" value={form.bp_diastolic} onChange={handleChange('bp_diastolic')} />
+              <input className="input" type="number" placeholder={t('VITALS_BP_DIASTOLIC_PLACEHOLDER')} value={form.bp_diastolic} onChange={handleChange('bp_diastolic')} />
             </div>
           </label>
           <label>
-            Weight (kg)
+            {t('VITALS_WEIGHT_LABEL')}
             <div className="input-wrapper">
-              <input className="input" type="number" step="0.1" placeholder="62.0" value={form.weight_kg} onChange={handleChange('weight_kg')} />
+              <input className="input" type="number" step="0.1" placeholder={t('VITALS_WEIGHT_PLACEHOLDER')} value={form.weight_kg} onChange={handleChange('weight_kg')} />
             </div>
           </label>
           <label>
-            Pulse (bpm)
+            {t('VITALS_PULSE_LABEL')}
             <div className="input-wrapper">
-              <input className="input" type="number" placeholder="78" value={form.pulse} onChange={handleChange('pulse')} />
+              <input className="input" type="number" placeholder={t('VITALS_PULSE_PLACEHOLDER')} value={form.pulse} onChange={handleChange('pulse')} />
             </div>
           </label>
           <label>
-            Temperature (°C)
+            {t('VITALS_TEMP_LABEL')}
             <div className="input-wrapper">
-              <input className="input" type="number" step="0.1" placeholder="36.8" value={form.temperature_c} onChange={handleChange('temperature_c')} />
+              <input className="input" type="number" step="0.1" placeholder={t('VITALS_TEMP_PLACEHOLDER')} value={form.temperature_c} onChange={handleChange('temperature_c')} />
             </div>
           </label>
           <label>
-            Symptoms (comma-separated)
+            {t('VITALS_SYMPTOMS_LABEL')}
             <div className="input-wrapper">
-              <input className="input" placeholder="Headache, fatigue, swelling..." value={form.symptoms} onChange={handleChange('symptoms')} />
+              <input className="input" placeholder={t('VITALS_SYMPTOMS_PLACEHOLDER')} value={form.symptoms} onChange={handleChange('symptoms')} />
             </div>
           </label>
         </div>
 
         {result && (
           <div className="alert-panel" style={{ background: 'rgba(16,185,129,0.1)', borderColor: 'rgba(16,185,129,0.3)', marginTop: '1rem' }}>
-            <strong style={{ color: 'var(--color-success)' }}>Vitals saved successfully</strong>
+            <strong style={{ color: 'var(--color-success)' }}>{t('VITALS_SAVED_SUCCESS')}</strong>
             <p className="muted">
-              Risk Score: {((result.riskScore || 0) * 100).toFixed(0)}% | Level: {result.riskLevel || 'low'}
+              {t('VITALS_RISK_SCORE')} {((result.riskScore || 0) * 100).toFixed(0)}% | {t('VITALS_LEVEL')} {t('RISK_' + (result.riskLevel || 'low').toUpperCase())}
             </p>
           </div>
         )}
 
         <div className="button-row">
           <button className="btn btn--primary" type="button" onClick={handleSave} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Vitals'}
+            {saving ? t('VITALS_SAVING') : t('VITALS_SAVE')}
           </button>
           {selectedPatient && (
             <button className="btn btn--ghost" type="button" onClick={() => navigate(`/worker/patient/${selectedPatient}`)}>
-              ← Back to Patient
+              {t('VITALS_BACK_TO_PATIENT')}
             </button>
           )}
         </div>

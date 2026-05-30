@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
+import { useLocale } from '../../context/LocaleContext'
 import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
 
 export default function Reports() {
+  const { t } = useLocale()
   const patientsRef = useRef([])
   const [loading, setLoading] = useState(true)
 
@@ -34,7 +36,7 @@ export default function Reports() {
 
   const handleExport = (reportId) => {
     if (patientsRef.current.length === 0) {
-      alert('No patient data available to export.')
+      alert(t('REPORTS_NO_DATA'))
       return
     }
 
@@ -73,39 +75,39 @@ export default function Reports() {
   const reports = [
     {
       id: 'rpt-1',
-      title: 'Maternal Health Report',
-      description: 'Comprehensive monthly summary of maternal health outcomes, risk distributions, and intervention effectiveness across all regions.',
+      title: t('REPORT_MATERNAL_HEALTH'),
+      description: t('REPORT_MATERNAL_HEALTH_DESC'),
       icon: '',
       lastGenerated: new Date().toLocaleDateString(),
     },
     {
       id: 'rpt-2',
-      title: 'Risk Analysis Report',
-      description: 'AI-powered risk prediction breakdown including preeclampsia, anemia, and gestational diabetes detection rates.',
+      title: t('REPORT_RISK_ANALYSIS'),
+      description: t('REPORT_RISK_ANALYSIS_DESC'),
       icon: '',
       lastGenerated: new Date().toLocaleDateString(),
     },
     {
       id: 'rpt-3',
-      title: 'Field Activity Report',
-      description: 'Health worker performance summary — visits completed, patients served, sync compliance, and response times.',
+      title: t('REPORT_FIELD_ACTIVITY'),
+      description: t('REPORT_FIELD_ACTIVITY_DESC'),
       icon: '',
       lastGenerated: new Date().toLocaleDateString(),
     },
     {
       id: 'rpt-4',
-      title: 'Sync Status Report',
-      description: 'Offline device analytics, sync success rates, conflict resolution metrics, and data integrity audit.',
+      title: t('REPORT_SYNC_STATUS'),
+      description: t('REPORT_SYNC_STATUS_DESC'),
       icon: '',
       lastGenerated: new Date().toLocaleDateString(),
     },
   ]
 
   return (
-    <AdminLayout title="Reports">
+    <AdminLayout title={t('REPORTS_TITLE')}>
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem' }}>
-          <p className="muted">Loading reports definitions…</p>
+          <p className="muted">{t('REPORTS_LOADING')}</p>
         </div>
       ) : (
         <section className="grid two stagger">
@@ -115,7 +117,7 @@ export default function Reports() {
               <h3>{report.title}</h3>
               <p className="muted" style={{ marginBottom: 'var(--spacing-3)' }}>{report.description}</p>
               <p className="muted" style={{ fontSize: '12px', marginBottom: 'var(--spacing-3)' }}>
-                Last generated: {report.lastGenerated}
+                {t('REPORTS_LAST_GENERATED')} {report.lastGenerated}
               </p>
               <div className="button-row">
                 <button
@@ -123,7 +125,7 @@ export default function Reports() {
                   type="button"
                   onClick={() => handleExport(report.id)}
                 >
-                  Export CSV
+                  {t('REPORTS_EXPORT_CSV')}
                 </button>
               </div>
             </div>
