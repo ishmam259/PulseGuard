@@ -11,8 +11,8 @@ const CORS_ORIGINS = ['http://localhost:5173', 'http://localhost:3000'];
 
 if(process.env.CORS_ALLOWED_ORIGIN) {
   let CORS_ALLOWED_ORIGIN = process.env.CORS_ALLOWED_ORIGIN;
-  CORS_ORIGINS.push(`http://{CORS_ALLOWED_ORIGIN}:5173`);
-  CORS_ORIGINS.push(`http://{CORS_ALLOWED_ORIGIN}:3000`);
+  CORS_ORIGINS.push(`http://${CORS_ALLOWED_ORIGIN}:5173`);
+  CORS_ORIGINS.push(`http://${CORS_ALLOWED_ORIGIN}:3000`);
 }
 
 console.log('Allowed CORS origins: ', CORS_ORIGINS);
