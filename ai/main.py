@@ -120,7 +120,7 @@ async def chat(req: ChatRequest):
 
     return {
         "response": response,
-        "model": "openrouter_llem",
+        "model": "groq_llama3",
         "language": req.language,
         "offline_capable": True,
     }
@@ -175,7 +175,7 @@ async def summary(req: SummaryRequest):
         "summary": response_json["summary"],
         "recommendations": response_json["recommendations"],
         "data_points_analyzed": response_json["data_points_analyzed"],
-        "model": "openrouter_llm",
+        "model": "groq_llama3",
         "sources": response_json["sources"],
     }
 
