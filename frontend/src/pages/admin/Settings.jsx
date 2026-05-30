@@ -18,6 +18,7 @@ const settingsCards = [
     description: 'Set risk prediction thresholds, model selection (XGBoost/Llama 3), and alert sensitivity levels.',
     buttonText: 'Configure AI',
     buttonClass: 'btn--primary',
+    path: '/admin/ai-config',
   },
   {
     id: 'set-3',
@@ -25,14 +26,6 @@ const settingsCards = [
     title: 'Offline & Sync Settings',
     description: 'Configure sync frequency, conflict resolution mode (auto-merge vs manual), and storage limits.',
     buttonText: 'Update Settings',
-    buttonClass: 'btn--secondary',
-  },
-  {
-    id: 'set-4',
-    icon: '',
-    title: 'Language Settings',
-    description: 'Configure Bengali and English language support. Set default language for AI responses.',
-    buttonText: 'Manage Languages',
     buttonClass: 'btn--secondary',
   },
 ]
@@ -67,28 +60,7 @@ export default function Settings() {
         ))}
       </section>
 
-      {/* System Info */}
-      <section className="card animate-fade-in" style={{ animationDelay: '320ms', marginTop: 'var(--spacing-5)' }}>
-        <h3>System Information</h3>
-        <div className="summary-grid" style={{ marginTop: 'var(--spacing-4)' }}>
-          <div>
-            <p className="muted">Version</p>
-            <strong>PulseGuard v1.0.0</strong>
-          </div>
-          <div>
-            <p className="muted">Stack</p>
-            <strong>PERN + Python AI</strong>
-          </div>
-          <div>
-            <p className="muted">AI Models</p>
-            <strong>Llama 3 + XGBoost</strong>
-          </div>
-          <div>
-            <p className="muted">Database</p>
-            <strong>PostgreSQL + pgvector</strong>
-          </div>
-        </div>
-      </section>
+
     </AdminLayout>
   )
 }

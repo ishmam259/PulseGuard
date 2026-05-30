@@ -206,6 +206,13 @@ router.post('/:id/vitals', async (req, res) => {
     const patientData = await pool.query('SELECT gestational_week FROM patients WHERE id = $1', [req.params.id])
     const gestationalWeek = patientData.rows[0]?.gestational_week || 24
 
+    // Load dynamic AI config thresholds from DB
+    let cfg = { high_bp_systolic: 140, high_bp_diastolic: 90, moderate_bp_systolic: 130, moderate_bp_diastolic: 85, high_risk_cutoff: 0.70, moderate_risk_cutoff: 0.40, alert_threshold: 0.70 }
+    try {
+      const cfgResult = await pool.query('SELECT * FROM ai_config WHERE id = 1')
+      if (cfgResult.rows.length > 0) cfg = cfgResult.rows[0]
+    } catch { /* use defaults */ }
+
     // Call AI worker for risk prediction
     let riskScore = 0
     let riskLevel = 'low'
@@ -230,11 +237,11 @@ router.post('/:id/vitals', async (req, res) => {
         riskLevel = aiResult.risk_level
       }
     } catch {
-      // AI worker unavailable — use simple heuristic
-      if (data.bp_systolic >= 140 || data.bp_diastolic >= 90) {
-        riskScore = 0.8
+      // AI worker unavailable — use configurable heuristic thresholds
+      if (data.bp_systolic >= cfg.high_bp_systolic || data.bp_diastolic >= cfg.high_bp_diastolic) {
+        riskScore = 0.85
         riskLevel = 'high'
-      } else if (data.bp_systolic >= 130 || data.bp_diastolic >= 85) {
+      } else if (data.bp_systolic >= cfg.moderate_bp_systolic || data.bp_diastolic >= cfg.moderate_bp_diastolic) {
         riskScore = 0.5
         riskLevel = 'moderate'
       } else {
@@ -256,8 +263,8 @@ router.post('/:id/vitals', async (req, res) => {
       [riskLevel, riskScore, req.params.id]
     )
 
-    // Broadcast WebSocket alert if high risk
-    if (riskScore > 0.7 && req.app.locals.broadcast) {
+    // Broadcast WebSocket alert if high risk (uses configurable threshold)
+    if (riskScore > parseFloat(cfg.alert_threshold) && req.app.locals.broadcast) {
       req.app.locals.broadcast({
         type: 'risk_alert',
         patient_id: req.params.id,

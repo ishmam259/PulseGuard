@@ -36,6 +36,7 @@ import AdminAnalytics from './pages/admin/Analytics'
 import AdminReports from './pages/admin/Reports'
 import AdminSettings from './pages/admin/Settings'
 import AdminUsers from './pages/admin/Users'
+import AdminAIConfig from './pages/admin/AIConfig'
 
 function App() {
   return (
@@ -77,6 +78,7 @@ function App() {
         <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AdminReports /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['admin']}><AdminSettings /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['admin']}><AdminUsers /></ProtectedRoute>} />
+        <Route path="/admin/ai-config" element={<ProtectedRoute allowedRoles={['admin']}><AdminAIConfig /></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

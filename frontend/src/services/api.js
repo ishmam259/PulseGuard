@@ -277,3 +277,18 @@ export function connectWebSocket(onMessage) {
 
   return ws
 }
+
+// ── AI Config API ──
+
+export async function getAIConfig() {
+  const res = await apiFetch('/ai-config')
+  return res.ok ? (await res.json()).config : null
+}
+
+export async function updateAIConfig(data) {
+  const res = await apiFetch('/ai-config', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
