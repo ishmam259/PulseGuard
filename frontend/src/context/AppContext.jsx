@@ -32,8 +32,8 @@ export function AppProvider({ children }) {
   }, [])
 
   // Real login
-  const login = useCallback(async (email, password) => {
-    const result = await api.login({ email, password })
+  const login = useCallback(async (email, password, role) => {
+    const result = await api.login({ email, password, role })
     if (result.ok) {
       setCurrentUser(result.user)
     }

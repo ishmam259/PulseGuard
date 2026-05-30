@@ -119,6 +119,11 @@ export async function getPatients() {
   return res.ok ? (await res.json()).patients : []
 }
 
+export async function getMyPatientProfile() {
+  const res = await apiFetch('/patients/my-profile')
+  return res.ok ? await res.json() : { patient: null, latestVitals: null }
+}
+
 export async function getPatient(id) {
   const res = await apiFetch(`/patients/${id}`)
   return res.ok ? await res.json() : null

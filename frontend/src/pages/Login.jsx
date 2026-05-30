@@ -35,7 +35,7 @@ export default function Login() {
     }
     setSubmitting(true)
     try {
-      const result = await login(email, password)
+      const result = await login(email, password, role)
       if (result.ok) {
         navigate(dashRoute, { replace: true })
       } else {

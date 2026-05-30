@@ -14,6 +14,7 @@ const loginSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().optional(),
   password: z.string().min(1),
+  role: z.enum(['patient', 'worker', 'admin']).optional(),
 }).refine(data => data.email || data.phone, {
   message: 'Either email or phone is required',
 })
