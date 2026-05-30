@@ -11,11 +11,13 @@ router.use(authenticate)
 // GET /api/patients — List patients
 router.get('/', async (req, res) => {
   try {
-    let query, params
-
-    query = `SELECT * FROM users WHERE ROLE='patient';`
-
-    const result = await pool.query(query, params)
+    const query = `
+      SELECT p.*, u.name as worker_name 
+      FROM patients p 
+      LEFT JOIN users u ON u.id = p.assigned_worker 
+      ORDER BY p.name ASC;
+    `
+    const result = await pool.query(query)
     res.json({ patients: result.rows })
   } catch (err) {
     console.error('List patients error:', err)
@@ -109,10 +111,13 @@ router.post('/', async (req, res) => {
 // GET /api/patients/:id — Get single patient with latest vitals
 router.get('/:id', async (req, res) => {
   try {
-    const patientResult = await pool.query(
-      `SELECT * FROM users WHERE role='patient' AND id=$1`,
-      [req.params.id]
-    )
+    const query = `
+      SELECT p.*, u.name as worker_name 
+      FROM patients p 
+      LEFT JOIN users u ON u.id = p.assigned_worker 
+      WHERE p.id = $1;
+    `
+    const patientResult = await pool.query(query, [req.params.id])
 
     if (patientResult.rows.length === 0) {
       return res.status(404).json({ error: 'Patient not found' })
