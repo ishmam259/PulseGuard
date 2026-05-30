@@ -29,17 +29,20 @@ class OpenRouterModel(ILLMModel):
         self.model_name = model_name
         self.url = "https://api.groq.com/openai/v1/chat/completions"
 
-    def ask(self, prompt: str) -> str:
+    def ask(self, prompt: str, system_prompt: str = None) -> str:
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
 
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+
         payload = {
             "model": self.model_name,
-            "messages": [
-                {"role": "user", "content": prompt}
-            ]
+            "messages": messages
         }
 
         try:
