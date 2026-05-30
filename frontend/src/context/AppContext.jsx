@@ -101,6 +101,48 @@ export function AppProvider({ children }) {
     }
   }, [])
 
+  // Auto-sync background offline records when connection is restored
+  const syncOfflineQueue = useCallback(async () => {
+    if (!currentUser || connectivity !== 'online') return
+
+    const queueStr = localStorage.getItem('pg_offline_queue:v1')
+    if (!queueStr) return
+
+    try {
+      const queue = JSON.parse(queueStr)
+      if (queue.length === 0) return
+
+      console.log('PulseGuard: Found offline items. Starting background sync...', queue)
+      const res = await api.syncBatch(queue)
+      
+      if (res.ok) {
+        localStorage.removeItem('pg_offline_queue:v1')
+        console.log('PulseGuard: Offline items synchronized successfully!')
+        
+        // Add a beautiful in-app success toast notification
+        addNotification({
+          id: Date.now(),
+          type: 'success',
+          title: '🔄 Offline Sync Complete',
+          message: `${queue.length} offline record(s) synced to server successfully!`,
+          time: 'Just now',
+          read: false,
+        })
+      } else {
+        console.warn('PulseGuard: Sync batch failed:', res.error || res.message)
+      }
+    } catch (err) {
+      console.error('PulseGuard: Unexpected error during offline sync:', err)
+    }
+  }, [currentUser, connectivity, addNotification])
+
+  // Automatically trigger sync when coming online or logging in online
+  useEffect(() => {
+    if (connectivity === 'online' && currentUser) {
+      syncOfflineQueue()
+    }
+  }, [connectivity, currentUser, syncOfflineQueue])
+
   const value = {
     connectivity,
     currentUser,

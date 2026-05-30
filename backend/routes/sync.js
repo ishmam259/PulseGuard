@@ -8,13 +8,31 @@ const router = express.Router()
 router.use(authenticate)
 
 // POST /api/sync — Batch upload offline queue
-router.post('/', requireRole('worker', 'admin'), async (req, res) => {
+router.post('/', requireRole('worker', 'admin', 'patient'), async (req, res) => {
   try {
     const data = syncBatchSchema.parse(req.body)
     const results = { synced: [], conflicts: [], errors: [] }
 
+    let verifiedPatientId = null
+    if (req.user.role === 'patient') {
+      const patientCheck = await pool.query('SELECT id FROM patients WHERE user_id = $1', [req.user.id])
+      if (patientCheck.rows.length === 0) {
+        return res.status(403).json({ error: 'Patient profile not found. Cannot sync records.' })
+      }
+      verifiedPatientId = patientCheck.rows[0].id
+    }
+
     for (const item of data.items) {
       try {
+        if (req.user.role === 'patient' && item.patient_id !== verifiedPatientId) {
+          results.errors.push({
+            patient_id: item.patient_id,
+            type: item.type,
+            error: 'Forbidden: You can only synchronize your own medical records.',
+          })
+          continue
+        }
+
         if (item.type === 'vitals') {
           const synced = await syncVitals(item, req.user, req.app.locals.broadcast)
           if (synced.conflict) {

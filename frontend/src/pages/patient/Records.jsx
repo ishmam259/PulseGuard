@@ -11,11 +11,10 @@ export default function Records() {
   useEffect(() => {
     async function loadHistory() {
       try {
-        const patients = await api.getPatients()
-        if (patients && patients.length > 0) {
-          const mainPatient = patients[0]
-          setPatient(mainPatient)
-          const records = await api.getHistory(mainPatient.id)
+        const data = await api.getMyPatientProfile()
+        if (data && data.patient) {
+          setPatient(data.patient)
+          const records = await api.getHistory(data.patient.id)
           setHistory(records)
         }
       } catch (err) {
