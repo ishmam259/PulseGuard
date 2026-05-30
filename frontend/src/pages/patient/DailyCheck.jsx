@@ -8,7 +8,7 @@ import { patientNavItems } from '../../data/navItems'
 export default function DailyCheck() {
   const { connectivity } = useApp()
   const navigate = useNavigate()
-  const [patient, setPatient] = useState(null)
+  const [patientData, setPatientData] = useState(null)  // holds { patient, latestVitals }
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({
     bp: '',
@@ -24,11 +24,10 @@ export default function DailyCheck() {
   useEffect(() => {
     async function loadPatient() {
       try {
-        const patient = await api.getMyPatientProfile();
-        console.log(patient);
-        //alert(patients.length)
-        if (patient) {
-          setPatient(patient)
+        const data = await api.getMyPatientProfile()
+        // data = { patient: {...} | null, latestVitals: {...} | null }
+        if (data && data.patient) {
+          setPatientData(data)
         }
       } catch (err) {
         console.error('Failed to load patient for daily check:', err)
@@ -47,8 +46,8 @@ export default function DailyCheck() {
     setError('')
     setSuccess('')
 
-    if (!patient) {
-      setError('No patient profile found. Please register first.')
+    if (!patientData) {
+      setError('No patient profile found. Please complete your registration first.')
       return
     }
 
@@ -89,11 +88,10 @@ export default function DailyCheck() {
     }
 
     if (connectivity === 'offline' || isOfflineExplicit) {
-      // Save to local offline queue
       try {
         const queue = JSON.parse(localStorage.getItem('pg_offline_queue:v1') || '[]')
         queue.push({
-          patient_id: patient.patient.id,
+          patient_id: patientData.patient.id,
           type: 'vitals',
           data: payload,
           local_timestamp: new Date().toISOString(),
@@ -109,7 +107,7 @@ export default function DailyCheck() {
 
     setSaving(true)
     try {
-      const res = await api.addVitals(patient.patient.id, payload)
+      const res = await api.addVitals(patientData.patient.id, payload)
       if (res.ok) {
         setSuccess(`Daily check recorded! Risk status: ${res.riskLevel || 'low'}`)
         setForm({ bp: '', weight_kg: '', temperature_c: '', symptoms: '', pulse: '' })
@@ -140,7 +138,7 @@ export default function DailyCheck() {
           <div className="card text-center" style={{ padding: '2rem' }}>
             <p className="muted animate-pulse">Loading daily health check form…</p>
           </div>
-        ) : !patient ? (
+        ) : !patientData ? (
           <div className="card" style={{
             background: 'linear-gradient(135deg, rgba(36,174,124,0.12), rgba(121,181,236,0.06))',
             border: '1px solid rgba(36,174,124,0.3)',
@@ -165,7 +163,7 @@ export default function DailyCheck() {
           <div className="card">
             <h3 className="text-gradient">Record Today's Vitals</h3>
             <p className="muted">
-              {currentDateStr}, Pregnancy Week {patient.patient.gestational_week || 'N/A'}
+              {currentDateStr}, Pregnancy Week {patientData.patient.gestational_week || 'N/A'}
             </p>
 
             {error && (

@@ -29,6 +29,7 @@ services:
       AI_WORKER_URL: http://ai-worker:8000
       PORT: 5000
       NODE_ENV: production
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
 
   ai-worker:
     build: ./ai
@@ -42,7 +43,11 @@ services:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
 
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     ports:
       - "3000:3000"
     depends_on:
