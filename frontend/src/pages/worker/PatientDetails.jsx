@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
+import { useApp } from '../../context/AppContext'
+import { workerNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
-
-const tabs = ['Overview', 'Vitals', 'AI Insights', 'History']
+import $ from '../../config/strings'
 
 export default function PatientDetails() {
   const { id } = useParams()
+  const { locale } = useApp()
+
+  // Tab values stay in English internally for logic
+  const TABS = ['Overview', 'Vitals', 'AI Insights', 'History']
+  const tabLabels = {
+    'Overview':    () => $('W_DETAILS_TAB_OVERVIEW', locale),
+    'Vitals':      () => $('W_DETAILS_TAB_VITALS', locale),
+    'AI Insights': () => $('W_DETAILS_TAB_AI', locale),
+    'History':     () => $('W_DETAILS_TAB_HISTORY', locale),
+  }
+
   const [activeTab, setActiveTab] = useState('Overview')
   const [patient, setPatient] = useState(null)
   const [latestVitals, setLatestVitals] = useState(null)
@@ -53,16 +57,16 @@ export default function PatientDetails() {
 
   if (loading) {
     return (
-      <MobileLayout title="Patient Details" navItems={workerNavItems}>
-        <p className="muted" style={{ textAlign: 'center', padding: '3rem 0' }}>Loading patient…</p>
+      <MobileLayout title={$('W_PAGE_TITLE_PATIENT_DETAILS', locale)} navItems={workerNavItems(locale)}>
+        <p className="muted" style={{ textAlign: 'center', padding: '3rem 0' }}>{$('W_DETAILS_LOADING', locale)}</p>
       </MobileLayout>
     )
   }
 
   if (!patient) {
     return (
-      <MobileLayout title="Patient Details" navItems={workerNavItems}>
-        <p className="muted" style={{ textAlign: 'center', padding: '3rem 0' }}>Patient not found</p>
+      <MobileLayout title={$('W_PAGE_TITLE_PATIENT_DETAILS', locale)} navItems={workerNavItems(locale)}>
+        <p className="muted" style={{ textAlign: 'center', padding: '3rem 0' }}>{$('W_DETAILS_NOT_FOUND', locale)}</p>
       </MobileLayout>
     )
   }
@@ -72,27 +76,27 @@ export default function PatientDetails() {
   const riskScore = patient.risk_score || 0
 
   return (
-    <MobileLayout title="Patient Details" navItems={workerNavItems}>
+    <MobileLayout title={$('W_PAGE_TITLE_PATIENT_DETAILS', locale)} navItems={workerNavItems(locale)}>
       {/* ── Patient Header ── */}
       <section className="card animate-fade-in">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
           <div className="avatar large">{getInitials(patient.name)}</div>
           <div>
             <h3 style={{ margin: 0 }}>{patient.name}</h3>
-            <p className="muted">Age: {patient.age || '—'} • Week {patient.gestational_week || '—'}</p>
+            <p className="muted">{$('W_DETAILS_AGE_PREFIX', locale)} {patient.age || '—'} • {$('W_DETAILS_WEEK_PREFIX', locale)} {patient.gestational_week || '—'}</p>
           </div>
         </div>
 
         {/* ── Tabs ── */}
         <div className="tabs">
-          {tabs.map((tab) => (
+          {TABS.map((tab) => (
             <button
               key={tab}
               className={`tab${activeTab === tab ? ' active' : ''}`}
               type="button"
               onClick={() => setActiveTab(tab)}
             >
-              {tab}
+              {tabLabels[tab]()}
             </button>
           ))}
         </div>
@@ -102,30 +106,30 @@ export default function PatientDetails() {
           <div className="animate-fade-in">
             <div className="card-row">
               <div>
-                <p className="muted">Pregnancy Week</p>
+                <p className="muted">{$('W_DETAILS_PREG_WEEK', locale)}</p>
                 <div className="kpi">{patient.gestational_week || '—'}</div>
               </div>
               <span className={`badge badge--${riskLevel}`}>
-                {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)} Risk
+                {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)} {$('W_DETAILS_RISK_SUFFIX', locale)}
               </span>
             </div>
 
             {latestVitals && (
               <div className="summary-grid">
                 <div>
-                  <p className="muted">Blood Pressure</p>
+                  <p className="muted">{$('W_DETAILS_BP', locale)}</p>
                   <strong>{latestVitals.bp_systolic}/{latestVitals.bp_diastolic}</strong>
                 </div>
                 <div>
-                  <p className="muted">Weight</p>
+                  <p className="muted">{$('W_DETAILS_WEIGHT', locale)}</p>
                   <strong>{latestVitals.weight_kg || '—'} kg</strong>
                 </div>
                 <div>
-                  <p className="muted">Pulse</p>
+                  <p className="muted">{$('W_DETAILS_PULSE', locale)}</p>
                   <strong>{latestVitals.pulse || '—'} bpm</strong>
                 </div>
                 <div>
-                  <p className="muted">Temperature</p>
+                  <p className="muted">{$('W_DETAILS_TEMPERATURE', locale)}</p>
                   <strong>{latestVitals.temperature_c || '—'}°C</strong>
                 </div>
               </div>
@@ -133,7 +137,7 @@ export default function PatientDetails() {
 
             {riskLevel === 'high' && (
               <div className="alert-panel">
-                <strong>High Risk Alert</strong>
+                <strong>{$('W_DETAILS_HIGH_RISK_ALERT', locale)}</strong>
                 <p className="muted">
                   Patient shows elevated BP ({latestVitals?.bp_systolic}/{latestVitals?.bp_diastolic}).
                   Risk score: {(riskScore * 100).toFixed(0)}%; recommend immediate clinical referral.
@@ -154,7 +158,7 @@ export default function PatientDetails() {
         {/* ── Vitals Tab ── */}
         {activeTab === 'Vitals' && (
           <div className="animate-fade-in">
-            <h4>Vitals History</h4>
+            <h4>{$('W_DETAILS_VITALS_HEADING', locale)}</h4>
             <div className="list stagger">
               {history.map((v, i) => (
                 <div className="list-item" key={v.id || i}>
@@ -174,7 +178,7 @@ export default function PatientDetails() {
                 </div>
               ))}
               {history.length === 0 && (
-                <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>No vitals recorded yet</p>
+                <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>{$('W_DETAILS_VITALS_EMPTY', locale)}</p>
               )}
             </div>
           </div>
@@ -183,10 +187,10 @@ export default function PatientDetails() {
         {/* ── AI Insights Tab ── */}
         {activeTab === 'AI Insights' && (
           <div className="animate-fade-in">
-            <h4>Risk Assessment</h4>
+            <h4>{$('W_DETAILS_AI_HEADING', locale)}</h4>
             <div className="card-row">
               <div>
-                <p className="muted">AI Risk Score</p>
+                <p className="muted">{$('W_DETAILS_AI_RISK_SCORE', locale)}</p>
                 <div className="kpi" style={{
                   color: (aiResult?.risk_score || riskScore) >= 0.7 ? '#ef4444' : (aiResult?.risk_score || riskScore) >= 0.3 ? '#f59e0b' : '#10b981'
                 }}>
@@ -194,7 +198,7 @@ export default function PatientDetails() {
                 </div>
               </div>
               <span className={`badge badge--${aiResult?.risk_level || riskLevel}`}>
-                {(aiResult?.risk_level || riskLevel).charAt(0).toUpperCase() + (aiResult?.risk_level || riskLevel).slice(1)} Risk
+                {(aiResult?.risk_level || riskLevel).charAt(0).toUpperCase() + (aiResult?.risk_level || riskLevel).slice(1)} {$('W_DETAILS_RISK_SUFFIX', locale)}
               </span>
             </div>
 
@@ -225,13 +229,13 @@ export default function PatientDetails() {
 
             {aiResult?.preeclampsia_flag && (
               <div className="alert-panel" style={{ marginTop: '1rem' }}>
-                <strong style={{ color: '#ef4444' }}>Preeclampsia Flag</strong>
-                <p className="muted">AI model has flagged potential preeclampsia risk. Immediate clinical referral recommended.</p>
+                <strong style={{ color: '#ef4444' }}>{$('W_DETAILS_AI_PREECLAMPSIA_TITLE', locale)}</strong>
+                <p className="muted">{$('W_DETAILS_AI_PREECLAMPSIA_BODY', locale)}</p>
               </div>
             )}
 
             <p className="muted" style={{ marginTop: '1rem', fontSize: '0.8rem' }}>
-              Model: {aiResult?.model || 'Not yet analyzed'} • Click "Run AI Analysis" below to get fresh prediction
+              {$('W_DETAILS_AI_MODEL_PREFIX', locale)} {aiResult?.model || $('W_DETAILS_AI_NOT_YET', locale)} • {$('W_DETAILS_AI_MODEL_SUFFIX', locale)}
             </p>
           </div>
         )}
@@ -239,23 +243,23 @@ export default function PatientDetails() {
         {/* ── History Tab ── */}
         {activeTab === 'History' && (
           <div className="animate-fade-in">
-            <h4>Visit History</h4>
+            <h4>{$('W_DETAILS_HISTORY_HEADING', locale)}</h4>
             <div className="list stagger">
               {history.slice(0, 5).map((v, i) => (
                 <div className="list-item" key={v.id || i}>
                   <div>
                     <strong>{new Date(v.recorded_at).toLocaleDateString()}</strong>
-                    <p className="muted">{patient.village || 'Village'} • Recorded by {v.recorded_by_name || 'Worker'}</p>
+                    <p className="muted">{patient.village || 'Village'} • {$('W_DETAILS_HISTORY_VILLAGE_PREFIX', locale)} {v.recorded_by_name || 'Worker'}</p>
                   </div>
-                  <span className="badge badge--online">Complete</span>
+                  <span className="badge badge--online">{$('W_DETAILS_HISTORY_COMPLETE', locale)}</span>
                 </div>
               ))}
               {history.length === 0 && (
-                <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>No visit history</p>
+                <p className="muted" style={{ textAlign: 'center', padding: '1rem 0' }}>{$('W_DETAILS_HISTORY_EMPTY', locale)}</p>
               )}
             </div>
             <p className="muted" style={{ marginTop: '1rem', textAlign: 'center' }}>
-              Assigned Worker: {patient.worker_name || '—'}
+              {$('W_DETAILS_HISTORY_WORKER_PREFIX', locale)} {patient.worker_name || '—'}
             </p>
           </div>
         )}
@@ -264,10 +268,10 @@ export default function PatientDetails() {
       {/* ── Action Buttons ── */}
       <div className="button-row animate-fade-in">
         <Link className="btn btn--primary" to={`/worker/vitals/${patient.id}`}>
-          Record Vitals
+          {$('W_DETAILS_BTN_RECORD_VITALS', locale)}
         </Link>
         <button className="btn btn--secondary" type="button" onClick={handleRunAI}>
-          Run AI Analysis
+          {$('W_DETAILS_BTN_RUN_AI', locale)}
         </button>
       </div>
     </MobileLayout>

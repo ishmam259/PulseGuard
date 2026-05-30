@@ -5,15 +5,12 @@ import { chatMessages as initialMessages } from '../../data/mockData'
 import { patientNavItems } from '../../data/navItems'
 import ReactMarkdown from 'react-markdown';
 import $ from '../../config/strings'
+import { useApp } from '../../context/AppContext'
 
 const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
 
 export default function AIChat() {
-  /** For initial messages use this 
-  const [messages, setMessages] = useState(
-    () => initialMessages.map((m) => ({ ...m }))
-  )*/
-
+  const { locale, connectivity } = useApp()
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -39,7 +36,7 @@ export default function AIChat() {
       const aiMsg = {
         id: `m-${Date.now()}-ai`,
         role: 'ai',
-        text: response.response || response.reply || 'Sorry, I couldn\'t process that request.',
+        text: response.response || response.reply || $('AI_CHAT_ERR_FAILED', locale),
       }
       setMessages((prev) => [...prev, aiMsg])
     } catch (err) {
@@ -47,7 +44,7 @@ export default function AIChat() {
       const aiMsg = {
         id: `m-${Date.now()}-ai`,
         role: 'ai',
-        text: 'Sorry, the AI service is currently offline or unreachable. Please try again later.',
+        text: $('AI_CHAT_ERR_OFFLINE', locale),
       }
       setMessages((prev) => [...prev, aiMsg])
     } finally {
@@ -62,9 +59,9 @@ export default function AIChat() {
 
   return (
     <MobileLayout
-      title={$("AI_SYMPTOM_CHECKER", "bn")}
-      status="online"
-      navItems={patientNavItems}
+      title={$('PAGE_TITLE_AI_CHAT', locale)}
+      status={connectivity}
+      navItems={patientNavItems(locale)}
     >
       <div className="animate-fade-in">
         <div className="card chat-card">
@@ -90,7 +87,7 @@ export default function AIChat() {
             <input
               type="text"
               className="input"
-              placeholder="Describe your symptoms..."
+              placeholder={$('AI_CHAT_PH', locale)}
               aria-label="Describe your symptoms"
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -99,7 +96,7 @@ export default function AIChat() {
               
             </button>
             <button type="submit" className="btn btn--primary">
-              Send
+              {$('AI_CHAT_SEND', locale)}
             </button>
           </div>
         </form>

@@ -1,3 +1,67 @@
+# PulseGuard i18n Implementation Plan
+# Bangla ↔ English Translation
+
+> **For Antigravity AI.** Every instruction is exact and implementation-ready.  
+> Follow the phases in order. Do not skip ahead.
+
+---
+
+## Ground Rules (Read First)
+
+1. **The `$` function is the only translation mechanism.** No i18n libraries, no React context for strings, no `useTranslation`, nothing new. Just `$`.
+2. **`locale` lives in `AppContext`.** It is exposed via `useApp()`. Every component that needs to translate text calls `const { locale } = useApp()` and passes it to `$`.
+3. **`config/strings.js` holds every string.** The outer shape is always `{ 'en': { ... }, 'bn': { ... } }`. The `$` function signature is `$(KEY, locale)` and returns `strings[locale][KEY]`.
+4. **navItems become functions**, not static arrays, because they are defined outside React components and cannot call `useApp()`. Every page that uses navItems will call the function with `locale` to get the translated array.
+5. **Admin pages are English-only** for this sprint (admin users are system operators). `AdminLayout` gets the language toggle button but admin page content strings are not translated. This keeps scope manageable.
+6. **Worker pages ARE translated.** Health workers in the field are the primary Bangla speakers.
+
+---
+
+## File Map (Every File That Changes)
+
+```
+frontend/src/
+├── config/
+│   └── strings.js                  ← REBUILT from scratch
+├── context/
+│   └── AppContext.jsx               ← ADD locale state
+├── data/
+│   └── navItems.js                  ← CONVERT arrays to functions
+├── components/layout/
+│   ├── MobileLayout.jsx             ← ADD toggle button + translate layout text
+│   └── AdminLayout.jsx              ← ADD toggle button only
+├── pages/
+│   ├── Splash.jsx                   ← TRANSLATE
+│   ├── RoleSelection.jsx            ← TRANSLATE
+│   ├── Login.jsx                    ← TRANSLATE
+│   ├── Register.jsx                 ← TRANSLATE
+│   ├── patient/
+│   │   ├── Dashboard.jsx            ← TRANSLATE
+│   │   ├── AIChat.jsx               ← FIX (already partial, complete it)
+│   │   ├── DailyCheck.jsx           ← TRANSLATE
+│   │   ├── Emergency.jsx            ← TRANSLATE
+│   │   ├── Nutrition.jsx            ← TRANSLATE
+│   │   ├── Records.jsx              ← TRANSLATE
+│   │   ├── Alerts.jsx               ← TRANSLATE
+│   │   ├── Profile.jsx              ← TRANSLATE
+│   │   └── Onboarding.jsx           ← TRANSLATE
+│   └── worker/
+│       ├── Dashboard.jsx            ← TRANSLATE
+│       ├── PatientList.jsx          ← TRANSLATE
+│       ├── PatientDetails.jsx       ← TRANSLATE
+│       ├── VitalsEntry.jsx          ← TRANSLATE
+│       ├── AIAnalysis.jsx           ← TRANSLATE
+│       ├── Alerts.jsx               ← TRANSLATE
+│       └── SyncCenter.jsx           ← TRANSLATE
+```
+
+---
+
+## Phase 0 — `config/strings.js` (Complete Rebuild)
+
+Replace the entire file with the following. Every key used anywhere in the plan lives here.
+
+```js
 const strings = {
   'en': {
 
@@ -135,7 +199,6 @@ const strings = {
     DAILY_BTN_SAVING: 'Saving...',
     DAILY_BTN_SAVE_OFFLINE: 'Save Offline',
     DAILY_SUCCESS_OFFLINE: 'Saved to offline queue successfully! It will sync when connection is restored.',
-    DAILY_SUCCESS_PREFIX: 'Daily check recorded! Risk status',
     DAILY_ERR_NO_PROFILE: 'No patient profile found. Please complete your registration first.',
     DAILY_ERR_BP_REQUIRED: 'Blood pressure is required (e.g. 120/80).',
     DAILY_ERR_BP_FORMAT: 'Please enter blood pressure in the format "systolic/diastolic" (e.g. 120/80)',
@@ -271,9 +334,6 @@ const strings = {
     W_DASH_LOADING_LIST: 'Loading…',
     W_DASH_NO_HIGH_RISK: 'No high risk patients',
     W_DASH_VIEW_BTN: 'View',
-    W_DASH_SUMMARY_A: 'You have',
-    W_DASH_SUMMARY_B: 'patients assigned, including',
-    W_DASH_SUMMARY_C: '',
 
     // ─── Worker Patient List ───
     W_PAGE_TITLE_PATIENTS: 'Patient List',
@@ -536,7 +596,6 @@ const strings = {
     DAILY_BTN_SAVING: 'সংরক্ষণ হচ্ছে...',
     DAILY_BTN_SAVE_OFFLINE: 'অফলাইনে সংরক্ষণ করুন',
     DAILY_SUCCESS_OFFLINE: 'অফলাইন কিউতে সফলভাবে সংরক্ষিত! সংযোগ ফিরে এলে সিঙ্ক হবে।',
-    DAILY_SUCCESS_PREFIX: 'দৈনিক পরীক্ষা রেকর্ড হয়েছে! ঝুঁকির অবস্থা',
     DAILY_ERR_NO_PROFILE: 'রোগীর প্রোফাইল পাওয়া যায়নি। প্রথমে নিবন্ধন সম্পন্ন করুন।',
     DAILY_ERR_BP_REQUIRED: 'রক্তচাপ প্রয়োজন (যেমন ১২০/৮০)।',
     DAILY_ERR_BP_FORMAT: 'রক্তচাপ "সিস্টোলিক/ডায়াস্টোলিক" ফরম্যাটে লিখুন (যেমন ১২০/৮০)',
@@ -573,7 +632,7 @@ const strings = {
     NUTRITION_SECTION_AVOID_DESC: 'গর্ভাবস্থায় ঝুঁকি কমান',
     NUTRITION_SECTION_LOCAL: 'স্থানীয় সাশ্রয়ী খাবার',
     NUTRITION_SECTION_LOCAL_DESC: 'আপনার এলাকায় পাওয়া পুষ্টিকর বিকল্প',
-    NUTRITION_EMPTY_RECOMMENDED: 'নভেম্বর/ডিসেম্বর ফিল্টারে কোনো প্রস্তাবিত খাবার নেই।',
+    NUTRITION_EMPTY_RECOMMENDED: 'নির্বাচিত ফিল্টারে কোনো প্রস্তাবিত খাবার নেই।',
     NUTRITION_EMPTY_LOCAL: 'নির্বাচিত ফিল্টারে কোনো স্থানীয় খাবার নেই।',
 
     // ─── Records ───
@@ -672,9 +731,6 @@ const strings = {
     W_DASH_LOADING_LIST: 'লোড হচ্ছে…',
     W_DASH_NO_HIGH_RISK: 'কোনো উচ্চ ঝুঁকির রোগী নেই',
     W_DASH_VIEW_BTN: 'দেখুন',
-    W_DASH_SUMMARY_A: 'আপনার',
-    W_DASH_SUMMARY_B: 'জন রোগী নির্ধারিত, এর মধ্যে',
-    W_DASH_SUMMARY_C: 'জন উচ্চ ঝুঁকির রোগী আজকে।',
 
     // ─── Worker Patient List ───
     W_PAGE_TITLE_PATIENTS: 'রোগীর তালিকা',
@@ -807,3 +863,1135 @@ const $ = (item, locale = 'en') => {
 }
 
 export default $
+```
+
+> **Note on the `$` function:** The updated version adds `?? strings['en'][item] ?? item` as a double fallback — if a Bangla key is missing it falls back to English, and if the key doesn't exist at all it shows the key name itself. This prevents blank text during development.
+
+---
+
+## Phase 1 — `context/AppContext.jsx`
+
+### What to change
+
+Find the line where `useState` calls are made at the top of `AppProvider`. Add the locale state immediately after the other state declarations. Then add it to the `useEffect` for persistence, and expose it in the `value` object.
+
+### Exact diff
+
+**Add this after the existing `useState` calls (after the `loading` state line):**
+
+```js
+const [locale, setLocale] = useState(() => {
+  return localStorage.getItem('pg_locale') || 'en'
+})
+```
+
+**Add this `useEffect` (put it after the existing connectivity useEffect):**
+
+```js
+useEffect(() => {
+  localStorage.setItem('pg_locale', locale)
+}, [locale])
+```
+
+**In the `value` object at the bottom of `AppProvider`, add `locale` and `setLocale`:**
+
+```js
+const value = {
+  connectivity,
+  currentUser,
+  setCurrentUser,
+  loading,
+  login,
+  register,
+  logout,
+  notifications,
+  addNotification,
+  locale,        // ← ADD
+  setLocale,     // ← ADD
+}
+```
+
+---
+
+## Phase 2 — `data/navItems.js` (Full Replacement)
+
+The static arrays cannot access `useApp()` because they're not React components. Convert both exports to functions that accept `locale` and use `$` to translate labels.
+
+Replace the entire file:
+
+```js
+import $ from '../config/strings'
+
+export const patientNavItems = (locale) => [
+  { label: $('NAV_P_HOME', locale),    to: '/patient/dashboard',   icon: '' },
+  { label: $('NAV_P_AICHAT', locale),  to: '/patient/ai-chat',     icon: '' },
+  { label: $('NAV_P_HEALTH', locale),  to: '/patient/daily-check', icon: '' },
+  { label: $('NAV_P_ALERTS', locale),  to: '/patient/alerts',      icon: '' },
+  { label: $('NAV_P_PROFILE', locale), to: '/patient/profile',     icon: '' },
+]
+
+export const workerNavItems = (locale) => [
+  { label: $('NAV_W_HOME', locale),     to: '/worker/dashboard',   icon: '' },
+  { label: $('NAV_W_PATIENTS', locale), to: '/worker/patients',    icon: '' },
+  { label: $('NAV_W_AI', locale),       to: '/worker/ai-analysis', icon: '' },
+  { label: $('NAV_W_SYNC', locale),     to: '/worker/sync',        icon: '' },
+  { label: $('NAV_W_PROFILE', locale),  to: '/worker/profile',     icon: '' },
+]
+```
+
+> **Critical:** Every file that currently does `import { patientNavItems } from '../../data/navItems'` and uses it as `navItems={patientNavItems}` must be updated to `navItems={patientNavItems(locale)}`. The same applies to `workerNavItems`. This is handled in each file's section below.
+
+---
+
+## Phase 3 — `components/layout/MobileLayout.jsx`
+
+### Three changes in this file
+
+**Change 1 — Import `$` and pull `locale`/`setLocale` from context.**
+
+At the top of the file, add the import:
+
+```js
+import $ from '../../config/strings'
+```
+
+In the component body, destructure `locale` and `setLocale` from `useApp()`:
+
+```js
+const { connectivity, toggleConnectivity, currentUser, logout, notifications, locale, setLocale } = useApp()
+```
+
+**Change 2 — Add the language toggle button.**
+
+In the **mobile header** `top-actions` div (it currently has the badge, the "Alerts" button, and the avatar), add the toggle button between the badge and the Alerts button:
+
+```jsx
+<button
+  type="button"
+  className="icon-btn"
+  onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
+  style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}
+>
+  {$('LANG_TOGGLE', locale)}
+</button>
+```
+
+Do the exact same thing in the **desktop header** `top-actions` div.
+
+**Change 3 — Translate hardcoded text in the layout itself.**
+
+Replace every hardcoded string in `MobileLayout.jsx`:
+
+| Current hardcoded text            | Replace with                           |
+| --------------------------------- | -------------------------------------- |
+| `'Online'` (in badge)             | `{$('LAYOUT_ONLINE', locale)}`         |
+| `'Offline'` (in badge)            | `{$('LAYOUT_OFFLINE', locale)}`        |
+| `'Syncing'` (in badge)            | `{$('LAYOUT_SYNCING', locale)}`        |
+| `'Alerts'` (button)               | `{$('LAYOUT_ALERTS_BTN', locale)}`     |
+| `'Logout'` (sidebar button)       | `{$('LAYOUT_LOGOUT_BTN', locale)}`     |
+| `'Respond'` (SOS toast button)    | `{$('LAYOUT_RESPOND_BTN', locale)}`    |
+| `'Maternal Health Worker Portal'` | `{$('LAYOUT_PORTAL_WORKER', locale)}`  |
+| `'Patient Portal'`                | `{$('LAYOUT_PORTAL_PATIENT', locale)}` |
+
+The muted subtitle under the desktop header page title:
+```jsx
+// BEFORE:
+<p className="muted">PulseGuard AI: {currentUser?.role === 'worker' ? 'Maternal Health Worker Portal' : 'Patient Portal'}</p>
+
+// AFTER:
+<p className="muted">PulseGuard AI: {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
+```
+
+---
+
+## Phase 4 — `components/layout/AdminLayout.jsx`
+
+Admin page *content* is not translated. But the layout chrome (header, sidebar) gets the toggle button.
+
+**Change 1 — Import `$` and pull `locale`/`setLocale`:**
+
+```js
+import $ from '../../config/strings'
+```
+
+```js
+const { connectivity, currentUser, logout, locale, setLocale } = useApp()
+```
+
+**Change 2 — Add toggle button to the admin header `top-actions` div:**
+
+```jsx
+<button
+  type="button"
+  className="icon-btn"
+  onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
+  style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}
+>
+  {$('LANG_TOGGLE', locale)}
+</button>
+```
+
+**Change 3 — Translate the Online/Offline/Syncing badges in the admin header:**
+
+```jsx
+{connectivity === 'online' && $('LAYOUT_ONLINE', locale)}
+{connectivity === 'offline' && $('LAYOUT_OFFLINE', locale)}
+{connectivity === 'syncing' && $('LAYOUT_SYNCING', locale)}
+```
+
+---
+
+## Phase 5 — Auth Pages
+
+### `pages/Splash.jsx`
+
+Add import at top:
+```js
+import $ from '../config/strings'
+import { useState } from 'react'
+```
+
+Add locale state (Splash has no `useApp` call yet — it's a public page so it should read from `localStorage` directly, not from context, to avoid requiring `AppProvider` on the root):
+
+```js
+const locale = localStorage.getItem('pg_locale') || 'en'
+```
+
+Replace every hardcoded string:
+
+```jsx
+// h1
+{$('SPLASH_HEADLINE', locale)}
+
+// p (subline)
+{$('SPLASH_SUBLINE', locale)}
+
+// Link (CTA)
+{$('SPLASH_CTA', locale)}
+
+// h4 (disclaimer title)
+{$('SPLASH_DISCLAIMER_TITLE', locale)}
+
+// p (disclaimer body — note: remove <strong>not</strong> hardcode, move "not" into the string)
+{$('SPLASH_DISCLAIMER_BODY', locale)}
+```
+
+> The disclaimer currently has `it does <strong>not</strong> replace...` — the Bangla string handles this naturally without needing bold. For English, since the string now contains the full sentence, remove the `<strong>` wrapper or keep it as a static `<strong>not</strong>` inserted separately. The simplest approach: keep the string as-is and just not use `<strong>`. The meaning is still clear.
+
+### `pages/RoleSelection.jsx`
+
+Add import:
+```js
+import $ from '../config/strings'
+```
+
+Add locale read:
+```js
+const locale = localStorage.getItem('pg_locale') || 'en'
+```
+
+Convert the `roles` array from a static constant to a computed value inside the component using `locale`:
+
+```js
+export default function RoleSelection() {
+  const locale = localStorage.getItem('pg_locale') || 'en'
+
+  const roles = [
+    {
+      icon: '',
+      title: $('ROLE_PATIENT_TITLE', locale),
+      desc: $('ROLE_PATIENT_DESC', locale),
+      to: '/login/patient',
+    },
+    {
+      icon: '',
+      title: $('ROLE_WORKER_TITLE', locale),
+      desc: $('ROLE_WORKER_DESC', locale),
+      to: '/login/worker',
+    },
+    {
+      icon: '',
+      title: $('ROLE_ADMIN_TITLE', locale),
+      desc: $('ROLE_ADMIN_DESC', locale),
+      to: '/login/admin',
+    },
+  ]
+  // ... rest of component
+```
+
+Replace JSX strings:
+```jsx
+// h1
+{$('ROLE_HEADING', locale)}
+// p
+{$('ROLE_SUBHEADING', locale)}
+// span inside each role card
+{$('ROLE_CONTINUE', locale)}
+// Link at bottom
+{$('ROLE_BACK', locale)}
+```
+
+### `pages/Login.jsx`
+
+Add import:
+```js
+import $ from '../config/strings'
+```
+
+Pull locale from `useApp()` — Login IS inside the provider because it's accessed after navigation:
+```js
+const { login, locale } = useApp()
+```
+
+Replace every hardcoded string:
+
+```jsx
+// h2
+{$('LOGIN_HEADING', locale)}
+
+// p (sign in as ...)
+{$('LOGIN_SUBHEADING_PREFIX', locale)} <strong>{roleLabel}</strong> {$('LOGIN_SUBHEADING_SUFFIX', locale)}
+
+// label
+{$('LOGIN_LABEL_EMAIL', locale)}
+// input placeholder
+placeholder={$('LOGIN_PH_EMAIL', locale)}
+
+// label
+{$('LOGIN_LABEL_PASSWORD', locale)}
+// input placeholder
+placeholder={$('LOGIN_PH_PASSWORD', locale)}
+
+// submit button
+{submitting ? $('LOGIN_BTN_LOADING', locale) : $('LOGIN_BTN', locale)}
+
+// error div prefix
+{$('LOGIN_ERR_PREFIX', locale)} {error}
+
+// Link (create account)
+{$('LOGIN_LINK_REGISTER', locale)}
+
+// Link (change role)
+{$('LOGIN_LINK_CHANGE_ROLE', locale)}
+```
+
+### `pages/Register.jsx`
+
+Add import:
+```js
+import $ from '../config/strings'
+```
+
+Pull locale:
+```js
+const { register, locale } = useApp()
+```
+
+Replace every hardcoded string:
+
+```jsx
+// h2
+{$('REGISTER_HEADING', locale)}
+
+// p
+{$('REGISTER_SUBHEADING_PREFIX', locale)} <strong>{roleLabel}</strong> {$('REGISTER_SUBHEADING_SUFFIX', locale)}
+
+// labels and placeholders for all 4 fields — follow same pattern as Login above
+
+// submit button
+{submitting ? $('REGISTER_BTN_LOADING', locale) : $('REGISTER_BTN', locale)}
+
+// "Already have an account?" span
+{$('REGISTER_ALREADY_HAVE', locale)}
+
+// Sign In link
+{$('REGISTER_LINK_SIGNIN', locale)}
+```
+
+---
+
+## Phase 6 — Patient Pages
+
+**Every patient page follows this pattern at the top of the component:**
+
+```js
+import $ from '../../config/strings'
+// ...existing imports...
+
+export default function SomePage() {
+  const { locale } = useApp()          // add locale to existing useApp() destructure
+  const navItems = patientNavItems(locale)  // call as function now
+  // ...
+```
+
+### `pages/patient/Dashboard.jsx`
+
+```jsx
+// MobileLayout title
+title={$('PAGE_TITLE_DASHBOARD', locale)}
+
+// Loading state p
+{$('DASH_LOADING', locale)}
+
+// Welcome card (no profile yet)
+<h2>{$('DASH_WELCOME_HEADING_PREFIX', locale)} {currentUser?.name?.split(' ')[0] || 'Mother'}!</h2>
+<p className="muted">{$('DASH_WELCOME_BODY', locale)}</p>
+<button ...>{$('DASH_COMPLETE_PROFILE_BTN', locale)}</button>
+
+// Greeting card (has profile)
+<h2>{$('DASH_GREETING_PREFIX', locale)} {patient.name}</h2>
+<p className="muted">{$('DASH_WEEK_LABEL', locale)} <strong>{patient.gestational_week || 'N/A'}</strong></p>
+
+// Section header
+<h3>{$('DASH_SECTION_QUICK_ACTIONS', locale)}</h3>
+
+// Action cards
+<h4>{$('DASH_ACTION_DAILY_TITLE', locale)}</h4>
+<p className="muted">{$('DASH_ACTION_DAILY_DESC', locale)}</p>
+
+<h4>{$('DASH_ACTION_AI_TITLE', locale)}</h4>
+<p className="muted">{$('DASH_ACTION_AI_DESC', locale)}</p>
+
+<h4>{$('DASH_ACTION_NUTRITION_TITLE', locale)}</h4>
+<p className="muted">{$('DASH_ACTION_NUTRITION_DESC', locale)}</p>
+
+<h4>{$('DASH_ACTION_EMERGENCY_TITLE', locale)}</h4>
+<p className="muted">{$('DASH_ACTION_EMERGENCY_DESC', locale)}</p>
+
+// Health Summary section
+<h3>{$('DASH_SECTION_HEALTH_SUMMARY', locale)}</h3>
+
+// KPI labels
+<span className="muted">{$('DASH_KPI_BP', locale)}</span>
+<span className="muted">{$('DASH_KPI_WEIGHT', locale)}</span>
+<span className="muted">{$('DASH_KPI_TEMP', locale)}</span>
+<span className="muted">{$('DASH_KPI_LAST_CHECKUP', locale)}</span>
+
+// "No records" fallback
+{latestVitals ? new Date(latestVitals.recorded_at).toLocaleDateString() : $('DASH_KPI_NO_RECORDS', locale)}
+
+// View all records link
+{$('DASH_VIEW_ALL_RECORDS', locale)}
+```
+
+### `pages/patient/AIChat.jsx`
+
+This page already imports `$`. The fix is:
+
+1. Pull `locale` from `useApp()` instead of hardcoding `"bn"`.
+2. Complete all remaining hardcoded strings.
+
+```js
+// BEFORE (wrong — hardcoded locale):
+const { connectivity } = useApp()
+// ...
+title={$("AI_SYMPTOM_CHECKER", "bn")}
+
+// AFTER (correct):
+const { connectivity, locale } = useApp()
+// ...
+title={$('PAGE_TITLE_AI_CHAT', locale)}
+```
+
+Other replacements:
+```jsx
+// placeholder
+placeholder={$('AI_CHAT_PH', locale)}
+
+// Send button
+{$('AI_CHAT_SEND', locale)}
+
+// Error messages in sendMessage function (these are strings set into state, not JSX)
+text: response.response || response.reply || $('AI_CHAT_ERR_FAILED', locale)
+text: $('AI_CHAT_ERR_OFFLINE', locale)
+```
+
+> The `quickChips` array (`['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']`) — these are sent as API messages. **Do not translate them.** The AI model receives them as clinical terms. Leave `quickChips` in English.
+
+### `pages/patient/DailyCheck.jsx`
+
+```jsx
+// MobileLayout title
+title={$('PAGE_TITLE_DAILY_CHECK', locale)}
+
+// Loading state
+{$('DAILY_LOADING', locale)}
+
+// No profile card
+{$('DAILY_NO_PROFILE_ICON', locale)}
+<h3>{$('DAILY_NO_PROFILE_HEADING', locale)}</h3>
+<p className="muted">{$('DAILY_NO_PROFILE_BODY', locale)}</p>
+<button ...>{$('DAILY_NO_PROFILE_BTN', locale)}</button>
+
+// Form heading
+<h3 className="text-gradient">{$('DAILY_FORM_HEADING', locale)}</h3>
+<p className="muted">{currentDateStr}, {$('DAILY_FORM_DATE_PREFIX', locale)} {patientData.patient.gestational_week || 'N/A'}</p>
+
+// Labels and placeholders
+<label>{$('DAILY_LABEL_BP', locale)} <input placeholder={$('DAILY_PH_BP', locale)} .../></label>
+<label>{$('DAILY_LABEL_WEIGHT', locale)} <input placeholder={$('DAILY_PH_WEIGHT', locale)} .../></label>
+<label>{$('DAILY_LABEL_TEMP', locale)} <input placeholder={$('DAILY_PH_TEMP', locale)} .../></label>
+<label>{$('DAILY_LABEL_PULSE', locale)} <input placeholder={$('DAILY_PH_PULSE', locale)} .../></label>
+<label>{$('DAILY_LABEL_SYMPTOMS', locale)} <input placeholder={$('DAILY_PH_SYMPTOMS', locale)} .../></label>
+
+// Buttons
+{saving ? $('DAILY_BTN_SAVING', locale) : $('DAILY_BTN_SAVE', locale)}
+{$('DAILY_BTN_SAVE_OFFLINE', locale)}
+
+// Error and success strings (these are set with setError / setSuccess — replace the string literals)
+setSuccess($('DAILY_SUCCESS_OFFLINE', locale))
+setError($('DAILY_ERR_NO_PROFILE', locale))
+setError($('DAILY_ERR_BP_REQUIRED', locale))
+setError($('DAILY_ERR_BP_FORMAT', locale))
+setError($('DAILY_ERR_BP_RANGE', locale))
+setError($('DAILY_ERR_PULSE_RANGE', locale))
+setError($('DAILY_ERR_NETWORK', locale))
+setError($('DAILY_ERR_SAVE_LOCAL', locale))
+```
+
+> **Important for `setError`/`setSuccess` calls:** These are inside `handleSave`, not in JSX. `locale` is in scope from `useApp()` at the top of the component, so `$(KEY, locale)` works directly inside the function body.
+
+Also, for the dynamic success message that includes risk level:
+```js
+// BEFORE:
+setSuccess(`Daily check recorded! Risk status: ${res.riskLevel || 'low'}`)
+// AFTER — keep the risk level in English as it's a technical value, only translate the prefix:
+setSuccess(`${$('DAILY_SUCCESS_PREFIX', locale)}: ${res.riskLevel || 'low'}`)
+```
+Add these two keys to `strings.js`:
+```js
+// en
+DAILY_SUCCESS_PREFIX: 'Daily check recorded! Risk status',
+// bn
+DAILY_SUCCESS_PREFIX: 'দৈনিক পরীক্ষা রেকর্ড হয়েছে! ঝুঁকির অবস্থা',
+```
+
+### `pages/patient/Emergency.jsx`
+
+The `statusText` is computed from a ternary. Replace the string literals inside it:
+
+```js
+const statusText = connectivity === 'online'
+  ? alertSent
+    ? $('EMERGENCY_STATUS_SENT', locale)
+    : gps
+      ? `${$('EMERGENCY_STATUS_GPS', locale)} ${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`
+      : $('EMERGENCY_STATUS_READY', locale)
+  : $('EMERGENCY_STATUS_OFFLINE', locale)
+```
+
+JSX replacements:
+```jsx
+title={$('PAGE_TITLE_EMERGENCY', locale)}
+
+<h2>{$('EMERGENCY_HEADING', locale)}</h2>
+<p className="muted">{statusText}</p>
+<p className="muted">{$('EMERGENCY_BODY', locale)}</p>
+
+// SOS button
+{alertSent ? $('EMERGENCY_SOS_SENT', locale) : $('EMERGENCY_SOS_BTN', locale)}
+
+// Action buttons
+{loadingGps ? $('EMERGENCY_BTN_GPS_LOADING', locale) : $('EMERGENCY_BTN_GPS', locale)}
+{$('EMERGENCY_BTN_NOTIFY', locale)}
+{$('EMERGENCY_BTN_CALL', locale)}
+```
+
+### `pages/patient/Nutrition.jsx`
+
+The `tags` array and the filter `map` keys are tightly coupled. The tags are used both as display labels and as keys into the `map` objects inside `filterRecommended` and `filterLocal`. **Do not translate the keys used for filtering** — only translate the display labels.
+
+```js
+// Keep the logic keys in English
+const tagKeys = ['All', 'Iron Rich', 'Protein', 'Calcium', 'Vitamins']
+
+// Map keys to display labels
+const tagLabels = {
+  'All': $('NUTRITION_TAG_ALL', locale),
+  'Iron Rich': $('NUTRITION_TAG_IRON', locale),
+  'Protein': $('NUTRITION_TAG_PROTEIN', locale),
+  'Calcium': $('NUTRITION_TAG_CALCIUM', locale),
+  'Vitamins': $('NUTRITION_TAG_VITAMINS', locale),
+}
+
+// selectedTag state stays as English key
+const [selectedTag, setSelectedTag] = useState('All')
+```
+
+Then in JSX, render the display label but keep the key:
+```jsx
+{tagKeys.map((tagKey) => (
+  <button
+    type="button"
+    key={tagKey}
+    className={`chip ${selectedTag === tagKey ? 'active' : ''}`}
+    onClick={() => setSelectedTag(tagKey)}
+  >
+    {tagLabels[tagKey]}
+  </button>
+))}
+```
+
+Section headings:
+```jsx
+title={$('PAGE_TITLE_NUTRITION', locale)}
+<h3 className="text-gradient">{$('NUTRITION_SECTION_RECOMMENDED', locale)}</h3>
+<p className="muted">{$('NUTRITION_SECTION_RECOMMENDED_DESC', locale)}</p>
+<p className="muted">{$('NUTRITION_EMPTY_RECOMMENDED', locale)}</p>
+
+<h3 className="text-gradient">{$('NUTRITION_SECTION_AVOID', locale)}</h3>
+<p className="muted">{$('NUTRITION_SECTION_AVOID_DESC', locale)}</p>
+
+<h3 className="text-gradient">{$('NUTRITION_SECTION_LOCAL', locale)}</h3>
+<p className="muted">{$('NUTRITION_SECTION_LOCAL_DESC', locale)}</p>
+<p className="muted">{$('NUTRITION_EMPTY_LOCAL', locale)}</p>
+```
+
+> **Do not translate food names** (`food.name`, `food.benefit`, `food.reason`, `food.tag`) — these come from `mockData.js` and are data, not UI strings. Translating mockData is a separate, optional concern.
+
+### `pages/patient/Records.jsx`
+
+```jsx
+title={$('PAGE_TITLE_RECORDS', locale)}
+
+<h3 className="text-gradient">{$('RECORDS_HEADING', locale)}</h3>
+<button ...>{$('RECORDS_EXPORT_BTN', locale)}</button>
+
+// Loading
+<p className="muted">{$('RECORDS_LOADING', locale)}</p>
+
+// Empty
+<p className="muted">{$('RECORDS_EMPTY', locale)}</p>
+
+// Record fields
+<strong>{$('RECORDS_FIELD_BP', locale)} {rec.bp_systolic}/{rec.bp_diastolic} mmHg</strong>
+<span>{$('RECORDS_FIELD_WEIGHT', locale)} {rec.weight_kg ? `${rec.weight_kg} kg` : $('RECORDS_NA', locale)}</span>
+<span>{$('RECORDS_FIELD_TEMP', locale)} {rec.temperature_c ? `${rec.temperature_c} °C` : $('RECORDS_NA', locale)}</span>
+<span>{$('RECORDS_FIELD_PULSE', locale)} {rec.pulse ? `${rec.pulse} bpm` : $('RECORDS_NA', locale)}</span>
+```
+
+### `pages/patient/Alerts.jsx`
+
+```jsx
+title={$('PAGE_TITLE_ALERTS', locale)}
+<h3 className="text-gradient">{$('ALERTS_HEADING', locale)}</h3>
+```
+
+> The demo alert `title` and `message` strings inside `displayAlerts` are static mock data. Leave them in English. Only the page title and section heading are translated.
+
+### `pages/patient/Profile.jsx`
+
+This is the largest patient page. Every section has translatable text.
+
+```jsx
+// MobileLayout title
+title={$('PAGE_TITLE_PROFILE', locale)}
+
+// Loading
+{$('PROFILE_LOADING', locale)}
+
+// Section heading (switches between view and edit)
+<h3>{isEditing ? $('PROFILE_SECTION_EDIT', locale) : $('PROFILE_SECTION_DETAILS', locale)}</h3>
+
+// Patient detail labels (view mode)
+<span className="profile-detail-label">{$('PROFILE_LABEL_PREG_WEEK', locale)}</span>
+<span className="profile-detail-label">{$('PROFILE_LABEL_RISK', locale)}</span>
+<span className="profile-detail-label">{$('PROFILE_LABEL_VILLAGE', locale)}</span>
+<span className="profile-detail-label">{$('PROFILE_LABEL_PHONE', locale)}</span>
+<span className="profile-detail-label">{$('PROFILE_LABEL_EMAIL', locale)}</span>
+
+// Worker labels
+<span className="profile-detail-label">{$('PROFILE_LABEL_ASSIGNED_PATIENTS', locale)}</span>
+
+// Admin labels
+<span className="profile-detail-label">{$('PROFILE_LABEL_SYSTEM_ROLE', locale)}</span>
+<span className="profile-detail-value">{$('PROFILE_LABEL_ADMIN_VALUE', locale)}</span>
+
+// Pending registration
+<span className="profile-detail-label">{$('PROFILE_LABEL_PROFILE_STATUS', locale)}</span>
+<span className="profile-detail-value">{$('PROFILE_LABEL_PENDING', locale)}</span>
+<button ...>{$('PROFILE_BTN_COMPLETE_REG', locale)}</button>
+
+// Edit form labels and placeholders
+<label>{$('PROFILE_EDIT_LABEL_NAME', locale)} <input placeholder={$('PROFILE_EDIT_PH_NAME', locale)} .../></label>
+<label>{$('PROFILE_EDIT_LABEL_EMAIL', locale)} <input placeholder={$('PROFILE_EDIT_PH_EMAIL', locale)} .../></label>
+<label>{$('PROFILE_EDIT_LABEL_PHONE', locale)} <input placeholder={$('PROFILE_EDIT_PH_PHONE', locale)} .../></label>
+<label>{$('PROFILE_EDIT_LABEL_VILLAGE', locale)} <input placeholder={$('PROFILE_EDIT_PH_VILLAGE', locale)} .../></label>
+<label>{$('PROFILE_EDIT_LABEL_WEEK', locale)} <input placeholder={$('PROFILE_EDIT_PH_WEEK', locale)} .../></label>
+
+// Action buttons
+{saving ? $('PROFILE_BTN_SAVING', locale) : $('PROFILE_BTN_SAVE_CHANGES', locale)}
+{$('PROFILE_BTN_CANCEL', locale)}
+{$('PROFILE_BTN_EDIT', locale)}
+{$('PROFILE_BTN_LOGOUT', locale)}
+
+// Error/success strings set in handleSaveProfile
+setError($('PROFILE_ERR_NAME_REQUIRED', locale))
+setError($('PROFILE_ERR_NAME_LETTERS', locale))
+setError($('PROFILE_ERR_PHONE_DIGITS', locale))
+setSuccess($('PROFILE_SUCCESS', locale))
+```
+
+Also translate the Patient ID and Worker ID display strings:
+```jsx
+// BEFORE:
+<p className="muted">Patient ID: PG-{patient.id.slice(0, 8).toUpperCase()}</p>
+<p className="muted">Health Worker ID: HW-{currentUser?.id.slice(0, 8).toUpperCase()}</p>
+
+// AFTER:
+<p className="muted">{$('PROFILE_PATIENT_ID_PREFIX', locale)}{patient.id.slice(0, 8).toUpperCase()}</p>
+<p className="muted">{$('PROFILE_WORKER_ID_PREFIX', locale)}{currentUser?.id.slice(0, 8).toUpperCase()}</p>
+```
+
+Also translate the nav items call — Profile is shared by patient and worker:
+```js
+// BEFORE:
+const navItems = isPatient ? patientNavItems : isWorker ? workerNavItems : []
+// AFTER:
+const navItems = isPatient ? patientNavItems(locale) : isWorker ? workerNavItems(locale) : []
+```
+
+### `pages/patient/Onboarding.jsx`
+
+```jsx
+// MobileLayout title
+title={$('PAGE_TITLE_ONBOARDING', locale)}
+
+// Welcome card
+<h2>{$('ONBOARD_WELCOME_PREFIX', locale)} {currentUser?.name?.split(' ')[0]}!</h2>
+<p className="muted">{$('ONBOARD_WELCOME_BODY', locale)}</p>
+
+// Form card heading
+<h3>{$('ONBOARD_SECTION_HEADING', locale)}</h3>
+<p className="muted">{$('ONBOARD_SECTION_SUBHEADING', locale)}</p>
+
+// Gestational week field
+<label>{$('ONBOARD_LABEL_WEEK', locale)}
+  <input placeholder={$('ONBOARD_PH_WEEK', locale)} .../>
+  <span>{$('ONBOARD_HINT_WEEK', locale)}</span>
+</label>
+
+// Age field
+<label>{$('ONBOARD_LABEL_AGE', locale)}
+  <input placeholder={$('ONBOARD_PH_AGE', locale)} .../>
+</label>
+
+// Village field
+<label>{$('ONBOARD_LABEL_VILLAGE', locale)}
+  <input placeholder={$('ONBOARD_PH_VILLAGE', locale)} .../>
+</label>
+
+// Submit button
+{saving ? $('ONBOARD_BTN_LOADING', locale) : $('ONBOARD_BTN_SUBMIT', locale)}
+
+// Error messages in handleSubmit
+setError($('ONBOARD_ERR_WEEK_REQUIRED', locale))
+setError($('ONBOARD_ERR_WEEK_RANGE', locale))
+```
+
+---
+
+## Phase 7 — Worker Pages
+
+Every worker page has a locally-defined `workerNavItems` array — a copy-paste of the same array. All of them need to be replaced with the function call from `data/navItems.js`.
+
+**At the top of every worker page, replace:**
+```js
+// REMOVE this block (it appears at the top of every worker file):
+const workerNavItems = [
+  { label: 'Home', to: '/worker/dashboard', icon: '' },
+  { label: 'Patients', to: '/worker/patients', icon: '' },
+  ...
+]
+
+// ADD this import (if not already present):
+import { workerNavItems } from '../../data/navItems'
+```
+
+**In the component body, add locale and call navItems as function:**
+```js
+const { locale } = useApp()  // add to existing useApp() call
+// then in JSX:
+navItems={workerNavItems(locale)}
+```
+
+### `pages/worker/Dashboard.jsx`
+
+The locally-defined `workerNavItems` at the top of this file must be deleted and replaced with the import.
+
+```jsx
+// MobileLayout
+title={$('W_PAGE_TITLE_DASHBOARD', locale)}
+
+// Banner (these are passed as props — translate inline)
+banner={{
+  tone: 'syncing',
+  title: $('W_DASH_BANNER_TITLE', locale),
+  message: `${total} ${$('W_DASH_PATIENTS_SUFFIX', locale)}`,    // "5 patients assigned"
+  action: { label: $('W_DASH_BANNER_ACTION', locale), onClick: () => navigate('/worker/sync') },
+}}
+
+// Greeting
+<h2>{$('W_DASH_GREETING_PREFIX', locale)} {currentUser?.name || $('W_DASH_GREETING_DEFAULT', locale)}</h2>
+<p className="muted">
+  {loading
+    ? $('W_DASH_LOADING', locale)
+    : `${$('W_DASH_PATIENTS_SUFFIX_START', locale)} ${total} ${$('W_DASH_PATIENTS_SUFFIX', locale)}, ${$('W_DASH_INCL_PREFIX', locale)} ${highRisk} ${$('W_DASH_HIGH_RISK_CASES', locale)}`}
+</p>
+```
+
+> The greeting message `"You have 5 patients assigned, including 2 high risk cases today."` is complex to translate word-for-word because Bangla sentence structure differs. Use a simpler template approach — store the whole sentence as a translated string with placeholders that you fill in:
+
+```js
+// Add to strings.js:
+// en:
+W_DASH_SUMMARY: (total, highRisk, caseWord) => `You have ${total} patients assigned, including ${highRisk} ${caseWord} today.`
+// bn:
+W_DASH_SUMMARY: (total, highRisk) => `আপনার ${total} জন রোগী নির্ধারিত, যার মধ্যে ${highRisk} জন উচ্চ ঝুঁকির রোগী আজকে।`
+```
+
+However, since `$` is a simple key-value lookup (it cannot hold functions per your teammate's format constraint), the safest approach is to build the sentence from parts:
+
+```js
+// In strings.js (both en and bn), add:
+// en:
+W_DASH_SUMMARY_A: 'You have',
+W_DASH_SUMMARY_B: 'patients assigned, including',
+W_DASH_SUMMARY_C: 'today.',
+// bn:
+W_DASH_SUMMARY_A: 'আপনার',
+W_DASH_SUMMARY_B: 'জন রোগী নির্ধারিত, এর মধ্যে',
+W_DASH_SUMMARY_C: 'জন উচ্চ ঝুঁকির রোগী আজকে।',
+```
+
+Then construct:
+```jsx
+`${$('W_DASH_SUMMARY_A', locale)} ${total} ${$('W_DASH_SUMMARY_B', locale)} ${highRisk} ${$('W_DASH_HIGH_RISK_CASES', locale)} ${$('W_DASH_SUMMARY_C', locale)}`
+```
+
+KPI cards:
+```jsx
+<h3>{$('W_DASH_KPI_HEADING', locale)}</h3>
+<p className="stat-card-label">{$('W_DASH_KPI_TOTAL', locale)}</p>
+<p className="stat-card-label">{$('W_DASH_KPI_HIGH', locale)}</p>
+<p className="stat-card-label">{$('W_DASH_KPI_MODERATE', locale)}</p>
+<p className="stat-card-label">{$('W_DASH_KPI_LOW', locale)}</p>
+```
+
+Quick Actions:
+```jsx
+<h3>{$('W_DASH_SECTION_QUICK', locale)}</h3>
+<Link ...>{$('W_DASH_QUICK_PATIENTS', locale)}</Link>
+<Link ...>{$('W_DASH_QUICK_AI', locale)}</Link>
+<Link ...>{$('W_DASH_QUICK_SYNC', locale)}</Link>
+```
+
+High Risk section:
+```jsx
+<h3>{$('W_DASH_SECTION_HIGH_RISK', locale)}</h3>
+<span className="muted">{highRisk} {$('W_DASH_HIGH_RISK_SUFFIX', locale)}</span>
+// Loading:
+{$('W_DASH_LOADING_LIST', locale)}
+// Empty:
+{$('W_DASH_NO_HIGH_RISK', locale)}
+// View button:
+<Link ...>{$('W_DASH_VIEW_BTN', locale)}</Link>
+```
+
+### `pages/worker/PatientList.jsx`
+
+Delete the local `workerNavItems` array, import from `data/navItems`.
+
+The `filters` array needs the same English-key / display-label split as Nutrition tags:
+
+```js
+const filterKeys = ['All', 'High Risk', 'Moderate', 'Low Risk']
+const filterLabels = {
+  'All': $('W_PATIENTS_FILTER_ALL', locale),
+  'High Risk': $('W_PATIENTS_FILTER_HIGH', locale),
+  'Moderate': $('W_PATIENTS_FILTER_MODERATE', locale),
+  'Low Risk': $('W_PATIENTS_FILTER_LOW', locale),
+}
+```
+
+The filter logic (`if (activeFilter === 'High Risk')` etc.) stays in English — it compares against `activeFilter` which is set to the key string, not the display label.
+
+```jsx
+title={$('W_PAGE_TITLE_PATIENTS', locale)}
+
+<input placeholder={$('W_PATIENTS_SEARCH_PH', locale)} .../>
+
+{filterKeys.map((key) => (
+  <button key={key} className={`chip${activeFilter === key ? ' active' : ''}`} onClick={() => setActiveFilter(key)}>
+    {filterLabels[key]}
+  </button>
+))}
+
+<h3>{$('W_PATIENTS_HEADING', locale)}</h3>
+<span className="muted">{filtered.length} {$('W_PATIENTS_RESULTS_SUFFIX', locale)}</span>
+
+// Loading
+{$('W_PATIENTS_LOADING', locale)}
+
+// Each patient row
+<p className="muted">{$('W_PATIENTS_WEEK_PREFIX', locale)} {patient.gestational_week || '—'} • {patient.village || $('W_PATIENTS_UNKNOWN', locale)}</p>
+<Link ...>{$('W_PATIENTS_VIEW_BTN', locale)}</Link>
+
+// Empty state
+{$('W_PATIENTS_EMPTY', locale)}
+```
+
+### `pages/worker/PatientDetails.jsx`
+
+Delete the local `workerNavItems` array, import from `data/navItems`.
+
+The `tabs` array is used both for display and as the `activeTab` comparison value. Use the same English-key pattern:
+
+```js
+const tabKeys = ['Overview', 'Vitals', 'AI Insights', 'History']
+const tabLabels = {
+  'Overview': $('W_DETAILS_TAB_OVERVIEW', locale),
+  'Vitals': $('W_DETAILS_TAB_VITALS', locale),
+  'AI Insights': $('W_DETAILS_TAB_AI', locale),
+  'History': $('W_DETAILS_TAB_HISTORY', locale),
+}
+```
+
+Tab buttons:
+```jsx
+{tabKeys.map((tabKey) => (
+  <button key={tabKey} className={`tab${activeTab === tabKey ? ' active' : ''}`} onClick={() => setActiveTab(tabKey)}>
+    {tabLabels[tabKey]}
+  </button>
+))}
+```
+
+All remaining JSX strings:
+```jsx
+title={$('W_PAGE_TITLE_PATIENT_DETAILS', locale)}
+
+// Loading / not found
+{$('W_DETAILS_LOADING', locale)}
+{$('W_DETAILS_NOT_FOUND', locale)}
+
+// Patient header
+<p className="muted">{$('W_DETAILS_AGE_PREFIX', locale)} {patient.age || '—'} • {$('W_DETAILS_WEEK_PREFIX', locale)} {patient.gestational_week || '—'}</p>
+
+// Overview tab
+<p className="muted">{$('W_DETAILS_PREG_WEEK', locale)}</p>
+{riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)} {$('W_DETAILS_RISK_SUFFIX', locale)}
+<p className="muted">{$('W_DETAILS_BP', locale)}</p>
+<p className="muted">{$('W_DETAILS_WEIGHT', locale)}</p>
+<p className="muted">{$('W_DETAILS_PULSE', locale)}</p>
+<p className="muted">{$('W_DETAILS_TEMPERATURE', locale)}</p>
+<strong>{$('W_DETAILS_HIGH_RISK_ALERT', locale)}</strong>
+
+// Vitals tab
+<h4>{$('W_DETAILS_VITALS_HEADING', locale)}</h4>
+{$('W_DETAILS_VITALS_EMPTY', locale)}
+
+// AI Insights tab
+<h4>{$('W_DETAILS_AI_HEADING', locale)}</h4>
+<p className="muted">{$('W_DETAILS_AI_RISK_SCORE', locale)}</p>
+<strong style={{ color: '#ef4444' }}>{$('W_DETAILS_AI_PREECLAMPSIA_TITLE', locale)}</strong>
+<p className="muted">{$('W_DETAILS_AI_PREECLAMPSIA_BODY', locale)}</p>
+<p className="muted">{$('W_DETAILS_AI_MODEL_PREFIX', locale)} {aiResult?.model || $('W_DETAILS_AI_NOT_YET', locale)} • {$('W_DETAILS_AI_MODEL_SUFFIX', locale)}</p>
+
+// History tab
+<h4>{$('W_DETAILS_HISTORY_HEADING', locale)}</h4>
+{$('W_DETAILS_HISTORY_EMPTY', locale)}
+<span className="badge badge--online">{$('W_DETAILS_HISTORY_COMPLETE', locale)}</span>
+<p className="muted">{patient.village || 'Village'} • {$('W_DETAILS_HISTORY_VILLAGE_PREFIX', locale)} {v.recorded_by_name || 'Worker'}</p>
+<p className="muted">{$('W_DETAILS_HISTORY_WORKER_PREFIX', locale)} {patient.worker_name || '—'}</p>
+
+// Action buttons
+<Link ...>{$('W_DETAILS_BTN_RECORD_VITALS', locale)}</Link>
+<button ...>{$('W_DETAILS_BTN_RUN_AI', locale)}</button>
+```
+
+### `pages/worker/VitalsEntry.jsx`
+
+Delete the local `workerNavItems` array, import from `data/navItems`.
+
+```jsx
+title={$('W_PAGE_TITLE_VITALS', locale)}
+<h3>{$('W_VITALS_HEADING', locale)}</h3>
+
+// Patient select
+<label>{$('W_VITALS_LABEL_PATIENT', locale)}
+  <select ...><option value="">{$('W_VITALS_PH_PATIENT', locale)}</option>...</select>
+</label>
+
+// Field labels
+<label>{$('W_VITALS_LABEL_SYSTOLIC', locale)} ...</label>
+<label>{$('W_VITALS_LABEL_DIASTOLIC', locale)} ...</label>
+<label>{$('W_VITALS_LABEL_WEIGHT', locale)} ...</label>
+<label>{$('W_VITALS_LABEL_PULSE', locale)} ...</label>
+<label>{$('W_VITALS_LABEL_TEMP', locale)} ...</label>
+<label>{$('W_VITALS_LABEL_SYMPTOMS', locale)}
+  <input placeholder={$('W_VITALS_PH_SYMPTOMS', locale)} .../>
+</label>
+
+// Success message
+<strong style={{ color: 'var(--color-success)' }}>{$('W_VITALS_SUCCESS', locale)}</strong>
+
+// Buttons
+{saving ? $('W_VITALS_BTN_SAVING', locale) : $('W_VITALS_BTN_SAVE', locale)}
+<button ...>{$('W_VITALS_BTN_BACK', locale)}</button>
+
+// Errors in handleSave
+setError($('W_VITALS_ERR_REQUIRED', locale))
+setError($('W_VITALS_ERR_NETWORK', locale))
+```
+
+### `pages/worker/AIAnalysis.jsx`
+
+Delete the local `workerNavItems` array, import from `data/navItems`.
+
+```jsx
+title={$('W_PAGE_TITLE_AI', locale)}
+<h3>{$('W_AI_HEADING', locale)}</h3>
+
+<label>{$('W_AI_LABEL_SELECT', locale)}
+  <select ...><option value="">{$('W_AI_PH_SELECT', locale)}</option>...</select>
+</label>
+
+{analyzing ? $('W_AI_BTN_ANALYZING', locale) : $('W_AI_BTN_ANALYZE', locale)}
+
+// Prediction section
+<h3>{$('W_AI_RISK_HEADING_PREFIX', locale)} {selectedName}</h3>
+<p className="muted">{$('W_AI_RISK_SCORE_LABEL', locale)}</p>
+<strong style={{ color: '#ef4444' }}>{$('W_AI_PREECLAMPSIA_TITLE', locale)}</strong>
+<p className="muted">{$('W_AI_PREECLAMPSIA_BODY', locale)}</p>
+<p className="muted">{$('W_AI_FACTORS_LABEL', locale)}</p>
+<p className="muted">{$('W_AI_MODEL_PREFIX', locale)} {prediction.model}</p>
+
+// Summary section
+<h3>{$('W_AI_SUMMARY_HEADING', locale)}</h3>
+<strong>{$('W_AI_SUMMARY_LABEL', locale)}</strong>
+<h4>{$('W_AI_RECOMMENDATIONS_HEADING', locale)}</h4>
+<p className="muted">{$('W_AI_SOURCES_PREFIX', locale)} {summary.sources.join(', ')}</p>
+```
+
+### `pages/worker/Alerts.jsx`
+
+Delete the local `workerNavItems` array, import from `data/navItems`.
+
+```jsx
+title={$('W_PAGE_TITLE_ALERTS', locale)}
+
+<h3>{$('W_ALERTS_ACTIVE_HEADING', locale)}</h3>
+<span className="badge badge--high">{activeAlerts.length} {$('W_ALERTS_ACTIVE_BADGE_SUFFIX', locale)}</span>
+
+// Loading
+{$('W_ALERTS_LOADING', locale)}
+
+// All quiet
+{$('W_ALERTS_ALL_QUIET', locale)}
+
+// Each active alert
+<span>{$('W_ALERTS_TRIGGERED_PREFIX', locale)}</span> {new Date(alert.created_at).toLocaleString()}
+
+// Location
+<span style={{ color: 'var(--color-primary-light)' }}>{$('W_ALERTS_LOCATION_LABEL', locale)}</span>
+<a ...>{$('W_ALERTS_MAP_LINK', locale)} (...)</a>
+
+// Buttons
+{$('W_ALERTS_BTN_RESOLVE', locale)}
+{$('W_ALERTS_BTN_DISMISS', locale)}
+
+// History section
+<h3>{$('W_ALERTS_HISTORY_HEADING', locale)}</h3>
+{$('W_ALERTS_HISTORY_EMPTY', locale)}
+```
+
+### `pages/worker/SyncCenter.jsx`
+
+Delete the local `workerNavItems` array, import from `data/navItems`.
+
+```jsx
+title={$('W_PAGE_TITLE_SYNC', locale)}
+
+// Banner
+banner={{
+  tone: connectivity === 'online' ? 'online' : 'offline',
+  title: $('W_SYNC_BANNER_TITLE', locale),
+  message: connectivity === 'online' ? $('W_SYNC_BANNER_ONLINE', locale) : $('W_SYNC_BANNER_OFFLINE', locale),
+  action: { label: $('W_SYNC_BANNER_REFRESH', locale), onClick: loadConflicts },
+}}
+
+// Stats
+<p className="muted">{$('W_SYNC_STAT_STATUS', locale)}</p>
+<div className="kpi">{connectivity === 'online' ? $('W_SYNC_STATUS_ONLINE', locale) : $('W_SYNC_STATUS_OFFLINE', locale)}</div>
+<p className="muted">{$('W_SYNC_STAT_CONFLICTS', locale)}</p>
+
+// Connection section
+<h3>{$('W_SYNC_CONN_HEADING', locale)}</h3>
+{connectivity === 'online' && $('W_SYNC_STATUS_ONLINE', locale)}
+{connectivity === 'offline' && $('W_SYNC_STATUS_OFFLINE', locale)}
+<p className="muted">{connectivity === 'online' ? $('W_SYNC_CONN_SYNCED', locale) : $('W_SYNC_CONN_WAITING', locale)}</p>
+
+// Conflicts section
+<h3>{$('W_SYNC_CONFLICTS_HEADING_PREFIX', locale)}{conflicts ? conflicts.length : 0}{$('W_SYNC_CONFLICTS_HEADING_SUFFIX', locale)}</h3>
+{$('W_SYNC_CONFLICTS_LOADING', locale)}
+{$('W_SYNC_CONFLICTS_EMPTY', locale)}
+
+// Diff view
+<h4>{$('W_SYNC_DIFF_LOCAL', locale)}</h4>
+<h4>{$('W_SYNC_DIFF_SERVER', locale)}</h4>
+
+// Buttons
+{$('W_SYNC_BTN_KEEP_LOCAL', locale)}
+{$('W_SYNC_BTN_KEEP_SERVER', locale)}
+```
+
+---
+
+## Phase 8 — Final Verification Checklist
+
+Run through this before calling the implementation done.
+
+### Code checks (read through each file after changes)
+
+- [ ] Every `import { patientNavItems }` and `import { workerNavItems }` in every file is calling `patientNavItems(locale)` / `workerNavItems(locale)` — not just `patientNavItems`
+- [ ] `workerNavItems` local array definition (the copy-paste block at the top of each worker page) has been **deleted** from all 7 worker pages: `Dashboard.jsx`, `PatientList.jsx`, `PatientDetails.jsx`, `VitalsEntry.jsx`, `AIAnalysis.jsx`, `Alerts.jsx`, `SyncCenter.jsx`
+- [ ] `AIChat.jsx` no longer has `$("AI_SYMPTOM_CHECKER", "bn")` — it uses the locale from context
+- [ ] `Profile.jsx` handles the nav correctly: `isPatient ? patientNavItems(locale) : isWorker ? workerNavItems(locale) : []`
+- [ ] `AppContext.jsx` value object includes both `locale` and `setLocale`
+- [ ] `strings.js` has no key in `'bn'` that is missing from `'en'` (and vice versa)
+- [ ] The `$` fallback chain is: `strings[locale]?.[item] ?? strings['en'][item] ?? item`
+- [ ] `Splash.jsx` and `RoleSelection.jsx` read locale from `localStorage` directly (they may render before `AppProvider` children are set up, so `useApp()` would throw)
+- [ ] All other pages use `const { locale } = useApp()`
+- [ ] The language toggle button appears in both the mobile header AND the desktop header in `MobileLayout.jsx`
+- [ ] The language toggle button appears in `AdminLayout.jsx` header
+
+### Functional checks (test in browser)
+
+- [ ] Toggle from English to Bangla — entire UI switches on every page
+- [ ] Refresh the browser — language choice persists
+- [ ] Toggle back to English — works correctly
+- [ ] AI Chat page title shows translated text
+- [ ] Daily Check form labels and placeholders are translated
+- [ ] Worker nav labels (Home, Patients, AI, Sync, Profile) translate
+- [ ] Patient nav labels (Home, AI Chat, Health, Alerts, Profile) translate
+- [ ] Nutrition filter tags display correctly in Bangla but filtering still works
+- [ ] Patient List filter chips display correctly in Bangla but filtering still works
+- [ ] Patient Details tabs display correctly in Bangla but tab switching still works
+- [ ] Error messages in DailyCheck are translated when triggered
+- [ ] Error messages in Profile edit are translated when triggered
+- [ ] Emergency SOS status text translates correctly in all three states
+- [ ] Admin pages: toggle button appears, connectivity badge translates, page content stays English
+
+---
+
+## Key Architectural Decisions (Why These Choices)
+
+| Decision                                    | Reason                                                       |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| `locale` in `AppContext`, not a new context | Teammate's explicit instruction: "onno kono context use korba na" |
+| `localStorage` for persistence              | No backend change needed; survives page refresh              |
+| `navItems` as functions, not arrays         | Arrays are evaluated at module load time, outside React — they cannot call `useApp()`. Functions are called inside components where `locale` is available |
+| English keys in filter/tab logic            | Bangla display labels and English comparison values must be separated to avoid breaking `activeFilter === 'High Risk'` checks |
+| Auth pages read `localStorage` directly     | `Splash` and `RoleSelection` are rendered inside `<Routes>` but may be the first component to mount — safer to read from storage than assume `useApp()` is available |
+| Fallback chain in `$`                       | `strings[locale]?.[item] ?? strings['en'][item] ?? item` prevents blank UI if a Bangla string is accidentally missing |
+| Food names / quick chips not translated     | These are data or clinical API terms — translating them would break AI model input or require mockData rewrite |

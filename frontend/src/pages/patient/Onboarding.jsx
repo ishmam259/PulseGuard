@@ -4,9 +4,10 @@ import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
+import $ from '../../config/strings'
 
 export default function Onboarding() {
-  const { currentUser } = useApp()
+  const { currentUser, locale, connectivity } = useApp()
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
@@ -26,13 +27,13 @@ export default function Onboarding() {
     setError('')
 
     if (!form.gestational_week) {
-      setError('Please enter your current gestational week.')
+      setError($('ONBOARD_ERR_WEEK_REQUIRED', locale))
       return
     }
 
     const week = parseInt(form.gestational_week)
     if (isNaN(week) || week < 1 || week > 45) {
-      setError('Gestational week must be between 1 and 45.')
+      setError($('ONBOARD_ERR_WEEK_RANGE', locale))
       return
     }
 
@@ -59,7 +60,11 @@ export default function Onboarding() {
   }
 
   return (
-    <MobileLayout title="Set Up Profile" navItems={patientNavItems}>
+    <MobileLayout
+      title={$('PAGE_TITLE_ONBOARDING', locale)}
+      status={connectivity}
+      navItems={patientNavItems(locale)}
+    >
       <div className="animate-fade-in">
         {/* Hero Card */}
         <div
@@ -74,18 +79,18 @@ export default function Onboarding() {
         >
           <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🌿</div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-            Welcome, {currentUser?.name?.split(' ')[0]}!
+            {$('ONBOARD_WELCOME_PREFIX', locale)} {currentUser?.name?.split(' ')[0]}!
           </h2>
           <p className="muted" style={{ lineHeight: 1.6 }}>
-            To get started with PulseGuard, we need a few details to set up your maternal health profile. This will unlock vitals tracking, AI health checks, and personalised guidance.
+            {$('ONBOARD_WELCOME_BODY', locale)}
           </p>
         </div>
 
         {/* Form Card */}
         <div className="card" style={{ padding: '1.75rem 1.5rem' }}>
-          <h3 style={{ marginBottom: '0.25rem' }}>Medical Profile Setup</h3>
+          <h3 style={{ marginBottom: '0.25rem' }}>{$('ONBOARD_SECTION_HEADING', locale)}</h3>
           <p className="muted" style={{ marginBottom: '1.5rem', fontSize: '13px' }}>
-            All fields marked <span style={{ color: 'var(--color-primary)' }}>*</span> are required.
+            {$('ONBOARD_SECTION_SUBHEADING', locale)}
           </p>
 
           {error && (
@@ -105,7 +110,7 @@ export default function Onboarding() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Gestational Week */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-              Current Pregnancy Week <span style={{ color: 'var(--color-primary)' }}>*</span>
+              {$('ONBOARD_LABEL_WEEK', locale)}
               <div className="input-wrapper">
                 <input
                   id="gestational_week"
@@ -113,20 +118,20 @@ export default function Onboarding() {
                   className="input"
                   value={form.gestational_week}
                   onChange={handleChange('gestational_week')}
-                  placeholder="e.g. 24"
+                  placeholder={$('ONBOARD_PH_WEEK', locale)}
                   min="1"
                   max="45"
                   required
                 />
               </div>
               <span style={{ fontSize: '12px', color: 'var(--color-muted)', fontWeight: 400 }}>
-                Enter a value between 1 and 45.
+                {$('ONBOARD_HINT_WEEK', locale)}
               </span>
             </label>
 
             {/* Age */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-              Your Age
+              {$('ONBOARD_LABEL_AGE', locale)}
               <div className="input-wrapper">
                 <input
                   id="age"
@@ -134,7 +139,7 @@ export default function Onboarding() {
                   className="input"
                   value={form.age}
                   onChange={handleChange('age')}
-                  placeholder="e.g. 26"
+                  placeholder={$('ONBOARD_PH_AGE', locale)}
                   min="10"
                   max="60"
                 />
@@ -143,7 +148,7 @@ export default function Onboarding() {
 
             {/* Village */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-              Village / Clinic Area
+              {$('ONBOARD_LABEL_VILLAGE', locale)}
               <div className="input-wrapper">
                 <input
                   id="village"
@@ -151,7 +156,7 @@ export default function Onboarding() {
                   className="input"
                   value={form.village}
                   onChange={handleChange('village')}
-                  placeholder="e.g. Kurigram Village A"
+                  placeholder={$('ONBOARD_PH_VILLAGE', locale)}
                 />
               </div>
             </label>
@@ -163,7 +168,7 @@ export default function Onboarding() {
               disabled={saving}
               style={{ marginTop: '0.5rem' }}
             >
-              {saving ? 'Setting up profile…' : '✓ Complete Registration'}
+              {saving ? $('ONBOARD_BTN_LOADING', locale) : $('ONBOARD_BTN_SUBMIT', locale)}
             </button>
           </form>
         </div>

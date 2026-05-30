@@ -1,19 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
+import { useApp } from '../../context/AppContext'
+import { workerNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
+import $ from '../../config/strings'
 
 export default function VitalsEntry() {
   const { patientId } = useParams()
   const navigate = useNavigate()
+  const { locale } = useApp()
   const [patients, setPatients] = useState([])
   const [selectedPatient, setSelectedPatient] = useState(patientId || '')
   const [form, setForm] = useState({
@@ -40,7 +36,7 @@ export default function VitalsEntry() {
   const handleSave = async () => {
     setError('')
     if (!selectedPatient || !form.bp_systolic || !form.bp_diastolic) {
-      setError('Please select a patient and enter BP readings')
+      setError($('W_VITALS_ERR_REQUIRED', locale))
       return
     }
     setSaving(true)
@@ -58,18 +54,18 @@ export default function VitalsEntry() {
         setResult(res)
         setForm({ bp_systolic: '', bp_diastolic: '', weight_kg: '', pulse: '', temperature_c: '', symptoms: '' })
       } else {
-        setError(res.error || 'Failed to save vitals')
+        setError(res.error || $('W_VITALS_ERR_REQUIRED', locale))
       }
     } catch {
-      setError('Connection failed. Please try again.')
+      setError($('W_VITALS_ERR_NETWORK', locale))
     }
     setSaving(false)
   }
 
   return (
-    <MobileLayout title="Record Vitals" navItems={workerNavItems}>
+    <MobileLayout title={$('W_PAGE_TITLE_VITALS', locale)} navItems={workerNavItems(locale)}>
       <section className="card animate-fade-in">
-        <h3>Vitals Input</h3>
+        <h3>{$('W_VITALS_HEADING', locale)}</h3>
 
         {error && (
           <div className="alert-panel" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)', marginBottom: '1rem' }}>
@@ -79,57 +75,57 @@ export default function VitalsEntry() {
 
         <div className="form-grid">
           <label>
-            Patient
+            {$('W_VITALS_LABEL_PATIENT', locale)}
             <div className="input-wrapper">
               <select className="input" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)}>
-                <option value="">Select patient…</option>
+                <option value="">{$('W_VITALS_PH_PATIENT', locale)}</option>
                 {patients.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}, Week {p.gestational_week || '?'}</option>
+                  <option key={p.id} value={p.id}>{p.name}, {$('W_PATIENTS_WEEK_PREFIX', locale)} {p.gestational_week || '?'}</option>
                 ))}
               </select>
             </div>
           </label>
           <label>
-            BP Systolic (mmHg) *
+            {$('W_VITALS_LABEL_SYSTOLIC', locale)}
             <div className="input-wrapper">
               <input className="input" type="number" placeholder="120" value={form.bp_systolic} onChange={handleChange('bp_systolic')} />
             </div>
           </label>
           <label>
-            BP Diastolic (mmHg) *
+            {$('W_VITALS_LABEL_DIASTOLIC', locale)}
             <div className="input-wrapper">
               <input className="input" type="number" placeholder="80" value={form.bp_diastolic} onChange={handleChange('bp_diastolic')} />
             </div>
           </label>
           <label>
-            Weight (kg)
+            {$('W_VITALS_LABEL_WEIGHT', locale)}
             <div className="input-wrapper">
               <input className="input" type="number" step="0.1" placeholder="62.0" value={form.weight_kg} onChange={handleChange('weight_kg')} />
             </div>
           </label>
           <label>
-            Pulse (bpm)
+            {$('W_VITALS_LABEL_PULSE', locale)}
             <div className="input-wrapper">
               <input className="input" type="number" placeholder="78" value={form.pulse} onChange={handleChange('pulse')} />
             </div>
           </label>
           <label>
-            Temperature (°C)
+            {$('W_VITALS_LABEL_TEMP', locale)}
             <div className="input-wrapper">
               <input className="input" type="number" step="0.1" placeholder="36.8" value={form.temperature_c} onChange={handleChange('temperature_c')} />
             </div>
           </label>
           <label>
-            Symptoms (comma-separated)
+            {$('W_VITALS_LABEL_SYMPTOMS', locale)}
             <div className="input-wrapper">
-              <input className="input" placeholder="Headache, fatigue, swelling..." value={form.symptoms} onChange={handleChange('symptoms')} />
+              <input className="input" placeholder={$('W_VITALS_PH_SYMPTOMS', locale)} value={form.symptoms} onChange={handleChange('symptoms')} />
             </div>
           </label>
         </div>
 
         {result && (
           <div className="alert-panel" style={{ background: 'rgba(16,185,129,0.1)', borderColor: 'rgba(16,185,129,0.3)', marginTop: '1rem' }}>
-            <strong style={{ color: 'var(--color-success)' }}>Vitals saved successfully</strong>
+            <strong style={{ color: 'var(--color-success)' }}>{$('W_VITALS_SUCCESS', locale)}</strong>
             <p className="muted">
               Risk Score: {((result.riskScore || 0) * 100).toFixed(0)}% | Level: {result.riskLevel || 'low'}
             </p>
@@ -138,11 +134,11 @@ export default function VitalsEntry() {
 
         <div className="button-row">
           <button className="btn btn--primary" type="button" onClick={handleSave} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Vitals'}
+            {saving ? $('W_VITALS_BTN_SAVING', locale) : $('W_VITALS_BTN_SAVE', locale)}
           </button>
           {selectedPatient && (
             <button className="btn btn--ghost" type="button" onClick={() => navigate(`/worker/patient/${selectedPatient}`)}>
-              ← Back to Patient
+              {$('W_VITALS_BTN_BACK', locale)}
             </button>
           )}
         </div>

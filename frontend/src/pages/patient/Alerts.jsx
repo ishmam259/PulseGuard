@@ -1,6 +1,7 @@
 import { useApp } from '../../context/AppContext'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { patientNavItems } from '../../data/navItems'
+import $ from '../../config/strings'
 
 const severityMap = {
   emergency: { badge: 'high', icon: '' },
@@ -10,7 +11,7 @@ const severityMap = {
 }
 
 export default function Alerts() {
-  const { notifications, connectivity } = useApp()
+  const { notifications, connectivity, locale } = useApp()
 
   // Default demo alerts if no real WebSocket alerts are present
   const displayAlerts = notifications.length > 0 ? notifications : [
@@ -34,13 +35,13 @@ export default function Alerts() {
 
   return (
     <MobileLayout
-      title="Alerts"
+      title={$('PAGE_TITLE_ALERTS', locale)}
       status={connectivity}
-      navItems={patientNavItems}
+      navItems={patientNavItems(locale)}
     >
       <div className="animate-fade-in">
         <div className="card">
-          <h3 className="text-gradient">Notifications</h3>
+          <h3 className="text-gradient">{$('ALERTS_HEADING', locale)}</h3>
           <div className="list" style={{ marginTop: '1rem' }}>
             {displayAlerts.map((alert, i) => {
               const sev = severityMap[alert.type] || severityMap.info

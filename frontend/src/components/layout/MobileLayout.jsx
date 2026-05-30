@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import $ from '../../config/strings'
 
 export default function MobileLayout({ title, status, banner, children, navItems }) {
-  const { connectivity, toggleConnectivity, currentUser, logout, notifications } = useApp()
+  const { connectivity, toggleConnectivity, currentUser, logout, notifications, locale, setLocale } = useApp()
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
 
@@ -70,7 +71,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
               onFocus={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
               onBlur={(e) => e.currentTarget.style.background = 'transparent'}
             >
-              <span>Logout</span>
+              <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>
             </button>
           </nav>
         </aside>
@@ -92,11 +93,19 @@ export default function MobileLayout({ title, status, banner, children, navItems
               style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
               title="Click to toggle connectivity state"
             >
-              {currentStatus === 'online' && 'Online'}
-              {currentStatus === 'offline' && 'Offline'}
-              {currentStatus === 'syncing' && 'Syncing'}
+              {currentStatus === 'online' && $('LAYOUT_ONLINE', locale)}
+              {currentStatus === 'offline' && $('LAYOUT_OFFLINE', locale)}
+              {currentStatus === 'syncing' && $('LAYOUT_SYNCING', locale)}
             </button>
-            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}>Alerts</button>
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
+              style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}
+            >
+              {$('LANG_TOGGLE', locale)}
+            </button>
+            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}>{$('LAYOUT_ALERTS_BTN', locale)}</button>
             <div className="avatar">{initials}</div>
           </div>
         </header>
@@ -105,7 +114,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
         <header className="desktop-header">
           <div>
             <h1 className="page-title">{title}</h1>
-            <p className="muted">PulseGuard AI: {currentUser?.role === 'worker' ? 'Maternal Health Worker Portal' : 'Patient Portal'}</p>
+            <p className="muted">PulseGuard AI: {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
           </div>
           <div className="top-actions">
             <button
@@ -115,12 +124,20 @@ export default function MobileLayout({ title, status, banner, children, navItems
               style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
               title="Click to toggle connectivity state"
             >
-              {currentStatus === 'online' && 'Online'}
-              {currentStatus === 'offline' && 'Offline'}
-              {currentStatus === 'syncing' && 'Syncing'}
+              {currentStatus === 'online' && $('LAYOUT_ONLINE', locale)}
+              {currentStatus === 'offline' && $('LAYOUT_OFFLINE', locale)}
+              {currentStatus === 'syncing' && $('LAYOUT_SYNCING', locale)}
             </button>
-            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
-            <NavLink to={navItems.filter(item => item.label == 'Profile')[0].to}>
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
+              style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}
+            >
+              {$('LANG_TOGGLE', locale)}
+            </button>
+            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>{$('LAYOUT_ALERTS_BTN', locale)}</button>
+            <NavLink to={navItems.find(item => item.to.includes('profile'))?.to || '#'}>
               <div className="avatar">{initials}</div>
             </NavLink> 
           </div>
@@ -150,7 +167,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
                   navigate('/worker/alerts')
                 }}
               >
-                Respond
+                {$('LAYOUT_RESPOND_BTN', locale)}
               </button>
               <button
                 type="button"

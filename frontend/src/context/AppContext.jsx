@@ -9,6 +9,9 @@ export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(undefined)
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
+  const [locale, setLocale] = useState(() => {
+    return localStorage.getItem('pg_locale') || 'en'
+  })
 
   // Load tokens and check auth on mount
   useEffect(() => {
@@ -101,6 +104,10 @@ export function AppProvider({ children }) {
     }
   }, [])
 
+  useEffect(() => {
+    localStorage.setItem('pg_locale', locale)
+  }, [locale])
+
   // Auto-sync background offline records when connection is restored
   const syncOfflineQueue = useCallback(async () => {
     if (!currentUser || connectivity !== 'online') return
@@ -153,6 +160,8 @@ export function AppProvider({ children }) {
     logout,
     notifications,
     addNotification,
+    locale,
+    setLocale,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

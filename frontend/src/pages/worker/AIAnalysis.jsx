@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
+import { useApp } from '../../context/AppContext'
+import { workerNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
+import $ from '../../config/strings'
 
 export default function AIAnalysis() {
+  const { locale } = useApp()
   const [patients, setPatients] = useState(undefined)
   const [selectedPatient, setSelectedPatient] = useState('')
   const [prediction, setPrediction] = useState(null)
@@ -67,34 +63,34 @@ export default function AIAnalysis() {
     setAnalyzing(false)
   }
 
-  const selectedName = (patients || []).find(p => p.id === selectedPatient)?.name || 'Select a patient'
+  const selectedName = (patients || []).find(p => p.id === selectedPatient)?.name || $('W_AI_PH_SELECT', locale)
 
   return (
-    <MobileLayout title="AI Analysis" navItems={workerNavItems}>
+    <MobileLayout title={$('W_PAGE_TITLE_AI', locale)} navItems={workerNavItems(locale)}>
       <section className="card animate-fade-in">
-        <h3>AI Risk Assessment</h3>
+        <h3>{$('W_AI_HEADING', locale)}</h3>
         <div className="form-grid" style={{ marginBottom: '1rem' }}>
           <label>
-            Select Patient
+            {$('W_AI_LABEL_SELECT', locale)}
             <select className="input" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)}>
-              <option value="">Choose patient…</option>
+              <option value="">{$('W_AI_PH_SELECT', locale)}</option>
               {(patients || []).map(p => (
-                <option key={p.id} value={p.id}>{p.name}, Week {p.gestational_week || '?'}</option>
+                <option key={p.id} value={p.id}>{p.name}, {$('W_PATIENTS_WEEK_PREFIX', locale)} {p.gestational_week || '?'}</option>
               ))}
             </select>
           </label>
         </div>
         <button type="button" className="btn btn--primary" onClick={handleAnalyze} disabled={!selectedPatient || analyzing}>
-          {analyzing ? 'Analyzing…' : 'Run AI Analysis'}
+          {analyzing ? $('W_AI_BTN_ANALYZING', locale) : $('W_AI_BTN_ANALYZE', locale)}
         </button>
       </section>
 
       {prediction && (
         <section className="card animate-fade-in" style={{ animationDelay: '80ms' }}>
-          <h3>Risk Prediction: {selectedName}</h3>
+          <h3>{$('W_AI_RISK_HEADING_PREFIX', locale)} {selectedName}</h3>
           <div className="card-row">
             <div>
-              <p className="muted">Risk Score</p>
+              <p className="muted">{$('W_AI_RISK_SCORE_LABEL', locale)}</p>
               <div className="kpi" style={{
                 color: prediction.risk_score >= 0.7 ? '#ef4444' : prediction.risk_score >= 0.3 ? '#f59e0b' : '#10b981'
               }}>
@@ -113,32 +109,32 @@ export default function AIAnalysis() {
           </div>
           {prediction.preeclampsia_flag && (
             <div className="alert-panel" style={{ marginTop: '1rem' }}>
-              <strong style={{ color: '#ef4444' }}>Preeclampsia Flag</strong>
-              <p className="muted">AI model has flagged potential preeclampsia risk.</p>
+              <strong style={{ color: '#ef4444' }}>{$('W_AI_PREECLAMPSIA_TITLE', locale)}</strong>
+              <p className="muted">{$('W_AI_PREECLAMPSIA_BODY', locale)}</p>
             </div>
           )}
           {prediction.factors?.length > 0 && (
             <div style={{ marginTop: '1rem' }}>
-              <p className="muted">Contributing Factors:</p>
+              <p className="muted">{$('W_AI_FACTORS_LABEL', locale)}</p>
               <div className="chip-row">
                 {prediction.factors.map((f) => <span key={f} className="chip">{f}</span>)}
               </div>
             </div>
           )}
-          <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>Model: {prediction.model}</p>
+          <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>{$('W_AI_MODEL_PREFIX', locale)} {prediction.model}</p>
         </section>
       )}
 
       {summary && (
         <section className="card animate-fade-in" style={{ animationDelay: '160ms' }}>
-          <h3>Longitudinal Summary</h3>
+          <h3>{$('W_AI_SUMMARY_HEADING', locale)}</h3>
           <div className="alert-panel">
-            <strong>AI Assessment</strong>
+            <strong>{$('W_AI_SUMMARY_LABEL', locale)}</strong>
             <p className="muted">{summary.summary}</p>
           </div>
           {summary.recommendations?.length > 0 && (
             <div style={{ marginTop: '1rem' }}>
-              <h4>Recommendations</h4>
+              <h4>{$('W_AI_RECOMMENDATIONS_HEADING', locale)}</h4>
               <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
                 {summary.recommendations.map((r) => <li key={r}>{r}</li>)}
               </ul>
@@ -146,7 +142,7 @@ export default function AIAnalysis() {
           )}
           {summary.sources && (
             <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
-              Sources: {summary.sources.join(', ')}
+              {$('W_AI_SOURCES_PREFIX', locale)} {summary.sources.join(', ')}
             </p>
           )}
         </section>

@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
+import $ from '../../config/strings'
 
 const sidebarLinks = [
   { label: 'Dashboard', to: '/admin', icon: '' },
@@ -11,7 +12,7 @@ const sidebarLinks = [
 ]
 
 export default function AdminLayout({ title, children }) {
-  const { connectivity, currentUser, logout } = useApp()
+  const { connectivity, currentUser, logout, locale, setLocale } = useApp()
   const navigate = useNavigate()
   const initials = currentUser ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AD'
 
@@ -73,10 +74,18 @@ export default function AdminLayout({ title, children }) {
           </div>
           <div className="top-actions">
             <span className={`badge badge--${connectivity}`}>
-              {connectivity === 'online' && 'Online'}
-              {connectivity === 'offline' && 'Offline'}
-              {connectivity === 'syncing' && 'Syncing'}
+              {connectivity === 'online' && $('LAYOUT_ONLINE', locale)}
+              {connectivity === 'offline' && $('LAYOUT_OFFLINE', locale)}
+              {connectivity === 'syncing' && $('LAYOUT_SYNCING', locale)}
             </span>
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
+              style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}
+            >
+              {$('LANG_TOGGLE', locale)}
+            </button>
             <button type="button" className="icon-btn" style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
             <div className="avatar">{initials}</div>
           </div>
