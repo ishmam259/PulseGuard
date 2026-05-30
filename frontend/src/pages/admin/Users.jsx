@@ -4,7 +4,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
 
 export default function Users() {
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -153,7 +153,7 @@ export default function Users() {
                 filtered.map((user) => (
                   <tr key={user.id}>
                     <td style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--color-muted)' }}>
-                      PG-{user.id.slice(0, 8).toUpperCase()}
+                      PG-{n(user.id.slice(0, 8).toUpperCase())}
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -170,13 +170,13 @@ export default function Users() {
                         background: user.role === 'admin' ? 'rgba(99,102,241,0.1)' : (user.role === 'worker' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)'),
                         color: user.role === 'admin' ? '#6366f1' : (user.role === 'worker' ? '#10b981' : '#f59e0b')
                       }}>
-                        {user.role}
+                        {t('ROLE_' + user.role.toUpperCase())}
                       </span>
                     </td>
                     <td>{user.email || <span className="muted">{t('FALLBACK_NA')}</span>}</td>
                     <td>{user.phone || <span className="muted">{t('FALLBACK_NA')}</span>}</td>
                     <td style={{ color: 'var(--color-muted)' }}>
-                      {new Date(user.created_at).toLocaleDateString()}
+                      {n(new Date(user.created_at).toLocaleDateString())}
                     </td>
                     <td>
                       <div className="inline-actions">

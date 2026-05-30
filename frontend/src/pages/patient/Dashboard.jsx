@@ -8,7 +8,7 @@ import { patientNavItems } from '../../data/navItems'
 
 export default function Dashboard() {
   const { currentUser, connectivity } = useApp()
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const navigate = useNavigate()
   const [patient, setPatient] = useState(null)
   const [latestVitals, setLatestVitals] = useState(null)
@@ -66,7 +66,7 @@ export default function Dashboard() {
         ) : (
           <div className="card greeting-card">
             <h2>{t('DASHBOARD_HELLO', { name: patient.name })}</h2>
-            <p className="muted">{t('DASHBOARD_PREGNANCY_WEEK')} <strong>{patient.gestational_week || t('FALLBACK_NA')}</strong></p>
+            <p className="muted">{t('DASHBOARD_PREGNANCY_WEEK')} <strong>{patient.gestational_week ? n(patient.gestational_week) : t('FALLBACK_NA')}</strong></p>
             <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.5rem' }}>
               {patient.risk_level === 'high'
                 ? t('HIGH_RISK')
@@ -121,25 +121,25 @@ export default function Dashboard() {
             <div className="kpi-card">
               <span className="muted">{t('DASHBOARD_KPI_BP')}</span>
               <span className={latestVitals ? "kpi" : "kpi-empty"}>
-                {latestVitals ? `${latestVitals.bp_systolic}/${latestVitals.bp_diastolic}` : t('FALLBACK_NA')}
+                {latestVitals ? `${n(latestVitals.bp_systolic)}/${n(latestVitals.bp_diastolic)}` : t('FALLBACK_NA')}
               </span>
             </div>
             <div className="kpi-card">
               <span className="muted">{t('DASHBOARD_KPI_WEIGHT')}</span>
               <span className={latestVitals?.weight_kg ? "kpi" : "kpi-empty"}>
-                {latestVitals?.weight_kg ? `${latestVitals.weight_kg} kg` : t('FALLBACK_NA')}
+                {latestVitals?.weight_kg ? `${n(latestVitals.weight_kg)} kg` : t('FALLBACK_NA')}
               </span>
             </div>
             <div className="kpi-card">
               <span className="muted">{t('DASHBOARD_KPI_TEMPERATURE')}</span>
               <span className={latestVitals?.temperature_c ? "kpi" : "kpi-empty"}>
-                {latestVitals?.temperature_c ? `${latestVitals.temperature_c} °C` : t('FALLBACK_NA')}
+                {latestVitals?.temperature_c ? `${n(latestVitals.temperature_c)} °C` : t('FALLBACK_NA')}
               </span>
             </div>
             <div className="kpi-card">
               <span className="muted">{t('DASHBOARD_KPI_LAST_CHECKUP')}</span>
               <span className={latestVitals ? "kpi" : "kpi-empty"}>
-                {latestVitals ? new Date(latestVitals.recorded_at).toLocaleDateString() : t('DASHBOARD_KPI_NO_RECORDS')}
+                {latestVitals ? n(new Date(latestVitals.recorded_at).toLocaleDateString()) : t('DASHBOARD_KPI_NO_RECORDS')}
               </span>
             </div>
           </div>

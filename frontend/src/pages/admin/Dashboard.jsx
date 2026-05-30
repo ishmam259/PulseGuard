@@ -7,7 +7,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 
 export default function Dashboard() {
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const { notifications } = useApp()
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
@@ -88,7 +88,7 @@ export default function Dashboard() {
           <div className="stat-card bg-appointments animate-fade-in" style={{ animationDelay: '0ms' }}>
             <div className="stat-card-header">
               <img src="/assets/icons/appointments.svg" alt="appointments" className="stat-card-icon" />
-              <h2 className="stat-card-count">{totalPatients}</h2>
+              <h2 className="stat-card-count">{n(totalPatients)}</h2>
             </div>
             <p className="stat-card-label">{t('ADMIN_KPI_TOTAL_PATIENTS')}</p>
           </div>
@@ -96,7 +96,7 @@ export default function Dashboard() {
           <div className="stat-card bg-pending animate-fade-in" style={{ animationDelay: '60ms' }}>
             <div className="stat-card-header">
               <img src="/assets/icons/pending.svg" alt="pending" className="stat-card-icon" />
-              <h2 className="stat-card-count">{highRiskCases}</h2>
+              <h2 className="stat-card-count">{n(highRiskCases)}</h2>
             </div>
             <p className="stat-card-label">{t('ADMIN_KPI_HIGH_RISK')}</p>
           </div>
@@ -104,7 +104,7 @@ export default function Dashboard() {
           <div className="stat-card bg-cancelled animate-fade-in" style={{ animationDelay: '120ms' }}>
             <div className="stat-card-header">
               <img src="/assets/icons/cancelled.svg" alt="cancelled" className="stat-card-icon" />
-              <h2 className="stat-card-count">{moderateRiskCases}</h2>
+              <h2 className="stat-card-count">{n(moderateRiskCases)}</h2>
             </div>
             <p className="stat-card-label">{t('ADMIN_KPI_MODERATE_RISK')}</p>
           </div>
@@ -112,7 +112,7 @@ export default function Dashboard() {
           <div className="stat-card bg-workers animate-fade-in" style={{ animationDelay: '180ms' }}>
             <div className="stat-card-header">
               <img src="/assets/icons/user.svg" alt="workers" className="stat-card-icon" style={{ filter: 'invert(100%)' }} />
-              <h2 className="stat-card-count">{workerCount}</h2>
+              <h2 className="stat-card-count">{n(workerCount)}</h2>
             </div>
             <p className="stat-card-label">{t('ADMIN_KPI_ACTIVE_WORKERS')}</p>
           </div>

@@ -6,7 +6,7 @@ import { useLocale } from '../../context/LocaleContext'
 
 export default function PatientDetails() {
   const { id } = useParams()
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [activeTab, setActiveTab] = useState('Overview')
   const [patient, setPatient] = useState(null)
   const [latestVitals, setLatestVitals] = useState(null)
@@ -86,7 +86,7 @@ export default function PatientDetails() {
           <div className="avatar large">{getInitials(patient.name)}</div>
           <div>
             <h3 style={{ margin: 0 }}>{patient.name}</h3>
-            <p className="muted">{t('PATIENT_AGE_LABEL')} {patient.age || '—'} • {t('WEEK')} {patient.gestational_week || '—'}</p>
+            <p className="muted">{t('PATIENT_AGE_LABEL')} {patient.age ? n(patient.age) : '—'} • {t('WEEK')} {patient.gestational_week ? n(patient.gestational_week) : '—'}</p>
           </div>
         </div>
 
@@ -110,7 +110,7 @@ export default function PatientDetails() {
             <div className="card-row">
               <div>
                 <p className="muted">{t('PATIENT_PREGNANCY_WEEK')}</p>
-                <div className="kpi">{patient.gestational_week || '—'}</div>
+                <div className="kpi">{patient.gestational_week ? n(patient.gestational_week) : '—'}</div>
               </div>
               <span className={`badge badge--${riskLevel}`}>
                 {t('RISK_' + riskLevel.toUpperCase())} {t('RISK_SUFFIX')}
@@ -121,19 +121,19 @@ export default function PatientDetails() {
               <div className="summary-grid">
                 <div>
                   <p className="muted">{t('PATIENT_BLOOD_PRESSURE')}</p>
-                  <strong>{latestVitals.bp_systolic}/{latestVitals.bp_diastolic}</strong>
+                  <strong>{n(latestVitals.bp_systolic)}/{n(latestVitals.bp_diastolic)}</strong>
                 </div>
                 <div>
                   <p className="muted">{t('PATIENT_WEIGHT')}</p>
-                  <strong>{latestVitals.weight_kg || '—'} {t('PATIENT_WEIGHT_UNIT')}</strong>
+                  <strong>{latestVitals.weight_kg ? n(latestVitals.weight_kg) : '—'} {t('PATIENT_WEIGHT_UNIT')}</strong>
                 </div>
                 <div>
                   <p className="muted">{t('PATIENT_PULSE')}</p>
-                  <strong>{latestVitals.pulse || '—'} {t('PATIENT_PULSE_UNIT')}</strong>
+                  <strong>{latestVitals.pulse ? n(latestVitals.pulse) : '—'} {t('PATIENT_PULSE_UNIT')}</strong>
                 </div>
                 <div>
                   <p className="muted">{t('PATIENT_TEMPERATURE')}</p>
-                  <strong>{latestVitals.temperature_c || '—'}{t('PATIENT_TEMPERATURE_UNIT')}</strong>
+                  <strong>{latestVitals.temperature_c ? n(latestVitals.temperature_c) : '—'}{t('PATIENT_TEMPERATURE_UNIT')}</strong>
                 </div>
               </div>
             )}
@@ -165,9 +165,9 @@ export default function PatientDetails() {
               {history.map((v, i) => (
                 <div className="list-item" key={v.id || i}>
                   <div>
-                    <strong>{new Date(v.recorded_at).toLocaleDateString()}</strong>
+                    <strong>{n(new Date(v.recorded_at).toLocaleDateString())}</strong>
                     <p className="muted">
-                      {t('PATIENT_VITALS_BP')} {v.bp_systolic}/{v.bp_diastolic} • {t('PATIENT_VITALS_WEIGHT')} {v.weight_kg}{t('PATIENT_WEIGHT_UNIT')} • {t('PATIENT_VITALS_PULSE')} {v.pulse}
+                      {t('PATIENT_VITALS_BP')} {n(v.bp_systolic)}/{n(v.bp_diastolic)} • {t('PATIENT_VITALS_WEIGHT')} {v.weight_kg ? n(v.weight_kg) : '—'}{t('PATIENT_WEIGHT_UNIT')} • {t('PATIENT_VITALS_PULSE')} {v.pulse ? n(v.pulse) : '—'}
                     </p>
                   </div>
                   <span
@@ -175,7 +175,7 @@ export default function PatientDetails() {
                       v.risk_score >= 0.7 ? 'high' : v.risk_score >= 0.3 ? 'moderate' : 'low'
                     }`}
                   >
-                    {t('PATIENT_VITALS_RISK')} {((v.risk_score || 0) * 100).toFixed(0)}%
+                    {t('PATIENT_VITALS_RISK')} {n(((v.risk_score || 0) * 100).toFixed(0))}%
                   </span>
                 </div>
               ))}
@@ -196,7 +196,7 @@ export default function PatientDetails() {
                 <div className="kpi" style={{
                   color: (aiResult?.risk_score || riskScore) >= 0.7 ? '#ef4444' : (aiResult?.risk_score || riskScore) >= 0.3 ? '#f59e0b' : '#10b981'
                 }}>
-                  {(((aiResult?.risk_score || riskScore)) * 100).toFixed(0)}%
+                  {n((((aiResult?.risk_score || riskScore)) * 100).toFixed(0))}%
                 </div>
               </div>
               <span className={`badge badge--${aiResult?.risk_level || riskLevel}`}>
@@ -250,7 +250,7 @@ export default function PatientDetails() {
               {history.slice(0, 5).map((v, i) => (
                 <div className="list-item" key={v.id || i}>
                   <div>
-                    <strong>{new Date(v.recorded_at).toLocaleDateString()}</strong>
+                    <strong>{n(new Date(v.recorded_at).toLocaleDateString())}</strong>
                     <p className="muted">{patient.village || t('PATIENT_VILLAGE_FALLBACK')} • {t('PATIENT_RECORDED_BY')} {v.recorded_by_name || t('PATIENT_WORKER_FALLBACK')}</p>
                   </div>
                   <span className="badge badge--online">{t('PATIENT_COMPLETE_BADGE')}</span>

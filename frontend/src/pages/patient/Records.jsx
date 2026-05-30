@@ -5,7 +5,7 @@ import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 
 export default function Records() {
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [patient, setPatient] = useState(undefined)
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
@@ -73,18 +73,18 @@ export default function Records() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                     <div>
                       <span style={{ marginRight: '0.5rem' }}></span>
-                      <strong>{t('RECORDS_BP_LABEL')}: {rec.bp_systolic}/{rec.bp_diastolic} mmHg</strong>
+                      <strong>{t('RECORDS_BP_LABEL')}: {n(rec.bp_systolic)}/{n(rec.bp_diastolic)} mmHg</strong>
                     </div>
                     <span className={`badge badge--${(rec.risk_level || 'low').toLowerCase()}`}>
                       {rec.risk_level || 'low'}
                     </span>
                   </div>
                   <div className="muted" style={{ fontSize: '0.85rem' }}>
-                    <span>{t('RECORDS_WEIGHT_LABEL')}: {rec.weight_kg ? `${rec.weight_kg} kg` : t('FALLBACK_NA')}</span>
+                    <span>{t('RECORDS_WEIGHT_LABEL')}: {rec.weight_kg ? `${n(rec.weight_kg)} kg` : t('FALLBACK_NA')}</span>
                     <span style={{ margin: '0 0.5rem' }}>•</span>
-                    <span>{t('RECORDS_TEMP_LABEL')}: {rec.temperature_c ? `${rec.temperature_c} °C` : t('FALLBACK_NA')}</span>
+                    <span>{t('RECORDS_TEMP_LABEL')}: {rec.temperature_c ? `${n(rec.temperature_c)} °C` : t('FALLBACK_NA')}</span>
                     <span style={{ margin: '0 0.5rem' }}>•</span>
-                    <span>{t('RECORDS_PULSE_LABEL')}: {rec.pulse ? `${rec.pulse} bpm` : t('FALLBACK_NA')}</span>
+                    <span>{t('RECORDS_PULSE_LABEL')}: {rec.pulse ? `${n(rec.pulse)} bpm` : t('FALLBACK_NA')}</span>
                   </div>
                   {rec.symptoms && rec.symptoms.length > 0 && (
                     <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
@@ -96,7 +96,7 @@ export default function Records() {
                     </div>
                   )}
                   <div className="muted" style={{ fontSize: '0.75rem', marginTop: '0.25rem', width: '100%', textAlign: 'right' }}>
-                    {new Date(rec.recorded_at).toLocaleString()}
+                    {n(new Date(rec.recorded_at).toLocaleString())}
                   </div>
                 </div>
               ))}

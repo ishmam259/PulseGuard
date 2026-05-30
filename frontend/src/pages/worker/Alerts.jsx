@@ -6,7 +6,7 @@ import { useLocale } from '../../context/LocaleContext'
 
 export default function WorkerAlerts() {
   const { connectivity } = useApp()
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -67,7 +67,7 @@ export default function WorkerAlerts() {
               {t('WORKER_ALERTS_ACTIVE_SOS')}
             </h3>
             <span className="badge badge--high" style={{ padding: '4px 10px' }}>
-              {activeAlerts.length} {t('WORKER_ALERTS_ACTIVE_BADGE')}
+              {n(activeAlerts.length)} {t('WORKER_ALERTS_ACTIVE_BADGE')}
             </span>
           </div>
 
@@ -88,7 +88,7 @@ export default function WorkerAlerts() {
                     <div>
                       <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: 0 }}>{alert.patient_name}</h4>
                       <p className="muted" style={{ fontSize: '0.85rem', marginTop: '4px' }}>
-                        {alert.village || t('WORKER_ALERTS_NO_VILLAGE')} • {t('WEEK')} {alert.gestational_week || '-'}
+                        {alert.village || t('WORKER_ALERTS_NO_VILLAGE')} • {t('WEEK')} {alert.gestational_week ? n(alert.gestational_week) : '-'}
                       </p>
                     </div>
                     {alert.risk_level && (
@@ -103,7 +103,7 @@ export default function WorkerAlerts() {
                       "{alert.message}"
                     </p>
                     <span className="muted" style={{ fontSize: '0.75rem', display: 'block', marginTop: '4px' }}>
-                      {t('WORKER_ALERTS_TRIGGERED')} {new Date(alert.created_at).toLocaleString()}
+                      {t('WORKER_ALERTS_TRIGGERED')} {n(new Date(alert.created_at).toLocaleString())}
                     </span>
                   </div>
 
@@ -116,7 +116,7 @@ export default function WorkerAlerts() {
                         rel="noopener noreferrer"
                         style={{ color: 'var(--color-secondary)', textDecoration: 'underline', fontWeight: 'bold' }}
                       >
-                        {t('WORKER_ALERTS_OPEN_MAPS')} ({Number(alert.latitude).toFixed(5)}, {Number(alert.longitude).toFixed(5)})
+                        {t('WORKER_ALERTS_OPEN_MAPS')} ({n(Number(alert.latitude).toFixed(5))}, {n(Number(alert.longitude).toFixed(5))})
                       </a>
                     </div>
                   )}
@@ -149,7 +149,7 @@ export default function WorkerAlerts() {
         <section className="card">
           <div className="section-header" style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
             <h3>{t('WORKER_ALERTS_RESOLVED_HEADING')}</h3>
-            <span className="muted">{resolvedAlerts.length} {t('WORKER_ALERTS_TOTAL')}</span>
+            <span className="muted">{n(resolvedAlerts.length)} {t('WORKER_ALERTS_TOTAL')}</span>
           </div>
 
           {loading ? null : resolvedAlerts.length === 0 ? (
@@ -179,7 +179,7 @@ export default function WorkerAlerts() {
                       {alert.message}
                     </p>
                     <span className="muted" style={{ fontSize: '0.75rem' }}>
-                      {t('WORKER_ALERTS_RESOLVED_LABEL')} {new Date(alert.resolved_at || alert.created_at).toLocaleString()}
+                      {t('WORKER_ALERTS_RESOLVED_LABEL')} {n(new Date(alert.resolved_at || alert.created_at).toLocaleString())}
                     </span>
                   </div>
                 </div>

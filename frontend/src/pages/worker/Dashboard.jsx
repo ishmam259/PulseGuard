@@ -5,7 +5,7 @@ import * as api from '../../services/api'
 import { useLocale } from '../../context/LocaleContext'
 
 export default function WorkerDashboard() {
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [patients, setPatients] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
@@ -48,7 +48,7 @@ export default function WorkerDashboard() {
           <div className="stat-card bg-appointments">
             <div className="stat-card-header">
               <img src="/assets/icons/appointments.svg" alt="appointments" className="stat-card-icon" />
-              <h2 className="stat-card-count">{loading ? '—' : total}</h2>
+              <h2 className="stat-card-count">{loading ? '—' : n(total)}</h2>
             </div>
             <p className="stat-card-label">{t('WORKER_TOTAL_PATIENTS')}</p>
           </div>
@@ -56,7 +56,7 @@ export default function WorkerDashboard() {
           <div className="stat-card bg-pending">
             <div className="stat-card-header">
               <img src="/assets/icons/pending.svg" alt="pending" className="stat-card-icon" />
-              <h2 className="stat-card-count">{loading ? '—' : highRisk}</h2>
+              <h2 className="stat-card-count">{loading ? '—' : n(highRisk)}</h2>
             </div>
             <p className="stat-card-label">{t('WORKER_HIGH_RISK_CASES')}</p>
           </div>
@@ -64,7 +64,7 @@ export default function WorkerDashboard() {
           <div className="stat-card bg-cancelled">
             <div className="stat-card-header">
               <img src="/assets/icons/cancelled.svg" alt="cancelled" className="stat-card-icon" />
-              <h2 className="stat-card-count">{loading ? '—' : (patients || []).filter(p => p.risk_level === 'moderate').length}</h2>
+              <h2 className="stat-card-count">{loading ? '—' : n((patients || []).filter(p => p.risk_level === 'moderate').length)}</h2>
             </div>
             <p className="stat-card-label">{t('WORKER_MODERATE_RISK_CASES')}</p>
           </div>
@@ -72,7 +72,7 @@ export default function WorkerDashboard() {
           <div className="stat-card bg-appointments" style={{ borderBottomColor: '#24AE7C' }}>
             <div className="stat-card-header">
               <img src="/assets/icons/check-circle.svg" alt="low risk" className="stat-card-icon" />
-              <h2 className="stat-card-count">{loading ? '—' : (patients || []).filter(p => p.risk_level === 'low').length}</h2>
+              <h2 className="stat-card-count">{loading ? '—' : n((patients || []).filter(p => p.risk_level === 'low').length)}</h2>
             </div>
             <p className="stat-card-label">{t('WORKER_LOW_RISK_CASES')}</p>
           </div>
@@ -111,12 +111,12 @@ export default function WorkerDashboard() {
               <div>
                 <strong>{patient.name}</strong>
                 <p className="muted">
-                  {t('WEEK')} {patient.gestational_week || '—'} • {patient.village || t('UNKNOWN')}
+                  {t('WEEK')} {patient.gestational_week ? n(patient.gestational_week) : '—'} • {patient.village || t('UNKNOWN')}
                 </p>
               </div>
               <div className="inline-actions">
                 <span className="badge badge--high">
-                  {((patient.risk_score || 0) * 100).toFixed(0)}%
+                  {n(((patient.risk_score || 0) * 100).toFixed(0))}%
                 </span>
                 <Link className="btn btn--secondary" to={`/worker/patient/${patient.id}`}>
                   {t('VIEW')}

@@ -5,7 +5,7 @@ import * as api from '../../services/api'
 import { useLocale } from '../../context/LocaleContext'
 
 export default function PatientList() {
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [patients, setPatients] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('All')
@@ -81,7 +81,7 @@ export default function PatientList() {
       <section className="card animate-fade-in">
         <div className="section-header">
           <h3>{t('PATIENT_LIST_HEADING')}</h3>
-          <span className="muted">{filtered.length} {t('PATIENT_LIST_RESULTS')}</span>
+          <span className="muted">{n(filtered.length)} {t('PATIENT_LIST_RESULTS')}</span>
         </div>
         <div className="list stagger">
           {loading ? (
@@ -93,7 +93,7 @@ export default function PatientList() {
                 <div>
                   <strong>{patient.name}</strong>
                   <p className="muted">
-                    {t('WEEK')} {patient.gestational_week || '—'} • {patient.village || t('UNKNOWN')}
+                    {t('WEEK')} {patient.gestational_week ? n(patient.gestational_week) : '—'} • {patient.village || t('UNKNOWN')}
                   </p>
                 </div>
               </div>

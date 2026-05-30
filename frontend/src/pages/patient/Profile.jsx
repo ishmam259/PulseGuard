@@ -8,7 +8,7 @@ import { patientNavItems, workerNavItems } from '../../data/navItems'
 
 export default function Profile() {
   const { currentUser, setCurrentUser, logout, connectivity } = useApp()
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const navigate = useNavigate()
   const [patient, setPatient] = useState(null)
   const [patientCount, setPatientCount] = useState(0)
@@ -274,7 +274,7 @@ export default function Profile() {
               <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
                 <div className="profile-detail-card">
                   <span className="profile-detail-label">{t('PROFILE_DETAIL_PREGNANCY_WEEK')}</span>
-                  <span className="profile-detail-value--accent">{patient.gestational_week || t('FALLBACK_NA')}</span>
+                  <span className="profile-detail-value--accent">{patient.gestational_week ? n(patient.gestational_week) : t('FALLBACK_NA')}</span>
                 </div>
                 <div className="profile-detail-card">
                   <span className="profile-detail-label">{t('PROFILE_DETAIL_RISK_LEVEL')}</span>
@@ -299,7 +299,7 @@ export default function Profile() {
               <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
                 <div className="profile-detail-card">
                   <span className="profile-detail-label">{t('PROFILE_DETAIL_ASSIGNED_PATIENTS')}</span>
-                  <span className="profile-detail-value--accent">{patientCount}</span>
+                  <span className="profile-detail-value--accent">{n(patientCount)}</span>
                 </div>
                 <div className="profile-detail-card">
                   <span className="profile-detail-label">{t('PROFILE_DETAIL_PHONE')}</span>

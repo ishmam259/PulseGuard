@@ -5,7 +5,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
 
 export default function Patients() {
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const navigate = useNavigate()
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
@@ -133,7 +133,7 @@ export default function Patients() {
                 filtered.map((patient) => (
                   <tr key={patient.id}>
                     <td style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--color-muted)' }}>
-                      PG-{patient.id.slice(0, 8).toUpperCase()}
+                      PG-{n(patient.id.slice(0, 8).toUpperCase())}
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -146,13 +146,13 @@ export default function Patients() {
                     </td>
                     <td>
                       <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`}>
-                        {patient.risk_level || 'low'}
+                        {t('RISK_' + (patient.risk_level || 'low').toUpperCase())}
                       </span>
                     </td>
-                    <td>{patient.gestational_week || t('FALLBACK_NA')}</td>
+                    <td>{patient.gestational_week ? n(patient.gestational_week) : t('FALLBACK_NA')}</td>
                     <td>{patient.worker_name || t('UNASSIGNED')}</td>
                     <td style={{ color: 'var(--color-muted)' }}>
-                      {new Date(patient.last_updated).toLocaleDateString()}
+                      {n(new Date(patient.last_updated).toLocaleDateString())}
                     </td>
                     <td>
                       <div className="inline-actions">

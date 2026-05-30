@@ -6,7 +6,7 @@ import RiskDistributionChart from '../../components/charts/RiskDistributionChart
 import * as api from '../../services/api'
 
 export default function Analytics() {
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
   const [region, setRegion] = useState('All Regions')
@@ -116,19 +116,19 @@ export default function Analytics() {
             <div className="summary-grid">
               <div className="kpi-card">
                 <span className="muted">{t('ANALYTICS_ACCURACY')}</span>
-                <span className="kpi" style={{ color: 'var(--color-success)' }}>94.2%</span>
+                <span className="kpi" style={{ color: 'var(--color-success)' }}>{n("94.2%")}</span>
               </div>
               <div className="kpi-card">
                 <span className="muted">{t('ANALYTICS_PRECISION')}</span>
-                <span className="kpi" style={{ color: 'var(--color-success)' }}>91.8%</span>
+                <span className="kpi" style={{ color: 'var(--color-success)' }}>{n("91.8%")}</span>
               </div>
               <div className="kpi-card">
                 <span className="muted">{t('ANALYTICS_RECALL')}</span>
-                <span className="kpi" style={{ color: 'var(--color-primary)' }}>89.5%</span>
+                <span className="kpi" style={{ color: 'var(--color-primary)' }}>{n("89.5%")}</span>
               </div>
               <div className="kpi-card">
                 <span className="muted">{t('ANALYTICS_F1_SCORE')}</span>
-                <span className="kpi" style={{ color: 'var(--color-primary)' }}>90.6%</span>
+                <span className="kpi" style={{ color: 'var(--color-primary)' }}>{n("90.6%")}</span>
               </div>
             </div>
           </section>

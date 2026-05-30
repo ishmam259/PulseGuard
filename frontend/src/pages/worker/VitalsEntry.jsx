@@ -7,7 +7,7 @@ import { useLocale } from '../../context/LocaleContext'
 export default function VitalsEntry() {
   const { patientId } = useParams()
   const navigate = useNavigate()
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [patients, setPatients] = useState([])
   const [selectedPatient, setSelectedPatient] = useState(patientId || '')
   const [form, setForm] = useState({
@@ -86,7 +86,7 @@ export default function VitalsEntry() {
               <select className="input" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)}>
                 <option value="">{t('VITALS_SELECT_PATIENT')}</option>
                 {patients.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}, {t('WEEK')} {p.gestational_week || '?'}</option>
+                  <option key={p.id} value={p.id}>{p.name}, {t('WEEK')} {p.gestational_week ? n(p.gestational_week) : '?'}</option>
                 ))}
               </select>
             </div>
@@ -133,7 +133,7 @@ export default function VitalsEntry() {
           <div className="alert-panel" style={{ background: 'rgba(16,185,129,0.1)', borderColor: 'rgba(16,185,129,0.3)', marginTop: '1rem' }}>
             <strong style={{ color: 'var(--color-success)' }}>{t('VITALS_SAVED_SUCCESS')}</strong>
             <p className="muted">
-              {t('VITALS_RISK_SCORE')} {((result.riskScore || 0) * 100).toFixed(0)}% | {t('VITALS_LEVEL')} {t('RISK_' + (result.riskLevel || 'low').toUpperCase())}
+              {t('VITALS_RISK_SCORE')} {n(((result.riskScore || 0) * 100).toFixed(0))}% | {t('VITALS_LEVEL')} {t('RISK_' + (result.riskLevel || 'low').toUpperCase())}
             </p>
           </div>
         )}

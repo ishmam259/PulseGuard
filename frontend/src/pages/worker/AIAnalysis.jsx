@@ -4,7 +4,7 @@ import * as api from '../../services/api'
 import { useLocale } from '../../context/LocaleContext'
 
 export default function AIAnalysis() {
-  const { t } = useLocale()
+  const { t, n } = useLocale()
   const [patients, setPatients] = useState(undefined)
   const [selectedPatient, setSelectedPatient] = useState('')
   const [prediction, setPrediction] = useState(null)
@@ -70,7 +70,7 @@ export default function AIAnalysis() {
             <select className="input" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)}>
               <option value="">{t('AI_CHOOSE_PATIENT')}</option>
               {(patients || []).map(p => (
-                <option key={p.id} value={p.id}>{p.name}, {t('WEEK')} {p.gestational_week || '?'}</option>
+                <option key={p.id} value={p.id}>{p.name}, {t('WEEK')} {p.gestational_week ? n(p.gestational_week) : '?'}</option>
               ))}
             </select>
           </label>
@@ -89,7 +89,7 @@ export default function AIAnalysis() {
               <div className="kpi" style={{
                 color: prediction.risk_score >= 0.7 ? '#ef4444' : prediction.risk_score >= 0.3 ? '#f59e0b' : '#10b981'
               }}>
-                {(prediction.risk_score * 100).toFixed(0)}%
+                {n((prediction.risk_score * 100).toFixed(0))}%
               </div>
             </div>
             <span className={`badge badge--${prediction.risk_level}`}>

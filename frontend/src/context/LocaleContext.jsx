@@ -28,6 +28,18 @@ export function LocaleProvider({ children }) {
     setLocale(locale === 'en' ? 'bn' : 'en')
   }, [locale, setLocale])
 
+  const n = useCallback((num) => {
+    if (num === null || num === undefined) return ''
+    if (locale === 'en') return String(num)
+    const valStr = String(num).trim()
+    const isPhone = /^\+?[0-9\s\-()]{7,20}$/.test(valStr)
+    const hasLetters = /[a-zA-Z]/.test(valStr)
+    if (isPhone || hasLetters) return String(num)
+
+    const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯']
+    return String(num).replace(/[0-9]/g, (digit) => banglaDigits[parseInt(digit)])
+  }, [locale])
+
   /**
    * Translation function.
    * @param {string} key - String key from strings.js
@@ -35,6 +47,26 @@ export function LocaleProvider({ children }) {
    * @returns {string}
    */
   const t = useCallback((key, params) => {
+    if (locale === 'bn' && params && typeof params === 'object') {
+      const translatedParams = {}
+      const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯']
+      Object.keys(params).forEach((param) => {
+        const val = params[param]
+        if (typeof val === 'number' || typeof val === 'string') {
+          const valStr = String(val).trim()
+          const isPhone = /^\+?[0-9\s\-()]{7,20}$/.test(valStr)
+          const hasLetters = /[a-zA-Z]/.test(valStr)
+          if (isPhone || hasLetters) {
+            translatedParams[param] = val
+          } else {
+            translatedParams[param] = valStr.replace(/[0-9]/g, (digit) => banglaDigits[parseInt(digit)])
+          }
+        } else {
+          translatedParams[param] = val
+        }
+      })
+      return $(key, locale, translatedParams)
+    }
     return $(key, locale, params)
   }, [locale])
 
@@ -43,6 +75,7 @@ export function LocaleProvider({ children }) {
     setLocale,
     toggleLocale,
     t,
+    n,
   }
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
