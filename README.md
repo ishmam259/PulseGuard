@@ -5,8 +5,7 @@
   <p>An offline-first maternal healthcare platform powered by local XGBoost predictions and Llama 3 models<br/>to bridge rural village health workers with real-time clinical monitoring.</p>
 
   <p>
-    <a href="http://localhost:3000"><img src="https://img.shields.io/badge/Live%20App-00F59B?style=flat-square&logo=react&logoColor=white" alt="Live App"/></a>
-    <a href="https://youtu.be/example"><img src="https://img.shields.io/badge/Demo%20Video-FF0000?style=flat-square&logo=youtube&logoColor=white" alt="Demo"/></a>
+    <a href="http://129.80.78.215:3000/"><img src="https://img.shields.io/badge/Live%20Demo-00F59B?style=flat-square&logo=react&logoColor=white" alt="Live Demo"/></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-6366F1?style=flat-square" alt="MIT"/></a>
     <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
     <img src="https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js"/>
@@ -233,6 +232,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
   <sub>
     PulseGuard AI &nbsp;·&nbsp; CloudCamp BuildFest 2026 &nbsp;·&nbsp;
     <a href="https://github.com/your-username/pulseguard">GitHub Project</a> &nbsp;·&nbsp;
-    <a href="http://localhost:3000">Local Live Portal</a>
+    <a href="http://129.80.78.215:3000/">Live Demo Portal</a>
   </sub>
 </div>
