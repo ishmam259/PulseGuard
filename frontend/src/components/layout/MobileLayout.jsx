@@ -120,7 +120,9 @@ export default function MobileLayout({ title, status, banner, children, navItems
               {currentStatus === 'syncing' && 'Syncing'}
             </button>
             <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>Alerts</button>
-            <div className="avatar">{initials}</div>
+            <NavLink to={navItems.filter(item => item.label == 'Profile')[0].to}>
+              <div className="avatar">{initials}</div>
+            </NavLink> 
           </div>
         </header>
 
