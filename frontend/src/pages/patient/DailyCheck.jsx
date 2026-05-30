@@ -66,6 +66,19 @@ export default function DailyCheck() {
       return
     }
 
+    if(systolic < 40 || systolic > 300 || diastolic < 30 || diastolic > 230) {
+      setError('Invalid BP. Out of range');
+      return;
+    }
+
+    if(form.pulse) {
+      let pulse = parseInt(form.pulse);
+      if(pulse < 30 || pulse > 250) {
+        setError('Invalid pulse. Out of range');
+        return;
+      }
+    }
+
     const payload = {
       bp_systolic: systolic,
       bp_diastolic: diastolic,
