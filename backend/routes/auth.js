@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
 const pool = require('../db/pool')
-const { registerSchema, loginSchema } = require('../schemas/auth.schema')
+const { registerSchema, loginSchema, profileUpdateSchema } = require('../schemas/auth.schema')
 const { authenticate } = require('../middleware/auth')
 
 const router = express.Router()
@@ -142,18 +142,14 @@ router.get('/me', authenticate, async (req, res) => {
 // PUT /api/auth/profile — Update user profile
 router.put('/profile', authenticate, async (req, res) => {
   try {
-    const { name, email, phone } = req.body
-
-    if (!name) {
-      return res.status(400).json({ error: 'Name is required' })
-    }
+    const data = profileUpdateSchema.parse(req.body)
 
     const result = await pool.query(
       `UPDATE users
        SET name = $1, email = $2, phone = $3, updated_at = now()
        WHERE id = $4
        RETURNING id, name, email, phone, role`,
-      [name, email || null, phone || null, req.user.id]
+      [data.name, data.email || null, data.phone || null, req.user.id]
     )
 
     if (result.rows.length === 0) {
@@ -162,6 +158,9 @@ router.put('/profile', authenticate, async (req, res) => {
 
     res.json({ user: result.rows[0] })
   } catch (err) {
+    if (err.name === 'ZodError') {
+      return res.status(400).json({ error: 'Validation failed', details: err.errors })
+    }
     if (err.code === '23505') {
       return res.status(409).json({ error: 'User with this email or phone already exists' })
     }

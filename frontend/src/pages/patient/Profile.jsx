@@ -80,9 +80,23 @@ export default function Profile() {
   }
 
   const handleSaveProfile = async () => {
-    if (!editForm.name.trim()) {
+    const trimmedName = editForm.name.trim()
+    if (!trimmedName) {
       setError('Name is required')
       return
+    }
+
+    if (!/^[a-zA-Z\s]+$/.test(trimmedName)) {
+      setError('Name must contain only letters and spaces')
+      return
+    }
+
+    if (editForm.phone && editForm.phone.trim() !== '') {
+      const phoneDigits = editForm.phone.trim()
+      if (!/^\d{11}$/.test(phoneDigits)) {
+        setError('Phone number must be exactly 11 digits')
+        return
+      }
     }
 
     setSaving(true)
@@ -92,7 +106,7 @@ export default function Profile() {
     try {
       // 1. Update user profile (name, email, phone)
       const userRes = await api.updateProfile({
-        name: editForm.name,
+        name: trimmedName,
         email: editForm.email,
         phone: editForm.phone,
       })

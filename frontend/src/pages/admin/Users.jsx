@@ -52,10 +52,24 @@ export default function Users() {
       return
     }
 
+    const trimmedName = form.name.trim()
+    if (!/^[a-zA-Z\s]+$/.test(trimmedName)) {
+      setError('Name must contain only letters and spaces')
+      return
+    }
+
+    if (form.phone && form.phone.trim() !== '') {
+      const phoneDigits = form.phone.trim()
+      if (!/^\d{11}$/.test(phoneDigits)) {
+        setError('Phone number must be exactly 11 digits')
+        return
+      }
+    }
+
     setSaving(true)
     try {
       const payload = {
-        name: form.name,
+        name: trimmedName,
         email: form.email || undefined,
         phone: form.phone || undefined,
         password: form.password,

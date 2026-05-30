@@ -1,7 +1,10 @@
 const { z } = require('zod')
 
 const patientSchema = z.object({
-  name: z.string().min(2).max(100),
+  name: z.string()
+    .min(2, { message: 'Name must be at least 2 characters' })
+    .max(100, { message: 'Name must be at most 100 characters' })
+    .regex(/^[a-zA-Z\s]+$/, { message: 'Name must contain only letters and spaces' }),
   age: z.number().int().min(10).max(60).optional(),
   village: z.string().max(200).optional(),
   gestational_week: z.number().int().min(0).max(45).optional(),

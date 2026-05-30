@@ -35,9 +35,24 @@ export default function Register() {
       setError('Please fill in all required fields')
       return
     }
+
+    const trimmedName = form.name.trim()
+    if (!/^[a-zA-Z\s]+$/.test(trimmedName)) {
+      setError('Name must contain only letters and spaces')
+      return
+    }
+
+    if (form.phone && form.phone.trim() !== '') {
+      const phoneDigits = form.phone.trim()
+      if (!/^\d{11}$/.test(phoneDigits)) {
+        setError('Phone number must be exactly 11 digits')
+        return
+      }
+    }
+
     setSubmitting(true)
     try {
-      const result = await register({ ...form, role })
+      const result = await register({ ...form, name: trimmedName, role })
       if (result.ok) {
         const dashRoute = dashboardRoutes[role] || '/patient/dashboard'
         navigate(dashRoute, { replace: true })

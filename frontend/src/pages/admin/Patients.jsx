@@ -45,10 +45,17 @@ export default function Patients() {
       setError('Name is required')
       return
     }
+
+    const trimmedName = form.name.trim()
+    if (!/^[a-zA-Z\s]+$/.test(trimmedName)) {
+      setError('Name must contain only letters and spaces')
+      return
+    }
+
     setSaving(true)
     try {
       const payload = {
-        name: form.name,
+        name: trimmedName,
         age: form.age ? parseInt(form.age) : undefined,
         village: form.village || undefined,
         gestational_week: form.gestational_week ? parseInt(form.gestational_week) : undefined,
