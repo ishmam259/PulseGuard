@@ -41,6 +41,7 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:wirelight@db:5432/pulseguard
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      MODAL_API_TOKEN: ${MODAL_API_KEY}
 
   frontend:
     build: 

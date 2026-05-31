@@ -12,6 +12,7 @@ import os
 import json
 
 from external.adapters.openrouter_model import OpenRouterModel
+from external.adapters.modal_model import ModalDirectModel
 
 # Add parent directory for model imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -115,7 +116,7 @@ async def chat(req: ChatRequest):
     """AI symptom checker — returns mock responses (Ollama integration placeholder)."""
     message = req.message.lower()
 
-    model = OpenRouterModel()
+    model = ModalDirectModel()
     response = model.ask(message)
 
     return {
@@ -130,7 +131,7 @@ async def chat(req: ChatRequest):
 async def summary(req: SummaryRequest):
     """Generate longitudinal patient summary — RAG placeholder."""
 
-    model = OpenRouterModel()
+    model = ModalDirectModel()
     prompt = f"""
     PATIENTS INFORMATION THAT WAS PROVIDED TO XGBOOST MODEL:
     BP SYSTOLIC: {req.symptoms.bp_systolic}
