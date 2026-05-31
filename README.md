@@ -1,9 +1,9 @@
-<div align="center">
+<!-- <div align="center">
   <br/>
   <img src="frontend/public/favicon.svg" alt="PulseGuard AI" width="80"/>
   <h1>PulseGuard AI</h1>
   <p>An offline-first maternal healthcare platform powered by local XGBoost predictions and Llama 3 models<br/>to bridge rural village health workers with real-time clinical monitoring.</p>
-
+<!-- 
   <p>
     <a href="http://129.80.78.215:3100/"><img src="https://img.shields.io/badge/Live%20Demo-00F59B?style=flat-square&logo=react&logoColor=white" alt="Live Demo"/></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-6366F1?style=flat-square" alt="MIT"/></a>
@@ -233,4 +233,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
     <a href="https://github.com/your-username/pulseguard">GitHub Project</a> &nbsp;·&nbsp;
     <a href="http://129.80.78.215:3000/">Live Demo Portal</a>
   </sub>
-</div>
+</div> --> -->
