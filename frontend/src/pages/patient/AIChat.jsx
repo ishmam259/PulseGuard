@@ -62,7 +62,7 @@ export default function AIChat() {
 
   return (
     <MobileLayout
-      title={$("AI_SYMPTOM_CHECKER", "bn")}
+      title={$("AI_SYMPTOM_CHECKER", "en")}
       status="online"
       navItems={patientNavItems}
     >
