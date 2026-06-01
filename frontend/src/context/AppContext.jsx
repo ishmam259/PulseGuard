@@ -62,7 +62,7 @@ export function AppProvider({ children }) {
         addNotification({
           id: data.id || Date.now(),
           type: 'emergency',
-          title: `🚨 SOS: ${data.patient_name}`,
+          title: `SOS Alert: ${data.patient_name}`,
           message: data.message || 'Emergency SOS dispatched!',
           time: 'Just now',
           read: false,
@@ -154,7 +154,7 @@ export function AppProvider({ children }) {
         addNotification({
           id: Date.now(),
           type: 'success',
-          title: '🔄 Offline Sync Complete',
+          title: 'Offline Sync Complete',
           message: `${queue.length} offline record(s) synced to server successfully!`,
           time: 'Just now',
           read: false,

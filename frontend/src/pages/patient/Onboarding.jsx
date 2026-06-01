@@ -77,7 +77,9 @@ export default function Onboarding() {
             marginBottom: '1.5rem',
           }}
         >
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🌿</div>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary)', marginBottom: '0.75rem' }}>
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>
             {$('ONBOARD_WELCOME_PREFIX', locale)} {currentUser?.name?.split(' ')[0]}!
           </h2>

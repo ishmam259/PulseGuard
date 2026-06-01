@@ -49,7 +49,9 @@ export default function Dashboard() {
             padding: '2rem 1.5rem',
             textAlign: 'center',
           }}>
-            <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>🌿</div>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary)', marginBottom: '0.75rem' }}>
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
             <h2 style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>{$('DASH_WELCOME_HEADING_PREFIX', locale)} {currentUser?.name?.split(' ')[0] || 'Mother'}!</h2>
             <p className="muted" style={{ marginBottom: '1.5rem', lineHeight: 1.6 }}>
               {$('DASH_WELCOME_BODY', locale)}
