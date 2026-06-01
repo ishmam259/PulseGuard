@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
 
 export default function MobileLayout({ title, status, banner, children, navItems }) {
-  const { connectivity, toggleConnectivity, currentUser, logout, notifications, locale, setLocale } = useApp()
+  const { connectivity, toggleConnectivity, currentUser, logout, notifications, locale, setLocale, theme, toggleTheme } = useApp()
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
 
@@ -105,6 +105,15 @@ export default function MobileLayout({ title, status, banner, children, navItems
             >
               {$('LANG_TOGGLE', locale)}
             </button>
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={toggleTheme}
+              style={{ fontSize: '14px', width: 'auto', padding: '0 8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              title="Toggle theme"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
             <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}>{$('LAYOUT_ALERTS_BTN', locale)}</button>
             <div className="avatar">{initials}</div>
           </div>
@@ -135,6 +144,15 @@ export default function MobileLayout({ title, status, banner, children, navItems
               style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}
             >
               {$('LANG_TOGGLE', locale)}
+            </button>
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={toggleTheme}
+              style={{ fontSize: '14px', width: 'auto', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              title="Toggle theme"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
             </button>
             <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>{$('LAYOUT_ALERTS_BTN', locale)}</button>
             <NavLink to={navItems.find(item => item.to.includes('profile'))?.to || '#'}>

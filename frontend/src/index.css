@@ -1,59 +1,65 @@
 /* ═══════════════════════════════════════════════════════════
    PulseGuard AI – Design System Foundation
-   Dark-mode glassmorphism with vibrant accents
+   Dual-mode glassmorphism with pink/rose accents
    ═══════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Color Palette (CarePulse Emerald Theme) ── */
-  --color-bg-start: #080A0C;
-  --color-bg-end: #0E1012;
-  --color-bg-accent: #16181C;
+  /* ── Color Palette (PulseGuard Pink/Rose Theme - Light Mode Default) ── */
+  --color-bg-start: #eef2f7;
+  --color-bg-end: #eff2f6;
+  --color-bg-accent: rgba(255, 255, 255, 0.38);
 
-  --color-surface: rgba(26, 29, 33, 0.55);
-  --color-surface-hover: rgba(38, 41, 48, 0.7);
-  --color-surface-active: rgba(49, 53, 61, 0.8);
-  --color-surface-solid: #111315;
-  --color-surface-elevated: rgba(26, 29, 33, 0.7);
+  --color-surface: rgba(255, 255, 255, 0.58);
+  --color-surface-hover: rgba(255, 255, 255, 0.5);
+  --color-surface-active: rgba(255, 255, 255, 0.6);
+  --color-surface-solid: rgba(255, 255, 255, 0.68);
+  --color-surface-elevated: rgba(255, 255, 255, 0.58);
 
-  --color-primary: #24AE7C;
-  --color-primary-light: #44cf9d;
-  --color-primary-dim: #0D2A1F;
-  --color-primary-glow: rgba(36, 174, 124, 0.25);
+  --color-primary: #db2777;
+  --color-primary-light: #D62054;
+  --color-primary-dim: rgba(219, 39, 119, 0.14);
+  --color-primary-glow: rgba(219, 39, 119, 0.25);
 
-  --color-secondary: #79B5EC;
-  --color-secondary-dim: #152432;
+  --color-secondary: #D4536A;
+  --color-secondary-dim: rgba(219, 39, 119, 0.08);
 
-  --color-success: #24AE7C;
-  --color-success-dim: #0D2A1F;
+  --color-success: #059669;
+  --color-success-dim: rgba(16, 185, 129, 0.13);
 
   --color-warning: #f59e0b;
   --color-warning-dim: rgba(245, 158, 11, 0.15);
 
-  --color-danger: #F24E43;
-  --color-danger-light: #F37877;
-  --color-danger-dim: #3E1716;
-  --color-danger-glow: rgba(242, 78, 67, 0.3);
+  --color-danger: #dc2626;
+  --color-danger-light: #ef4444;
+  --color-danger-dim: rgba(239, 68, 68, 0.1);
+  --color-danger-glow: rgba(239, 68, 68, 0.25);
 
-  --color-text: #FFFFFF;
-  --color-text-secondary: #ABB8C4;
-  --color-muted: #76828D;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-light: rgba(255, 255, 255, 0.15);
+  --color-text: #1e1b4b;
+  --color-text-secondary: #64748b;
+  --color-muted: #94a3b8;
+  --color-border: rgba(255, 255, 255, 0.82);
+  --color-border-light: rgba(255, 255, 255, 0.65);
 
   /* ── Gradients ── */
-  --gradient-primary: linear-gradient(135deg, #24AE7C, #79B5EC);
-  --gradient-danger: linear-gradient(135deg, #F24E43, #F37877);
+  --gradient-primary: linear-gradient(135deg, #db2777, #D62054);
+  --gradient-danger: linear-gradient(135deg, #dc2626, #ef4444);
   --gradient-warning: linear-gradient(135deg, #f59e0b, #fbbf24);
-  --gradient-surface: linear-gradient(135deg, rgba(26, 29, 33, 0.6), rgba(19, 22, 25, 0.6));
-  --gradient-bg: radial-gradient(circle at top left, #121517 0%, #080A0C 100%);
+  --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.48));
+  --gradient-bg: linear-gradient(135deg, #eef2f7 0%, #e8edf5 25%, #f0f3f8 50%, #eaeef4 75%, #eff2f6 100%);
 
   /* ── Shadows ── */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.6);
-  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.8);
-  --shadow-glow-primary: 0 0 20px rgba(36, 174, 124, 0.2);
-  --shadow-glow-danger: 0 0 20px rgba(242, 78, 67, 0.2);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4px 30px rgba(219, 39, 119, 0.09), 0 1.5px 4px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-elevated: 0 8px 32px rgba(219, 39, 119, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-glow-primary: 0 0 20px rgba(219, 39, 119, 0.2);
+  --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.2);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  /* ── Grid/Scrollbar ── */
+  --grid-color: rgba(0, 0, 0, 0.06);
+  --grid-opacity: 1;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
 
   /* ── Typography ── */
   --font-sans: 'Plus Jakarta Sans', 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
@@ -85,7 +91,7 @@
   --duration-slow: 400ms;
 
   /* ── Backdrop ── */
-  --blur-glass: blur(12px);
+  --blur-glass: blur(24px) saturate(190%);
   --blur-heavy: blur(30px);
 
   font-family: var(--font-sans);
@@ -96,6 +102,130 @@
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root.dark {
+  /* ── Color Palette (PulseGuard Pink/Rose Theme - Dark Mode Overrides) ── */
+  --color-bg-start: #050608;
+  --color-bg-end: #060709;
+  --color-bg-accent: rgba(255, 255, 255, 0.025);
+
+  --color-surface: rgba(255, 255, 255, 0.025);
+  --color-surface-hover: rgba(255, 255, 255, 0.05);
+  --color-surface-active: rgba(255, 255, 255, 0.08);
+  --color-surface-solid: rgba(255, 255, 255, 0.025);
+  --color-surface-elevated: rgba(255, 255, 255, 0.035);
+
+  --color-primary: #db2777;
+  --color-primary-light: #D62054;
+  --color-primary-dim: rgba(219, 39, 119, 0.12);
+  --color-primary-glow: rgba(219, 39, 119, 0.2);
+
+  --color-secondary: #D4536A;
+  --color-secondary-dim: rgba(219, 39, 119, 0.08);
+
+  --color-success: #34d399;
+  --color-success-dim: rgba(16, 185, 129, 0.12);
+
+  --color-warning: #f59e0b;
+  --color-warning-dim: rgba(245, 158, 11, 0.15);
+
+  --color-danger: #f87171;
+  --color-danger-light: #f87171;
+  --color-danger-dim: rgba(239, 68, 68, 0.1);
+  --color-danger-glow: rgba(239, 68, 68, 0.2);
+
+  --color-text: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-muted: #64748b;
+  --color-border: rgba(255, 255, 255, 0.05);
+  --color-border-light: rgba(255, 255, 255, 0.08);
+
+  /* ── Gradients ── */
+  --gradient-primary: linear-gradient(135deg, #db2777, #D62054);
+  --gradient-danger: linear-gradient(135deg, #f87171, #ef4444);
+  --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.015));
+  --gradient-bg: linear-gradient(135deg, #050608 0%, #08090e 25%, #0a0b10 50%, #08090e 75%, #060709 100%);
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.25), 0 1.5px 4px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --shadow-glow-primary: 0 0 20px rgba(219, 39, 119, 0.15);
+  --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.15);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+
+  /* ── Grid/Scrollbar ── */
+  --grid-color: rgba(255, 255, 255, 0.1);
+  --grid-opacity: 0.018;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+
+  /* ── Backdrop ── */
+  --blur-glass: blur(24px) saturate(120%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    /* ── Color Palette (PulseGuard Pink/Rose Theme - Dark Mode Overrides) ── */
+    --color-bg-start: #050608;
+    --color-bg-end: #060709;
+    --color-bg-accent: rgba(255, 255, 255, 0.025);
+
+    --color-surface: rgba(255, 255, 255, 0.025);
+    --color-surface-hover: rgba(255, 255, 255, 0.05);
+    --color-surface-active: rgba(255, 255, 255, 0.08);
+    --color-surface-solid: rgba(255, 255, 255, 0.025);
+    --color-surface-elevated: rgba(255, 255, 255, 0.035);
+
+    --color-primary: #db2777;
+    --color-primary-light: #D62054;
+    --color-primary-dim: rgba(219, 39, 119, 0.12);
+    --color-primary-glow: rgba(219, 39, 119, 0.2);
+
+    --color-secondary: #D4536A;
+    --color-secondary-dim: rgba(219, 39, 119, 0.08);
+
+    --color-success: #34d399;
+    --color-success-dim: rgba(16, 185, 129, 0.12);
+
+    --color-warning: #f59e0b;
+    --color-warning-dim: rgba(245, 158, 11, 0.15);
+
+    --color-danger: #f87171;
+    --color-danger-light: #f87171;
+    --color-danger-dim: rgba(239, 68, 68, 0.1);
+    --color-danger-glow: rgba(239, 68, 68, 0.2);
+
+    --color-text: #f1f5f9;
+    --color-text-secondary: #cbd5e1;
+    --color-muted: #64748b;
+    --color-border: rgba(255, 255, 255, 0.05);
+    --color-border-light: rgba(255, 255, 255, 0.08);
+
+    /* ── Gradients ── */
+    --gradient-primary: linear-gradient(135deg, #db2777, #D62054);
+    --gradient-danger: linear-gradient(135deg, #f87171, #ef4444);
+    --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.015));
+    --gradient-bg: linear-gradient(135deg, #050608 0%, #08090e 25%, #0a0b10 50%, #08090e 75%, #060709 100%);
+
+    /* ── Shadows ── */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.25), 0 1.5px 4px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    --shadow-glow-primary: 0 0 20px rgba(219, 39, 119, 0.15);
+    --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.15);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+
+    /* ── Grid/Scrollbar ── */
+    --grid-color: rgba(255, 255, 255, 0.1);
+    --grid-opacity: 0.018;
+    --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+
+    /* ── Backdrop ── */
+    --blur-glass: blur(24px) saturate(120%);
+  }
 }
 
 /* ── Reset ── */
@@ -119,11 +249,11 @@ body::before {
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.018;
+  opacity: var(--grid-opacity);
   pointer-events: none;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
   background-size: 30px 30px;
   z-index: 0;
 }
@@ -192,11 +322,11 @@ p { margin: 0; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--scrollbar-thumb);
   border-radius: var(--radius-pill);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* ── Animations ── */
@@ -226,8 +356,8 @@ p { margin: 0; }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(0, 212, 170, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(219, 39, 119, 0); }
 }
 
 @keyframes pulseRed {
