@@ -3,7 +3,11 @@
 // Wraps all backend API calls with JWT auth
 // ═══════════════════════════════════════════════════════════
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+let base = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+if (base && !base.endsWith('/api')) {
+  base = base.replace(/\/$/, '') + '/api'
+}
+const API_BASE = base
 
 let accessToken = null
 let refreshToken = null
@@ -299,4 +303,23 @@ export async function updateAIConfig(data) {
     body: JSON.stringify(data),
   })
   return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function checkHealth() {
+  // Check REAL internet connectivity by pinging an external endpoint.
+  // localhost services are always reachable even when the device has no internet.
+  if (!navigator.onLine) return false
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
+    await fetch('https://www.gstatic.com/generate_204', {
+      mode: 'no-cors',
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+    clearTimeout(timeoutId)
+    return true
+  } catch {
+    return false
+  }
 }
