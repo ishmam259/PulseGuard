@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import $ from '../config/strings'
 
 export default function Splash() {
+  const locale = localStorage.getItem('pg_locale') || 'en'
   return (
     <div className="onboarding-container animate-fade-in">
       <div className="onboarding-form-pane">
@@ -11,16 +13,16 @@ export default function Splash() {
           </div>
           
           <h1 style={{ fontSize: '38px', fontWeight: '800', lineHeight: '1.2', marginBottom: '1rem', color: '#FFFFFF' }}>
-            Offline-First AI Maternal Healthcare
+            {$('SPLASH_HEADLINE', locale)}
           </h1>
           <p className="muted" style={{ fontSize: '15px', lineHeight: '1.6', marginBottom: '2.5rem' }}>
-            AI-powered pregnancy risk monitoring, symptom checking, and automatic database syncing for rural health workers and mothers.
+            {$('SPLASH_SUBLINE', locale)}
           </p>
         </div>
 
         <div className="button-row" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <Link to="/role" className="btn btn--primary btn--large" style={{ textAlign: 'center' }}>
-            Get Started →
+            {$('SPLASH_CTA', locale)}
           </Link>
         </div>
 
@@ -67,7 +69,7 @@ export default function Splash() {
               alignItems: 'center',
               letterSpacing: '0.3px'
             }}>
-              Medical Disclaimer
+              {$('SPLASH_DISCLAIMER_TITLE', locale)}
             </h4>
             <p style={{ 
               fontSize: '14px', 
@@ -75,7 +77,7 @@ export default function Splash() {
               lineHeight: '1.6', 
               margin: 0 
             }}>
-              PulseGuard is a decision-support tool for trained health workers — it does <strong>not</strong> replace professional medical advice, diagnosis, or treatment. In case of an emergency, contact a qualified healthcare provider or the nearest clinic immediately.
+              {$('SPLASH_DISCLAIMER_BODY', locale)}
             </p>
           </div>
         </div>

@@ -1,27 +1,30 @@
 import { Link } from 'react-router-dom'
-
-const roles = [
-  {
-    icon: '',
-    title: 'Patient / Mother',
-    desc: 'Log health data, check pregnancy vitals, and consult the AI assistant offline.',
-    to: '/login/patient',
-  },
-  {
-    icon: '',
-    title: 'Health Worker',
-    desc: 'Register mothers, monitor local vitals, and review AI risk analysis in villages.',
-    to: '/login/worker',
-  },
-  {
-    icon: '',
-    title: 'Administrator',
-    desc: 'Manage clinical assignments, inspect system analytics, and view regional summaries.',
-    to: '/login/admin',
-  },
-]
+import $ from '../config/strings'
 
 export default function RoleSelection() {
+  const locale = localStorage.getItem('pg_locale') || 'en'
+
+  const roles = [
+    {
+      icon: '',
+      title: $('ROLE_PATIENT_TITLE', locale),
+      desc: $('ROLE_PATIENT_DESC', locale),
+      to: '/login/patient',
+    },
+    {
+      icon: '',
+      title: $('ROLE_WORKER_TITLE', locale),
+      desc: $('ROLE_WORKER_DESC', locale),
+      to: '/login/worker',
+    },
+    {
+      icon: '',
+      title: $('ROLE_ADMIN_TITLE', locale),
+      desc: $('ROLE_ADMIN_DESC', locale),
+      to: '/login/admin',
+    },
+  ]
+
   return (
     <section className="page animate-fade-in" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -30,15 +33,15 @@ export default function RoleSelection() {
           <span className="logo-text" style={{ fontSize: '24px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
         </div>
         <h1 style={{ fontSize: '32px', fontWeight: '800', color: '#FFFFFF', marginBottom: '0.5rem' }}>
-          Choose Your Role
+          {$('ROLE_HEADING', locale)}
         </h1>
-        <p className="muted">Select how you want to log in to the PulseGuard platform</p>
+        <p className="muted">{$('ROLE_SUBHEADING', locale)}</p>
       </div>
 
       <div className="grid three" style={{ marginBottom: '3rem' }}>
         {roles.map((role, i) => (
           <Link
-            key={role.title}
+            key={role.to}
             to={role.to}
             className="card role-card stagger"
             style={{ animationDelay: `${i * 0.1}s` }}
@@ -46,14 +49,14 @@ export default function RoleSelection() {
             <div className="role-icon">{role.icon}</div>
             <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#FFFFFF' }}>{role.title}</h3>
             <p className="muted" style={{ fontSize: '13px', lineHeight: '1.5' }}>{role.desc}</p>
-            <span className="link" style={{ fontSize: '13px', fontWeight: '600', marginTop: '1rem', display: 'inline-block' }}>Continue →</span>
+            <span className="link" style={{ fontSize: '13px', fontWeight: '600', marginTop: '1rem', display: 'inline-block' }}>{$('ROLE_CONTINUE', locale)}</span>
           </Link>
         ))}
       </div>
 
       <div style={{ textAlign: 'center' }}>
         <Link to="/" className="link" style={{ color: 'var(--color-muted)' }}>
-          ← Back to Welcome Screen
+          {$('ROLE_BACK', locale)}
         </Link>
       </div>
     </section>

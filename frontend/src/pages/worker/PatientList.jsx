@@ -1,19 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
+import { useApp } from '../../context/AppContext'
+import { workerNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-]
-
-const filters = ['All', 'High Risk', 'Moderate', 'Low Risk']
+import $ from '../../config/strings'
 
 export default function PatientList() {
+  const { locale } = useApp()
   const [patients, setPatients] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('All')
@@ -27,6 +21,14 @@ export default function PatientList() {
     }
     load()
   }, [])
+
+  // Filter labels map to internal English values for logic
+  const filterLabels = [
+    { label: $('W_PATIENTS_FILTER_ALL', locale), value: 'All' },
+    { label: $('W_PATIENTS_FILTER_HIGH', locale), value: 'High Risk' },
+    { label: $('W_PATIENTS_FILTER_MODERATE', locale), value: 'Moderate' },
+    { label: $('W_PATIENTS_FILTER_LOW', locale), value: 'Low Risk' },
+  ]
 
   const filtered = (patients || []).filter((p) => {
     const matchesSearch =
@@ -42,14 +44,21 @@ export default function PatientList() {
 
   const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??'
 
+  const getRiskLabel = (riskLevel) => {
+    const rl = riskLevel || 'low'
+    if (rl === 'high') return $('W_PATIENTS_FILTER_HIGH', locale)
+    if (rl === 'moderate') return $('W_PATIENTS_FILTER_MODERATE', locale)
+    return $('W_PATIENTS_FILTER_LOW', locale)
+  }
+
   return (
-    <MobileLayout title="Patient List" navItems={workerNavItems}>
+    <MobileLayout title={$('W_PAGE_TITLE_PATIENTS', locale)} navItems={workerNavItems(locale)}>
       {/* ── Search ── */}
       <section className="animate-fade-in">
         <input
           className="input"
-          placeholder="Search patient by name or village…"
-          aria-label="Search patient by name or village"
+          placeholder={$('W_PATIENTS_SEARCH_PH', locale)}
+          aria-label={$('W_PATIENTS_SEARCH_PH', locale)}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -57,15 +66,15 @@ export default function PatientList() {
 
       {/* ── Filter Chips ── */}
       <div className="chip-row animate-fade-in">
-        {filters.map((f) => (
+        {filterLabels.map((f) => (
           <button
             type="button"
-            key={f}
-            className={`chip${activeFilter === f ? ' active' : ''}`}
-            onClick={() => setActiveFilter(f)}
+            key={f.value}
+            className={`chip${activeFilter === f.value ? ' active' : ''}`}
+            onClick={() => setActiveFilter(f.value)}
             style={{ font: 'inherit', color: 'inherit' }}
           >
-            {f}
+            {f.label}
           </button>
         ))}
       </div>
@@ -73,12 +82,12 @@ export default function PatientList() {
       {/* ── Patient List ── */}
       <section className="card animate-fade-in">
         <div className="section-header">
-          <h3>Patients</h3>
-          <span className="muted">{filtered.length} results</span>
+          <h3>{$('W_PATIENTS_HEADING', locale)}</h3>
+          <span className="muted">{filtered.length} {$('W_PATIENTS_RESULTS_SUFFIX', locale)}</span>
         </div>
         <div className="list stagger">
           {loading ? (
-            <p className="muted" style={{ textAlign: 'center', padding: '2rem 0' }}>Loading patients…</p>
+            <p className="muted" style={{ textAlign: 'center', padding: '2rem 0' }}>{$('W_PATIENTS_LOADING', locale)}</p>
           ) : filtered.map((patient) => (
             <div className="list-item" key={patient.id}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -86,23 +95,23 @@ export default function PatientList() {
                 <div>
                   <strong>{patient.name}</strong>
                   <p className="muted">
-                    Week {patient.gestational_week || '—'} • {patient.village || 'Unknown'}
+                    {$('W_PATIENTS_WEEK_PREFIX', locale)} {patient.gestational_week || '—'} • {patient.village || $('W_PATIENTS_UNKNOWN', locale)}
                   </p>
                 </div>
               </div>
               <div className="inline-actions">
                 <span className={`badge badge--${patient.risk_level || 'low'}`}>
-                  {(patient.risk_level || 'low').charAt(0).toUpperCase() + (patient.risk_level || 'low').slice(1)}
+                  {getRiskLabel(patient.risk_level)}
                 </span>
                 <Link className="btn btn--secondary" to={`/worker/patient/${patient.id}`}>
-                  View
+                  {$('W_PATIENTS_VIEW_BTN', locale)}
                 </Link>
               </div>
             </div>
           ))}
           {!loading && filtered.length === 0 && (
             <p className="muted" style={{ textAlign: 'center', padding: '2rem 0' }}>
-              No patients match your search.
+              {$('W_PATIENTS_EMPTY', locale)}
             </p>
           )}
         </div>

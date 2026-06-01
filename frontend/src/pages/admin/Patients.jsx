@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
+import { useApp } from '../../context/AppContext'
+import $ from '../../config/strings'
 
 export default function Patients() {
   const navigate = useNavigate()
+  const { locale } = useApp()
   const [patients, setPatients] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -92,46 +95,46 @@ export default function Patients() {
   }
 
   return (
-    <AdminLayout title="Patient Management">
+    <AdminLayout title={$('ADMIN_TITLE_PATIENTS', locale)}>
       {/* Header Actions */}
       <div className="card-row animate-fade-in" style={{ marginTop: 0, marginBottom: 'var(--spacing-4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <input
           className="input"
-          placeholder="Search patients by name, village, or ID..."
-          aria-label="Search patients by name, village, or ID"
+          placeholder={$('ADMIN_PATIENTS_SEARCH', locale)}
+          aria-label={$('ADMIN_PATIENTS_SEARCH', locale)}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ maxWidth: '400px' }}
         />
         <button className="btn btn--primary" type="button" onClick={() => setShowModal(true)}>
-          + Add Patient
+          {$('ADMIN_PATIENTS_ADD', locale)}
         </button>
       </div>
 
       {/* Patients Table */}
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem' }}>
-          <p className="muted">Loading patients list…</p>
+          <p className="muted">{$('ADMIN_USERS_LOADING', locale)}</p>
         </div>
       ) : (
         <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
           <table className="table">
             <thead>
               <tr>
-                <th>Patient ID</th>
-                <th>Name</th>
-                <th>Risk Level</th>
-                <th>Week</th>
-                <th>Assigned Worker</th>
-                <th>Last Updated</th>
-                <th>Actions</th>
+                <th>{$('ADMIN_PATIENTS_COL_ID', locale)}</th>
+                <th>{$('ADMIN_USERS_COL_NAME', locale)}</th>
+                <th>{$('ADMIN_PATIENTS_COL_RISK', locale)}</th>
+                <th>{$('ADMIN_PATIENTS_COL_WEEK', locale)}</th>
+                <th>{$('ADMIN_PATIENTS_COL_WORKER', locale)}</th>
+                <th>{$('ADMIN_PATIENTS_COL_UPDATED', locale)}</th>
+                <th>{$('ADMIN_USERS_COL_ACTIONS', locale)}</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan="7" style={{ textAlign: 'center', color: 'var(--color-muted)', padding: '2rem' }}>
-                    No patients found matching the criteria.
+                    {$('ADMIN_PATIENTS_EMPTY', locale)}
                   </td>
                 </tr>
               ) : (
@@ -167,7 +170,7 @@ export default function Patients() {
                           style={{ padding: '4px 10px', fontSize: '12px' }}
                           onClick={() => navigate(`/worker/patient/${patient.id}`)}
                         >
-                          View Details
+                          {$('ADMIN_PATIENTS_VIEW', locale)}
                         </button>
                       </div>
                     </td>
@@ -182,16 +185,16 @@ export default function Patients() {
       {/* Summary */}
       {!loading && (
         <div className="card-row" style={{ marginTop: 'var(--spacing-4)' }}>
-          <p className="muted">Showing {filtered.length} of {patients.length} patients</p>
+          <p className="muted">{$('ADMIN_USERS_SHOWING', locale)} {filtered.length} {$('ADMIN_USERS_OF', locale)} {patients.length} patients</p>
           <div className="chip-row">
             <span className="chip" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
-              High Risk: {patients.filter((p) => p.risk_level === 'high').length}
+              {$('ADMIN_PATIENTS_HIGH_RISK', locale)} {patients.filter((p) => p.risk_level === 'high').length}
             </span>
             <span className="chip" style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b' }}>
-              Moderate: {patients.filter((p) => p.risk_level === 'moderate').length}
+              {$('ADMIN_PATIENTS_MODERATE', locale)} {patients.filter((p) => p.risk_level === 'moderate').length}
             </span>
             <span className="chip" style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--color-success)' }}>
-              Low: {patients.filter((p) => p.risk_level === 'low').length}
+              {$('ADMIN_PATIENTS_LOW', locale)} {patients.filter((p) => p.risk_level === 'low').length}
             </span>
           </div>
         </div>
@@ -201,7 +204,7 @@ export default function Patients() {
       {showModal && (
         <div className="modal-backdrop admin-patient-modal-overlay">
           <div className="card animate-fade-in" style={{ width: '100%', maxWidth: '500px', padding: '2rem' }}>
-            <h3>Create Patient Profile</h3>
+            <h3>{$('ADMIN_PATIENTS_MODAL_TITLE', locale)}</h3>
             {error && (
               <div className="alert-panel" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)', margin: '1rem 0' }}>
                 <strong style={{ color: '#ef4444' }}>{error}</strong>
@@ -210,28 +213,28 @@ export default function Patients() {
             <form onSubmit={handleCreatePatient} style={{ marginTop: '1rem' }}>
               <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
                 <label>
-                  Full Name *
+                  {$('ADMIN_USERS_LABEL_NAME', locale)}
                   <input className="input" placeholder="Amina Rahman" value={form.name} onChange={handleInputChange('name')} required />
                 </label>
                 <label>
-                  Age (years)
+                  {$('ADMIN_PATIENTS_LABEL_AGE', locale)}
                   <input className="input" type="number" placeholder="25" value={form.age} onChange={handleInputChange('age')} />
                 </label>
                 <label>
-                  Village
+                  {$('ADMIN_PATIENTS_LABEL_VILLAGE', locale)}
                   <input className="input" placeholder="Kurigram Village A" value={form.village} onChange={handleInputChange('village')} />
                 </label>
                 <label>
-                  Gestational Week
+                  {$('ADMIN_PATIENTS_LABEL_WEEK', locale)}
                   <input className="input" type="number" placeholder="24" value={form.gestational_week} onChange={handleInputChange('gestational_week')} />
                 </label>
               </div>
               <div className="button-row" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                 <button className="btn btn--secondary" type="button" onClick={() => setShowModal(false)}>
-                  Cancel
+                  {$('ADMIN_USERS_BTN_CANCEL', locale)}
                 </button>
                 <button className="btn btn--primary" type="submit" disabled={saving}>
-                  {saving ? 'Creating...' : 'Create'}
+                  {saving ? $('ADMIN_USERS_BTN_CREATING', locale) : $('ADMIN_USERS_BTN_CREATE', locale)}
                 </button>
               </div>
             </form>

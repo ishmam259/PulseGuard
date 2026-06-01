@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import $ from '../config/strings'
 
-const roleLabels = {
-  patient: 'Patient / Mother',
-  worker: 'Health Worker',
-  admin: 'Administrator',
-}
+// Removed static roleLabels in favor of dynamic lookup within component
 
 const dashboardRoutes = {
   patient: '/patient/dashboard',
@@ -17,7 +14,12 @@ const dashboardRoutes = {
 export default function Register() {
   const { role } = useParams()
   const navigate = useNavigate()
-  const { register } = useApp()
+  const { register, locale } = useApp()
+  const roleLabels = {
+    patient: $('ROLE_PATIENT_TITLE', locale),
+    worker: $('ROLE_WORKER_TITLE', locale),
+    admin: $('ROLE_ADMIN_TITLE', locale),
+  }
   const roleLabel = roleLabels[role] || 'User'
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' })
@@ -75,27 +77,27 @@ export default function Register() {
           </div>
 
           <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#FFFFFF', marginBottom: '0.5rem' }}>
-            Join PulseGuard AI
+            {$('REGISTER_HEADING', locale)}
           </h2>
-          <p className="muted">Create your <strong>{roleLabel}</strong> account to get started</p>
+          <p className="muted">{$('REGISTER_SUBHEADING_PREFIX', locale)} <strong>{roleLabel}</strong> {$('REGISTER_SUBHEADING_SUFFIX', locale)}</p>
         </div>
 
         {error && (
           <div className="badge badge--offline" style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', width: '100%', justifyContent: 'center', borderRadius: 'var(--radius-md)' }}>
-            Error: {error}
+            {$('REGISTER_ERR_PREFIX', locale)} {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <div className="form-grid">
             <label>
-              Full Name *
+              {$('REGISTER_LABEL_NAME', locale)}
               <div className="input-wrapper">
                 <img src="/assets/icons/user.svg" alt="user" className="input-icon" />
                 <input
                   type="text"
                   className="input"
-                  placeholder="Dr. Sarah Connor or Mother's Name"
+                  placeholder={$('REGISTER_PH_NAME', locale)}
                   value={form.name}
                   onChange={handleChange('name')}
                   disabled={submitting}
@@ -104,13 +106,13 @@ export default function Register() {
               </div>
             </label>
             <label>
-              Email Address *
+              {$('REGISTER_LABEL_EMAIL', locale)}
               <div className="input-wrapper">
                 <img src="/assets/icons/email.svg" alt="email" className="input-icon" />
                 <input
                   type="email"
                   className="input"
-                  placeholder="you@example.com"
+                  placeholder={$('REGISTER_PH_EMAIL', locale)}
                   value={form.email}
                   onChange={handleChange('email')}
                   disabled={submitting}
@@ -119,13 +121,13 @@ export default function Register() {
               </div>
             </label>
             <label>
-              Phone Number
+              {$('REGISTER_LABEL_PHONE', locale)}
               <div className="input-wrapper">
                 <img src="/assets/icons/user.svg" alt="phone" className="input-icon" style={{ filter: 'opacity(0.5)' }} />
                 <input
                   type="tel"
                   className="input"
-                  placeholder="+880 XXX XXX XXX"
+                  placeholder={$('REGISTER_PH_PHONE', locale)}
                   value={form.phone}
                   onChange={handleChange('phone')}
                   disabled={submitting}
@@ -133,12 +135,12 @@ export default function Register() {
               </div>
             </label>
             <label>
-              Password *
+              {$('REGISTER_LABEL_PASSWORD', locale)}
               <div className="input-wrapper">
                 <input
                   type="password"
                   className="input"
-                  placeholder="Create a strong password"
+                  placeholder={$('REGISTER_PH_PASSWORD', locale)}
                   value={form.password}
                   onChange={handleChange('password')}
                   disabled={submitting}
@@ -154,14 +156,14 @@ export default function Register() {
             disabled={submitting}
             style={{ marginTop: '1.5rem' }}
           >
-            {submitting ? 'Creating Account...' : 'Create Account'}
+            {submitting ? $('REGISTER_BTN_LOADING', locale) : $('REGISTER_BTN', locale)}
           </button>
         </form>
 
         <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between', fontSize: '13px', width: '100%' }}>
-          <span className="muted">Already have an account?</span>
+          <span className="muted">{$('REGISTER_ALREADY_HAVE', locale)}</span>
           <Link to={`/login/${role}`} className="link">
-            Sign In
+            {$('REGISTER_LINK_SIGNIN', locale)}
           </Link>
         </div>
       </div>

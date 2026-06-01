@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import $ from '../config/strings'
 
-const roleLabels = {
-  patient: 'Patient / Mother',
-  worker: 'Health Worker',
-  admin: 'Administrator',
-}
+// Removed static roleLabels in favor of dynamic lookup within component
 
 const dashboardRoutes = {
   patient: '/patient/dashboard',
@@ -17,7 +14,12 @@ const dashboardRoutes = {
 export default function Login() {
   const { role } = useParams()
   const navigate = useNavigate()
-  const { login } = useApp()
+  const { login, locale } = useApp()
+  const roleLabels = {
+    patient: $('ROLE_PATIENT_TITLE', locale),
+    worker: $('ROLE_WORKER_TITLE', locale),
+    admin: $('ROLE_ADMIN_TITLE', locale),
+  }
   const roleLabel = roleLabels[role] || 'User'
   const dashRoute = dashboardRoutes[role] || '/patient/dashboard'
 
@@ -57,27 +59,27 @@ export default function Login() {
           </div>
 
           <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#FFFFFF', marginBottom: '0.5rem' }}>
-            Welcome Back
+            {$('LOGIN_HEADING', locale)}
           </h2>
-          <p className="muted">Sign in as <strong>{roleLabel}</strong> to access PulseGuard AI</p>
+          <p className="muted">{$('LOGIN_SUBHEADING_PREFIX', locale)} <strong>{roleLabel}</strong> {$('LOGIN_SUBHEADING_SUFFIX', locale)}</p>
         </div>
 
         {error && (
           <div className="badge badge--offline" style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', width: '100%', justifyContent: 'center', borderRadius: 'var(--radius-md)' }}>
-            Error: {error}
+            {$('LOGIN_ERR_PREFIX', locale)} {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <div className="form-grid">
             <label>
-              Email Address
+              {$('LOGIN_LABEL_EMAIL', locale)}
               <div className="input-wrapper">
                 <img src="/assets/icons/email.svg" alt="email" className="input-icon" />
                 <input
                   type="email"
                   className="input"
-                  placeholder="you@example.com"
+                  placeholder={$('LOGIN_PH_EMAIL', locale)}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={submitting}
@@ -86,12 +88,12 @@ export default function Login() {
               </div>
             </label>
             <label>
-              Password
+              {$('LOGIN_LABEL_PASSWORD', locale)}
               <div className="input-wrapper">
                 <input
                   type="password"
                   className="input"
-                  placeholder="••••••••"
+                  placeholder={$('LOGIN_PH_PASSWORD', locale)}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={submitting}
@@ -107,16 +109,16 @@ export default function Login() {
             disabled={submitting}
             style={{ marginTop: '1.5rem' }}
           >
-            {submitting ? 'Signing in...' : 'Sign In'}
+            {submitting ? $('LOGIN_BTN_LOADING', locale) : $('LOGIN_BTN', locale)}
           </button>
         </form>
 
         <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between', fontSize: '13px', width: '100%' }}>
           <Link to={`/register/${role}`} className="link">
-            Create an Account
+            {$('LOGIN_LINK_REGISTER', locale)}
           </Link>
           <Link to="/role" className="link" style={{ color: 'var(--color-muted)' }}>
-            Change Role
+            {$('LOGIN_LINK_CHANGE_ROLE', locale)}
           </Link>
         </div>
       </div>
