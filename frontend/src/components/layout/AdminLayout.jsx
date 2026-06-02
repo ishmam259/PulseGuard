@@ -45,10 +45,6 @@ export default function AdminLayout({ title, children }) {
             type="button"
             onClick={handleLogout}
             className="sidebar-logout-btn admin-sidebar"
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-            onFocus={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
-            onBlur={(e) => e.currentTarget.style.background = 'transparent'}
           >
             <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>
           </button>

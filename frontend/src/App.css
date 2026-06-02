@@ -75,6 +75,7 @@
   border: 1px solid var(--color-border);
   color: var(--color-primary);
   backdrop-filter: var(--blur-glass);
+  box-shadow: var(--shadow-card);
 }
 
 .btn--secondary:hover {
@@ -99,15 +100,17 @@
 }
 
 .btn--ghost {
-  background: transparent;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-text-secondary);
+  box-shadow: var(--shadow-card);
 }
 
 .btn--ghost:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
   background: var(--color-primary-dim);
+  box-shadow: var(--shadow-glow-primary);
 }
 
 .btn--large {
@@ -201,11 +204,12 @@
   padding: 14px 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  background: var(--color-bg-accent);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
   color: var(--color-text);
   font-size: 14px;
   width: 100%;
-  transition: border-color var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .input::placeholder {
@@ -214,8 +218,8 @@
 
 .input:focus {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-glow-primary);
-  background: var(--color-bg-accent);
+  box-shadow: var(--shadow-card), var(--shadow-glow-primary);
+  background: var(--color-surface-hover);
 }
 
 /* ── Input Wrapper with Icon ── */
@@ -224,16 +228,18 @@
   align-items: center;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  background: var(--color-bg-accent);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
   width: 100%;
-  transition: border-color var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
+  transition: all var(--duration-normal) var(--ease-out);
   padding: 0 16px;
   height: 48px;
 }
 
 .input-wrapper:focus-within {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-glow-primary);
+  box-shadow: var(--shadow-card), var(--shadow-glow-primary);
+  background: var(--color-surface-hover);
 }
 
 .input-wrapper .input-icon {
@@ -314,6 +320,7 @@ select.input option {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-4);
+  box-shadow: var(--shadow-card);
   transition: all var(--duration-normal) var(--ease-out);
   display: flex;
   flex-direction: column;
@@ -365,8 +372,8 @@ select.input option {
 }
 
 .stat-card.bg-workers {
-  background-image: var(--gradient-surface), url('/assets/images/appointments-bg.png');
-  border-bottom: 3px solid var(--color-secondary);
+  background-image: url('/assets/images/appointments-bg.png');
+  border-bottom: 3px solid var(--color-success);
 }
 
 .stat-card-header {
@@ -893,12 +900,14 @@ select.input option {
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
+  box-shadow: var(--shadow-card);
   transition: all var(--duration-normal) var(--ease-out);
 }
 
 .list-item:hover {
   border-color: var(--color-border-light);
   background: var(--color-surface-hover);
+  box-shadow: var(--shadow-card), var(--shadow-glow-primary);
 }
 
 .inline-actions {
@@ -1570,6 +1579,7 @@ select.input option {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-5) var(--spacing-4);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2);
@@ -1636,15 +1646,22 @@ select.input option {
   padding: 12px 16px;
   border-radius: 8px;
   color: #ef4444;
-  background: transparent;
-  border: none;
+  background: var(--color-surface);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  box-shadow: var(--shadow-sm);
   text-align: left;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all var(--duration-normal) var(--ease-out);
   width: 100%;
   margin-top: auto;
+}
+
+.mobile-layout-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: #ef4444;
+  box-shadow: var(--shadow-glow-danger);
 }
 
 /* ── MobileLayout: Emergency Toast ── */
@@ -1682,15 +1699,22 @@ select.input option {
   padding: 12px 16px;
   border-radius: 8px;
   color: #ef4444;
-  background: transparent;
-  border: none;
+  background: var(--color-surface);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  box-shadow: var(--shadow-sm);
   text-align: left;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all var(--duration-normal) var(--ease-out);
   width: 100%;
   margin-top: 12px;
+}
+
+.admin-sidebar:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: #ef4444;
+  box-shadow: var(--shadow-glow-danger);
 }
 
 /* ── Profile Avatar (extracted inline style) ── */

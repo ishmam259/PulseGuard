@@ -66,10 +66,6 @@ export default function MobileLayout({ title, status, banner, children, navItems
               type="button"
               onClick={handleLogout}
               className="desktop-sidebar-logout-btn mobile-layout-logout-btn"
-              onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
-              onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-              onFocus={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
-              onBlur={(e) => e.currentTarget.style.background = 'transparent'}
             >
               <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>
             </button>
