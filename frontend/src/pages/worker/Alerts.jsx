@@ -154,7 +154,7 @@ export default function WorkerAlerts() {
                   key={alert.id}
                   style={{
                     opacity: 0.75,
-                    boxShadow: 'inset 3px 0 0 var(--color-border)',
+                    borderLeft: '3px solid var(--color-border)',
                     padding: '12px 16px',
                     borderRadius: '6px',
                     marginBottom: '8px'

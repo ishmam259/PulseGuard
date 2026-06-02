@@ -14,7 +14,7 @@ const dashboardRoutes = {
 export default function Register() {
   const { role } = useParams()
   const navigate = useNavigate()
-  const { register, locale } = useApp()
+  const { register, locale, theme, toggleTheme } = useApp()
   const roleLabels = {
     patient: $('ROLE_PATIENT_TITLE', locale),
     worker: $('ROLE_WORKER_TITLE', locale),
@@ -69,14 +69,28 @@ export default function Register() {
 
   return (
     <div className="onboarding-container animate-fade-in">
+      <button
+        type="button"
+        className="icon-btn theme-toggle-btn"
+        onClick={toggleTheme}
+        style={{
+          position: 'fixed',
+          top: '1.5rem',
+          right: '1.5rem',
+          zIndex: 1000,
+        }}
+        title="Toggle theme"
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       <div className="onboarding-form-pane">
         <div style={{ marginBottom: '2rem' }}>
           <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
-            <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
+            <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
+            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: 'var(--color-primary)' }}>PulseGuard</span>
           </div>
 
-          <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#FFFFFF', marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-text)', marginBottom: '0.5rem' }}>
             {$('REGISTER_HEADING', locale)}
           </h2>
           <p className="muted">{$('REGISTER_SUBHEADING_PREFIX', locale)} <strong>{roleLabel}</strong> {$('REGISTER_SUBHEADING_SUFFIX', locale)}</p>

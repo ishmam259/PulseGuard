@@ -203,6 +203,7 @@ export function AppProvider({ children }) {
   // Automatically trigger sync when coming online or logging in online
   useEffect(() => {
     if (connectivity === 'online' && currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       syncOfflineQueue()
     }
   }, [connectivity, currentUser, syncOfflineQueue])

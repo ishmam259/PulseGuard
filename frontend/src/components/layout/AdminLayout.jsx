@@ -26,8 +26,8 @@ export default function AdminLayout({ title, children }) {
       {/* ── Sidebar ── */}
       <aside className="sidebar">
         <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-          <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
+          <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
+          <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800' }}>PulseGuard</span>
         </div>
 
         <nav className="sidebar-nav">

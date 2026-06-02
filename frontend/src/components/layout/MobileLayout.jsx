@@ -47,8 +47,8 @@ export default function MobileLayout({ title, status, banner, children, navItems
       {navItems && navItems.length > 0 && (
         <aside className="desktop-sidebar">
           <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
-            <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
+            <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
+            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800' }}>PulseGuard</span>
           </div>
 
           <nav className="desktop-sidebar-nav">
@@ -82,7 +82,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
         {/* ── Mobile Header ── */}
         <header className="mobile-header">
           <div className="logo">
-            <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
+            <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
           </div>
           <div className="top-center">{title}</div>
           <div className="top-actions">
