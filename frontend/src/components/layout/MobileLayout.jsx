@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
 
 export default function MobileLayout({ title, status, banner, children, navItems }) {
-  const { connectivity, toggleConnectivity, currentUser, logout, notifications, locale, setLocale } = useApp()
+  const { connectivity, currentUser, logout, notifications, locale, setLocale } = useApp()
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
 
@@ -86,17 +86,11 @@ export default function MobileLayout({ title, status, banner, children, navItems
           </div>
           <div className="top-center">{title}</div>
           <div className="top-actions">
-            <button
-              type="button"
-              className={`badge badge--${currentStatus}`}
-              onClick={toggleConnectivity}
-              style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
-              title="Click to toggle connectivity state"
-            >
+            <span className={`badge badge--${currentStatus}`}>
               {currentStatus === 'online' && $('LAYOUT_ONLINE', locale)}
               {currentStatus === 'offline' && $('LAYOUT_OFFLINE', locale)}
               {currentStatus === 'syncing' && $('LAYOUT_SYNCING', locale)}
-            </button>
+            </span>
             <button
               type="button"
               className="icon-btn"
@@ -117,17 +111,11 @@ export default function MobileLayout({ title, status, banner, children, navItems
             <p className="muted">PulseGuard AI: {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
           </div>
           <div className="top-actions">
-            <button
-              type="button"
-              className={`badge badge--${currentStatus}`}
-              onClick={toggleConnectivity}
-              style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
-              title="Click to toggle connectivity state"
-            >
+            <span className={`badge badge--${currentStatus}`}>
               {currentStatus === 'online' && $('LAYOUT_ONLINE', locale)}
               {currentStatus === 'offline' && $('LAYOUT_OFFLINE', locale)}
               {currentStatus === 'syncing' && $('LAYOUT_SYNCING', locale)}
-            </button>
+            </span>
             <button
               type="button"
               className="icon-btn"

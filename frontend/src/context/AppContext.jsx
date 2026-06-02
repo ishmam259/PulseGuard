@@ -6,7 +6,6 @@ const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
   const [connectivity, setConnectivity] = useState(navigator.onLine ? 'online' : 'offline')
-  const [isManualOffline, setIsManualOffline] = useState(false)
   const [currentUser, setCurrentUser] = useState(undefined)
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
@@ -95,8 +94,6 @@ export function AppProvider({ children }) {
 
   // Listen for real connectivity changes
   useEffect(() => {
-    if (isManualOffline) return
-
     const handleOnline = () => setConnectivity('online')
     const handleOffline = () => setConnectivity('offline')
     window.addEventListener('online', handleOnline)
@@ -105,16 +102,14 @@ export function AppProvider({ children }) {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
     }
-  }, [isManualOffline])
+  }, [])
 
   // Periodic actual network/server accessibility check
   useEffect(() => {
-    if (isManualOffline) return
-
     let active = true
     const checkApi = async () => {
       const isOnline = await api.checkHealth()
-      if (active && !isManualOffline) {
+      if (active) {
         setConnectivity(isOnline ? 'online' : 'offline')
       }
     }
@@ -126,7 +121,7 @@ export function AppProvider({ children }) {
       active = false
       clearInterval(interval)
     }
-  }, [isManualOffline])
+  }, [])
 
   useEffect(() => {
     localStorage.setItem('pg_locale', locale)
@@ -168,11 +163,7 @@ export function AppProvider({ children }) {
   }, [currentUser, connectivity, addNotification])
 
   const toggleConnectivity = useCallback(() => {
-    setIsManualOffline((prev) => {
-      const next = !prev
-      setConnectivity(next ? 'offline' : 'online')
-      return next
-    })
+    // No-op: manual toggle removed. Status reflects real network state only.
   }, [])
 
   // Automatically trigger sync when coming online or logging in online

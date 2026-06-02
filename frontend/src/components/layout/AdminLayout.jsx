@@ -12,7 +12,7 @@ const sidebarLinks = (locale) => [
 ]
 
 export default function AdminLayout({ title, children }) {
-  const { connectivity, toggleConnectivity, currentUser, logout, locale, setLocale } = useApp()
+  const { connectivity, currentUser, logout, locale, setLocale } = useApp()
   const navigate = useNavigate()
   const initials = currentUser ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AD'
 
@@ -73,17 +73,11 @@ export default function AdminLayout({ title, children }) {
             <p className="muted">PulseGuard AI, {$('LAYOUT_ADMIN_CONSOLE', locale)}</p>
           </div>
           <div className="top-actions">
-            <button
-              type="button"
-              className={`badge badge--${connectivity}`}
-              onClick={toggleConnectivity}
-              style={{ cursor: 'pointer', font: 'inherit', color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }}
-              title="Click to toggle connectivity state"
-            >
+            <span className={`badge badge--${connectivity}`}>
               {connectivity === 'online' && $('LAYOUT_ONLINE', locale)}
               {connectivity === 'offline' && $('LAYOUT_OFFLINE', locale)}
               {connectivity === 'syncing' && $('LAYOUT_SYNCING', locale)}
-            </button>
+            </span>
             <button
               type="button"
               className="icon-btn"
