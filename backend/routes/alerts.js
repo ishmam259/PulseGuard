@@ -1,6 +1,7 @@
 const express = require('express')
 const pool = require('../db/pool')
 const { authenticate, requireRole } = require('../middleware/auth')
+const { alertWorkersByEmail } = require('../services/emailSender')
 
 const router = express.Router()
 
@@ -31,6 +32,8 @@ router.post('/', async (req, res) => {
        RETURNING *`,
       [patientId, patientName, latitude || null, longitude || null, message || 'SOS Emergency Alert']
     )
+
+    alertWorkersByEmail({ patientId, latitude, longitude, message});
 
     const alert = result.rows[0]
 

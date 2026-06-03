@@ -30,6 +30,11 @@ services:
       PORT: 5000
       NODE_ENV: production
       CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
 
   ai-worker:
     build: ./ai
