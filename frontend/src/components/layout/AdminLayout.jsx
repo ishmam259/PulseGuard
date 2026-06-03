@@ -12,11 +12,7 @@ const sidebarLinks = (locale) => [
 ]
 
 export default function AdminLayout({ title, children }) {
-<<<<<<< HEAD
-  const { connectivity, currentUser, logout, locale, setLocale } = useApp()
-=======
   const { connectivity, toggleConnectivity, currentUser, logout, locale, setLocale, theme, toggleTheme } = useApp()
->>>>>>> origin/ui-ishmam
   const navigate = useNavigate()
   const initials = currentUser ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AD'
 

@@ -4,11 +4,7 @@ import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
 
 export default function MobileLayout({ title, status, banner, children, navItems }) {
-<<<<<<< HEAD
-  const { connectivity, currentUser, logout, notifications, locale, setLocale } = useApp()
-=======
   const { connectivity, toggleConnectivity, currentUser, logout, notifications, locale, setLocale, theme, toggleTheme } = useApp()
->>>>>>> origin/ui-ishmam
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
 
