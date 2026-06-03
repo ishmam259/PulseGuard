@@ -6,7 +6,7 @@
 .app {
   min-height: 100vh;
   position: relative;
-  background-color: var(--color-bg-start);
+  background: transparent;
   color: var(--color-text);
 }
 
@@ -607,7 +607,7 @@ select.input option {
 }
 
 .bottom-nav a.active, .nav-link.active {
-  background: var(--color-primary-dim);
+  background: var(--color-surface-hover);
   color: var(--color-primary);
   font-weight: 700;
   box-shadow: none;
@@ -1007,7 +1007,9 @@ select.input option {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr;
-  background-color: var(--color-bg-start);
+  background: var(--gradient-shell);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
 }
 
 @media (min-width: 1024px) {
@@ -1110,7 +1112,9 @@ select.input option {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 280px 1fr;
-  background-color: var(--color-bg-start);
+  background: var(--gradient-shell);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
 }
 
 .sidebar {
@@ -1152,7 +1156,7 @@ select.input option {
 }
 
 .sidebar-nav a.active {
-  background: var(--color-primary-dim);
+  background: var(--color-surface-hover);
   color: var(--color-primary);
   position: relative;
   box-shadow: none;
@@ -1371,7 +1375,9 @@ select.input option {
 /* ── Responsive Patient/Worker Shell Layout ── */
 .app-layout-shell {
   min-height: 100vh;
-  background-color: var(--color-bg-start);
+  background: var(--gradient-shell);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
   color: var(--color-text);
   display: block; /* Mobile default */
 }
@@ -1434,7 +1440,7 @@ select.input option {
 }
 
 .mobile-bottom-nav a.active {
-  background: var(--color-primary-dim);
+  background: var(--color-surface-hover);
   color: var(--color-primary);
   font-weight: 700;
   box-shadow: none;
@@ -1504,7 +1510,7 @@ select.input option {
   }
 
   .desktop-sidebar-nav a.active {
-    background: var(--color-primary-dim);
+    background: var(--color-surface-hover);
     color: var(--color-primary);
     position: relative;
     box-shadow: none;
