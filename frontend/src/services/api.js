@@ -290,6 +290,43 @@ export function connectWebSocket(onMessage) {
   return ws
 }
 
+// ── Wellness API ──
+
+export async function logWater(amount_ml) {
+  const res = await apiFetch('/wellness/water', { method: 'POST', body: JSON.stringify({ amount_ml }) })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function deleteWaterEntry(id) {
+  const res = await apiFetch(`/wellness/water/${id}`, { method: 'DELETE' })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function logVomit(data) {
+  const res = await apiFetch('/wellness/vomit', { method: 'POST', body: JSON.stringify(data) })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function deleteVomitEntry(id) {
+  const res = await apiFetch(`/wellness/vomit/${id}`, { method: 'DELETE' })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function getWellnessDaily() {
+  const res = await apiFetch('/wellness/daily')
+  return res.ok ? await res.json() : null
+}
+
+export async function getWaterWeekTrend() {
+  const res = await apiFetch('/wellness/water/week')
+  return res.ok ? (await res.json()).trend : []
+}
+
+export async function getWellnessSummary(patientId) {
+  const res = await apiFetch(`/wellness/summary/${patientId}`)
+  return res.ok ? await res.json() : null
+}
+
 // ── AI Config API ──
 
 export async function getAIConfig() {

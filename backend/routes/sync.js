@@ -48,6 +48,18 @@ router.post('/', requireRole('worker', 'admin', 'patient'), async (req, res) => 
           } else {
             results.synced.push(synced)
           }
+        } else if (item.type === 'water') {
+          await pool.query(
+            `INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES ($1, $2, $3)`,
+            [item.patient_id, item.data.amount_ml, item.local_timestamp || new Date().toISOString()]
+          )
+          results.synced.push({ type: 'water', patient_id: item.patient_id })
+        } else if (item.type === 'vomit') {
+          await pool.query(
+            `INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES ($1, $2, $3, $4, $5)`,
+            [item.patient_id, item.data.severity ?? 1, item.data.kept_food ?? false, item.data.notes ?? null, item.local_timestamp || new Date().toISOString()]
+          )
+          results.synced.push({ type: 'vomit', patient_id: item.patient_id })
         }
       } catch (err) {
         results.errors.push({

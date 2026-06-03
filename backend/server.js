@@ -50,6 +50,7 @@ app.use('/api/alerts', require('./routes/alerts'))
 app.use('/api/users', require('./routes/users'))
 app.use('/api/ai-config', require('./routes/aiConfig'))
 app.use('/api/chat', require('./routes/chat'))
+app.use('/api/wellness', require('./routes/wellness'))
 
 
 // ── Health check ──

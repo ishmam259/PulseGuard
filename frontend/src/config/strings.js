@@ -20,6 +20,7 @@ const strings = {
     NAV_P_AICHAT: 'AI Chat',
     NAV_P_HEALTH: 'Health',
     NAV_P_ALERTS: 'Alerts',
+    NAV_P_WELLNESS: 'Wellness',
     NAV_P_PROFILE: 'Profile',
 
     // ─── Nav Items (Worker) ───
@@ -531,6 +532,40 @@ const strings = {
     ADMIN_AI_RISK: 'Risk',
     ADMIN_AI_LOGIC: 'Evaluation Logic:',
 
+    // ─── Wellness (Water + Vomit Tracker) ───
+    PAGE_TITLE_WELLNESS: 'Wellness Tracker',
+    WELLNESS_TAB_WATER: 'Water',
+    WELLNESS_TAB_VOMIT: 'Vomit Log',
+    WELLNESS_WATER_TODAY: 'Today',
+    WELLNESS_WATER_GOAL: 'Daily Goal',
+    WELLNESS_WATER_ADD: 'Add Water',
+    WELLNESS_WATER_UNDO: 'Undo',
+    WELLNESS_WATER_TOTAL: 'Total Today',
+    WELLNESS_WATER_ML_SUFFIX: 'ml',
+    WELLNESS_WATER_TREND: '7-Day Trend',
+    WELLNESS_WATER_EMPTY: 'No water logged yet today.',
+    WELLNESS_VOMIT_COUNT: 'Episodes Today',
+    WELLNESS_VOMIT_LOG: 'Log Episode',
+    WELLNESS_VOMIT_CANCEL: 'Cancel',
+    WELLNESS_VOMIT_SEVERITY: 'Severity',
+    WELLNESS_VOMIT_MILD: 'Mild',
+    WELLNESS_VOMIT_MODERATE: 'Moderate',
+    WELLNESS_VOMIT_SEVERE: 'Severe',
+    WELLNESS_VOMIT_KEPT_FOOD: 'Kept food down?',
+    WELLNESS_VOMIT_NOTES: 'Notes (optional)',
+    WELLNESS_VOMIT_NOTES_PH: 'e.g. after breakfast',
+    WELLNESS_VOMIT_SAVE: 'Save Episode',
+    WELLNESS_VOMIT_UNDO: 'Undo',
+    WELLNESS_VOMIT_EMPTY: 'No episodes logged today.',
+    WELLNESS_DEHYDRATION_WARNING: 'Dehydration Risk — you have vomited multiple times and your water intake is low. Drink water and rest.',
+    WELLNESS_EXCESSIVE_VOMITING: 'Excessive vomiting detected — consider contacting your healthcare provider.',
+    WELLNESS_REMINDER: "It's afternoon and you haven't logged much water today — stay hydrated!",
+    WELLNESS_LOADING: 'Loading wellness data…',
+    WELLNESS_WORKER_WATER: 'Water Today',
+    WELLNESS_WORKER_VOMIT: 'Vomit Episodes',
+    WELLNESS_DEHYDRATION_BADGE: 'Dehydration Risk',
+    WELLNESS_EXCESSIVE_BADGE: 'Excessive Vomiting',
+
   },
 
   'bn': {
@@ -554,6 +589,7 @@ const strings = {
     NAV_P_AICHAT: 'এআই চ্যাট',
     NAV_P_HEALTH: 'স্বাস্থ্য',
     NAV_P_ALERTS: 'সতর্কতা',
+    NAV_P_WELLNESS: 'সুস্থতা',
     NAV_P_PROFILE: 'প্রোফাইল',
 
     // ─── Nav Items (Worker) ───
@@ -1064,6 +1100,41 @@ const strings = {
     ADMIN_AI_RESULT: 'ফলাফল:',
     ADMIN_AI_RISK: 'ঝুঁকি',
     ADMIN_AI_LOGIC: 'মূল্যায়নের যুক্তি:',
+
+    // ─── Wellness (Water + Vomit Tracker) ───
+    PAGE_TITLE_WELLNESS: 'সুস্থতা ট্র্যাকার',
+    WELLNESS_TAB_WATER: 'পানি',
+    WELLNESS_TAB_VOMIT: 'বমির লগ',
+    WELLNESS_WATER_TODAY: 'আজকে',
+    WELLNESS_WATER_GOAL: 'দৈনিক লক্ষ্য',
+    WELLNESS_WATER_ADD: 'পানি যোগ করুন',
+    WELLNESS_WATER_UNDO: 'বাতিল',
+    WELLNESS_WATER_TOTAL: 'আজকের মোট',
+    WELLNESS_WATER_ML_SUFFIX: 'মিলি',
+    WELLNESS_WATER_TREND: '৭ দিনের প্রবণতা',
+    WELLNESS_WATER_EMPTY: 'আজকে এখনো পানি লগ করা হয়নি।',
+    WELLNESS_VOMIT_COUNT: 'আজকের বমির সংখ্যা',
+    WELLNESS_VOMIT_LOG: 'বমি লগ করুন',
+    WELLNESS_VOMIT_CANCEL: 'বাতিল',
+    WELLNESS_VOMIT_SEVERITY: 'তীব্রতা',
+    WELLNESS_VOMIT_MILD: 'হালকা',
+    WELLNESS_VOMIT_MODERATE: 'মাঝারি',
+    WELLNESS_VOMIT_SEVERE: 'তীব্র',
+    WELLNESS_VOMIT_KEPT_FOOD: 'খাবার হজম হয়েছে?',
+    WELLNESS_VOMIT_NOTES: 'নোট (ঐচ্ছিক)',
+    WELLNESS_VOMIT_NOTES_PH: 'যেমন সকালের নাস্তার পরে',
+    WELLNESS_VOMIT_SAVE: 'বমি সংরক্ষণ করুন',
+    WELLNESS_VOMIT_UNDO: 'বাতিল',
+    WELLNESS_VOMIT_EMPTY: 'আজকে কোনো বমি লগ করা হয়নি।',
+    WELLNESS_DEHYDRATION_WARNING: 'পানিশূন্যতার ঝুঁকি — আপনি বারবার বমি করেছেন এবং পানি কম খেয়েছেন। পানি পান করুন এবং বিশ্রাম নিন।',
+    WELLNESS_EXCESSIVE_VOMITING: 'অতিরিক্ত বমি শনাক্ত হয়েছে — আপনার স্বাস্থ্যসেবা প্রদানকারীর সাথে যোগাযোগ করুন।',
+    WELLNESS_REMINDER: 'দুপুর হয়ে গেছে কিন্তু আপনি এখনো বেশি পানি পান করেননি — সুস্থ থাকুন!',
+    WELLNESS_LOADING: 'সুস্থতার তথ্য লোড হচ্ছে…',
+    WELLNESS_WORKER_WATER: 'আজকের পানি',
+    WELLNESS_WORKER_VOMIT: 'বমির সংখ্যা',
+    WELLNESS_DEHYDRATION_BADGE: 'পানিশূন্যতার ঝুঁকি',
+    WELLNESS_EXCESSIVE_BADGE: 'অতিরিক্ত বমি',
+
   }
 }
 

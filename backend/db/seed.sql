@@ -47,6 +47,64 @@ INSERT INTO vitals (patient_id, recorded_by, bp_systolic, bp_diastolic, weight_k
   ('b0000004-0000-0000-0000-000000000004', 'a0000004-0000-0000-0000-000000000004', 115, 75, 55.0, 36.5, 70, ARRAY['Nausea'], 0.120, 'low', now() - interval '5 days'),
   ('b0000005-0000-0000-0000-000000000005', 'a0000002-0000-0000-0000-000000000002', 145, 95, 72.0, 37.4, 92, ARRAY['Headache', 'Swelling', 'Blurred Vision'], 0.780, 'high', now() - interval '1 day');
 
+-- ── Wellness seed ──────────────────────────────────────────────────────
+-- Amina (week ~25, high risk): low water + 3 vomits → dehydration_risk
+INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
+  ('b0000001-0000-0000-0000-000000000001', 250, now() - interval '5 hours'),
+  ('b0000001-0000-0000-0000-000000000001', 200, now() - interval '2 hours'),
+  ('b0000001-0000-0000-0000-000000000001', 150, now() - interval '30 minutes')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES
+  ('b0000001-0000-0000-0000-000000000001', 2, false, 'After breakfast', now() - interval '6 hours'),
+  ('b0000001-0000-0000-0000-000000000001', 2, false, null,             now() - interval '3 hours'),
+  ('b0000001-0000-0000-0000-000000000001', 1, true,  null,             now() - interval '1 hour')
+ON CONFLICT DO NOTHING;
+
+-- Salma (week 18, moderate risk): decent water, 1 mild vomit
+INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
+  ('b0000002-0000-0000-0000-000000000002', 500, now() - interval '6 hours'),
+  ('b0000002-0000-0000-0000-000000000002', 500, now() - interval '3 hours'),
+  ('b0000002-0000-0000-0000-000000000002', 500, now() - interval '1 hour')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES
+  ('b0000002-0000-0000-0000-000000000002', 1, true, 'Morning sickness', now() - interval '7 hours')
+ON CONFLICT DO NOTHING;
+
+-- Rahima (week 30, low risk): good hydration, no vomiting
+INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
+  ('b0000003-0000-0000-0000-000000000003', 500, now() - interval '7 hours'),
+  ('b0000003-0000-0000-0000-000000000003', 500, now() - interval '4 hours'),
+  ('b0000003-0000-0000-0000-000000000003', 500, now() - interval '2 hours'),
+  ('b0000003-0000-0000-0000-000000000003', 500, now() - interval '30 minutes')
+ON CONFLICT DO NOTHING;
+
+-- Fatema (week 12, low risk): some nausea, moderate water, 2 vomits (below alert threshold)
+INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
+  ('b0000004-0000-0000-0000-000000000004', 250, now() - interval '5 hours'),
+  ('b0000004-0000-0000-0000-000000000004', 350, now() - interval '2 hours')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES
+  ('b0000004-0000-0000-0000-000000000004', 1, true,  'First trimester nausea', now() - interval '6 hours'),
+  ('b0000004-0000-0000-0000-000000000004', 2, false, null,                     now() - interval '2 hours')
+ON CONFLICT DO NOTHING;
+
+-- Nasreen (week 36, high risk): excessive vomiting (5) + very low water → dehydration_risk + excessive_vomiting
+INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
+  ('b0000005-0000-0000-0000-000000000005', 150, now() - interval '4 hours'),
+  ('b0000005-0000-0000-0000-000000000005', 150, now() - interval '1 hour')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES
+  ('b0000005-0000-0000-0000-000000000005', 3, false, 'Severe episode',   now() - interval '7 hours'),
+  ('b0000005-0000-0000-0000-000000000005', 3, false, null,               now() - interval '5 hours'),
+  ('b0000005-0000-0000-0000-000000000005', 2, false, null,               now() - interval '3 hours'),
+  ('b0000005-0000-0000-0000-000000000005', 2, false, 'Cannot keep food', now() - interval '2 hours'),
+  ('b0000005-0000-0000-0000-000000000005', 3, false, null,               now() - interval '45 minutes')
+ON CONFLICT DO NOTHING;
+
 -- Sample sync conflict
 INSERT INTO sync_conflicts (patient_id, record_type, local_payload, server_payload) VALUES
   ('b0000005-0000-0000-0000-000000000005', 'vitals',

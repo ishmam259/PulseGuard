@@ -121,3 +121,26 @@ CREATE TABLE IF NOT EXISTS alerts (
 CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
 CREATE INDEX IF NOT EXISTS idx_alerts_patient ON alerts(patient_id);
 
+-- Daily water intake log
+CREATE TABLE IF NOT EXISTS water_logs (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  amount_ml  INT NOT NULL CHECK (amount_ml > 0 AND amount_ml <= 2000),
+  logged_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Vomiting episode log
+CREATE TABLE IF NOT EXISTS vomit_logs (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  severity   SMALLINT NOT NULL DEFAULT 1 CHECK (severity BETWEEN 1 AND 3),
+  kept_food  BOOLEAN NOT NULL DEFAULT false,
+  notes      TEXT,
+  logged_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_water_logs_patient
+  ON water_logs (patient_id, logged_at DESC);
+CREATE INDEX IF NOT EXISTS idx_vomit_logs_patient
+  ON vomit_logs (patient_id, logged_at DESC);
+

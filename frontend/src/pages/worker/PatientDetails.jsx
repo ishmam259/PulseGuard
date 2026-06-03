@@ -24,17 +24,22 @@ export default function PatientDetails() {
   const [latestVitals, setLatestVitals] = useState(null)
   const [history, setHistory] = useState([])
   const [aiResult, setAiResult] = useState(null)
+  const [wellness, setWellness] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const load = async () => {
-      const data = await api.getPatient(id)
+      const [data, hist, well] = await Promise.all([
+        api.getPatient(id),
+        api.getHistory(id),
+        api.getWellnessSummary(id),
+      ])
       if (data) {
         setPatient(data.patient)
         setLatestVitals(data.latestVitals)
       }
-      const hist = await api.getHistory(id)
       setHistory(hist)
+      setWellness(well)
       setLoading(false)
     }
     load()
@@ -143,6 +148,24 @@ export default function PatientDetails() {
                 </div>
               </div>
             )}
+
+            {/* Wellness summary */}
+            <div className="summary-grid" style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--color-border)' }}>
+              <div>
+                <p className="muted">{$('WELLNESS_WORKER_WATER', locale)}</p>
+                <strong>{wellness?.water_total_ml ?? '—'} ml</strong>
+                {wellness?.dehydration_risk && (
+                  <span className="badge badge--high" style={{ display: 'block', marginTop: '2px', fontSize: '10px' }}>{$('WELLNESS_DEHYDRATION_BADGE', locale)}</span>
+                )}
+              </div>
+              <div>
+                <p className="muted">{$('WELLNESS_WORKER_VOMIT', locale)}</p>
+                <strong>{wellness?.vomit_count ?? '—'}</strong>
+                {wellness?.excessive_vomiting && (
+                  <span className="badge badge--moderate" style={{ display: 'block', marginTop: '2px', fontSize: '10px' }}>{$('WELLNESS_EXCESSIVE_BADGE', locale)}</span>
+                )}
+              </div>
+            </div>
 
             {riskLevel === 'high' && (
               <div className="alert-panel">
