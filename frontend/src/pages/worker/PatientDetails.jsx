@@ -108,6 +108,15 @@ export default function PatientDetails() {
               <div>
                 <p className="muted">{$('W_DETAILS_PREG_WEEK', locale)}</p>
                 <div className="kpi">{patient.gestational_week || '—'}</div>
+                {patient.lmp_recorded_date != null && patient.initial_gestational_week != null && (
+                  <p className="muted" style={{ fontSize: '11px', marginTop: '2px' }}>
+                    {$('PREG_WEEK_INITIAL', locale).replace('$W', patient.initial_gestational_week)}{' '}
+                    {new Date(patient.lmp_recorded_date).toLocaleDateString(
+                      locale === 'bn' ? 'bn-BD' : 'en-GB',
+                      { day: 'numeric', month: 'short', year: 'numeric' }
+                    )}
+                  </p>
+                )}
               </div>
               <span className={`badge badge--${riskLevel}`}>
                 {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)} {$('W_DETAILS_RISK_SUFFIX', locale)}

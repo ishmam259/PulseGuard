@@ -16,12 +16,19 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Patients
 INSERT INTO patients (id, user_id, assigned_worker, name, age, village, gestational_week, risk_level, risk_score) VALUES
-  ('b0000001-0000-0000-0000-000000000001', 'a0000001-0000-0000-0000-000000000001', 'a0000002-0000-0000-0000-000000000002', 'Amina Rahman', 28, 'Kurigram Village A', 24, 'high', 0.820),
+  ('b0000001-0000-0000-0000-000000000001', 'a0000001-0000-0000-0000-000000000001', 'a0000002-0000-0000-0000-000000000002', 'Amina Rahman', 28, 'Kurigram Village A', 22, 'high', 0.820),
   ('b0000002-0000-0000-0000-000000000002', NULL, 'a0000004-0000-0000-0000-000000000004', 'Salma Begum', 25, 'Kurigram Village B', 18, 'moderate', 0.450),
   ('b0000003-0000-0000-0000-000000000003', NULL, 'a0000002-0000-0000-0000-000000000002', 'Rahima Khatun', 32, 'Rangpur Village C', 30, 'low', 0.180),
   ('b0000004-0000-0000-0000-000000000004', NULL, 'a0000004-0000-0000-0000-000000000004', 'Fatema Akter', 22, 'Dinajpur Village D', 12, 'low', 0.120),
   ('b0000005-0000-0000-0000-000000000005', NULL, 'a0000002-0000-0000-0000-000000000002', 'Nasreen Jahan', 30, 'Kurigram Village A', 36, 'high', 0.780)
 ON CONFLICT (id) DO NOTHING;
+
+-- Amina: week 22 entered 3 weeks ago → current computed week ≈ 25
+UPDATE patients SET gestational_week = 22, lmp_date = CURRENT_DATE - 175
+  WHERE id = 'b0000001-0000-0000-0000-000000000001';
+
+-- Anchor remaining patients' gestational weeks from today (those without an anchor yet).
+UPDATE patients SET lmp_date = CURRENT_DATE - (gestational_week * 7) WHERE lmp_date IS NULL;
 
 -- Vitals history for Amina Rahman
 INSERT INTO vitals (patient_id, recorded_by, bp_systolic, bp_diastolic, weight_kg, temperature_c, pulse, symptoms, risk_score, risk_level, recorded_at) VALUES

@@ -37,11 +37,18 @@ CREATE TABLE IF NOT EXISTS patients (
   age INT,
   village TEXT,
   gestational_week INT,
+  lmp_date DATE,
   risk_level TEXT DEFAULT 'low',
   risk_score NUMERIC(4,3) DEFAULT 0,
   last_updated TIMESTAMPTZ DEFAULT now(),
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Idempotent migration for existing databases (pre-lmp_date schema):
+-- add the anchor column and backfill it from the static gestational_week.
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS lmp_date DATE;
+UPDATE patients SET lmp_date = CURRENT_DATE - (gestational_week * 7)
+  WHERE lmp_date IS NULL AND gestational_week IS NOT NULL;
 
 -- Vitals entries
 CREATE TABLE IF NOT EXISTS vitals (

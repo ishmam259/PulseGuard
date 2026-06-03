@@ -2,6 +2,7 @@ const express = require('express')
 const pool = require('../db/pool')
 const { authenticate, requireRole } = require('../middleware/auth')
 const { syncBatchSchema, vitalsSchema } = require('../schemas/patient.schema')
+const { lmpDateFromWeek } = require('../services/gestation')
 
 const router = express.Router()
 
@@ -127,7 +128,11 @@ router.post('/conflicts/:id/resolve', requireRole('worker', 'admin'), async (req
         )
       } else if (c.record_type === 'profile') {
         const data = c.local_payload
-        const allowedFields = ['name', 'age', 'village', 'gestational_week']
+        // Re-anchor the gestational week when applying a local profile edit.
+        if (data.gestational_week != null) {
+          data.lmp_date = lmpDateFromWeek(data.gestational_week)
+        }
+        const allowedFields = ['name', 'age', 'village', 'gestational_week', 'lmp_date']
         const fields = []
         const values = []
         let idx = 1
@@ -229,6 +234,11 @@ async function syncVitals(item, user, broadcast) {
 }
 
 async function syncProfile(item, user) {
+  // Re-anchor the gestational week whenever a synced profile carries one.
+  if (item.data && item.data.gestational_week != null) {
+    item.data.lmp_date = lmpDateFromWeek(item.data.gestational_week)
+  }
+
   const latest = await pool.query('SELECT * FROM patients WHERE id = $1', [item.patient_id])
 
   if (latest.rows.length > 0 && item.local_timestamp) {
