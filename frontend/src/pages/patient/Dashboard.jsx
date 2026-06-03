@@ -43,9 +43,9 @@ export default function Dashboard() {
           </div>
         ) : !patient ? (
           <div className="card" style={{
-            background: 'linear-gradient(135deg, rgba(36,174,124,0.12), rgba(121,181,236,0.06))',
-            border: '1px solid rgba(36,174,124,0.3)',
-            boxShadow: 'inset 3px 0 0 var(--color-primary)',
+            background: 'var(--gradient-surface)',
+            border: '1px solid var(--color-border)',
+            borderLeft: '4px solid var(--color-primary)',
             padding: '2rem 1.5rem',
             textAlign: 'center',
           }}>

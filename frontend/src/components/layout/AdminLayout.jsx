@@ -12,7 +12,7 @@ const sidebarLinks = (locale) => [
 ]
 
 export default function AdminLayout({ title, children }) {
-  const { connectivity, currentUser, logout, locale, setLocale } = useApp()
+  const { connectivity, toggleConnectivity, currentUser, logout, locale, setLocale, theme, toggleTheme } = useApp()
   const navigate = useNavigate()
   const initials = currentUser ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AD'
 
@@ -26,8 +26,8 @@ export default function AdminLayout({ title, children }) {
       {/* ── Sidebar ── */}
       <aside className="sidebar">
         <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-          <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
+          <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
+          <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800' }}>PulseGuard</span>
         </div>
 
         <nav className="sidebar-nav">
@@ -45,10 +45,6 @@ export default function AdminLayout({ title, children }) {
             type="button"
             onClick={handleLogout}
             className="sidebar-logout-btn admin-sidebar"
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-            onFocus={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)'}
-            onBlur={(e) => e.currentTarget.style.background = 'transparent'}
           >
             <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>
           </button>
@@ -85,6 +81,15 @@ export default function AdminLayout({ title, children }) {
               style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}
             >
               {$('LANG_TOGGLE', locale)}
+            </button>
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={toggleTheme}
+              style={{ fontSize: '14px', width: 'auto', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              title="Toggle theme"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
             </button>
             <button type="button" className="icon-btn" style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>{$('LAYOUT_ALERTS_BTN', locale)}</button>
             <div className="avatar">{initials}</div>

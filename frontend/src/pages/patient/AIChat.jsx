@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
-import { chatMessages as initialMessages } from '../../data/mockData'
 import { patientNavItems } from '../../data/navItems'
 import ReactMarkdown from 'react-markdown';
 import $ from '../../config/strings'

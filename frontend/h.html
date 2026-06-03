@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PulseGuard AI — Maternal Healthcare Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --font-sans: 'Plus Jakarta Sans', 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family: var(--font-sans);
+  background: linear-gradient(135deg, #eef2f7 0%, #e8edf5 25%, #f0f3f8 50%, #eaeef4 75%, #eff2f6 100%);
+  color: #1e1b4b;
+  min-height:100vh;
+  width:1280px;
+  height:800px;
+  overflow:hidden;
+  position:relative;
+}
+body::before{
+  content:'';
+  position:fixed;
+  top:-40%;left:-20%;
+  width:80%;height:80%;
+  background:radial-gradient(ellipse,rgba(148,163,184,0.14) 0%,transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+body::after{
+  content:'';
+  position:fixed;
+  bottom:-30%;right:-10%;
+  width:70%;height:70%;
+  background:radial-gradient(ellipse,rgba(148,163,184,0.12) 0%,transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+/* Extra ambient blobs */
+.blob1{
+  position:fixed;top:30%;right:20%;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(148,163,184,0.08) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+.glass{
+  background:rgba(255,255,255,0.58);
+  backdrop-filter:blur(24px) saturate(190%);
+  -webkit-backdrop-filter:blur(24px) saturate(190%);
+  border:1px solid rgba(255,255,255,0.82);
+  border-radius:20px;
+  box-shadow:0 4px 30px rgba(219,39,119,0.09),0 1.5px 4px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.glass-dark{
+  background:rgba(255,255,255,0.38);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.65);
+  border-radius:16px;
+  box-shadow:0 2px 12px rgba(219,39,119,0.07),inset 0 1px 0 rgba(255,255,255,0.8);
+}
+.glass-nav{
+  background:rgba(255,255,255,0.68);
+  backdrop-filter:blur(28px) saturate(200%);
+  -webkit-backdrop-filter:blur(28px) saturate(200%);
+  border-right:1px solid rgba(255,255,255,0.85);
+  box-shadow:3px 0 30px rgba(219,39,119,0.07),inset -1px 0 0 rgba(255,255,255,0.9);
+}
+
+.layout{display:flex;height:800px;position:relative;z-index:1;}
+
+.sidebar{
+  width:228px;flex-shrink:0;
+  display:flex;flex-direction:column;
+  padding:28px 18px;
+  gap:4px;
+}
+.logo-area{display:flex;align-items:center;gap:11px;padding:0 8px 28px;}
+.logo-icon{
+  width:42px;height:42px;border-radius:13px;
+  background:linear-gradient(135deg,#db2777,#D62054);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 5px 16px rgba(219,39,119,0.38);
+  flex-shrink:0;
+}
+.logo-text h2{font-family: var(--font-sans);font-size:15px;font-weight:600;color:#1e1b4b;line-height:1.1;}
+.logo-text p{font-size:10px;color:#D4536A;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-top:2px;}
+
+.nav-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 13px;border-radius:13px;
+  font-size:13.5px;font-weight:500;
+  color:#64748b;cursor:pointer;
+  position:relative;
+}
+.nav-item.active{
+  background:linear-gradient(135deg,rgba(219,39,119,0.14),rgba(255,180,162,0.09));
+  color:#D4536A;
+  border:1px solid rgba(219,39,119,0.22);
+  box-shadow:0 2px 10px rgba(219,39,119,0.12);
+}
+.nav-item.active::after{
+  content:'';
+  position:absolute;right:-18px;top:50%;transform:translateY(-50%);
+  width:3px;height:26px;border-radius:3px;
+  background:linear-gradient(180deg,#db2777,#D62054);
+}
+.nav-icon{width:19px;height:19px;opacity:0.65;flex-shrink:0;}
+.nav-item.active .nav-icon{opacity:1;}
+
+.sos-btn{
+  margin-top:auto;
+  display:flex;align-items:center;gap:9px;
+  padding:12px 15px;border-radius:15px;
+  background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(239,68,68,0.08));
+  border:1px solid rgba(239,68,68,0.22);
+  color:#dc2626;font-size:12.5px;font-weight:600;cursor:pointer;
+  letter-spacing:0.04em;
+  box-shadow:0 2px 8px rgba(239,68,68,0.08);
+  transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.sos-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 14px rgba(239,68,68,0.18);
+}
+.sos-pulse{
+  width:8px;height:8px;border-radius:50%;
+  background:#ef4444;
+  box-shadow:0 0 0 3px rgba(239,68,68,0.25);
+  flex-shrink:0;
+}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 32px 16px;
+}
+.page-title h1{font-family: var(--font-sans);font-size:28px;font-weight:600;color:#1e1b4b;line-height:1.1;}
+.page-title p{font-size:13px;color:#94a3b8;margin-top:4px;font-weight:400;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+
+.new-req-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:10px 18px;border-radius:13px;
+  background:linear-gradient(135deg,#db2777,#D62054);
+  color:#fff;font-size:13px;font-weight:600;cursor:pointer;
+  box-shadow:0 4px 14px rgba(219,39,119,0.3),0 1px 2px rgba(219,39,119,0.15);
+  border:none;
+  transition:transform 0.2s ease, box-shadow 0.2s ease;
+}
+.new-req-btn:hover{
+  transform:translateY(-1.5px);
+  box-shadow:0 6px 20px rgba(219,39,119,0.45),0 2px 5px rgba(219,39,119,0.2);
+}
+
+.icon-btn{
+  width:38px;height:38px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(219,39,119,0.06);
+  border:1px solid rgba(219,39,119,0.15);
+  cursor:pointer;
+  backdrop-filter:blur(12px);
+  box-shadow:0 2px 8px rgba(219,39,119,0.06);
+  transition:background 0.2s;
+}
+.icon-btn:hover{
+  background:rgba(219,39,119,0.12);
+}
+.avatar{
+  width:38px;height:38px;border-radius:11px;
+  background:linear-gradient(135deg,#db2777,#D62054);
+  border:2.5px solid rgba(255,255,255,0.95);
+  box-shadow:0 3px 10px rgba(219,39,119,0.28);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+  letter-spacing:0.05em;
+}
+
+.content{flex:1;display:flex;gap:16px;padding:0 32px 28px;overflow:hidden;}
+.content-left{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0;}
+.content-right{width:296px;flex-shrink:0;}
+
+.stat-row{display:flex;gap:12px;}
+.stat-card{
+  flex:1;padding:20px 22px;
+  position:relative;overflow:hidden;
+}
+
+
+.stat-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:20px;
+  font-size:10.5px;font-weight:600;
+  letter-spacing:0.05em;text-transform:uppercase;
+  margin-bottom:12px;
+}
+.badge-live{background:rgba(16,185,129,0.13);color:#059669;border:1px solid rgba(16,185,129,0.22);}
+.badge-alert{background:rgba(239,68,68,0.1);color:#dc2626;border:1px solid rgba(239,68,68,0.2);}
+.badge-today{background:rgba(219,39,119,0.1);color:#D4536A;border:1px solid rgba(219,39,119,0.2);}
+
+.live-dot{width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;margin-right:1px;}
+
+.stat-num{font-family: var(--font-sans);font-size:42px;font-weight:600;line-height:1;color:#1e1b4b;}
+.stat-num.alert-red{color:#dc2626;}
+.stat-label{font-size:12.5px;color:#94a3b8;margin-top:6px;font-weight:400;}
+
+.reports-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px 14px;
+}
+.panel-header h3{font-size:14.5px;font-weight:600;color:#1e1b4b;}
+.panel-actions{display:flex;gap:7px;}
+.panel-btn{
+  width:30px;height:30px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(219,39,119,0.07);cursor:pointer;
+  border:1px solid rgba(219,39,119,0.13);
+}
+
+.reports-list{flex:1;overflow:hidden;padding:0 14px 14px;}
+
+.report-item{
+  display:flex;align-items:center;gap:13px;
+  padding:13px 11px;border-radius:15px;
+  cursor:pointer;
+  margin-bottom:5px;
+}
+.report-item.anomaly{
+  background:rgba(239,68,68,0.05);
+  border:1px solid rgba(239,68,68,0.15);
+}
+
+.report-icon{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,0.75);
+}
+.r-ecg{background:linear-gradient(135deg,rgba(219,39,119,0.15),rgba(219,39,119,0.1));}
+.r-xray{background:linear-gradient(135deg,rgba(239,68,68,0.13),rgba(239,68,68,0.09));}
+.r-mri{background:linear-gradient(135deg,rgba(16,185,129,0.13),rgba(16,185,129,0.09));}
+.r-panel{background:linear-gradient(135deg,rgba(16,185,129,0.13),rgba(16,185,129,0.09));}
+
+.report-info{flex:1;min-width:0;}
+.report-info h4{font-size:13px;font-weight:600;color:#1e1b4b;}
+.report-info p{font-size:11.5px;color:#94a3b8;margin-top:3px;}
+
+.conf-badge{text-align:right;font-size:12px;font-weight:700;}
+.c-indigo{color:#D4536A;}
+.c-red2{color:#dc2626;}
+.c-teal{color:#059669;}
+.c-emerald{color:#059669;}
+
+.conf-bar{
+  width:68px;height:3.5px;border-radius:2px;
+  margin-top:5px;margin-left:auto;
+  background:rgba(0,0,0,0.07);overflow:hidden;
+}
+.conf-fill{height:100%;border-radius:2px;}
+.f-indigo{background:linear-gradient(90deg,#db2777,#D62054);}
+.f-red{background:linear-gradient(90deg,#ef4444,#dc2626);}
+.f-teal{background:linear-gradient(90deg,#10b981,#059669);}
+.f-emerald{background:linear-gradient(90deg,#10b981,#34d399);}
+
+.chevron{opacity:0.35;}
+
+.right-panel{height:100%;display:flex;flex-direction:column;gap:12px;}
+
+.insight-card{padding:20px;flex:1;display:flex;flex-direction:column;}
+.insight-header{display:flex;align-items:center;gap:9px;margin-bottom:16px;}
+.insight-icon{
+  width:34px;height:34px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(219,39,119,0.14),rgba(255,180,162,0.09));
+  border:1px solid rgba(219,39,119,0.2);
+  display:flex;align-items:center;justify-content:center;
+}
+.insight-title{font-size:14px;font-weight:600;color:#1e1b4b;font-family: var(--font-sans);}
+
+.priority-alert{
+  padding:13px 15px;border-radius:15px;
+  background:rgba(239,68,68,0.05);
+  border:1px solid rgba(239,68,68,0.17);
+  margin-bottom:14px;
+}
+.alert-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.alert-label{font-size:11px;font-weight:700;color:#dc2626;display:flex;align-items:center;gap:5px;}
+.alert-time{font-size:10.5px;color:#94a3b8;}
+.alert-text{font-size:11.5px;color:#1e1b4b;line-height:1.55;}
+.alert-actions{display:flex;gap:8px;margin-top:11px;}
+.btn-review{
+  flex:1;padding:8px;border-radius:11px;font-size:11.5px;font-weight:700;
+  background:linear-gradient(135deg,#db2777,#D62054);
+  color:#fff;border:none;cursor:pointer;
+  box-shadow:0 3px 10px rgba(219,39,119,0.25);
+  transition:transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-review:hover{
+  transform:translateY(-1.5px);
+  box-shadow:0 5px 16px rgba(219,39,119,0.4);
+}
+.btn-assign{
+  flex:1;padding:8px;border-radius:11px;font-size:11.5px;font-weight:600;
+  background:rgba(219,39,119,0.08);
+  border:1px solid rgba(219,39,119,0.22);
+  color:#D4536A;cursor:pointer;
+  box-shadow:0 2px 6px rgba(219,39,119,0.05);
+  transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.btn-assign:hover{
+  background:rgba(219,39,119,0.14);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(219,39,119,0.12);
+}
+
+.trend-section{flex:1;}
+.trend-title{font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:10px;}
+.trend-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 15px;border-radius:14px;
+  margin-bottom:9px;
+}
+.trend-info h4{font-size:12.5px;font-weight:600;color:#1e1b4b;}
+.trend-stat{font-size:11px;margin-top:3px;}
+.trend-up{color:#dc2626;}
+.trend-stable{color:#059669;}
+.trend-chip{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+  background:rgba(255,255,255,0.7);
+  border:1px solid rgba(255,255,255,0.9);
+  color:#D4536A;
+  box-shadow:0 1px 4px rgba(219,39,119,0.1);
+}
+
+svg{display:block;}
+</style>
+</head>
+<body>
+<div class="blob1"></div>
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar glass-nav">
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 10h3.5l2-5.5 3 10 2-7.5 1.5 3H18" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="logo-text">
+        <h2>PulseGuard AI</h2>
+        <p>Clinical Portal</p>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="1" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="1" y="10" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 16c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Patients
+    </div>
+    <div class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none"><path d="M2 9h2.5l2-4.5 2.5 8L11 7l1.5 2H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Diagnostics
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none"><rect x="1" y="4" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 10h8M5 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Consultations
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="7" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 14c0-2.21 1.79-4 4-4s4 1.79 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Settings
+    </div>
+
+    <div class="sos-btn">
+      <div class="sos-pulse"></div>
+      ✳ Emergency SOS
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title">
+        <h1>Diagnostics Intelligence</h1>
+        <p>Real-time analysis & AI clinical confidence scoring.</p>
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn">
+          <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#64748b" stroke-width="1.5"/><path d="M7.5 5v2.5l1.8 1.8" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="icon-btn" style="position:relative;">
+          <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M8.5 2a4.5 4.5 0 0 0-4.5 4.5c0 2.2-1.1 3.3-1.6 3.8h12.2c-.5-.5-1.6-1.6-1.6-3.8A4.5 4.5 0 0 0 8.5 2zM7 14a1.5 1.5 0 0 0 3 0" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span style="position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid white;display:block;"></span>
+        </div>
+        <div class="avatar">DR</div>
+        <button class="new-req-btn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          New Request
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="content-left">
+        <!-- Stat cards -->
+        <div class="stat-row">
+          <div class="stat-card glass s1">
+            <div class="stat-badge badge-live"><span class="live-dot"></span>Live</div>
+            <div class="stat-num">14</div>
+            <div class="stat-label">Pending Diagnostics</div>
+          </div>
+          <div class="stat-card glass s2">
+            <div class="stat-badge badge-alert">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style="display:inline;"><path d="M6 1L11 11H1L6 1z" stroke="#dc2626" stroke-width="1.4"/><path d="M6 5v2.2M6 9v.2" stroke="#dc2626" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Requires Action
+            </div>
+            <div class="stat-num alert-red">3</div>
+            <div class="stat-label">Critical Anomalies</div>
+          </div>
+          <div class="stat-card glass s3">
+            <div class="stat-badge badge-today">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style="display:inline;"><circle cx="6" cy="6" r="5" stroke="#D4536A" stroke-width="1.4"/><path d="M4 6l1.5 1.5L8.5 4" stroke="#D4536A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Today
+            </div>
+            <div class="stat-num">42</div>
+            <div class="stat-label">Cleared Today</div>
+          </div>
+        </div>
+
+        <!-- Reports -->
+        <div class="reports-panel glass">
+          <div class="panel-header">
+            <h3>Recent Diagnostic Reports</h3>
+            <div class="panel-actions">
+              <div class="panel-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 4h12M3 7h8M5 10h4" stroke="#db2777" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+              <div class="panel-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1.2" fill="#db2777"/><circle cx="7" cy="7" r="1.2" fill="#db2777"/><circle cx="7" cy="11" r="1.2" fill="#db2777"/></svg></div>
+            </div>
+          </div>
+          <div class="reports-list">
+
+            <div class="report-item">
+              <div class="report-icon r-ecg">
+                <svg width="19" height="19" viewBox="0 0 19 19" fill="none"><path d="M2 9.5h3.5l2-5 2.5 9 2-6 1.5 2H17" stroke="#db2777" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="report-info">
+                <h4>12-Lead ECG Analysis</h4>
+                <p>Patient: ID-4928 · 10 mins ago</p>
+              </div>
+              <div>
+                <div class="conf-badge c-indigo">85% Confidence</div>
+                <div class="conf-bar"><div class="conf-fill f-indigo" style="width:85%"></div></div>
+              </div>
+              <svg class="chevron" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+
+            <div class="report-item anomaly">
+              <div class="report-icon r-xray">
+                <svg width="19" height="19" viewBox="0 0 19 19" fill="none"><rect x="3.5" y="2" width="12" height="15" rx="2" stroke="#ef4444" stroke-width="1.5"/><path d="M9.5 5.5v8M7 9.5h5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div class="report-info">
+                <h4>Chest X-Ray Segmentation</h4>
+                <p>Patient: ID-1102 · 45 mins ago</p>
+              </div>
+              <div>
+                <div class="conf-badge c-red2">92% (Anomaly)</div>
+                <div class="conf-bar"><div class="conf-fill f-red" style="width:92%"></div></div>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+
+            <div class="report-item">
+              <div class="report-icon r-mri">
+                <svg width="19" height="19" viewBox="0 0 19 19" fill="none"><circle cx="9.5" cy="9.5" r="6.5" stroke="#059669" stroke-width="1.5"/><circle cx="9.5" cy="9.5" r="2.5" stroke="#059669" stroke-width="1.5"/><path d="M9.5 3v2.5M9.5 16.5V14M3 9.5h2.5M16.5 9.5H14" stroke="#059669" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div class="report-info">
+                <h4>MRI Brain Scan Screening</h4>
+                <p>Patient: ID-7731 · 2 hrs ago</p>
+              </div>
+              <div>
+                <div class="conf-badge c-teal">98% Confidence</div>
+                <div class="conf-bar"><div class="conf-fill f-teal" style="width:98%"></div></div>
+              </div>
+              <svg class="chevron" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+
+            <div class="report-item">
+              <div class="report-icon r-panel">
+                <svg width="19" height="19" viewBox="0 0 19 19" fill="none"><path d="M9.5 2.5v4M9.5 12.5v4M2.5 9.5h4M12.5 9.5h4" stroke="#059669" stroke-width="1.5" stroke-linecap="round"/><circle cx="9.5" cy="9.5" r="3" stroke="#059669" stroke-width="1.5"/></svg>
+              </div>
+              <div class="report-info">
+                <h4>Comprehensive Metabolic Panel</h4>
+                <p>Patient: ID-3094 · 3 hrs ago</p>
+              </div>
+              <div>
+                <div class="conf-badge c-emerald">99% Confidence</div>
+                <div class="conf-bar"><div class="conf-fill f-emerald" style="width:99%"></div></div>
+              </div>
+              <svg class="chevron" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="content-right">
+        <div class="right-panel">
+          <div class="insight-card glass">
+            <div class="insight-header">
+              <div class="insight-icon">
+                <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M8.5 2v3.5M8.5 11.5v3.5M2 8.5h3.5M11.5 8.5H15" stroke="#db2777" stroke-width="1.6" stroke-linecap="round"/><circle cx="8.5" cy="8.5" r="3" stroke="#db2777" stroke-width="1.5"/></svg>
+              </div>
+              <div class="insight-title">PulseGuard AI Insight</div>
+            </div>
+
+            <div class="priority-alert">
+              <div class="alert-top">
+                <span class="alert-label">
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style="display:inline;"><path d="M6 1L11 11H1L6 1z" stroke="#dc2626" stroke-width="1.5"/><path d="M6 5v2M6 8.5v.2" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Priority Alert Detected
+                </span>
+                <span class="alert-time">Just now</span>
+              </div>
+              <p class="alert-text">Pattern consistent with acute myocardial infarction observed in Patient ID-4928's latest ECG. Immediate review recommended.</p>
+              <div class="alert-actions">
+                <button class="btn-review">Review Scan</button>
+                <button class="btn-assign">Assign Consult</button>
+              </div>
+            </div>
+
+            <div class="trend-section">
+              <p class="trend-title">Department Trend Analysis</p>
+              <div class="trend-item glass-dark">
+                <div class="trend-info">
+                  <h4>Cardiology Backlog</h4>
+                  <p class="trend-stat trend-up">↗ +12% from avg</p>
+                </div>
+                <div class="trend-chip">8m</div>
+              </div>
+              <div class="trend-item glass-dark">
+                <div class="trend-info">
+                  <h4>Radiology Auto-Clearance</h4>
+                  <p class="trend-stat trend-stable">→ Stable at 94%</p>
+                </div>
+                <div class="trend-chip">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="7" width="2.5" height="5" rx="0.5" fill="#D4536A"/><rect x="5.2" y="4" width="2.5" height="8" rx="0.5" fill="#D4536A"/><rect x="9.5" y="1.5" width="2.5" height="10.5" rx="0.5" fill="#D4536A"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

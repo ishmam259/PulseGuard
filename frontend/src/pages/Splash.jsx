@@ -1,18 +1,34 @@
 import { Link } from 'react-router-dom'
+import { useApp } from '../context/AppContext'
 import $ from '../config/strings'
 
 export default function Splash() {
+  const { theme, toggleTheme } = useApp()
   const locale = localStorage.getItem('pg_locale') || 'en'
   return (
     <div className="onboarding-container animate-fade-in">
+      <button
+        type="button"
+        className="icon-btn theme-toggle-btn"
+        onClick={toggleTheme}
+        style={{
+          position: 'fixed',
+          top: '1.5rem',
+          right: '1.5rem',
+          zIndex: 1000,
+        }}
+        title="Toggle theme"
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       <div className="onboarding-form-pane">
         <div style={{ marginBottom: '2rem' }}>
           <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2.5rem' }}>
-            <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
+            <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
+            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: 'var(--color-primary)' }}>PulseGuard</span>
           </div>
           
-          <h1 style={{ fontSize: '38px', fontWeight: '800', lineHeight: '1.2', marginBottom: '1rem', color: '#FFFFFF' }}>
+          <h1 style={{ fontSize: '38px', fontWeight: '800', lineHeight: '1.2', marginBottom: '1rem', color: 'var(--color-text)' }}>
             {$('SPLASH_HEADLINE', locale)}
           </h1>
           <p className="muted" style={{ fontSize: '15px', lineHeight: '1.6', marginBottom: '2.5rem' }}>
@@ -31,11 +47,11 @@ export default function Splash() {
           marginTop: '2.5rem',
           padding: '1.25rem 1.5rem',
           borderRadius: '12px',
-          background: 'rgba(30, 33, 38, 0.6)',
+          background: 'var(--color-surface)',
           backdropFilter: 'blur(12px)',
           border: '1px solid rgba(242, 78, 67, 0.25)',
           borderLeft: '4px solid var(--color-danger)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+          boxShadow: 'var(--shadow-card)',
           display: 'flex',
           gap: '1rem',
           alignItems: 'flex-start',
@@ -63,7 +79,7 @@ export default function Splash() {
             <h4 style={{ 
               fontWeight: 700, 
               fontSize: '16px', 
-              color: '#FFFFFF', 
+              color: 'var(--color-text)', 
               margin: 0,
               display: 'flex',
               alignItems: 'center',
@@ -88,7 +104,7 @@ export default function Splash() {
       </div>
 
       <div className="onboarding-image-pane">
-        <img src="/assets/images/onboarding-img.png" alt="Healthcare Onboarding Illustration" />
+        <img src={theme === 'dark' ? "/assets/images/onboarding-img.png" : "/assets/images/onboarding-img_light_mode.png"} alt="Healthcare Onboarding Illustration" />
       </div>
     </div>
   )
