@@ -178,7 +178,7 @@ const strings = {
     // ─── Records ───
     PAGE_TITLE_RECORDS: 'Medical Records',
     RECORDS_HEADING: 'Your Records',
-    RECORDS_EXPORT_BTN: '⬇️ Export CSV',
+    RECORDS_EXPORT_BTN: 'Export CSV',
     RECORDS_LOADING: 'Loading records…',
     RECORDS_EMPTY: 'No records recorded yet.',
     RECORDS_FIELD_BP: 'BP:',
