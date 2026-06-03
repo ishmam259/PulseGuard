@@ -3,20 +3,21 @@ import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
 import { patientNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
+import $ from '../../config/strings'
 
 export default function Emergency() {
-  const { connectivity } = useApp()
+  const { connectivity, locale } = useApp()
   const [gps, setGps] = useState(null)
   const [loadingGps, setLoadingGps] = useState(false)
   const [alertSent, setAlertSent] = useState(false)
 
   const statusText = connectivity === 'online'
     ? alertSent
-      ? 'SOS Dispatched: Help is on the way!'
+      ? $('EMERGENCY_STATUS_SENT', locale)
       : gps
-        ? `GPS Coordinates: ${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`
-        : 'PulseGuard Security System: Ready'
-    : 'Offline Mode Active'
+        ? `${$('EMERGENCY_STATUS_GPS', locale)} ${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`
+        : $('EMERGENCY_STATUS_READY', locale)
+    : $('EMERGENCY_STATUS_OFFLINE', locale)
 
   const handleShareGps = () => {
     if (!navigator.geolocation) {
@@ -88,18 +89,18 @@ export default function Emergency() {
 
   return (
     <MobileLayout
-      title="Emergency SOS"
+      title={$('PAGE_TITLE_EMERGENCY', locale)}
       status={connectivity}
-      navItems={patientNavItems}
+      navItems={patientNavItems(locale)}
     >
       <div className="animate-fade-in">
         <div className="card emergency-card">
-          <h2>Emergency Alert</h2>
+          <h2>{$('EMERGENCY_HEADING', locale)}</h2>
           <p className="muted" style={{ fontWeight: 'bold', color: 'var(--color-danger)' }}>
             {statusText}
           </p>
           <p className="muted" style={{ margin: '1rem 0' }}>
-            Press the SOS button to alert nearby health workers and emergency services. Your GPS location will be shared automatically.
+            {$('EMERGENCY_BODY', locale)}
           </p>
 
           <button
@@ -111,18 +112,18 @@ export default function Emergency() {
             }}
             onClick={handleSOS}
           >
-            {alertSent ? 'SENT' : 'SOS'}
+            {alertSent ? $('EMERGENCY_SOS_SENT', locale) : $('EMERGENCY_SOS_BTN', locale)}
           </button>
 
           <div className="button-row" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '2rem' }}>
             <button type="button" className="btn btn--secondary btn--large" onClick={handleShareGps} disabled={loadingGps}>
-              {loadingGps ? 'Fetching Location…' : 'Share GPS Location'}
+              {loadingGps ? $('EMERGENCY_BTN_GPS_LOADING', locale) : $('EMERGENCY_BTN_GPS', locale)}
             </button>
             <button type="button" className="btn btn--secondary btn--large" onClick={handleSOS}>
-              Notify Health Worker
+              {$('EMERGENCY_BTN_NOTIFY', locale)}
             </button>
             <a href="tel:999" className="btn btn--primary btn--large text-center" style={{ textDecoration: 'none' }}>
-              Call Emergency Services
+              {$('EMERGENCY_BTN_CALL', locale)}
             </a>
           </div>
         </div>

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
+import { useApp } from '../../context/AppContext'
+import $ from '../../config/strings'
 
 const DEFAULTS = {
   high_bp_systolic: 140,
@@ -95,6 +97,7 @@ function InputRow({ label, min, max, step = 1, unit = '', value, onChange }) {
 
 export default function AIConfig() {
   const navigate = useNavigate()
+  const { locale } = useApp()
   const [config, setConfig] = useState(DEFAULTS)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -138,7 +141,7 @@ export default function AIConfig() {
     try {
       const res = await api.updateAIConfig(config)
       if (!res.ok) throw new Error(res.error || 'Failed to save configuration.')
-      setSuccess('AI configuration saved successfully!')
+      setSuccess($('ADMIN_AI_SAVE_SUCCESS', locale))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -155,48 +158,23 @@ export default function AIConfig() {
   const riskStyle = riskColors[previewRisk]
 
   return (
-    <AdminLayout title="AI Configuration">
-      <style>{`
-        .aiconfig-grid {
-          display: grid;
-          grid-template-columns: 1.1fr 0.9fr;
-          gap: 1.5rem;
-          align-items: start;
-          width: 100%;
-          margin-bottom: 2rem;
-        }
-        .guide-item {
-          display: flex;
-          gap: 12px;
-          padding: 12px 0;
-          border-bottom: 1px solid var(--color-border);
-        }
-        .guide-item:last-child {
-          border-bottom: none;
-        }
-        .aiconfig-value-input::-webkit-outer-spin-button,
-        .aiconfig-value-input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        .aiconfig-value-input {
-          appearance: textfield;
-          -moz-appearance: textfield;
-        }
-        @media (max-width: 1080px) {
-          .aiconfig-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
+    <AdminLayout title={$('ADMIN_TITLE_AICONFIG', locale)}>
+      <style>{[
+        '.aiconfig-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:1.5rem;align-items:start;width:100%;margin-bottom:2rem;}',
+        '.guide-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--color-border);}',
+        '.guide-item:last-child{border-bottom:none;}',
+        '.aiconfig-value-input::-webkit-outer-spin-button,.aiconfig-value-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}',
+        '.aiconfig-value-input{appearance:textfield;-moz-appearance:textfield;}',
+        '@media(max-width:1080px){.aiconfig-grid{grid-template-columns:1fr;}}',
+      ].join(' ')}</style>
 
       <div style={{ width: '100%' }}>
         {/* Header */}
         <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
           <button className="btn btn--ghost" onClick={() => navigate('/admin/settings')} style={{ padding: '8px 14px', fontSize: '13px' }}>
-            ← Back
+            {$('ADMIN_AI_BACK', locale)}
           </button>
-          <p className="muted" style={{ margin: 0 }}>Adjust risk prediction thresholds and alert sensitivity. Changes apply immediately to new vitals entries.</p>
+          <p className="muted" style={{ margin: 0 }}>{$('ADMIN_AI_SUBTITLE', locale)}</p>
         </div>
 
         {/* Status messages */}
@@ -213,7 +191,7 @@ export default function AIConfig() {
 
         {loading ? (
           <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-            <p className="muted animate-pulse">Loading AI configuration...</p>
+            <p className="muted animate-pulse">{$('ADMIN_AI_LOADING', locale)}</p>
           </div>
         ) : (
           <div className="aiconfig-grid">
@@ -221,9 +199,9 @@ export default function AIConfig() {
             <div style={{ display: 'grid', gap: '1.25rem' }}>
               {/* Blood Pressure Thresholds */}
               <div className="card animate-fade-in">
-                <h3 style={{ marginBottom: '0.25rem' }}>🩺 Blood Pressure Thresholds</h3>
+                <h3 style={{ marginBottom: '0.25rem' }}>{$('ADMIN_AI_CARD1_TITLE', locale)}</h3>
                 <p className="muted" style={{ marginBottom: '1rem', fontSize: '13px' }}>
-                  Used by the heuristic engine when the AI worker is offline. Readings above the <strong>High</strong> threshold are immediately flagged.
+                  {$('ADMIN_AI_CARD1_DESC', locale)}
                 </p>
                 <InputRow label="High Risk — Systolic (mmHg)" min={120} max={180} value={config.high_bp_systolic} onChange={handleChange('high_bp_systolic')} />
                 <InputRow label="High Risk — Diastolic (mmHg)" min={70} max={130} value={config.high_bp_diastolic} onChange={handleChange('high_bp_diastolic')} />
@@ -233,9 +211,9 @@ export default function AIConfig() {
 
               {/* Risk Score Cutoffs */}
               <div className="card animate-fade-in" style={{ animationDelay: '80ms' }}>
-                <h3 style={{ marginBottom: '0.25rem' }}>📊 Risk Score Cutoffs</h3>
+                <h3 style={{ marginBottom: '0.25rem' }}>{$('ADMIN_AI_CARD2_TITLE', locale)}</h3>
                 <p className="muted" style={{ marginBottom: '1rem', fontSize: '13px' }}>
-                  Applied when the AI worker returns a numerical score (0.0 – 1.0). Scores above the <strong>High</strong> cutoff broadcast a real-time alert.
+                  {$('ADMIN_AI_CARD2_DESC', locale)}
                 </p>
                 <InputRow label="High Risk Cutoff" min={0.5} max={0.95} step={0.05} value={config.high_risk_cutoff} onChange={handleChange('high_risk_cutoff')} />
                 <InputRow label="Moderate Risk Cutoff" min={0.2} max={0.7} step={0.05} value={config.moderate_risk_cutoff} onChange={handleChange('moderate_risk_cutoff')} />
@@ -246,15 +224,15 @@ export default function AIConfig() {
             {/* Right Column: Preview, Guidelines & Actions */}
             <div style={{ display: 'grid', gap: '1.25rem' }}>
               {/* Live Preview Card */}
-              <div className="card animate-fade-in" style={{ animationDelay: '160ms', border: `1px solid ${riskStyle.border}`, background: riskStyle.bg, transition: 'all 0.3s ease' }}>
-                <h3 style={{ marginBottom: '0.5rem' }}>🔍 Live Threshold Preview</h3>
+              <div className="card animate-fade-in" style={{ animationDelay: '160ms', border: '1px solid ' + riskStyle.border, background: riskStyle.bg, transition: 'all 0.3s ease' }}>
+                <h3 style={{ marginBottom: '0.5rem' }}>{$('ADMIN_AI_CARD3_TITLE', locale)}</h3>
                 <p className="muted" style={{ marginBottom: '1.25rem', fontSize: '13px' }}>
-                  Enter a sample BP reading below to see how the active configuration would classify it.
+                  {$('ADMIN_AI_CARD3_DESC', locale)}
                 </p>
                 
                 <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
                   <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontWeight: 600, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                    Systolic
+                    {$('ADMIN_AI_LBL_SYSTOLIC', locale)}
                     <input
                       type="number"
                       className="input"
@@ -266,7 +244,7 @@ export default function AIConfig() {
                     />
                   </label>
                   <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontWeight: 600, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                    Diastolic
+                    {$('ADMIN_AI_LBL_DIASTOLIC', locale)}
                     <input
                       type="number"
                       className="input"
@@ -278,28 +256,32 @@ export default function AIConfig() {
                     />
                   </label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
-                    <span style={{ color: 'var(--color-muted)', fontSize: '13px' }}>Result:</span>
-                    <span className={`badge ${riskStyle.badge}`} style={{ fontSize: '13px', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '4px', fontWeight: 700 }}>
-                      {previewRisk} Risk
+                    <span style={{ color: 'var(--color-muted)', fontSize: '13px' }}>{$('ADMIN_AI_RESULT', locale)}</span>
+                    <span className={`badge \${riskStyle.badge}`} style={{ fontSize: '13px', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '4px', fontWeight: 700 }}>
+                      {previewRisk} {$('ADMIN_AI_RISK', locale)}
                     </span>
                   </div>
                 </div>
 
-                <div style={{ background: 'rgba(0, 0, 0, 0.2)', padding: '10px 14px', borderRadius: '6px', borderLeft: `3px solid ${riskStyle.text === '#FFFFFF' ? 'var(--color-border)' : riskStyle.text}` }}>
+                <div style={{ background: 'rgba(0, 0, 0, 0.2)', padding: '10px 14px', borderRadius: '6px', borderLeft: '3px solid ' + (riskStyle.text === '#FFFFFF' ? 'var(--color-border)' : riskStyle.text) }}>
                   <p style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', margin: 0, lineHeight: '1.5' }}>
-                    💡 <strong>Evaluation Logic:</strong> {previewReason}
+                    {$('ADMIN_AI_LOGIC', locale)} {previewReason}
                   </p>
                 </div>
               </div>
 
               {/* System Guide Card */}
               <div className="card animate-fade-in" style={{ animationDelay: '240ms' }}>
-                <h3 style={{ marginBottom: '0.75rem' }}>ℹ️ Threshold Decision Guide</h3>
+                <h3 style={{ marginBottom: '0.75rem' }}>{$('ADMIN_AI_CARD4_TITLE', locale)}</h3>
                 <p className="muted" style={{ marginBottom: '1rem', fontSize: '13px' }}>
-                  How PulseGuard AI uses these configuration thresholds to safeguard patients:
+                  {$('ADMIN_AI_CARD4_DESC', locale)}
                 </p>
                 <div className="guide-item">
-                  <div style={{ fontSize: '18px', marginTop: '2px' }}>🚨</div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary)', marginTop: '2px', flexShrink: 0 }}>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
                   <div>
                     <h4 style={{ fontSize: '14px', marginBottom: '2.5px', fontWeight: 600 }}>Emergency Alerts</h4>
                     <p className="muted" style={{ fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
@@ -308,7 +290,15 @@ export default function AIConfig() {
                   </div>
                 </div>
                 <div className="guide-item">
-                  <div style={{ fontSize: '18px', marginTop: '2px' }}>🔌</div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary)', marginTop: '2px', flexShrink: 0 }}>
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                    <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.5" />
+                    <path d="M5 12.5a10.94 10.94 0 0 1 5.17-2.39" />
+                    <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+                    <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                    <line x1="12" y1="20" x2="12.01" y2="20" />
+                  </svg>
                   <div>
                     <h4 style={{ fontSize: '14px', marginBottom: '2.5px', fontWeight: 600 }}>Offline-First Fallback</h4>
                     <p className="muted" style={{ fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
@@ -317,7 +307,18 @@ export default function AIConfig() {
                   </div>
                 </div>
                 <div className="guide-item">
-                  <div style={{ fontSize: '18px', marginTop: '2px' }}>🧠</div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary)', marginTop: '2px', flexShrink: 0 }}>
+                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+                    <rect x="9" y="9" width="6" height="6" />
+                    <line x1="9" y1="1" x2="9" y2="4" />
+                    <line x1="15" y1="1" x2="15" y2="4" />
+                    <line x1="9" y1="20" x2="9" y2="23" />
+                    <line x1="15" y1="20" x2="15" y2="23" />
+                    <line x1="20" y1="9" x2="23" y2="9" />
+                    <line x1="20" y1="15" x2="23" y2="15" />
+                    <line x1="1" y1="9" x2="4" y2="9" />
+                    <line x1="1" y1="15" x2="4" y2="15" />
+                  </svg>
                   <div>
                     <h4 style={{ fontSize: '14px', marginBottom: '2.5px', fontWeight: 600 }}>AI Risk Model</h4>
                     <p className="muted" style={{ fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
@@ -329,7 +330,7 @@ export default function AIConfig() {
 
               {/* Actions Panel */}
               <div className="card animate-fade-in" style={{ animationDelay: '300ms', padding: '1.25rem' }}>
-                <h3 style={{ marginBottom: '0.75rem', fontSize: '14px' }}>⚙️ Configuration Controls</h3>
+                <h3 style={{ marginBottom: '0.75rem', fontSize: '14px' }}>{$('ADMIN_AI_CARD5_TITLE', locale)}</h3>
                 <div style={{ display: 'flex', gap: '1rem' }}>
                   <button
                     className="btn btn--primary"
@@ -337,7 +338,7 @@ export default function AIConfig() {
                     disabled={saving}
                     style={{ flex: 1, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
-                    {saving ? 'Saving...' : '💾 Save'}
+                    {saving ? $('ADMIN_AI_BTN_SAVING', locale) : $('ADMIN_AI_BTN_SAVE', locale)}
                   </button>
                   <button
                     className="btn btn--ghost"
@@ -345,7 +346,7 @@ export default function AIConfig() {
                     disabled={saving}
                     style={{ flex: 1, padding: '12px' }}
                   >
-                    Reset
+                    {$('ADMIN_AI_BTN_RESET', locale)}
                   </button>
                 </div>
               </div>

@@ -9,6 +9,9 @@ export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(undefined)
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
+  const [locale, setLocale] = useState(() => {
+    return localStorage.getItem('pg_locale') || 'en'
+  })
 
   // Load tokens and check auth on mount
   useEffect(() => {
@@ -58,7 +61,7 @@ export function AppProvider({ children }) {
         addNotification({
           id: data.id || Date.now(),
           type: 'emergency',
-          title: `🚨 SOS: ${data.patient_name}`,
+          title: `SOS Alert: ${data.patient_name}`,
           message: data.message || 'Emergency SOS dispatched!',
           time: 'Just now',
           read: false,
@@ -101,6 +104,29 @@ export function AppProvider({ children }) {
     }
   }, [])
 
+  // Periodic actual network/server accessibility check
+  useEffect(() => {
+    let active = true
+    const checkApi = async () => {
+      const isOnline = await api.checkHealth()
+      if (active) {
+        setConnectivity(isOnline ? 'online' : 'offline')
+      }
+    }
+
+    checkApi()
+    const interval = setInterval(checkApi, 2000)
+
+    return () => {
+      active = false
+      clearInterval(interval)
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('pg_locale', locale)
+  }, [locale])
+
   // Auto-sync background offline records when connection is restored
   const syncOfflineQueue = useCallback(async () => {
     if (!currentUser || connectivity !== 'online') return
@@ -123,7 +149,7 @@ export function AppProvider({ children }) {
         addNotification({
           id: Date.now(),
           type: 'success',
-          title: '🔄 Offline Sync Complete',
+          title: 'Offline Sync Complete',
           message: `${queue.length} offline record(s) synced to server successfully!`,
           time: 'Just now',
           read: false,
@@ -136,6 +162,10 @@ export function AppProvider({ children }) {
     }
   }, [currentUser, connectivity, addNotification])
 
+  const toggleConnectivity = useCallback(() => {
+    // No-op: manual toggle removed. Status reflects real network state only.
+  }, [])
+
   // Automatically trigger sync when coming online or logging in online
   useEffect(() => {
     if (connectivity === 'online' && currentUser) {
@@ -145,6 +175,7 @@ export function AppProvider({ children }) {
 
   const value = {
     connectivity,
+    toggleConnectivity,
     currentUser,
     setCurrentUser,
     loading,
@@ -153,6 +184,8 @@ export function AppProvider({ children }) {
     logout,
     notifications,
     addNotification,
+    locale,
+    setLocale,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

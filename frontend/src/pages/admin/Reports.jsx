@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
+import { useApp } from '../../context/AppContext'
+import $ from '../../config/strings'
 
 export default function Reports() {
+  const { locale } = useApp()
   const patientsRef = useRef([])
   const [loading, setLoading] = useState(true)
 
@@ -34,7 +37,7 @@ export default function Reports() {
 
   const handleExport = (reportId) => {
     if (patientsRef.current.length === 0) {
-      alert('No patient data available to export.')
+      alert($('ADMIN_REPORTS_NO_DATA', locale))
       return
     }
 
@@ -73,39 +76,39 @@ export default function Reports() {
   const reports = [
     {
       id: 'rpt-1',
-      title: 'Maternal Health Report',
-      description: 'Comprehensive monthly summary of maternal health outcomes, risk distributions, and intervention effectiveness across all regions.',
+      title: $('ADMIN_REPORTS_RPT1_TITLE', locale),
+      description: $('ADMIN_REPORTS_RPT1_DESC', locale),
       icon: '',
       lastGenerated: new Date().toLocaleDateString(),
     },
     {
       id: 'rpt-2',
-      title: 'Risk Analysis Report',
-      description: 'AI-powered risk prediction breakdown including preeclampsia, anemia, and gestational diabetes detection rates.',
+      title: $('ADMIN_REPORTS_RPT2_TITLE', locale),
+      description: $('ADMIN_REPORTS_RPT2_DESC', locale),
       icon: '',
       lastGenerated: new Date().toLocaleDateString(),
     },
     {
       id: 'rpt-3',
-      title: 'Field Activity Report',
-      description: 'Health worker performance summary — visits completed, patients served, sync compliance, and response times.',
+      title: $('ADMIN_REPORTS_RPT3_TITLE', locale),
+      description: $('ADMIN_REPORTS_RPT3_DESC', locale),
       icon: '',
       lastGenerated: new Date().toLocaleDateString(),
     },
     {
       id: 'rpt-4',
-      title: 'Sync Status Report',
-      description: 'Offline device analytics, sync success rates, conflict resolution metrics, and data integrity audit.',
+      title: $('ADMIN_REPORTS_RPT4_TITLE', locale),
+      description: $('ADMIN_REPORTS_RPT4_DESC', locale),
       icon: '',
       lastGenerated: new Date().toLocaleDateString(),
     },
   ]
 
   return (
-    <AdminLayout title="Reports">
+    <AdminLayout title={$('ADMIN_TITLE_REPORTS', locale)}>
       {loading ? (
         <div className="card text-center animate-pulse" style={{ padding: '2rem' }}>
-          <p className="muted">Loading reports definitions…</p>
+          <p className="muted">{$('ADMIN_REPORTS_LOADING', locale)}</p>
         </div>
       ) : (
         <section className="grid two stagger">
@@ -115,7 +118,7 @@ export default function Reports() {
               <h3>{report.title}</h3>
               <p className="muted" style={{ marginBottom: 'var(--spacing-3)' }}>{report.description}</p>
               <p className="muted" style={{ fontSize: '12px', marginBottom: 'var(--spacing-3)' }}>
-                Last generated: {report.lastGenerated}
+                {$('ADMIN_REPORTS_LAST_GEN', locale)} {report.lastGenerated}
               </p>
               <div className="button-row">
                 <button
@@ -123,7 +126,7 @@ export default function Reports() {
                   type="button"
                   onClick={() => handleExport(report.id)}
                 >
-                  Export CSV
+                  {$('ADMIN_REPORTS_BTN_EXPORT', locale)}
                 </button>
               </div>
             </div>

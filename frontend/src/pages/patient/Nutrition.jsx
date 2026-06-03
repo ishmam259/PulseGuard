@@ -2,10 +2,20 @@ import { useState } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { nutritionData } from '../../data/mockData'
 import { patientNavItems } from '../../data/navItems'
+import $ from '../../config/strings'
+import { useApp } from '../../context/AppContext'
 
 export default function Nutrition() {
+  const { locale, connectivity } = useApp()
   const [selectedTag, setSelectedTag] = useState('All')
-  const tags = ['All', 'Iron Rich', 'Protein', 'Calcium', 'Vitamins']
+  const tagKeys = ['All', 'Iron Rich', 'Protein', 'Calcium', 'Vitamins']
+  const tagLabels = {
+    'All': $('NUTRITION_TAG_ALL', locale),
+    'Iron Rich': $('NUTRITION_TAG_IRON', locale),
+    'Protein': $('NUTRITION_TAG_PROTEIN', locale),
+    'Calcium': $('NUTRITION_TAG_CALCIUM', locale),
+    'Vitamins': $('NUTRITION_TAG_VITAMINS', locale),
+  }
 
   const filterRecommended = (foods, tag) => {
     if (tag === 'All') return foods
@@ -34,31 +44,31 @@ export default function Nutrition() {
 
   return (
     <MobileLayout
-      title="Nutrition Guide"
-      status="online"
-      navItems={patientNavItems}
+      title={$('PAGE_TITLE_NUTRITION', locale)}
+      status={connectivity}
+      navItems={patientNavItems(locale)}
     >
       <div className="animate-fade-in">
         {/* Filter Tags */}
         <div className="chip-row" style={{ marginBottom: '1.5rem', overflowX: 'auto', whiteSpace: 'nowrap' }}>
-          {tags.map((tag) => (
+          {tagKeys.map((tagKey) => (
             <button
               type="button"
-              key={tag}
-              className={`chip ${selectedTag === tag ? 'active' : ''}`}
-              onClick={() => setSelectedTag(tag)}
+              key={tagKey}
+              className={`chip ${selectedTag === tagKey ? 'active' : ''}`}
+              onClick={() => setSelectedTag(tagKey)}
             >
-              {tag}
+              {tagLabels[tagKey]}
             </button>
           ))}
         </div>
 
         {/* Recommended Foods */}
         <div className="card stagger" style={{ animationDelay: '0s' }}>
-          <h3 className="text-gradient">Recommended Foods</h3>
-          <p className="muted">Essential nutrients for your pregnancy</p>
+          <h3 className="text-gradient">{$('NUTRITION_SECTION_RECOMMENDED', locale)}</h3>
+          <p className="muted">{$('NUTRITION_SECTION_RECOMMENDED_DESC', locale)}</p>
           {recommendedFoods.length === 0 ? (
-            <p className="muted" style={{ marginTop: '1rem' }}>No recommended foods match the selected filter.</p>
+            <p className="muted" style={{ marginTop: '1rem' }}>{$('NUTRITION_EMPTY_RECOMMENDED', locale)}</p>
           ) : (
             <div className="pill-list" style={{ marginTop: '1rem' }}>
               {recommendedFoods.map((food) => (
@@ -72,8 +82,8 @@ export default function Nutrition() {
 
         {/* Foods to Avoid */}
         <div className="card stagger" style={{ animationDelay: '0.1s' }}>
-          <h3 className="text-gradient">Foods to Avoid</h3>
-          <p className="muted">Minimize risk during pregnancy</p>
+          <h3 className="text-gradient">{$('NUTRITION_SECTION_AVOID', locale)}</h3>
+          <p className="muted">{$('NUTRITION_SECTION_AVOID_DESC', locale)}</p>
           <div className="pill-list" style={{ marginTop: '1rem' }}>
             {nutritionData.avoid.map((food) => (
               <span key={food.name} className="pill warning" title={food.reason}>
@@ -85,10 +95,10 @@ export default function Nutrition() {
 
         {/* Local Affordable Foods */}
         <div className="card stagger" style={{ animationDelay: '0.2s' }}>
-          <h3 className="text-gradient">Local Affordable Foods</h3>
-          <p className="muted">Nutritious options available in your region</p>
+          <h3 className="text-gradient">{$('NUTRITION_SECTION_LOCAL', locale)}</h3>
+          <p className="muted">{$('NUTRITION_SECTION_LOCAL_DESC', locale)}</p>
           {localFoods.length === 0 ? (
-            <p className="muted" style={{ marginTop: '1rem' }}>No local foods match the selected filter.</p>
+            <p className="muted" style={{ marginTop: '1rem' }}>{$('NUTRITION_EMPTY_LOCAL', locale)}</p>
           ) : (
             <div className="pill-list" style={{ marginTop: '1rem' }}>
               {localFoods.map((food) => (

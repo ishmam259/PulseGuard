@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
+import $ from '../../config/strings'
+import { useApp } from '../../context/AppContext'
 
 export default function Records() {
+  const { locale, connectivity } = useApp()
   const [patient, setPatient] = useState(undefined)
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
@@ -35,25 +38,25 @@ export default function Records() {
 
   return (
     <MobileLayout
-      title="Medical Records"
-      status="online"
-      navItems={patientNavItems}
+      title={$('PAGE_TITLE_RECORDS', locale)}
+      status={connectivity}
+      navItems={patientNavItems(locale)}
     >
       <div className="animate-fade-in">
         <div className="card">
           <div className="card-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 className="text-gradient">Your Records</h3>
+            <h3 className="text-gradient">{$('RECORDS_HEADING', locale)}</h3>
             {patient && history.length > 0 && (
               <button type="button" className="btn btn--secondary btn--small" onClick={handleExport}>
-                ⬇️ Export CSV
+                {$('RECORDS_EXPORT_BTN', locale)}
               </button>
             )}
           </div>
 
           {loading ? (
-            <p className="muted text-center" style={{ padding: '2rem 0' }}>Loading records…</p>
+            <p className="muted text-center" style={{ padding: '2rem 0' }}>{$('RECORDS_LOADING', locale)}</p>
           ) : history.length === 0 ? (
-            <p className="muted text-center" style={{ padding: '2rem 0' }}>No records recorded yet.</p>
+            <p className="muted text-center" style={{ padding: '2rem 0' }}>{$('RECORDS_EMPTY', locale)}</p>
           ) : (
             <div className="list" style={{ marginTop: '1rem' }}>
               {history.map((rec, i) => (
@@ -70,18 +73,18 @@ export default function Records() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                     <div>
                       <span style={{ marginRight: '0.5rem' }}></span>
-                      <strong>BP: {rec.bp_systolic}/{rec.bp_diastolic} mmHg</strong>
+                      <strong>{$('RECORDS_FIELD_BP', locale)} {rec.bp_systolic}/{rec.bp_diastolic} mmHg</strong>
                     </div>
                     <span className={`badge badge--${(rec.risk_level || 'low').toLowerCase()}`}>
                       {rec.risk_level || 'low'}
                     </span>
                   </div>
                   <div className="muted" style={{ fontSize: '0.85rem' }}>
-                    <span>Weight: {rec.weight_kg ? `${rec.weight_kg} kg` : 'N/A'}</span>
+                    <span>{$('RECORDS_FIELD_WEIGHT', locale)} {rec.weight_kg ? `${rec.weight_kg} kg` : $('RECORDS_NA', locale)}</span>
                     <span style={{ margin: '0 0.5rem' }}>•</span>
-                    <span>Temp: {rec.temperature_c ? `${rec.temperature_c} °C` : 'N/A'}</span>
+                    <span>{$('RECORDS_FIELD_TEMP', locale)} {rec.temperature_c ? `${rec.temperature_c} °C` : $('RECORDS_NA', locale)}</span>
                     <span style={{ margin: '0 0.5rem' }}>•</span>
-                    <span>Pulse: {rec.pulse ? `${rec.pulse} bpm` : 'N/A'}</span>
+                    <span>{$('RECORDS_FIELD_PULSE', locale)} {rec.pulse ? `${rec.pulse} bpm` : $('RECORDS_NA', locale)}</span>
                   </div>
                   {rec.symptoms && rec.symptoms.length > 0 && (
                     <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>

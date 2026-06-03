@@ -2,18 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import MobileLayout from '../../components/layout/MobileLayout';
 import { useApp } from '../../context/AppContext';
+import { workerNavItems } from '../../data/navItems';
 import * as api from '../../services/api';
-
-const workerNavItems = [
-  { label: 'Home', to: '/worker/dashboard', icon: '' },
-  { label: 'Patients', to: '/worker/patients', icon: '' },
-  { label: 'AI', to: '/worker/ai-analysis', icon: '' },
-  { label: 'Sync', to: '/worker/sync', icon: '' },
-  { label: 'Profile', to: '/worker/profile', icon: '' },
-];
+import $ from '../../config/strings';
 
 export default function WorkerDashboard() {
-  const { currentUser } = useApp();
+  const { currentUser, locale } = useApp();
   const [patients, setPatients] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -32,16 +26,20 @@ export default function WorkerDashboard() {
   ).length;
   const total = (patients || []).length;
 
+  const summaryText = loading
+    ? $('W_DASH_LOADING', locale)
+    : `${$('W_DASH_SUMMARY_A', locale)} ${total} ${$('W_DASH_SUMMARY_B', locale)} ${highRisk} ${highRisk === 1 ? $('W_DASH_HIGH_RISK_CASE', locale) : $('W_DASH_HIGH_RISK_CASES', locale)}`;
+
   return (
     <MobileLayout
-      title="Health Worker"
+      title={$('W_PAGE_TITLE_DASHBOARD', locale)}
       banner={{
         tone: 'syncing',
-        title: 'Sync Center',
-        message: `${total} patients assigned`,
-        action: { label: 'Open Sync', onClick: () => navigate('/worker/sync') },
+        title: $('W_DASH_BANNER_TITLE', locale),
+        message: `${total} ${$('W_DASH_PATIENTS_SUFFIX', locale)}`,
+        action: { label: $('W_DASH_BANNER_ACTION', locale), onClick: () => navigate('/worker/sync') },
       }}
-      navItems={workerNavItems}
+      navItems={workerNavItems(locale)}
     >
       {/* ── KPI Section ── */}
       <section
@@ -53,15 +51,11 @@ export default function WorkerDashboard() {
         }}
       >
         <div className="card greeting-card">
-          <h2>Hello, {currentUser?.name || 'Health Worker'}</h2>
-          <p className="muted">
-            {loading
-              ? 'Loading your assigned patient overview...'
-              : `You have ${total} patients assigned, including ${highRisk} high risk ${highRisk === 1 ? 'case' : 'cases'} today.`}
-          </p>
+          <h2>{$('W_DASH_GREETING_PREFIX', locale)} {currentUser?.name || $('W_DASH_GREETING_DEFAULT', locale)}</h2>
+          <p className="muted">{summaryText}</p>
         </div>
 
-        <h3>Today's KPIs</h3>
+        <h3>{$('W_DASH_KPI_HEADING', locale)}</h3>
         <div className="kpi-row">
           <div className="stat-card bg-appointments">
             <div className="stat-card-header">
@@ -72,7 +66,7 @@ export default function WorkerDashboard() {
               />
               <h2 className="stat-card-count">{loading ? '—' : total}</h2>
             </div>
-            <p className="stat-card-label">Total Patients</p>
+            <p className="stat-card-label">{$('W_DASH_KPI_TOTAL', locale)}</p>
           </div>
 
           <div className="stat-card bg-pending">
@@ -84,7 +78,7 @@ export default function WorkerDashboard() {
               />
               <h2 className="stat-card-count">{loading ? '—' : highRisk}</h2>
             </div>
-            <p className="stat-card-label">High Risk Cases</p>
+            <p className="stat-card-label">{$('W_DASH_KPI_HIGH', locale)}</p>
           </div>
 
           <div className="stat-card bg-cancelled">
@@ -101,7 +95,7 @@ export default function WorkerDashboard() {
                       .length}
               </h2>
             </div>
-            <p className="stat-card-label">Moderate Risk Cases</p>
+            <p className="stat-card-label">{$('W_DASH_KPI_MODERATE', locale)}</p>
           </div>
 
           <div
@@ -121,7 +115,7 @@ export default function WorkerDashboard() {
                       .length}
               </h2>
             </div>
-            <p className="stat-card-label">Low Risk Cases</p>
+            <p className="stat-card-label">{$('W_DASH_KPI_LOW', locale)}</p>
           </div>
         </div>
       </section>
@@ -129,17 +123,17 @@ export default function WorkerDashboard() {
       {/* ── Quick Actions ── */}
       <section className="animate-fade-in">
         <div className="section-header">
-          <h3>Quick Actions</h3>
+          <h3>{$('W_DASH_SECTION_QUICK', locale)}</h3>
         </div>
         <div className="grid three">
           <Link className="card action-card" to="/worker/patients">
-            Patient List
+            {$('W_DASH_QUICK_PATIENTS', locale)}
           </Link>
           <Link className="card action-card" to="/worker/ai-analysis">
-            AI Assistant
+            {$('W_DASH_QUICK_AI', locale)}
           </Link>
           <Link className="card action-card" to="/worker/sync">
-            Sync Center
+            {$('W_DASH_QUICK_SYNC', locale)}
           </Link>
         </div>
       </section>
@@ -147,8 +141,8 @@ export default function WorkerDashboard() {
       {/* ── High Risk Patients ── */}
       <section className="card animate-fade-in">
         <div className="section-header">
-          <h3>High Risk Patients</h3>
-          <span className="muted">{highRisk} patients</span>
+          <h3>{$('W_DASH_SECTION_HIGH_RISK', locale)}</h3>
+          <span className="muted">{highRisk} {$('W_DASH_HIGH_RISK_SUFFIX', locale)}</span>
         </div>
         <div className="list stagger">
           {loading ? (
@@ -156,7 +150,7 @@ export default function WorkerDashboard() {
               className="muted"
               style={{ textAlign: 'center', padding: '1rem 0' }}
             >
-              Loading…
+              {$('W_DASH_LOADING_LIST', locale)}
             </p>
           ) : (
             (patients || []).flatMap((patient) =>
@@ -166,8 +160,8 @@ export default function WorkerDashboard() {
                       <div>
                         <strong>{patient.name}</strong>
                         <p className="muted">
-                          Week {patient.gestational_week || '—'} •{' '}
-                          {patient.village || 'Unknown'}
+                          {$('W_PATIENTS_WEEK_PREFIX', locale)} {patient.gestational_week || '—'} •{' '}
+                          {patient.village || $('W_PATIENTS_UNKNOWN', locale)}
                         </p>
                       </div>
                       <div className="inline-actions">
@@ -178,7 +172,7 @@ export default function WorkerDashboard() {
                           className="btn btn--secondary"
                           to={`/worker/patient/${patient.id}`}
                         >
-                          View
+                          {$('W_DASH_VIEW_BTN', locale)}
                         </Link>
                       </div>
                     </div>,
@@ -191,7 +185,7 @@ export default function WorkerDashboard() {
               className="muted"
               style={{ textAlign: 'center', padding: '1rem 0' }}
             >
-              No high risk patients
+              {$('W_DASH_NO_HIGH_RISK', locale)}
             </p>
           )}
         </div>
