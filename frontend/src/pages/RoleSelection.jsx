@@ -3,8 +3,7 @@ import { useApp } from '../context/AppContext'
 import $ from '../config/strings'
 
 export default function RoleSelection() {
-  const { theme, toggleTheme } = useApp()
-  const locale = localStorage.getItem('pg_locale') || 'en'
+  const { theme, toggleTheme, locale, setLocale } = useApp()
 
   const roles = [
     {
@@ -29,6 +28,23 @@ export default function RoleSelection() {
 
   return (
     <section className="page animate-fade-in" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <button
+        type="button"
+        className="icon-btn"
+        onClick={() => setLocale(prev => (prev === 'en' ? 'bn' : 'en'))}
+        style={{
+          position: 'fixed',
+          top: '1.5rem',
+          right: '4.5rem',
+          zIndex: 1000,
+          fontSize: '12px',
+          width: 'auto',
+          padding: '0 10px',
+        }}
+        title="Switch language"
+      >
+        {$('LANG_TOGGLE', locale)}
+      </button>
       <button
         type="button"
         className="icon-btn theme-toggle-btn"

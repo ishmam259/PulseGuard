@@ -3,10 +3,26 @@ import { useApp } from '../context/AppContext'
 import $ from '../config/strings'
 
 export default function Splash() {
-  const { theme, toggleTheme } = useApp()
-  const locale = localStorage.getItem('pg_locale') || 'en'
+  const { theme, toggleTheme, locale, setLocale } = useApp()
   return (
     <div className="onboarding-container animate-fade-in">
+      <button
+        type="button"
+        className="icon-btn"
+        onClick={() => setLocale(prev => (prev === 'en' ? 'bn' : 'en'))}
+        style={{
+          position: 'fixed',
+          top: '1.5rem',
+          right: '4.5rem',
+          zIndex: 1000,
+          fontSize: '12px',
+          width: 'auto',
+          padding: '0 10px',
+        }}
+        title="Switch language"
+      >
+        {$('LANG_TOGGLE', locale)}
+      </button>
       <button
         type="button"
         className="icon-btn theme-toggle-btn"
