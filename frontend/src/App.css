@@ -1767,6 +1767,9 @@ select.input option {
 }
 :root.dark .greeting-card h2 {
   background: linear-gradient(120deg, #FFFFFF 50%, #ABB8C4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 :root.dark .card h2,
 :root.dark .card h3 {
@@ -1797,6 +1800,9 @@ select.input option {
   }
   :root:not(.light) .greeting-card h2 {
     background: linear-gradient(120deg, #FFFFFF 50%, #ABB8C4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   :root:not(.light) .card h2,
   :root:not(.light) .card h3 {
