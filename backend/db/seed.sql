@@ -48,62 +48,66 @@ INSERT INTO vitals (patient_id, recorded_by, bp_systolic, bp_diastolic, weight_k
   ('b0000005-0000-0000-0000-000000000005', 'a0000002-0000-0000-0000-000000000002', 145, 95, 72.0, 37.4, 92, ARRAY['Headache', 'Swelling', 'Blurred Vision'], 0.780, 'high', now() - interval '1 day');
 
 -- ── Wellness seed ──────────────────────────────────────────────────────
--- Amina (week ~25, high risk): low water + 3 vomits → dehydration_risk
-INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
-  ('b0000001-0000-0000-0000-000000000001', 250, now() - interval '5 hours'),
-  ('b0000001-0000-0000-0000-000000000001', 200, now() - interval '2 hours'),
-  ('b0000001-0000-0000-0000-000000000001', 150, now() - interval '30 minutes')
-ON CONFLICT DO NOTHING;
+-- Fixed UUIDs ensure ON CONFLICT (id) DO NOTHING works on re-runs.
+-- Without fixed UUIDs, gen_random_uuid() produces new IDs every time
+-- and rows accumulate across Docker restarts.
 
-INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES
-  ('b0000001-0000-0000-0000-000000000001', 2, false, 'After breakfast', now() - interval '6 hours'),
-  ('b0000001-0000-0000-0000-000000000001', 2, false, null,             now() - interval '3 hours'),
-  ('b0000001-0000-0000-0000-000000000001', 1, true,  null,             now() - interval '1 hour')
-ON CONFLICT DO NOTHING;
+-- Amina (week ~25, high risk): low water + 3 vomits → dehydration_risk
+INSERT INTO water_logs (id, patient_id, amount_ml, logged_at) VALUES
+  ('c1000001-0000-0000-0000-000000000001', 'b0000001-0000-0000-0000-000000000001', 250, now() - interval '5 hours'),
+  ('c1000001-0000-0000-0000-000000000002', 'b0000001-0000-0000-0000-000000000001', 200, now() - interval '2 hours'),
+  ('c1000001-0000-0000-0000-000000000003', 'b0000001-0000-0000-0000-000000000001', 150, now() - interval '30 minutes')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO vomit_logs (id, patient_id, severity, kept_food, notes, logged_at) VALUES
+  ('c2000001-0000-0000-0000-000000000001', 'b0000001-0000-0000-0000-000000000001', 2, false, 'After breakfast', now() - interval '6 hours'),
+  ('c2000001-0000-0000-0000-000000000002', 'b0000001-0000-0000-0000-000000000001', 2, false, null,             now() - interval '3 hours'),
+  ('c2000001-0000-0000-0000-000000000003', 'b0000001-0000-0000-0000-000000000001', 1, true,  null,             now() - interval '1 hour')
+ON CONFLICT (id) DO NOTHING;
 
 -- Salma (week 18, moderate risk): decent water, 1 mild vomit
-INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
-  ('b0000002-0000-0000-0000-000000000002', 500, now() - interval '6 hours'),
-  ('b0000002-0000-0000-0000-000000000002', 500, now() - interval '3 hours'),
-  ('b0000002-0000-0000-0000-000000000002', 500, now() - interval '1 hour')
-ON CONFLICT DO NOTHING;
+INSERT INTO water_logs (id, patient_id, amount_ml, logged_at) VALUES
+  ('c3000001-0000-0000-0000-000000000001', 'b0000002-0000-0000-0000-000000000002', 500, now() - interval '6 hours'),
+  ('c3000001-0000-0000-0000-000000000002', 'b0000002-0000-0000-0000-000000000002', 500, now() - interval '3 hours'),
+  ('c3000001-0000-0000-0000-000000000003', 'b0000002-0000-0000-0000-000000000002', 500, now() - interval '1 hour')
+ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES
-  ('b0000002-0000-0000-0000-000000000002', 1, true, 'Morning sickness', now() - interval '7 hours')
-ON CONFLICT DO NOTHING;
+INSERT INTO vomit_logs (id, patient_id, severity, kept_food, notes, logged_at) VALUES
+  ('c4000001-0000-0000-0000-000000000001', 'b0000002-0000-0000-0000-000000000002', 1, true, 'Morning sickness', now() - interval '7 hours')
+ON CONFLICT (id) DO NOTHING;
 
 -- Rahima (week 30, low risk): good hydration, no vomiting
-INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
-  ('b0000003-0000-0000-0000-000000000003', 500, now() - interval '7 hours'),
-  ('b0000003-0000-0000-0000-000000000003', 500, now() - interval '4 hours'),
-  ('b0000003-0000-0000-0000-000000000003', 500, now() - interval '2 hours'),
-  ('b0000003-0000-0000-0000-000000000003', 500, now() - interval '30 minutes')
-ON CONFLICT DO NOTHING;
+INSERT INTO water_logs (id, patient_id, amount_ml, logged_at) VALUES
+  ('c5000001-0000-0000-0000-000000000001', 'b0000003-0000-0000-0000-000000000003', 500, now() - interval '7 hours'),
+  ('c5000001-0000-0000-0000-000000000002', 'b0000003-0000-0000-0000-000000000003', 500, now() - interval '4 hours'),
+  ('c5000001-0000-0000-0000-000000000003', 'b0000003-0000-0000-0000-000000000003', 500, now() - interval '2 hours'),
+  ('c5000001-0000-0000-0000-000000000004', 'b0000003-0000-0000-0000-000000000003', 500, now() - interval '30 minutes')
+ON CONFLICT (id) DO NOTHING;
 
 -- Fatema (week 12, low risk): some nausea, moderate water, 2 vomits (below alert threshold)
-INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
-  ('b0000004-0000-0000-0000-000000000004', 250, now() - interval '5 hours'),
-  ('b0000004-0000-0000-0000-000000000004', 350, now() - interval '2 hours')
-ON CONFLICT DO NOTHING;
+INSERT INTO water_logs (id, patient_id, amount_ml, logged_at) VALUES
+  ('c6000001-0000-0000-0000-000000000001', 'b0000004-0000-0000-0000-000000000004', 250, now() - interval '5 hours'),
+  ('c6000001-0000-0000-0000-000000000002', 'b0000004-0000-0000-0000-000000000004', 350, now() - interval '2 hours')
+ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES
-  ('b0000004-0000-0000-0000-000000000004', 1, true,  'First trimester nausea', now() - interval '6 hours'),
-  ('b0000004-0000-0000-0000-000000000004', 2, false, null,                     now() - interval '2 hours')
-ON CONFLICT DO NOTHING;
+INSERT INTO vomit_logs (id, patient_id, severity, kept_food, notes, logged_at) VALUES
+  ('c7000001-0000-0000-0000-000000000001', 'b0000004-0000-0000-0000-000000000004', 1, true,  'First trimester nausea', now() - interval '6 hours'),
+  ('c7000001-0000-0000-0000-000000000002', 'b0000004-0000-0000-0000-000000000004', 2, false, null,                     now() - interval '2 hours')
+ON CONFLICT (id) DO NOTHING;
 
 -- Nasreen (week 36, high risk): excessive vomiting (5) + very low water → dehydration_risk + excessive_vomiting
-INSERT INTO water_logs (patient_id, amount_ml, logged_at) VALUES
-  ('b0000005-0000-0000-0000-000000000005', 150, now() - interval '4 hours'),
-  ('b0000005-0000-0000-0000-000000000005', 150, now() - interval '1 hour')
-ON CONFLICT DO NOTHING;
+INSERT INTO water_logs (id, patient_id, amount_ml, logged_at) VALUES
+  ('c8000001-0000-0000-0000-000000000001', 'b0000005-0000-0000-0000-000000000005', 150, now() - interval '4 hours'),
+  ('c8000001-0000-0000-0000-000000000002', 'b0000005-0000-0000-0000-000000000005', 150, now() - interval '1 hour')
+ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO vomit_logs (patient_id, severity, kept_food, notes, logged_at) VALUES
-  ('b0000005-0000-0000-0000-000000000005', 3, false, 'Severe episode',   now() - interval '7 hours'),
-  ('b0000005-0000-0000-0000-000000000005', 3, false, null,               now() - interval '5 hours'),
-  ('b0000005-0000-0000-0000-000000000005', 2, false, null,               now() - interval '3 hours'),
-  ('b0000005-0000-0000-0000-000000000005', 2, false, 'Cannot keep food', now() - interval '2 hours'),
-  ('b0000005-0000-0000-0000-000000000005', 3, false, null,               now() - interval '45 minutes')
-ON CONFLICT DO NOTHING;
+INSERT INTO vomit_logs (id, patient_id, severity, kept_food, notes, logged_at) VALUES
+  ('c9000001-0000-0000-0000-000000000001', 'b0000005-0000-0000-0000-000000000005', 3, false, 'Severe episode',   now() - interval '7 hours'),
+  ('c9000001-0000-0000-0000-000000000002', 'b0000005-0000-0000-0000-000000000005', 3, false, null,               now() - interval '5 hours'),
+  ('c9000001-0000-0000-0000-000000000003', 'b0000005-0000-0000-0000-000000000005', 2, false, null,               now() - interval '3 hours'),
+  ('c9000001-0000-0000-0000-000000000004', 'b0000005-0000-0000-0000-000000000005', 2, false, 'Cannot keep food', now() - interval '2 hours'),
+  ('c9000001-0000-0000-0000-000000000005', 'b0000005-0000-0000-0000-000000000005', 3, false, null,               now() - interval '45 minutes')
+ON CONFLICT (id) DO NOTHING;
 
 -- Sample sync conflict
 INSERT INTO sync_conflicts (patient_id, record_type, local_payload, server_payload) VALUES
