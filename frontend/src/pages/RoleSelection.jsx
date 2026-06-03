@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useApp } from '../context/AppContext'
 import $ from '../config/strings'
 
 export default function RoleSelection() {
+  const { theme, toggleTheme } = useApp()
   const locale = localStorage.getItem('pg_locale') || 'en'
 
   const roles = [
@@ -27,12 +29,26 @@ export default function RoleSelection() {
 
   return (
     <section className="page animate-fade-in" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <button
+        type="button"
+        className="icon-btn theme-toggle-btn"
+        onClick={toggleTheme}
+        style={{
+          position: 'fixed',
+          top: '1.5rem',
+          right: '1.5rem',
+          zIndex: 1000,
+        }}
+        title="Toggle theme"
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '2rem' }}>
-          <img src="/assets/icons/logo-icon.svg" alt="logo" style={{ height: '36px', width: '36px' }} />
-          <span className="logo-text" style={{ fontSize: '24px', fontWeight: '800', color: '#FFFFFF' }}>PulseGuard</span>
+          <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '36px', width: '36px' }} />
+          <span className="logo-text" style={{ fontSize: '24px', fontWeight: '800', color: 'var(--color-primary)' }}>PulseGuard</span>
         </div>
-        <h1 style={{ fontSize: '32px', fontWeight: '800', color: '#FFFFFF', marginBottom: '0.5rem' }}>
+        <h1 style={{ fontSize: '32px', fontWeight: '800', color: 'var(--color-text)', marginBottom: '0.5rem' }}>
           {$('ROLE_HEADING', locale)}
         </h1>
         <p className="muted">{$('ROLE_SUBHEADING', locale)}</p>
@@ -47,7 +63,7 @@ export default function RoleSelection() {
             style={{ animationDelay: `${i * 0.1}s` }}
           >
             <div className="role-icon">{role.icon}</div>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#FFFFFF' }}>{role.title}</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)' }}>{role.title}</h3>
             <p className="muted" style={{ fontSize: '13px', lineHeight: '1.5' }}>{role.desc}</p>
             <span className="link" style={{ fontSize: '13px', fontWeight: '600', marginTop: '1rem', display: 'inline-block' }}>{$('ROLE_CONTINUE', locale)}</span>
           </Link>

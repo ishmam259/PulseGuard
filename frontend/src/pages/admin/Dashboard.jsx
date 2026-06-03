@@ -128,7 +128,7 @@ export default function Dashboard() {
 
           <div className="stat-card bg-workers animate-fade-in" style={{ animationDelay: '180ms' }}>
             <div className="stat-card-header">
-              <img src="/assets/icons/user.svg" alt="workers" className="stat-card-icon" style={{ filter: 'invert(100%)' }} />
+              <img src="/assets/icons/user.svg" alt="workers" className="stat-card-icon" />
               <h2 className="stat-card-count">{workerCount}</h2>
             </div>
             <p className="stat-card-label">{$('ADMIN_DASH_KPI_WORKERS', locale)}</p>

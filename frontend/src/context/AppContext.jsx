@@ -127,6 +127,31 @@ export function AppProvider({ children }) {
     localStorage.setItem('pg_locale', locale)
   }, [locale])
 
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('pg_theme') || 'system'
+  })
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.remove('light', 'dark')
+    if (theme !== 'system') {
+      root.classList.add(theme)
+      localStorage.setItem('pg_theme', theme)
+    } else {
+      localStorage.removeItem('pg_theme')
+    }
+  }, [theme])
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => {
+      if (prev === 'system') {
+        const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        return isSystemDark ? 'light' : 'dark'
+      }
+      return prev === 'dark' ? 'light' : 'dark'
+    })
+  }, [])
+
   // Auto-sync background offline records when connection is restored
   const syncOfflineQueue = useCallback(async () => {
     if (!currentUser || connectivity !== 'online') return
@@ -169,6 +194,7 @@ export function AppProvider({ children }) {
   // Automatically trigger sync when coming online or logging in online
   useEffect(() => {
     if (connectivity === 'online' && currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       syncOfflineQueue()
     }
   }, [connectivity, currentUser, syncOfflineQueue])
@@ -186,6 +212,8 @@ export function AppProvider({ children }) {
     addNotification,
     locale,
     setLocale,
+    theme,
+    toggleTheme,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
