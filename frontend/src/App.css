@@ -222,6 +222,25 @@
   background: var(--color-surface-hover);
 }
 
+/* Global browser autofill style overrides to force background transparency */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: var(--color-text) !important;
+  transition: background-color 600000s ease-in-out 0s !important;
+}
+
 /* ── Input Wrapper with Icon ── */
 .input-wrapper {
   display: flex;
@@ -241,13 +260,26 @@
   box-shadow: var(--shadow-card), var(--shadow-glow-primary);
   background: var(--color-surface-hover);
 }
-
 .input-wrapper .input-icon {
   width: 20px;
   height: 20px;
   margin-right: 12px;
-  opacity: 0.7;
   flex-shrink: 0;
+  opacity: 0.85;
+  filter: brightness(0.35) contrast(1.2) saturate(1.5);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+:root.dark .input-wrapper .input-icon {
+  filter: brightness(1.2) contrast(1.1) saturate(1.1);
+  opacity: 0.95;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .input-wrapper .input-icon {
+    filter: brightness(1.2) contrast(1.1) saturate(1.1);
+    opacity: 0.95;
+  }
 }
 
 .input-wrapper .input {
@@ -1008,6 +1040,39 @@ select.input option {
   display: grid;
   grid-template-columns: 1fr;
   background-color: var(--color-bg-start);
+}
+
+.onboarding-page-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-start);
+}
+
+.onboarding-error-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  border-left: 4px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.onboarding-error-alert .error-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.onboarding-error-alert .error-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-text);
+  text-align: left;
 }
 
 @media (min-width: 1024px) {
