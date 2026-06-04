@@ -24,6 +24,7 @@ export default function Wellness() {
   const [vKeptFood, setVKeptFood] = useState(false)
   const [vNotes, setVNotes] = useState('')
   const [saving, setSaving] = useState(false)
+  const [customMl, setCustomMl] = useState('')
 
   const patientId = localStorage.getItem('pg_wellness_pid') // cache patient id
 
@@ -103,6 +104,8 @@ export default function Wellness() {
   const severityLabel = (n) => $('WELLNESS_VOMIT_' + ['MILD', 'MODERATE', 'SEVERE'][n - 1], locale)
   const severityColor = (n) => n === 3 ? '#ef4444' : n === 2 ? '#f59e0b' : '#10b981'
 
+  const fmtN = (n) => locale === 'bn' ? n.toLocaleString('bn-BD') : String(n)
+
   const tabLabels = {
     Water: () => $('WELLNESS_TAB_WATER', locale),
     Vomit: () => $('WELLNESS_TAB_VOMIT', locale),
@@ -161,12 +164,12 @@ export default function Wellness() {
                     <div>
                       <p className="muted">{$('WELLNESS_WATER_TOTAL', locale)}</p>
                       <div className="kpi" style={{ color: water.hydration_pct >= 80 ? '#10b981' : water.hydration_pct >= 40 ? '#f59e0b' : '#ef4444' }}>
-                        {water.total_ml} <span style={{ fontSize: '1rem', fontWeight: 400 }}>{$('WELLNESS_WATER_ML_SUFFIX', locale)}</span>
+                        {fmtN(water.total_ml)} <span style={{ fontSize: '1rem', fontWeight: 400 }}>{$('WELLNESS_WATER_ML_SUFFIX', locale)}</span>
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <p className="muted">{$('WELLNESS_WATER_GOAL', locale)}</p>
-                      <strong style={{ fontSize: '1.1rem' }}>{water.goal_ml} {$('WELLNESS_WATER_ML_SUFFIX', locale)}</strong>
+                      <strong style={{ fontSize: '1.1rem' }}>{fmtN(water.goal_ml)} {$('WELLNESS_WATER_ML_SUFFIX', locale)}</strong>
                     </div>
                   </div>
 
@@ -184,7 +187,7 @@ export default function Wellness() {
                       }}
                     />
                   </div>
-                  <p className="muted" style={{ fontSize: '11px', marginTop: '4px', textAlign: 'right' }}>{water.hydration_pct}%</p>
+                  <p className="muted" style={{ fontSize: '11px', marginTop: '4px', textAlign: 'right' }}>{fmtN(water.hydration_pct)}%</p>
 
                   {/* Quick-add buttons */}
                   <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
@@ -196,10 +199,43 @@ export default function Wellness() {
                         style={{ flex: 1, minWidth: '60px', fontSize: '0.85rem', padding: '8px 4px' }}
                         onClick={() => handleAddWater(ml)}
                       >
-                        +{ml >= 1000 ? '1L' : `${ml}ml`}
+                        +{ml >= 1000 ? '1L' : `${fmtN(ml)}ml`}
                       </button>
                     ))}
                   </div>
+
+                  {/* Manual amount input */}
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      const val = parseInt(customMl, 10)
+                      if (!isNaN(val) && val >= 100 && val <= 2000) {
+                        handleAddWater(val)
+                        setCustomMl('')
+                      }
+                    }}
+                    style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}
+                  >
+                    <input
+                      type="number"
+                      className="input"
+                      placeholder="Enter ml (100–2000)"
+                      min={100}
+                      max={2000}
+                      value={customMl}
+                      onChange={(e) => setCustomMl(e.target.value)}
+                      style={{ flex: 1, MozAppearance: 'textfield' }}
+                      onWheel={(e) => e.target.blur()}
+                    />
+                    <button
+                      type="submit"
+                      className="btn btn--primary"
+                      disabled={!customMl || parseInt(customMl, 10) < 100 || parseInt(customMl, 10) > 2000}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      + Add
+                    </button>
+                  </form>
 
                   {/* Today's log */}
                   <div style={{ marginTop: '1.25rem' }}>
@@ -210,7 +246,7 @@ export default function Wellness() {
                         {[...water.entries].reverse().map((e, i) => (
                           <div className="list-item" key={e.id || i}>
                             <div>
-                              <strong>{e.amount_ml} {$('WELLNESS_WATER_ML_SUFFIX', locale)}</strong>
+                              <strong>{fmtN(e.amount_ml)} {$('WELLNESS_WATER_ML_SUFFIX', locale)}</strong>
                               <p className="muted">{new Date(e.logged_at).toLocaleTimeString(locale === 'bn' ? 'bn-BD' : 'en-GB', { hour: '2-digit', minute: '2-digit' })}</p>
                             </div>
                             <button type="button" className="btn btn--ghost" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => handleUndoWater(e.id)}>
@@ -259,7 +295,7 @@ export default function Wellness() {
                   <div style={{ marginTop: '1rem', textAlign: 'center' }}>
                     <p className="muted">{$('WELLNESS_VOMIT_COUNT', locale)}</p>
                     <div className="kpi" style={{ color: vomit.count >= 5 ? '#ef4444' : vomit.count >= 3 ? '#f59e0b' : 'var(--color-text)' }}>
-                      {vomit.count}
+                      {fmtN(vomit.count)}
                     </div>
                     {vomit.excessive_vomiting && (
                       <span className="badge badge--high" style={{ marginTop: '0.25rem' }}>{$('WELLNESS_EXCESSIVE_BADGE', locale)}</span>
