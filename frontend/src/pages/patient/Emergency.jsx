@@ -122,7 +122,7 @@ export default function Emergency() {
             <button type="button" className="btn btn--secondary btn--large" onClick={handleSOS}>
               {$('EMERGENCY_BTN_NOTIFY', locale)}
             </button>
-            <a href="tel:999" className="btn btn--primary btn--large text-center" style={{ textDecoration: 'none' }}>
+            <a href="tel:999" className="btn btn--danger btn--large text-center" style={{ textDecoration: 'none' }}>
               {$('EMERGENCY_BTN_CALL', locale)}
             </a>
           </div>

@@ -865,8 +865,6 @@ select.input option {
   text-align: center;
   display: grid;
   gap: var(--spacing-4);
-  background: rgba(239, 68, 68, 0.06);
-  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .sos-btn {
