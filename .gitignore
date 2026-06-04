@@ -10,7 +10,7 @@ ENV/
 env/
 ai/.venv/
 backend/.venv/
-
+competitor_analysis.md
 # Python Cache
 __pycache__/
 *.pyc

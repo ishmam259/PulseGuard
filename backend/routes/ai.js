@@ -35,11 +35,8 @@ router.post('/chat', async (req, res) => {
       console.error('❌ AI worker fetch failed:', err.message);
     }
 
-    // Fallback mock AI response
-    const mockResponses = generateMockResponse(message);
-    res.json({
-      response: mockResponses,
-      model: 'mock',
+    return res.status(503).json({
+      error: 'AI service unavailable. Please try again when connected.',
       offline: true,
     });
   } catch (err) {
@@ -167,31 +164,5 @@ router.post('/summary', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-function generateMockResponse(message) {
-  const lower = message.toLowerCase();
-
-  if (lower.includes('headache') || lower.includes('head')) {
-    return 'Headaches during pregnancy can have several causes:\n\n• **Tension headache** — Often due to stress, fatigue, or dehydration\n• **Preeclampsia indicator** — If accompanied by high blood pressure, blurred vision, or swelling\n• **Hormonal changes** — Common in early pregnancy\n\n💡 **Recommendation**: Rest, drink plenty of water, and check your blood pressure. If the headache is severe or persistent, contact your health worker immediately.';
-  }
-
-  if (
-    lower.includes('dizzy') ||
-    lower.includes('dizziness') ||
-    lower.includes('faint')
-  ) {
-    return 'Dizziness during pregnancy may indicate:\n\n• **Low blood pressure** (hypotension)\n• **Dehydration** — Ensure you drink at least 8 glasses of water daily\n• **Anemia** — Iron deficiency is common during pregnancy\n• **Blood sugar drop** — Try eating small, frequent meals\n\n💡 **Recommendation**: Sit or lie down when feeling dizzy. Avoid standing up quickly. Report this to your health worker at your next visit.';
-  }
-
-  if (
-    lower.includes('nausea') ||
-    lower.includes('vomit') ||
-    lower.includes('sick')
-  ) {
-    return 'Nausea is very common during pregnancy, especially in the first trimester:\n\n• **Morning sickness** — Usually improves after week 12-14\n• **Eat small, frequent meals** to keep blood sugar stable\n• **Ginger tea** can help reduce nausea naturally\n• **Avoid strong smells** that trigger symptoms\n\n💡 **Recommendation**: If vomiting is severe or you cannot keep fluids down, seek medical attention to prevent dehydration.';
-  }
-
-  return 'Thank you for sharing your symptoms. Based on your input, I recommend:\n\n• **Monitor your symptoms** over the next 24 hours\n• **Stay hydrated** and rest when possible\n• **Record any changes** in the Daily Health Check\n• **Contact your health worker** if symptoms worsen\n\n💡 Your health worker will review this information at your next visit.';
-}
 
 module.exports = router;
