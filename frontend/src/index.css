@@ -15,19 +15,19 @@
   --color-surface-solid: rgba(255, 255, 255, 0.45);
   --color-surface-elevated: rgba(255, 255, 255, 0.55);
 
-  --color-blob-1: radial-gradient(ellipse, rgba(219, 39, 119, 0.10) 0%, rgba(148, 163, 184, 0.10) 40%, transparent 70%);
+  --color-blob-1: radial-gradient(ellipse, rgba(204, 43, 94, 0.10) 0%, rgba(148, 163, 184, 0.10) 40%, transparent 70%);
   --color-blob-2: radial-gradient(ellipse, rgba(148, 163, 184, 0.12) 0%, transparent 70%);
-  --color-blob-3: radial-gradient(ellipse, rgba(219, 39, 119, 0.06) 0%, rgba(148, 163, 184, 0.06) 50%, transparent 70%);
+  --color-blob-3: radial-gradient(ellipse, rgba(204, 43, 94, 0.06) 0%, rgba(148, 163, 184, 0.06) 50%, transparent 70%);
   --color-blob-4: radial-gradient(ellipse, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
   --color-blob-5: radial-gradient(ellipse, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
 
-  --color-primary: #db2777;
-  --color-primary-light: #D62054;
-  --color-primary-dim: rgba(219, 39, 119, 0.14);
-  --color-primary-glow: rgba(219, 39, 119, 0.25);
+  --color-primary: #cc2b5e;
+  --color-primary-light: #be1a4c;
+  --color-primary-dim: rgba(204, 43, 94, 0.14);
+  --color-primary-glow: rgba(204, 43, 94, 0.25);
 
-  --color-secondary: #D4536A;
-  --color-secondary-dim: rgba(219, 39, 119, 0.08);
+  --color-secondary: #cb4e65;
+  --color-secondary-dim: rgba(204, 43, 94, 0.08);
 
   --color-success: #059669;
   --color-success-dim: rgba(16, 185, 129, 0.13);
@@ -47,21 +47,21 @@
   --color-border-light: rgba(255, 255, 255, 0.60);
 
   /* ── Gradients ── */
-  --gradient-primary: linear-gradient(135deg, #db2777, #D62054);
+  --gradient-primary: linear-gradient(135deg, #cc2b5e, #be1a4c);
   --gradient-danger: linear-gradient(135deg, #dc2626, #ef4444);
   --gradient-warning: linear-gradient(135deg, #f59e0b, #fbbf24);
   --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.20));
   --gradient-shell: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
-  --gradient-bg: linear-gradient(to right, #e7dee3 0%, #e7dee3 100%);
+  --gradient-bg: linear-gradient(to right, #ece7e8 0%, #ece7e8 100%);
 
   /* ── Shadows ── */
   --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
   --shadow-card: 0 12px 30px -10px rgba(15, 23, 42, 0.15), 0 1.5px 4px rgba(15, 23, 42, 0.08), inset 0 1.5px 0 rgba(255, 255, 255, 0.85);
   --shadow-elevated: 0 25px 50px -12px rgba(15, 23, 42, 0.18), inset 0 1.5px 0 rgba(255, 255, 255, 0.85);
-  --shadow-glow-primary: 0 0 20px rgba(219, 39, 119, 0.08);
+  --shadow-glow-primary: 0 0 20px rgba(204, 43, 94, 0.08);
   --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.08);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  --shadow-nav: 3px 0 30px rgba(219, 39, 119, 0.07), inset -1px 0 0 rgba(255, 255, 255, 0.9);
+  --shadow-nav: 3px 0 30px rgba(204, 43, 94, 0.07), inset -1px 0 0 rgba(255, 255, 255, 0.9);
 
   /* ── Grid/Scrollbar ── */
   --grid-color: rgba(0, 0, 0, 0.06);
@@ -125,19 +125,19 @@
   --color-surface-solid: rgba(255, 255, 255, 0.07);
   --color-surface-elevated: rgba(255, 255, 255, 0.09);
 
-  --color-blob-1: radial-gradient(ellipse, rgba(219, 39, 119, 0.12) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
+  --color-blob-1: radial-gradient(ellipse, rgba(204, 43, 94, 0.12) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
   --color-blob-2: radial-gradient(ellipse, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
-  --color-blob-3: radial-gradient(ellipse, rgba(219, 39, 119, 0.08) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
+  --color-blob-3: radial-gradient(ellipse, rgba(204, 43, 94, 0.08) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
   --color-blob-4: radial-gradient(ellipse, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
   --color-blob-5: radial-gradient(ellipse, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
 
-  --color-primary: #db2777;
-  --color-primary-light: #D62054;
-  --color-primary-dim: rgba(219, 39, 119, 0.12);
-  --color-primary-glow: rgba(219, 39, 119, 0.2);
+  --color-primary: #cc2b5e;
+  --color-primary-light: #be1a4c;
+  --color-primary-dim: rgba(204, 43, 94, 0.12);
+  --color-primary-glow: rgba(204, 43, 94, 0.2);
 
-  --color-secondary: #D4536A;
-  --color-secondary-dim: rgba(219, 39, 119, 0.08);
+  --color-secondary: #cb4e65;
+  --color-secondary-dim: rgba(204, 43, 94, 0.08);
 
   --color-success: #34d399;
   --color-success-dim: rgba(16, 185, 129, 0.12);
@@ -157,17 +157,17 @@
   --color-border-light: rgba(255, 255, 255, 0.18);
 
   /* ── Gradients ── */
-  --gradient-primary: linear-gradient(135deg, #db2777, #D62054);
+  --gradient-primary: linear-gradient(135deg, #cc2b5e, #be1a4c);
   --gradient-danger: linear-gradient(135deg, #f87171, #ef4444);
   --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
   --gradient-shell: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-  --gradient-bg: linear-gradient(to right, #120a0d 0%, #120a0d 100%);
+  --gradient-bg: linear-gradient(to right, #0e0a0b 0%, #0e0a0b 100%);
 
   /* ── Shadows ── */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
   --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-elevated: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  --shadow-glow-primary: 0 0 20px rgba(219, 39, 119, 0.1);
+  --shadow-glow-primary: 0 0 20px rgba(204, 43, 94, 0.1);
   --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.1);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
   --shadow-nav: 0 10px 30px -10px rgba(0, 0, 0, 0.3), inset -1px 0 0 rgba(255, 255, 255, 0.02);
@@ -196,19 +196,19 @@
     --color-surface-solid: rgba(255, 255, 255, 0.07);
     --color-surface-elevated: rgba(255, 255, 255, 0.09);
 
-    --color-blob-1: radial-gradient(ellipse, rgba(219, 39, 119, 0.12) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
+    --color-blob-1: radial-gradient(ellipse, rgba(204, 43, 94, 0.12) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
     --color-blob-2: radial-gradient(ellipse, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
-    --color-blob-3: radial-gradient(ellipse, rgba(219, 39, 119, 0.08) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
+    --color-blob-3: radial-gradient(ellipse, rgba(204, 43, 94, 0.08) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
     --color-blob-4: radial-gradient(ellipse, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
     --color-blob-5: radial-gradient(ellipse, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
 
-    --color-primary: #db2777;
-    --color-primary-light: #D62054;
-    --color-primary-dim: rgba(219, 39, 119, 0.12);
-    --color-primary-glow: rgba(219, 39, 119, 0.2);
+    --color-primary: #cc2b5e;
+    --color-primary-light: #be1a4c;
+    --color-primary-dim: rgba(204, 43, 94, 0.12);
+    --color-primary-glow: rgba(204, 43, 94, 0.2);
 
-    --color-secondary: #D4536A;
-    --color-secondary-dim: rgba(219, 39, 119, 0.08);
+    --color-secondary: #cb4e65;
+    --color-secondary-dim: rgba(204, 43, 94, 0.08);
 
     --color-success: #34d399;
     --color-success-dim: rgba(16, 185, 129, 0.12);
@@ -228,17 +228,17 @@
     --color-border-light: rgba(255, 255, 255, 0.18);
 
     /* ── Gradients ── */
-    --gradient-primary: linear-gradient(135deg, #db2777, #D62054);
+    --gradient-primary: linear-gradient(135deg, #cc2b5e, #be1a4c);
     --gradient-danger: linear-gradient(135deg, #f87171, #ef4444);
     --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
     --gradient-shell: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-    --gradient-bg: linear-gradient(to right, #120a0d 0%, #120a0d 100%);
+    --gradient-bg: linear-gradient(to right, #0e0a0b 0%, #0e0a0b 100%);
 
     /* ── Shadows ── */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     --shadow-elevated: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    --shadow-glow-primary: 0 0 20px rgba(219, 39, 119, 0.1);
+    --shadow-glow-primary: 0 0 20px rgba(204, 43, 94, 0.1);
     --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.1);
     --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
     --shadow-nav: 0 10px 30px -10px rgba(0, 0, 0, 0.3), inset -1px 0 0 rgba(255, 255, 255, 0.02);
@@ -376,8 +376,8 @@ p { margin: 0; }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(219, 39, 119, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(204, 43, 94, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(204, 43, 94, 0); }
 }
 
 @keyframes pulseRed {
@@ -435,14 +435,14 @@ p { margin: 0; }
 /* Desktop background layout zones (places neutral backdrop behind the sidebar only when visible) */
 @media (min-width: 768px) {
   :root {
-    --gradient-bg: linear-gradient(to right, #e2e8f0 0px, #e2e8f0 280px, #e7dee3 290px, #e7dee3 100%);
+    --gradient-bg: linear-gradient(to right, #e2e8f0 0px, #e2e8f0 280px, #ece7e8 290px, #ece7e8 100%);
   }
   :root.dark {
-    --gradient-bg: linear-gradient(to right, #050608 0px, #050608 280px, #120a0d 290px, #120a0d 100%);
+    --gradient-bg: linear-gradient(to right, #050608 0px, #050608 280px, #0e0a0b 290px, #0e0a0b 100%);
   }
   @media (prefers-color-scheme: dark) {
     :root:not(.light) {
-      --gradient-bg: linear-gradient(to right, #050608 0px, #050608 280px, #120a0d 290px, #120a0d 100%);
+      --gradient-bg: linear-gradient(to right, #050608 0px, #050608 280px, #0e0a0b 290px, #0e0a0b 100%);
     }
   }
 }

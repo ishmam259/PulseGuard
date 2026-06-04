@@ -61,12 +61,12 @@
   background: var(--gradient-primary);
   color: #FFFFFF;
   border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 16px rgba(219, 39, 119, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 16px rgba(204, 43, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .btn--primary:hover {
-  background: linear-gradient(135deg, #f43f5e 0%, #db2777 100%);
-  box-shadow: 0 6px 20px rgba(219, 39, 119, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, #e13354 0%, #cc2b5e 100%);
+  box-shadow: 0 6px 20px rgba(204, 43, 94, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   transform: translateY(-1.5px);
 }
 
@@ -144,7 +144,7 @@
 .badge--online {
   background: var(--color-primary-dim);
   color: var(--color-primary);
-  border: 1px solid rgba(219, 39, 119, 0.25);
+  border: 1px solid rgba(204, 43, 94, 0.25);
 }
 .badge--online::before {
   content: '';
@@ -197,7 +197,7 @@
 .badge--low {
   background: var(--color-primary-dim);
   color: var(--color-primary);
-  border: 1px solid rgba(219, 39, 119, 0.3);
+  border: 1px solid rgba(204, 43, 94, 0.3);
 }
 
 .input {
@@ -220,6 +220,17 @@
   border-color: var(--color-primary);
   box-shadow: var(--shadow-card), var(--shadow-glow-primary);
   background: var(--color-surface-hover);
+}
+
+/* Chrome/Safari browser autofill custom styles to remove the default light-blue/whitish background */
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover, 
+.input:-webkit-autofill:focus, 
+.input:-webkit-autofill:active {
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: var(--color-text) !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* ── Input Wrapper with Icon ── */
@@ -747,14 +758,14 @@ select.input option {
 
 .chat-bubble.ai {
   background: var(--color-primary-dim);
-  border: 1px solid rgba(219, 39, 119, 0.15);
+  border: 1px solid rgba(204, 43, 94, 0.15);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
 
 .chat-bubble.user {
   background: var(--color-secondary-dim);
-  border: 1px solid rgba(219, 39, 119, 0.08);
+  border: 1px solid rgba(204, 43, 94, 0.08);
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
@@ -764,7 +775,7 @@ select.input option {
   gap: 4px;
   padding: 12px 16px;
   background: var(--color-primary-dim);
-  border: 1px solid rgba(219, 39, 119, 0.15);
+  border: 1px solid rgba(204, 43, 94, 0.15);
   border-radius: var(--radius-lg);
   border-bottom-left-radius: 4px;
   align-self: flex-start;
@@ -811,7 +822,7 @@ select.input option {
 }
 
 .chip:hover {
-  background: rgba(219, 39, 119, 0.25);
+  background: rgba(204, 43, 94, 0.25);
   border-color: var(--color-primary);
 }
 
@@ -834,7 +845,7 @@ select.input option {
   color: var(--color-primary);
   font-size: 13px;
   font-weight: 600;
-  border: 1px solid rgba(219, 39, 119, 0.15);
+  border: 1px solid rgba(204, 43, 94, 0.15);
 }
 
 .pill.warning {
@@ -1007,9 +1018,40 @@ select.input option {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr;
-  background: var(--gradient-shell);
-  backdrop-filter: var(--blur-glass);
-  -webkit-backdrop-filter: var(--blur-glass);
+  background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
+}
+
+.onboarding-page-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
+}
+
+.onboarding-error-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  border-left: 4px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.onboarding-error-alert .error-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.onboarding-error-alert .error-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-text);
+  text-align: left;
 }
 
 @media (min-width: 1024px) {
