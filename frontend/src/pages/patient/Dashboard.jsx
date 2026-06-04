@@ -108,6 +108,13 @@ export default function Dashboard() {
             <h4>{$('DASH_ACTION_EMERGENCY_TITLE', locale)}</h4>
             <p className="muted">{$('DASH_ACTION_EMERGENCY_DESC', locale)}</p>
           </Link>
+          <Link to="/patient/community-chat" className="card action-card stagger" style={{ animationDelay: '0.4s' }}>
+            <svg style={{ width: '40px', height: '40px', color: 'var(--color-primary)', marginBottom: '4px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2v4l-4-4H7a2 2 0 0 1-2-2v-1M7 8a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 4v-4H7" />
+            </svg>
+            <h4>{$('DASH_ACTION_COMMUNITY_TITLE', locale)}</h4>
+            <p className="muted">{$('DASH_ACTION_COMMUNITY_DESC', locale)}</p>
+          </Link>
         </div>
 
         <div className="section-header" style={{ marginTop: '1.5rem' }}>

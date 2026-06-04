@@ -114,3 +114,18 @@ CREATE TABLE IF NOT EXISTS alerts (
 CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
 CREATE INDEX IF NOT EXISTS idx_alerts_patient ON alerts(patient_id);
 
+
+-- ═══════════════════════════════════════════════════════════
+-- Conduit (matrix) credentials for community chat
+-- ═══════════════════════════════════════════════════════════
+-- Conduit v0.10 does not support JWT login; we provision each
+-- PulseGuard patient with a server-generated strong password,
+-- store its bcrypt hash here, and use the plaintext (read on
+-- demand from the server process) to call m.login.password.
+-- The plaintext is never returned to the browser.
+CREATE TABLE IF NOT EXISTS conduit_credentials (
+  user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  conduit_user_id TEXT NOT NULL UNIQUE,
+  password_ciphertext TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);

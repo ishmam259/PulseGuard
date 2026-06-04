@@ -4,6 +4,12 @@ const cors = require('cors')
 const http = require('http')
 const { setupWebSocket } = require('./services/websocket')
 
+// Don't let an unhandled promise rejection (e.g. from a Matrix-side
+// race condition in the chat subsystem) crash the entire API.
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason)
+})
+
 const app = express()
 const server = http.createServer(app)
 

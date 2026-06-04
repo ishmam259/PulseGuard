@@ -1,0 +1,33 @@
+# PulseGuard — Conduit matrix homeserver config
+# Conduit v0.10.x — uses the [global] section wrapper (required by
+# the modern Conduit schema). All fields belong inside [global] or
+# inside their own typed tables.
+
+[global]
+
+# Networking — bound to all interfaces, listening on the in-container port
+# that docker-compose maps to host 8008.
+address = "0.0.0.0"
+port = 6167
+server_name = "localhost"
+max_request_size = 20_000_000
+
+# JWT secret is read from the CONDUIT_JWT_SECRET env var; we set the
+# placeholder here so the field validates.
+jwt_secret = "REPLACE_WITH_CONDUIT_JWT_SECRET"
+
+# Open registration so /register can auto-provision first-time patients.
+# Lock this down once you have an admin path.
+allow_registration = true
+allow_encryption = true
+allow_federation = false
+allow_public_room_directory = true
+allow_guest_registration = false
+
+# Verbose enough to see who's connecting; quiet on the framework internals.
+log = "warn,rocket=warn,_server=warn"
+
+# Database — Conduit 0.10 requires a database_backend field.
+# RocksDB is bundled in the image; the data lives in the volume mount.
+database_backend = "rocksdb"
+database_path = "/srv/conduit/data/db"

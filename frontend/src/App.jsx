@@ -11,6 +11,7 @@ import Register from './pages/Register'
 // Patient pages
 import PatientDashboard from './pages/patient/Dashboard'
 import PatientChat from './pages/patient/AIChat'
+import PatientCommunityChat from './pages/patient/CommunityChat'
 import DailyHealthCheck from './pages/patient/DailyCheck'
 import NutritionPlan from './pages/patient/Nutrition'
 import EmergencySOS from './pages/patient/Emergency'
@@ -55,6 +56,7 @@ function App() {
         <Route path="/patient/dashboard" element={<ProtectedRoute allowedRoles={['patient']}><PatientDashboard /></ProtectedRoute>} />
         <Route path="/patient/onboarding" element={<ProtectedRoute allowedRoles={['patient']}><PatientOnboarding /></ProtectedRoute>} />
         <Route path="/patient/ai-chat" element={<ProtectedRoute allowedRoles={['patient']}><PatientChat /></ProtectedRoute>} />
+        <Route path="/patient/community-chat" element={<ProtectedRoute allowedRoles={['patient']}><PatientCommunityChat /></ProtectedRoute>} />
         <Route path="/patient/daily-check" element={<ProtectedRoute allowedRoles={['patient']}><DailyHealthCheck /></ProtectedRoute>} />
         <Route path="/patient/nutrition" element={<ProtectedRoute allowedRoles={['patient']}><NutritionPlan /></ProtectedRoute>} />
         <Route path="/patient/emergency" element={<ProtectedRoute allowedRoles={['patient']}><EmergencySOS /></ProtectedRoute>} />
