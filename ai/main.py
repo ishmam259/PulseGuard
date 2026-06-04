@@ -11,7 +11,7 @@ import sys
 import os
 import json
 
-from external.adapters.openrouter_model import OpenRouterModel
+from external.llm_cascade import LLMCascade
 
 # Add parent directory for model imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -110,11 +110,7 @@ async def predict(req: PredictRequest):
     return result
 
 
-@app.post("/ai/chat")
-async def chat(req: ChatRequest):
-    """AI symptom checker — supports English, Bengali (বাংলা), and Banglish."""
-
-    SYSTEM_PROMPT = """You are PulseGuard AI — a knowledgeable and compassionate maternal health assistant for pregnant women in rural Bangladesh.
+_CHAT_SYSTEM_PROMPT = """You are PulseGuard AI — a knowledgeable and compassionate maternal health assistant for pregnant women in rural Bangladesh.
 
 ═══ LANGUAGE DETECTION & RESPONSE RULES (STRICTLY ENFORCED) ═══
 
@@ -132,33 +128,56 @@ CRITICAL RULE: If the user writes in English (e.g. "I have a headache", "I feel 
 
 Common Banglish words for detection: jor/jor ache=fever | matha byatha=headache | bomi/ulti=vomiting | pet byatha=stomach ache | rokto=blood | chakkar=dizziness | pa fola=swollen feet | swash koshto=breathing difficulty | ki korte pari=what should I do | akhon=now | khub=very | beshi=too much | amr/amar=my | ache=have
 
-═══ RESPONSE FORMAT ═══
+═══ RESPONSE FORMAT (MANDATORY — FOLLOW EXACTLY) ═══
 
-For ENGLISH responses use this structure:
+For ENGLISH responses, use this exact structure with bold headers:
+
 **Warning:** I am an AI, not a doctor. For severe symptoms, see a doctor immediately.
-1. [First action]
-2. [Second step — fluids/rest]
-3. [What to eat]
-4. [What to avoid]
-5. [Prevention/hygiene]
-**When to seek immediate medical attention:** 4-5 specific emergency signs.
-**Medication caution:** Brief note on not self-medicating during pregnancy.
 
-For BENGALI responses use the same structure in Bengali:
+1. **Immediate action:** [what to do right now]
+2. **Rest and hydration:** [fluids, rest guidance]
+3. **What to eat:** [specific foods]
+4. **What to avoid:** [specific things to avoid]
+5. **Prevention:** [how to prevent recurrence]
+
+**When to seek immediate medical attention:** [4-5 specific emergency warning signs]
+**Medication caution:** [brief note on not self-medicating during pregnancy]
+
+For BENGALI responses, use the same structure in Bengali with bold headers:
+
 **সতর্কবার্তা:** আমি একজন এআই, কোনো ডাক্তার নই। গুরুতর লক্ষণের জন্য অবিলম্বে ডাক্তারের পরামর্শ নিন।
-১. ২. ৩. ৪. ৫.
-**কখন দ্রুত ডাক্তারের কাছে যাবেন:** ...
-**ওষুধের ব্যাপারে সতর্কতা:** ...
 
-Use **bold** for section headers. Be thorough — 300-500 words. Write like a knowledgeable health worker, not a chatbot.
+১. **তাৎক্ষণিক পদক্ষেপ:** [এখনই কী করতে হবে]
+২. **বিশ্রাম ও পানি পান:** [তরল ও বিশ্রামের নির্দেশনা]
+৩. **কী খাবেন:** [নির্দিষ্ট খাবার]
+৪. **কী এড়াবেন:** [নির্দিষ্টভাবে কী এড়াতে হবে]
+৫. **প্রতিরোধ:** [পুনরাবৃত্তি রোধের উপায়]
+
+**কখন দ্রুত ডাক্তারের কাছে যাবেন:** [৪-৫টি জরুরি সতর্ক সংকেত]
+**ওষুধের ব্যাপারে সতর্কতা:** [গর্ভাবস্থায় নিজে ওষুধ না খাওয়ার সংক্ষিপ্ত নির্দেশ]
+
+CRITICAL: Always use the numbered structure above. Never skip sections. Be thorough — 300-500 words. Write like a knowledgeable health worker, not a chatbot.
 Only answer maternal/pregnancy health questions. For unrelated topics, politely decline in the same language the user wrote in."""
 
-    model = OpenRouterModel(model_name="llama-3.3-70b-versatile")
-    response = model.ask(req.message, system_prompt=SYSTEM_PROMPT)
+_cascade: LLMCascade | None = None
+
+
+def _get_cascade() -> LLMCascade:
+    global _cascade
+    if _cascade is None:
+        _cascade = LLMCascade(system_prompt=_CHAT_SYSTEM_PROMPT)
+    return _cascade
+
+
+@app.post("/ai/chat")
+async def chat(req: ChatRequest):
+    """AI symptom checker — Groq → Gemini → offline Q&A cascade."""
+    result = _get_cascade().generate(req.message, language=req.language or "en")
 
     return {
-        "response": response,
-        "model": "groq_llama3",
+        "response": result["text"],
+        "source": result["source"],
+        "model": f"cascade/{result['source']}",
         "language": req.language,
         "offline_capable": True,
     }
@@ -168,7 +187,7 @@ Only answer maternal/pregnancy health questions. For unrelated topics, politely 
 async def summary(req: SummaryRequest):
     """Generate longitudinal patient summary — RAG placeholder."""
 
-    model = OpenRouterModel()
+    model = _get_cascade()._groq
     prompt = f"""
     PATIENTS INFORMATION THAT WAS PROVIDED TO XGBOOST MODEL:
     BP SYSTOLIC: {req.symptoms.bp_systolic}

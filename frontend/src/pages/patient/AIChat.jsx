@@ -8,6 +8,11 @@ import { useApp } from '../../context/AppContext'
 
 const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
 
+const SOURCE_BADGE = {
+  offline: { label: 'Offline Answer', style: { background: '#f59e0b', color: '#fff' } },
+  gemini:  { label: 'Gemini',         style: { background: '#4f46e5', color: '#fff' } },
+}
+
 export default function AIChat() {
   const { locale, connectivity } = useApp()
   const [messages, setMessages] = useState([]);
@@ -31,11 +36,12 @@ export default function AIChat() {
     setIsTyping(true)
 
     try {
-      const response = await api.aiChat(text.trim())
+      const response = await api.aiChat(text.trim(), locale)
       const aiMsg = {
         id: `m-${Date.now()}-ai`,
         role: 'ai',
         text: response.response || response.reply || $('AI_CHAT_ERR_FAILED', locale),
+        source: response.source,
       }
       setMessages((prev) => [...prev, aiMsg])
     } catch (err) {
@@ -66,7 +72,33 @@ export default function AIChat() {
         <div className="card chat-card">
           {messages.map((msg) => (
             <div key={msg.id} className={`chat-bubble ${msg.role}`}>
-              <ReactMarkdown>{msg.text}</ReactMarkdown>
+              {msg.role === 'ai' && SOURCE_BADGE[msg.source] && (
+                <span style={{
+                  display: 'inline-block',
+                  fontSize: '0.65rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  padding: '1px 7px',
+                  borderRadius: '999px',
+                  marginBottom: '6px',
+                  ...SOURCE_BADGE[msg.source].style,
+                }}>
+                  {SOURCE_BADGE[msg.source].label}
+                </span>
+              )}
+              <ReactMarkdown
+                components={{
+                  p: ({ children }) => {
+                    const text = String(children);
+                    if (text.startsWith('Warning:') || text.startsWith('সতর্কবার্তা:')) {
+                      return <p className="ai-warning">{children}</p>;
+                    }
+                    return <p>{children}</p>;
+                  },
+                }}
+              >
+                {msg.text}
+              </ReactMarkdown>
             </div>
           ))}
           {isTyping && (
