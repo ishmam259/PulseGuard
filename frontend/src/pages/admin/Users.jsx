@@ -3,6 +3,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
+import { formatDate } from '../../utils/date'
 
 export default function Users() {
   const { locale } = useApp()
@@ -191,7 +192,7 @@ export default function Users() {
                     <td>{user.email || <span className="muted">N/A</span>}</td>
                     <td>{user.phone || <span className="muted">N/A</span>}</td>
                     <td style={{ color: 'var(--color-muted)' }}>
-                      {new Date(user.created_at).toLocaleDateString()}
+                      {formatDate(user.created_at)}
                     </td>
                     <td>
                       <div className="inline-actions">

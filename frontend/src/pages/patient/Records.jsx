@@ -4,6 +4,7 @@ import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
 import { useApp } from '../../context/AppContext'
+import { formatDateTime } from '../../utils/date'
 
 export default function Records() {
   const { locale, connectivity } = useApp()
@@ -96,7 +97,7 @@ export default function Records() {
                     </div>
                   )}
                   <div className="muted" style={{ fontSize: '0.75rem', marginTop: '0.25rem', width: '100%', textAlign: 'right' }}>
-                    {new Date(rec.recorded_at).toLocaleString()}
+                    {formatDateTime(rec.recorded_at)}
                   </div>
                 </div>
               ))}

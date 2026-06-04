@@ -3,6 +3,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
+import { formatDate, formatDateTime } from '../../utils/date'
 
 export default function Reports() {
   const { locale } = useApp()
@@ -45,7 +46,7 @@ export default function Reports() {
       // Maternal Health Report
       let csv = 'Patient ID,Name,Age,Village,Gestational Week,Risk Level,Risk Score,Last Updated\n'
       patientsRef.current.forEach((p) => {
-        csv += `PG-${p.id.slice(0, 8).toUpperCase()},"${p.name}",${p.age || 'N/A'},"${p.village || 'N/A'}",${p.gestational_week || 'N/A'},${p.risk_level || 'low'},${p.risk_score || 0},"${new Date(p.last_updated).toLocaleDateString()}"\n`
+        csv += `PG-${p.id.slice(0, 8).toUpperCase()},"${p.name}",${p.age || 'N/A'},"${p.village || 'N/A'}",${p.gestational_week || 'N/A'},${p.risk_level || 'low'},${p.risk_score || 0},"${formatDate(p.last_updated)}"\n`
       })
       downloadCSV(csv, 'maternal_health_report.csv')
     } else if (reportId === 'rpt-2') {
@@ -60,14 +61,14 @@ export default function Reports() {
       // Field Activity Report
       let csv = 'Patient Name,Village,Assigned Health Worker,Last Visit Date\n'
       patientsRef.current.forEach((p) => {
-        csv += `"${p.name}","${p.village || 'N/A'}","${p.worker_name || 'Unassigned'}","${new Date(p.last_updated).toLocaleDateString()}"\n`
+        csv += `"${p.name}","${p.village || 'N/A'}","${p.worker_name || 'Unassigned'}","${formatDate(p.last_updated)}"\n`
       })
       downloadCSV(csv, 'field_activity_report.csv')
     } else if (reportId === 'rpt-4') {
       // Sync Status Report
       let csv = 'Patient Name,Village,Sync Status,Last Updated\n'
       patientsRef.current.forEach((p) => {
-        csv += `"${p.name}","${p.village || 'N/A'}",Synced,"${new Date(p.last_updated).toLocaleString()}"\n`
+        csv += `"${p.name}","${p.village || 'N/A'}",Synced,"${formatDateTime(p.last_updated)}"\n`
       })
       downloadCSV(csv, 'sync_status_report.csv')
     }
@@ -79,28 +80,28 @@ export default function Reports() {
       title: $('ADMIN_REPORTS_RPT1_TITLE', locale),
       description: $('ADMIN_REPORTS_RPT1_DESC', locale),
       icon: '',
-      lastGenerated: new Date().toLocaleDateString(),
+      lastGenerated: formatDate(new Date()),
     },
     {
       id: 'rpt-2',
       title: $('ADMIN_REPORTS_RPT2_TITLE', locale),
       description: $('ADMIN_REPORTS_RPT2_DESC', locale),
       icon: '',
-      lastGenerated: new Date().toLocaleDateString(),
+      lastGenerated: formatDate(new Date()),
     },
     {
       id: 'rpt-3',
       title: $('ADMIN_REPORTS_RPT3_TITLE', locale),
       description: $('ADMIN_REPORTS_RPT3_DESC', locale),
       icon: '',
-      lastGenerated: new Date().toLocaleDateString(),
+      lastGenerated: formatDate(new Date()),
     },
     {
       id: 'rpt-4',
       title: $('ADMIN_REPORTS_RPT4_TITLE', locale),
       description: $('ADMIN_REPORTS_RPT4_DESC', locale),
       icon: '',
-      lastGenerated: new Date().toLocaleDateString(),
+      lastGenerated: formatDate(new Date()),
     },
   ]
 

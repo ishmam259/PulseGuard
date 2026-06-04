@@ -5,6 +5,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
+import { formatDate } from '../../utils/date'
 
 export default function Dashboard() {
   const { currentUser, connectivity, locale } = useApp()
@@ -135,7 +136,7 @@ export default function Dashboard() {
             <div className="kpi-card">
               <span className="muted">{$('DASH_KPI_LAST_CHECKUP', locale)}</span>
               <span className={latestVitals ? "kpi" : "kpi-empty"}>
-                {latestVitals ? new Date(latestVitals.recorded_at).toLocaleDateString() : $('DASH_KPI_NO_RECORDS', locale)}
+                {latestVitals ? formatDate(latestVitals.recorded_at) : $('DASH_KPI_NO_RECORDS', locale)}
               </span>
             </div>
           </div>

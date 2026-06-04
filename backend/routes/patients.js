@@ -3,6 +3,16 @@ const pool = require('../db/pool')
 const { authenticate, requireRole } = require('../middleware/auth')
 const { patientSchema, vitalsSchema } = require('../schemas/patient.schema')
 
+function formatDate(dateInput) {
+  if (!dateInput) return ''
+  const d = new Date(dateInput)
+  if (isNaN(d.getTime())) return ''
+  const dd = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const yy = String(d.getFullYear()).slice(-2)
+  return `${dd}/${mm}/${yy}`
+}
+
 const router = express.Router()
 
 // All patient routes require authentication
@@ -332,7 +342,7 @@ router.get('/:id/export', async (req, res) => {
     let csv = 'Date,BP Systolic,BP Diastolic,Weight (kg),Temperature (C),Pulse,Symptoms,Risk Score,Risk Level\n'
 
     for (const v of vitals.rows) {
-      csv += `${v.recorded_at},${v.bp_systolic},${v.bp_diastolic},${v.weight_kg},${v.temperature_c},${v.pulse},"${(v.symptoms || []).join('; ')}",${v.risk_score},${v.risk_level}\n`
+      csv += `${formatDate(v.recorded_at)},${v.bp_systolic},${v.bp_diastolic},${v.weight_kg},${v.temperature_c},${v.pulse},"${(v.symptoms || []).join('; ')}",${v.risk_score},${v.risk_level}\n`
     }
 
     res.setHeader('Content-Type', 'text/csv')
