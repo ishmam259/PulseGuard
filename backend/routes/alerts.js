@@ -39,7 +39,31 @@ const getPlaceName = async (latitude, longitude, defaultVillage, clientLocationN
   const latNum = parseFloat(latitude)
   const lngNum = parseFloat(longitude)
 
-  // 1. Try resolving using Groq LLM (highly reliable in this sandbox environment since api.groq.com is open)
+  // 1. Try Nominatim (primary)
+  try {
+    const controller = new AbortController()
+    const id = setTimeout(() => controller.abort(), 2000)
+
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latNum}&lon=${lngNum}&zoom=18&addressdetails=1`
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'PulseGuard-AI/1.0 (noreplypulseguard.ai@gmail.com)'
+      }
+    })
+    clearTimeout(id)
+
+    if (res.ok) {
+      const data = await res.json()
+      if (data && data.display_name) {
+        return data.display_name
+      }
+    }
+  } catch (err) {
+    console.warn('Reverse geocoding fetch failed or timed out, trying Groq fallback:', err.message)
+  }
+
+  // 2. Try resolving using Groq LLM (fallback)
   if (process.env.GROQ_API_KEY) {
     try {
       const controller = new AbortController()
@@ -81,30 +105,6 @@ const getPlaceName = async (latitude, longitude, defaultVillage, clientLocationN
     } catch (err) {
       console.warn('Groq geocoding failed or timed out:', err.message)
     }
-  }
-
-  // 2. Try Nominatim (traditional fallback)
-  try {
-    const controller = new AbortController()
-    const id = setTimeout(() => controller.abort(), 2000)
-
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latNum}&lon=${lngNum}&zoom=18&addressdetails=1`
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'PulseGuard-AI/1.0 (noreplypulseguard.ai@gmail.com)'
-      }
-    })
-    clearTimeout(id)
-
-    if (res.ok) {
-      const data = await res.json()
-      if (data && data.display_name) {
-        return data.display_name
-      }
-    }
-  } catch (err) {
-    console.warn('Reverse geocoding fetch failed or timed out, using fallback:', err.message)
   }
 
   return defaultVillage || `${latNum.toFixed(5)}, ${lngNum.toFixed(5)}`
