@@ -67,10 +67,54 @@ export default function Emergency() {
 
     setLoadingGps(false)
 
+    let locationName = null
+    if (coords) {
+      // Try OpenStreetMap Nominatim for highly detailed address (e.g., street name, road number, sector)
+      try {
+        const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}`
+        const geoRes = await fetch(geoUrl, {
+          headers: {
+            'Accept-Language': 'en'
+          }
+        })
+        if (geoRes.ok) {
+          const geoData = await geoRes.json()
+          if (geoData && geoData.display_name) {
+            locationName = geoData.display_name
+          }
+        }
+      } catch (osmErr) {
+        console.warn('Client-side Nominatim geocoding failed, falling back to BigDataCloud:', osmErr)
+      }
+
+      // Fallback to BigDataCloud if Nominatim failed
+      if (!locationName) {
+        try {
+          const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.lat}&longitude=${coords.lng}&localityLanguage=en`
+          const geoRes = await fetch(geoUrl)
+          if (geoRes.ok) {
+            const geoData = await geoRes.json()
+            const parts = []
+            if (geoData.locality) parts.push(geoData.locality)
+            if (geoData.city) parts.push(geoData.city)
+            if (geoData.countryName) parts.push(geoData.countryName)
+            if (parts.length > 0) {
+              locationName = parts.join(', ')
+            } else if (geoData.displayName) {
+              locationName = geoData.displayName
+            }
+          }
+        } catch (geoErr) {
+          console.warn('Client-side BigDataCloud geocoding failed:', geoErr)
+        }
+      }
+    }
+
     try {
       const alertData = {
         latitude: coords ? coords.lat : null,
         longitude: coords ? coords.lng : null,
+        locationName,
         message: 'SOS Emergency Alert triggered from Patient Portal.',
       }
 

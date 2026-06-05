@@ -23,7 +23,97 @@ const sosAlertTemplate = fs.readFileSync(SOS_ALERT_TEMPLATE_PATH, 'utf-8')
  * Renders the SOS alert HTML email body using the external EJS template.
  * Returns the rendered HTML string to be passed into SMTPEmailSender.sendEmail.
  */
-const renderSosAlertEmail = ({ workerName, patientName, patientId, latitude, longitude, message }) => {
+/**
+ * Resolves the latitude and longitude to a place name.
+ * Falls back to the patient's village from database if offline or API error.
+ */
+const getPlaceName = async (latitude, longitude, defaultVillage, clientLocationName) => {
+  if (clientLocationName) {
+    return clientLocationName
+  }
+  if (latitude === null || latitude === undefined || longitude === null || longitude === undefined) {
+    return defaultVillage || 'Not provided'
+  }
+
+  const latNum = parseFloat(latitude)
+  const lngNum = parseFloat(longitude)
+
+  // 1. Try resolving using Groq LLM (highly reliable in this sandbox environment since api.groq.com is open)
+  if (process.env.GROQ_API_KEY) {
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 4000)
+
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a precise geocoder. Given a latitude and longitude in Bangladesh, return ONLY a concise place/area name, city, and country. Do not explain. Do not include markdown formatting or extra text. Example: Sector 10, Uttara, Dhaka, Bangladesh'
+            },
+            {
+              role: 'user',
+              content: `Latitude: ${latNum}, Longitude: ${lngNum}`
+            }
+          ],
+          temperature: 0.1,
+          max_tokens: 60
+        })
+      })
+
+      clearTimeout(timeoutId)
+
+      if (response.ok) {
+        const data = await response.json()
+        const place = data?.choices?.[0]?.message?.content?.trim()
+        if (place) {
+          return place.replace(/^["']|["']$/g, '').replace(/\.$/, '')
+        }
+      }
+    } catch (err) {
+      console.warn('Groq geocoding failed or timed out:', err.message)
+    }
+  }
+
+  // 2. Try Nominatim (traditional fallback)
+  try {
+    const controller = new AbortController()
+    const id = setTimeout(() => controller.abort(), 2000)
+
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latNum}&lon=${lngNum}&zoom=18&addressdetails=1`
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'PulseGuard-AI/1.0 (noreplypulseguard.ai@gmail.com)'
+      }
+    })
+    clearTimeout(id)
+
+    if (res.ok) {
+      const data = await res.json()
+      if (data && data.display_name) {
+        return data.display_name
+      }
+    }
+  } catch (err) {
+    console.warn('Reverse geocoding fetch failed or timed out, using fallback:', err.message)
+  }
+
+  return defaultVillage || `${latNum.toFixed(5)}, ${lngNum.toFixed(5)}`
+}
+
+/**
+ * Renders the SOS alert HTML email body using the external EJS template.
+ * Returns the rendered HTML string to be passed into SMTPEmailSender.sendEmail.
+ */
+const renderSosAlertEmail = ({ workerName, patientName, patientId, latitude, longitude, locationPlace, message }) => {
     const hasCoords =
         latitude !== null &&
         latitude !== undefined &&
@@ -35,6 +125,7 @@ const renderSosAlertEmail = ({ workerName, patientName, patientId, latitude, lon
         : null
 
     const triggeredAt = new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Dhaka',
         dateStyle: 'medium',
         timeStyle: 'short',
     })
@@ -45,6 +136,7 @@ const renderSosAlertEmail = ({ workerName, patientName, patientId, latitude, lon
         patientId,
         latitude,
         longitude,
+        locationPlace,
         message,
         mapsUrl,
         hasCoords,
@@ -58,19 +150,21 @@ router.use(authenticate)
 // POST /api/alerts — Trigger SOS alert
 router.post('/', async (req, res) => {
   try {
-    const { latitude, longitude, message } = req.body
+    const { latitude, longitude, locationName, message } = req.body
     let patientId = null
     let patientName = req.user.name
+    let village = null
 
     // Check if there is a patient record for the current user
     const patientResult = await pool.query(
-      'SELECT id, name FROM patients WHERE user_id = $1',
+      'SELECT id, name, village FROM patients WHERE user_id = $1',
       [req.user.id]
     )
 
     if (patientResult.rows.length > 0) {
       patientId = patientResult.rows[0].id
       patientName = patientResult.rows[0].name
+      village = patientResult.rows[0].village
     }
 
     const result = await pool.query(
@@ -85,6 +179,7 @@ router.post('/', async (req, res) => {
       const workersResult = await pool.query(
         `SELECT name, email FROM users WHERE role = 'worker'`
       )
+      const locationPlace = await getPlaceName(latitude || null, longitude || null, village, locationName)
       const mailSender = new SMTPEmailSender()
       for (const worker of workersResult.rows) {
         const htmlBody = renderSosAlertEmail({
@@ -93,6 +188,7 @@ router.post('/', async (req, res) => {
           patientId,
           latitude: latitude || null,
           longitude: longitude || null,
+          locationPlace,
           message: message || 'SOS Emergency Alert',
         })
         await mailSender.sendEmail(
