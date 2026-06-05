@@ -32,7 +32,7 @@ const strings = {
     NAV_W_PROFILE: 'Profile',
 
     // ─── Splash ───
-    SPLASH_HEADLINE: 'Offline-First AI Maternal Healthcare',
+    SPLASH_HEADLINE: 'AI-Native Maternal Healthcare',
     SPLASH_SUBLINE: 'AI-powered pregnancy risk monitoring, symptom checking, and automatic database syncing for rural health workers and mothers.',
     SPLASH_CTA: 'Get Started →',
     SPLASH_DISCLAIMER_TITLE: 'Medical Disclaimer',
@@ -618,7 +618,7 @@ const strings = {
     NAV_W_PROFILE: 'প্রোফাইল',
 
     // ─── Splash ───
-    SPLASH_HEADLINE: 'অফলাইন-ফার্স্ট এআই মাতৃস্বাস্থ্য সেবা',
+    SPLASH_HEADLINE: 'এআই-নেটিভ মাতৃস্বাস্থ্য সেবা',
     SPLASH_SUBLINE: 'গ্রামীণ স্বাস্থ্যকর্মী ও মায়েদের জন্য এআই-চালিত গর্ভাবস্থা ঝুঁকি পর্যবেক্ষণ, লক্ষণ পরীক্ষা এবং স্বয়ংক্রিয় ডেটা সিঙ্ক।',
     SPLASH_CTA: 'শুরু করুন →',
     SPLASH_DISCLAIMER_TITLE: 'চিকিৎসা সংক্রান্ত দাবিত্যাগ',

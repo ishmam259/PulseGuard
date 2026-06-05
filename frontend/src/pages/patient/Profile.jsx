@@ -5,6 +5,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import { patientNavItems, workerNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
+import { Pencil, LogOut, Check, ShieldAlert, Save } from 'lucide-react'
 
 export default function Profile() {
   const { currentUser, setCurrentUser, logout, connectivity, locale } = useApp()
@@ -149,133 +150,171 @@ export default function Profile() {
 
   const navItems = isPatient ? patientNavItems(locale) : isWorker ? workerNavItems(locale) : []
 
+  const riskLevelClass = (level) => {
+    const l = (level || 'low').toLowerCase();
+    if (l === 'high') return 'badge--high';
+    if (l === 'moderate') return 'badge--moderate';
+    return 'badge--low';
+  }
+
+  const splitDisplayName = (fullName) => {
+    if (!fullName) return { first: 'User', last: 'Profile' }
+    const parts = fullName.split(' ')
+    if (parts.length === 1) return { first: parts[0], last: '' }
+    const last = parts.pop()
+    const first = parts.join(' ')
+    return { first, last }
+  }
+
+  const nameParts = splitDisplayName(currentUser?.name)
+
+  const inputStyle = {
+    height: '48px',
+    borderRadius: '16px',
+    border: '1px solid var(--color-border)',
+    backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+    padding: '0 16px',
+    fontSize: '14px',
+    outline: 'none',
+    width: '100%',
+    color: 'var(--color-text)',
+    marginTop: '8px'
+  }
+
   return (
     <MobileLayout
       title={$('PAGE_TITLE_PROFILE', locale)}
       status={connectivity}
       navItems={navItems}
     >
-      <div className="animate-fade-in">
-        {/* Alerts */}
+      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        
+        {/* Error Alert */}
         {error && (
-          <div
-            className="alert-panel"
-            style={{
-              background: 'rgba(239,68,68,0.1)',
-              borderColor: 'rgba(239,68,68,0.3)',
-              marginBottom: '1rem',
-              padding: '0.75rem',
-              borderRadius: '6px',
-            }}
-          >
-            <strong style={{ color: '#ef4444' }}>{error}</strong>
+          <div style={{ borderRadius: '16px', border: '1px solid rgba(239, 68, 68, 0.2)', backgroundColor: 'var(--color-danger-dim)', padding: '16px 20px', fontSize: '13px', color: 'var(--color-danger-light)', display: 'flex', alignItems: 'start', gap: '12px' }}>
+            <ShieldAlert className="h-5 w-5 shrink-0" style={{ marginTop: '2px' }} />
+            <strong>{error}</strong>
           </div>
         )}
 
+        {/* Success Alert */}
         {success && (
-          <div
-            className="alert-panel"
-            style={{
-              background: 'rgba(16,185,129,0.1)',
-              borderColor: 'rgba(16,185,129,0.3)',
-              marginBottom: '1rem',
-              padding: '0.75rem',
-              borderRadius: '6px',
-            }}
-          >
-            <strong style={{ color: 'var(--color-success)' }}>{success}</strong>
+          <div style={{ borderRadius: '16px', border: '1px solid rgba(16, 185, 129, 0.2)', backgroundColor: 'var(--color-success-dim)', padding: '16px 20px', fontSize: '13px', color: 'var(--color-success)', display: 'flex', alignItems: 'start', gap: '12px' }}>
+            <Check className="h-5 w-5 shrink-0" style={{ marginTop: '2px' }} />
+            <strong>{success}</strong>
           </div>
         )}
 
-        {/* Profile Card */}
-        <div className="card profile-card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
-          <div className="avatar large profile-modal-overlay">
+        {/* Identity Header Card */}
+        <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px', textAlign: 'center' }}>
+          <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
+          
+          {/* Circular gradient initials avatar */}
+          <div className="relative" style={{ display: 'grid', height: '96px', width: '96px', placeItems: 'center', borderRadius: '50%', background: 'var(--gradient-primary)', fontSize: '24px', fontWeight: 'bold', color: 'white', boxShadow: 'var(--shadow-glow-primary)', margin: '0 auto 20px' }}>
             {getInitials(currentUser?.name)}
           </div>
-          <h2 className="text-gradient" style={{ fontSize: '1.6rem', marginBottom: '0.25rem' }}>{currentUser?.name || 'User Profile'}</h2>
-          <p className="muted" style={{ textTransform: 'capitalize', fontWeight: '600', fontSize: '0.9rem' }}>
+          
+          {/* Serif font name with gradient first name highlight */}
+          <h2 className="font-display" style={{ fontSize: '2.2rem', letterSpacing: '-0.02em', marginBottom: '8px' }}>
+            {nameParts.first} {nameParts.last && <span className="italic text-gradient-primary">{nameParts.last}</span>}
+          </h2>
+          
+          <p style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-primary)' }}>
             {currentUser?.role || 'Guest'}
           </p>
+          
           {isPatient && patient && (
-            <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>{$('PROFILE_PATIENT_ID_PREFIX', locale)}{patient.id.slice(0, 8).toUpperCase()}</p>
+            <p className="muted" style={{ fontSize: '12px', marginTop: '6px' }}>
+              {$('PROFILE_PATIENT_ID_PREFIX', locale)}{patient.id.slice(0, 8).toUpperCase()}
+            </p>
           )}
           {isWorker && (
-            <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>{$('PROFILE_WORKER_ID_PREFIX', locale)}{currentUser?.id.slice(0, 8).toUpperCase()}</p>
+            <p className="muted" style={{ fontSize: '12px', marginTop: '6px' }}>
+              {$('PROFILE_WORKER_ID_PREFIX', locale)}{currentUser?.id.slice(0, 8).toUpperCase()}
+            </p>
           )}
         </div>
 
-        {/* Details or Edit Form based on state */}
-        <div className="card" style={{ marginTop: '1.25rem', padding: '1.5rem' }}>
-          <h3 style={{ marginBottom: '0.25rem' }}>{isEditing ? $('PROFILE_SECTION_EDIT', locale) : $('PROFILE_SECTION_DETAILS', locale)}</h3>
+        {/* Details or Edit Form Container */}
+        <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
+          <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
           
+          <h3 className="font-display" style={{ fontSize: '1.6rem', letterSpacing: '-0.01em', marginBottom: '24px' }}>
+            {isEditing ? $('PROFILE_SECTION_EDIT', locale) : $('PROFILE_SECTION_DETAILS', locale)}
+          </h3>
+
           {loading ? (
-            <p className="muted text-center" style={{ padding: '1rem 0' }}>{$('PROFILE_LOADING', locale)}</p>
+            <p className="muted text-center" style={{ padding: '24px 0', animation: 'pulse 2s infinite' }}>{$('PROFILE_LOADING', locale)}</p>
           ) : isEditing ? (
-            /* ── Edit Profile Form ── */
-            <div className="form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-              <label>
+            
+            /* ── Edit Profile Form Card ── */
+            <div className="form-grid" style={{ gap: '16px' }}>
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                 {$('PROFILE_EDIT_LABEL_NAME', locale)}
                 <div className="input-wrapper">
                   <input
                     type="text"
-                    className="input"
                     value={editForm.name}
                     onChange={handleChange('name')}
                     placeholder={$('PROFILE_EDIT_PH_NAME', locale)}
+                    style={inputStyle}
                   />
                 </div>
               </label>
-              <label>
+              
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                 {$('PROFILE_EDIT_LABEL_EMAIL', locale)}
                 <div className="input-wrapper">
                   <input
                     type="email"
-                    className="input"
                     value={editForm.email}
                     onChange={handleChange('email')}
                     placeholder={$('PROFILE_EDIT_PH_EMAIL', locale)}
+                    style={inputStyle}
                   />
                 </div>
               </label>
-              <label>
+
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                 {$('PROFILE_EDIT_LABEL_PHONE', locale)}
                 <div className="input-wrapper">
                   <input
                     type="text"
-                    className="input"
                     value={editForm.phone}
                     onChange={handleChange('phone')}
                     placeholder={$('PROFILE_EDIT_PH_PHONE', locale)}
+                    style={inputStyle}
                   />
                 </div>
               </label>
 
               {isPatient && patient && (
                 <>
-                  <label>
+                  <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                     {$('PROFILE_EDIT_LABEL_VILLAGE', locale)}
                     <div className="input-wrapper">
                       <input
                         type="text"
-                        className="input"
                         value={editForm.village}
                         onChange={handleChange('village')}
                         placeholder={$('PROFILE_EDIT_PH_VILLAGE', locale)}
+                        style={inputStyle}
                       />
                     </div>
                   </label>
+
                   {!patient.lmp_date && (
-                    <label>
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                       {$('PROFILE_EDIT_LABEL_WEEK', locale)}
                       <div className="input-wrapper">
                         <input
                           type="number"
-                          className="input"
                           value={editForm.gestational_week}
                           onChange={handleChange('gestational_week')}
                           placeholder={$('PROFILE_EDIT_PH_WEEK', locale)}
                           min="1"
                           max="45"
+                          style={inputStyle}
                         />
                       </div>
                     </label>
@@ -284,131 +323,284 @@ export default function Profile() {
               )}
             </div>
           ) : (
-            /* ── Profile Details View ── */
+            
+            /* ── Profile Details Grid View ── */
             isPatient && patient ? (
-              <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_PREG_WEEK', locale)}</span>
-                  <span className="profile-detail-value--accent">{patient.gestational_week || 'N/A'}</span>
+              <div className="detail-cards-grid">
+                
+                {/* Gestational Week Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_PREG_WEEK', locale)}
+                  </p>
+                  <p className="detail-card-value--accent">
+                    {patient.gestational_week || 'N/A'}
+                  </p>
                   {patient.lmp_recorded_date != null && patient.initial_gestational_week != null && (
-                    <span className="muted" style={{ fontSize: '11px', marginTop: '2px' }}>
+                    <p className="muted" style={{ marginTop: '8px', fontSize: '11px' }}>
                       {$('PREG_WEEK_INITIAL', locale).replace('$W', patient.initial_gestational_week)}{' '}
                       {new Date(patient.lmp_recorded_date).toLocaleDateString(
                         locale === 'bn' ? 'bn-BD' : 'en-GB',
                         { day: 'numeric', month: 'short', year: 'numeric' }
                       )}
-                    </span>
+                    </p>
                   )}
                 </div>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_RISK', locale)}</span>
-                  <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.25rem', alignSelf: 'flex-start' }}>
-                    {patient.risk_level || 'Low'}
-                  </span>
+
+                {/* Risk level badge Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_RISK', locale)}
+                  </p>
+                  <div style={{ marginTop: '12px' }}>
+                    <span className={`badge ${riskLevelClass(patient.risk_level)}`} style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>
+                      {patient.risk_level || 'Low'}
+                    </span>
+                  </div>
                 </div>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_VILLAGE', locale)}</span>
-                  <span className="profile-detail-value">{patient.village || 'N/A'}</span>
+
+                {/* Village Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_VILLAGE', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {patient.village || 'N/A'}
+                  </p>
                 </div>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_PHONE', locale)}</span>
-                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+
+                {/* Phone Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_PHONE', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {currentUser?.phone || 'N/A'}
+                  </p>
                 </div>
-                <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_EMAIL', locale)}</span>
-                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+
+                {/* Email Card spanning full row */}
+                <div className="detail-card" style={{ gridColumn: 'span 2' }}>
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_EMAIL', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {currentUser?.email || 'N/A'}
+                  </p>
                 </div>
+
               </div>
             ) : isWorker ? (
-              <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_ASSIGNED_PATIENTS', locale)}</span>
-                  <span className="profile-detail-value--accent">{patientCount}</span>
+              /* Worker details grid */
+              <div className="detail-cards-grid">
+                
+                {/* Patients Count Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_ASSIGNED_PATIENTS', locale)}
+                  </p>
+                  <p className="detail-card-value--accent">
+                    {patientCount}
+                  </p>
                 </div>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_PHONE', locale)}</span>
-                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+
+                {/* Phone Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_PHONE', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {currentUser?.phone || 'N/A'}
+                  </p>
                 </div>
-                <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_EMAIL', locale)}</span>
-                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+
+                {/* Email Card */}
+                <div className="detail-card" style={{ gridColumn: 'span 2' }}>
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_EMAIL', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {currentUser?.email || 'N/A'}
+                  </p>
                 </div>
+
               </div>
             ) : isAdmin ? (
-              <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_SYSTEM_ROLE', locale)}</span>
-                  <span className="profile-detail-value">{$('PROFILE_LABEL_ADMIN_VALUE', locale)}</span>
+              /* Admin details grid */
+              <div className="detail-cards-grid">
+                
+                {/* System Role Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_SYSTEM_ROLE', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {$('PROFILE_LABEL_ADMIN_VALUE', locale)}
+                  </p>
                 </div>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_PHONE', locale)}</span>
-                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+
+                {/* Phone Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_PHONE', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {currentUser?.phone || 'N/A'}
+                  </p>
                 </div>
-                <div className="profile-detail-card" style={{ gridColumn: 'span 2' }}>
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_EMAIL', locale)}</span>
-                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+
+                {/* Email Card */}
+                <div className="detail-card" style={{ gridColumn: 'span 2' }}>
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_EMAIL', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {currentUser?.email || 'N/A'}
+                  </p>
                 </div>
+
               </div>
             ) : (
-              <div className="profile-details-grid" style={{ marginTop: '1rem' }}>
-                <div className="profile-detail-card" style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-start' }}>
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_PROFILE_STATUS', locale)}</span>
-                  <span className="profile-detail-value">{$('PROFILE_LABEL_PENDING', locale)}</span>
-                  <button type="button"
-                    className="btn btn--primary btn--sm" 
-                    style={{ marginTop: '0.5rem', fontSize: '0.85rem', padding: '8px 16px' }}
+              /* Registration pending details grid */
+              <div className="detail-cards-grid">
+                
+                {/* Profile pending Card */}
+                <div className="detail-card" style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_PROFILE_STATUS', locale)}
+                  </p>
+                  <p className="detail-card-value" style={{ color: 'var(--color-warning)' }}>
+                    {$('PROFILE_LABEL_PENDING', locale)}
+                  </p>
+                  <button 
+                    type="button"
+                    className="btn btn--primary" 
                     onClick={() => navigate('/patient/onboarding')}
+                    style={{ marginTop: '8px', borderRadius: '9999px', padding: '10px 24px' }}
                   >
                     {$('PROFILE_BTN_COMPLETE_REG', locale)}
                   </button>
                 </div>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_PHONE', locale)}</span>
-                  <span className="profile-detail-value">{currentUser?.phone || 'N/A'}</span>
+
+                {/* Phone Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_PHONE', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {currentUser?.phone || 'N/A'}
+                  </p>
                 </div>
-                <div className="profile-detail-card">
-                  <span className="profile-detail-label">{$('PROFILE_LABEL_EMAIL', locale)}</span>
-                  <span className="profile-detail-value--muted">{currentUser?.email || 'N/A'}</span>
+
+                {/* Email Card */}
+                <div className="detail-card">
+                  <p className="detail-card-label">
+                    {$('PROFILE_LABEL_EMAIL', locale)}
+                  </p>
+                  <p className="detail-card-value">
+                    {currentUser?.email || 'N/A'}
+                  </p>
                 </div>
+
               </div>
             )
           )}
         </div>
 
-        {/* Actions */}
-        <div className="profile-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+        {/* Action button triggers */}
+        <div style={{ display: 'flex', gap: '16px', marginTop: '1.5rem', flexWrap: 'wrap' }}>
           {isEditing ? (
             <>
               <button
                 type="button"
-                className="btn btn--primary"
-                style={{ flex: 1 }}
                 onClick={handleSaveProfile}
                 disabled={saving}
+                className="btn btn--primary"
+                style={{
+                  flex: 1,
+                  height: '48px',
+                  borderRadius: '9999px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  fontWeight: '600'
+                }}
               >
-                {saving ? $('PROFILE_BTN_SAVING', locale) : $('PROFILE_BTN_SAVE_CHANGES', locale)}
+                <Save className="h-4 w-4" />
+                <span>{saving ? $('PROFILE_BTN_SAVING', locale) : $('PROFILE_BTN_SAVE_CHANGES', locale)}</span>
               </button>
+              
               <button
                 type="button"
-                className="btn btn--secondary"
-                style={{ flex: 1 }}
                 onClick={() => setIsEditing(false)}
                 disabled={saving}
+                className="btn btn--secondary"
+                style={{
+                  flex: 1,
+                  height: '48px',
+                  borderRadius: '9999px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '600',
+                  border: '1px solid var(--color-border)',
+                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                  color: 'var(--color-text)'
+                }}
               >
                 {$('PROFILE_BTN_CANCEL', locale)}
               </button>
             </>
           ) : (
             <>
-              <button type="button" className="btn btn--secondary" style={{ flex: 1 }} onClick={handleStartEdit}>
-                {$('PROFILE_BTN_EDIT', locale)}
+              <button 
+                type="button" 
+                onClick={handleStartEdit}
+                className="btn btn--secondary"
+                style={{
+                  flex: 1,
+                  height: '48px',
+                  borderRadius: '9999px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  fontWeight: '600',
+                  border: '1px solid var(--color-border)',
+                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                  color: 'var(--color-text)'
+                }}
+              >
+                <Pencil className="h-4 w-4" />
+                <span>{$('PROFILE_BTN_EDIT', locale)}</span>
               </button>
-              <button type="button" className="btn btn--ghost" style={{ flex: 1 }} onClick={handleLogout}>
-                {$('PROFILE_BTN_LOGOUT', locale)}
+              
+              <button 
+                type="button" 
+                onClick={handleLogout}
+                className="btn btn--secondary"
+                style={{
+                  flex: 1,
+                  height: '48px',
+                  borderRadius: '9999px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  fontWeight: '600',
+                  border: '1px solid var(--color-border)',
+                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                  color: 'var(--color-destructive)'
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+                <span>{$('PROFILE_BTN_LOGOUT', locale)}</span>
               </button>
             </>
           )}
         </div>
+
       </div>
     </MobileLayout>
   )

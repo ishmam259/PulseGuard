@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
+import { Sun, Moon, Bell, HeartPulse, LogOut } from 'lucide-react'
 
 export default function MobileLayout({ title, status, banner, children, navItems }) {
-  const { connectivity, toggleConnectivity, currentUser, logout, notifications, locale, setLocale, theme, toggleTheme } = useApp()
+  const { connectivity, currentUser, logout, notifications, locale, setLocale, theme, toggleTheme } = useApp()
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
 
@@ -42,23 +43,29 @@ export default function MobileLayout({ title, status, banner, children, navItems
   }
 
   return (
-    <div className="app-layout-shell">
+    <div className="app-layout-shell" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* ── Ambient Glow Blobs ── */}
+      <div style={{ pointerEvents: 'none', position: 'absolute', top: '-150px', right: '-150px', height: '600px', width: '600px', borderRadius: '50%', background: 'radial-gradient(circle, color-mix(in oklab, var(--color-primary) 12%, transparent) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
+      <div style={{ pointerEvents: 'none', position: 'absolute', top: '50%', left: '-150px', height: '500px', width: '500px', borderRadius: '50%', background: 'radial-gradient(circle, color-mix(in oklab, var(--color-bg-accent) 20%, transparent) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
+
       {/* ── Desktop Sidebar ── */}
       {navItems && navItems.length > 0 && (
         <aside className="desktop-sidebar">
-          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
-            <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800' }}>PulseGuard</span>
+          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem', padding: '0 8px' }}>
+            <span style={{ position: 'relative', display: 'grid', placeItems: 'center', width: '36px', height: '36px', borderRadius: '12px', backgroundColor: 'var(--color-primary)', color: 'var(--color-primary-foreground)', boxShadow: 'var(--shadow-glow-primary)', transition: 'transform 0.2s' }}>
+              <HeartPulse className="h-5 w-5" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
+            </span>
+            <span className="logo-text" style={{ fontSize: '18px', fontWeight: '600', fontFamily: 'var(--font-display)', color: 'var(--color-text)', letterSpacing: '-0.02em' }}>PulseGuard</span>
           </div>
 
-          <nav className="desktop-sidebar-nav">
+          <nav className="desktop-sidebar-nav" style={{ marginTop: '8px' }}>
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) => (isActive ? 'active' : '')}
               >
-                <span>{item.icon}</span>
+                {item.Icon && <item.Icon style={{ height: '16px', width: '16px', flexShrink: 0 }} />}
                 <span>{item.label}</span>
               </NavLink>
             ))}
@@ -66,7 +73,9 @@ export default function MobileLayout({ title, status, banner, children, navItems
               type="button"
               onClick={handleLogout}
               className="desktop-sidebar-logout-btn mobile-layout-logout-btn"
+              style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
             >
+              <LogOut className="h-4 w-4" />
               <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>
             </button>
           </nav>
@@ -77,71 +86,146 @@ export default function MobileLayout({ title, status, banner, children, navItems
       <div className="main-container">
         {/* ── Mobile Header ── */}
         <header className="mobile-header">
-          <div className="logo">
-            <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
+          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ display: 'grid', placeItems: 'center', width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'var(--color-primary)' }}>
+              <HeartPulse className="h-4 w-4" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
+            </span>
           </div>
           <div className="top-center">{title}</div>
           <div className="top-actions">
-            <span className={`badge badge--${currentStatus}`}>
-              {currentStatus === 'online' && $('LAYOUT_ONLINE', locale)}
-              {currentStatus === 'offline' && $('LAYOUT_OFFLINE', locale)}
-              {currentStatus === 'syncing' && $('LAYOUT_SYNCING', locale)}
-            </span>
             <button
               type="button"
-              className="icon-btn"
               onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
-              style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}
+              style={{
+                borderRadius: '9999px',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                padding: '6px 12px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                color: 'var(--color-text-secondary)',
+                backdropFilter: 'blur(8px)',
+                lineHeight: '1'
+              }}
             >
-              {$('LANG_TOGGLE', locale)}
+              {locale === 'en' ? 'বাংলা' : 'English'}
             </button>
             <button
               type="button"
-              className="icon-btn"
               onClick={toggleTheme}
-              style={{ fontSize: '14px', width: 'auto', padding: '0 8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                display: 'grid',
+                placeItems: 'center',
+                height: '28px',
+                width: '28px',
+                borderRadius: '50%',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                cursor: 'pointer',
+                color: 'var(--color-text)',
+                backdropFilter: 'blur(8px)',
+                padding: '0'
+              }}
               title="Toggle theme"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 8px' }}>{$('LAYOUT_ALERTS_BTN', locale)}</button>
-            <div className="avatar">{initials}</div>
+            <button 
+              type="button" 
+              onClick={handleAlertsClick} 
+              style={{ 
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '28px',
+                width: '28px',
+                borderRadius: '50%',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                cursor: 'pointer',
+                color: 'var(--color-text-secondary)',
+                backdropFilter: 'blur(8px)',
+                padding: '0'
+              }}
+              title={$('LAYOUT_ALERTS_BTN', locale)}
+            >
+              <Bell className="h-4 w-4" />
+            </button>
+            <div className="avatar-container">
+              <div className="avatar">{initials}</div>
+              <span className={`avatar-status-badge avatar-status-badge--${currentStatus}`} title={currentStatus} />
+            </div>
           </div>
         </header>
 
         {/* ── Desktop Header ── */}
-        <header className="desktop-header">
-          <div>
-            <h1 className="page-title">{title}</h1>
-            <p className="muted">PulseGuard AI: {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
+        <header className="desktop-header" style={{ borderBottom: '1px solid color-mix(in oklab, var(--color-border) 60%, transparent)', paddingBottom: '20px' }}>
+          <div style={{ minWidth: 0 }}>
+            <h1 className="font-display" style={{ fontSize: '1.875rem', letterSpacing: '-0.02em', fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.2 }}>{title}</h1>
+            <p style={{ marginTop: '4px', fontSize: '13px', color: 'var(--color-muted)' }}>PulseGuard AI · {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
           </div>
-          <div className="top-actions">
-            <span className={`badge badge--${currentStatus}`}>
-              {currentStatus === 'online' && $('LAYOUT_ONLINE', locale)}
-              {currentStatus === 'offline' && $('LAYOUT_OFFLINE', locale)}
-              {currentStatus === 'syncing' && $('LAYOUT_SYNCING', locale)}
-            </span>
-            <button
-              type="button"
-              className="icon-btn"
-              onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
-              style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}
+          <div className="top-actions" style={{ gap: '12px' }}>
+            <button 
+              type="button" 
+              onClick={handleAlertsClick} 
+              style={{ 
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                borderRadius: '9999px',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                padding: '8px 16px',
+                fontSize: '13px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                color: 'var(--color-text-secondary)',
+                backdropFilter: 'blur(8px)',
+                transition: 'all 0.2s'
+              }}
             >
-              {$('LANG_TOGGLE', locale)}
+              <Bell className="h-4 w-4" />
+              <span>{$('LAYOUT_ALERTS_BTN', locale)}</span>
             </button>
             <button
               type="button"
-              className="icon-btn"
+              onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
+              style={{
+                borderRadius: '9999px',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                padding: '8px 16px',
+                fontSize: '13px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                color: 'var(--color-text-secondary)',
+                backdropFilter: 'blur(8px)',
+                transition: 'all 0.2s'
+              }}
+            >
+              {locale === 'en' ? 'বাংলা' : 'English'}
+            </button>
+            <button
+              type="button"
               onClick={toggleTheme}
-              style={{ fontSize: '14px', width: 'auto', padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                display: 'grid',
+                placeItems: 'center',
+                height: '40px',
+                width: '40px',
+                borderRadius: '50%',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                cursor: 'pointer',
+                color: 'var(--color-text)',
+                backdropFilter: 'blur(8px)',
+                transition: 'all 0.2s'
+              }}
               title="Toggle theme"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <button type="button" className="icon-btn" onClick={handleAlertsClick} style={{ fontSize: '12px', width: 'auto', padding: '0 12px' }}>{$('LAYOUT_ALERTS_BTN', locale)}</button>
-            <NavLink to={navItems.find(item => item.to.includes('profile'))?.to || '#'}>
-              <div className="avatar">{initials}</div>
-            </NavLink> 
           </div>
         </header>
 
@@ -234,4 +318,3 @@ export default function MobileLayout({ title, status, banner, children, navItems
     </div>
   )
 }
-
