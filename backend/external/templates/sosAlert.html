@@ -263,38 +263,41 @@
                 <div class="alert-card">
                     <p class="alert-card-title">Patient Information</p>
 
-                    <div class="info-row">
-                        <div class="info-label">Patient</div>
-                        <div class="info-value"><%= patientName %></div>
-                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                        <tr>
+                            <td style="padding: 10px 0; border-bottom: 1px solid #fee2e2; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; width: 120px; text-align: left; vertical-align: middle;">Patient</td>
+                            <td style="padding: 10px 0; border-bottom: 1px solid #fee2e2; font-size: 15px; font-weight: 600; color: #0f172a; text-align: right; vertical-align: middle;"><%= patientName %></td>
+                        </tr>
 
-                    <% if (patientId) { %>
-                        <div class="info-row">
-                            <div class="info-label">Patient ID</div>
-                            <div class="info-value">#<%= patientId %></div>
-                        </div>
-                    <% } %>
+                        <% if (patientId) { %>
+                            <tr>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #fee2e2; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; width: 120px; text-align: left; vertical-align: middle;">Patient ID</td>
+                                <td style="padding: 10px 0; border-bottom: 1px solid #fee2e2; font-size: 15px; font-weight: 600; color: #0f172a; text-align: right; vertical-align: middle;">#<%= patientId %></td>
+                            </tr>
+                        <% } %>
 
-                    <div class="info-row">
-                        <div class="info-label">Triggered</div>
-                        <div class="info-value"><%= triggeredAt %></div>
-                    </div>
+                        <tr>
+                            <td style="padding: 10px 0; border-bottom: 1px solid #fee2e2; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; width: 120px; text-align: left; vertical-align: middle;">Triggered</td>
+                            <td style="padding: 10px 0; border-bottom: 1px solid #fee2e2; font-size: 15px; font-weight: 600; color: #0f172a; text-align: right; vertical-align: middle;"><%= triggeredAt %></td>
+                        </tr>
 
-                    <% if (hasCoords) { %>
-                        <div class="info-row">
-                            <div class="info-label">Location</div>
-                            <div class="info-value">
-                                <a href="<%= mapsUrl %>" target="_blank">
-                                    <%= latitude %>, <%= longitude %>
-                                </a>
-                            </div>
-                        </div>
-                    <% } else { %>
-                        <div class="info-row">
-                            <div class="info-label">Location</div>
-                            <div class="info-value">Not provided</div>
-                        </div>
-                    <% } %>
+                        <tr>
+                            <td style="padding: 10px 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; width: 120px; text-align: left; vertical-align: middle;">Location</td>
+                            <td style="padding: 10px 0; font-size: 15px; font-weight: 600; color: #0f172a; text-align: right; vertical-align: middle;">
+                                <% if (locationPlace) { %>
+                                    <% if (hasCoords) { %>
+                                        <a href="<%= mapsUrl %>" target="_blank" style="color: #dc2626; text-decoration: none; font-weight: 700;">
+                                            <%= locationPlace %>
+                                        </a>
+                                    <% } else { %>
+                                        <%= locationPlace %>
+                                    <% } %>
+                                <% } else { %>
+                                    Not provided
+                                <% } %>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
                 <!-- Message -->
