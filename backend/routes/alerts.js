@@ -5,6 +5,7 @@ const ejs = require('ejs')
 const pool = require('../db/pool')
 const { authenticate, requireRole } = require('../middleware/auth')
 const { SMTPEmailSender } = require('../external/adapters/SMTPEmailSender')
+const { enrichPatient } = require('../services/gestation')
 
 const router = express.Router()
 
@@ -231,7 +232,7 @@ router.get('/', async (req, res) => {
   try {
     let query, params
     if (req.user.role === 'worker' || req.user.role === 'admin') {
-      query = `SELECT a.*, p.village, p.gestational_week, p.risk_level
+      query = `SELECT a.*, p.village, p.gestational_week, p.lmp_date, p.risk_level
                FROM alerts a
                LEFT JOIN patients p ON p.id = a.patient_id
                ORDER BY a.created_at DESC`
@@ -251,7 +252,10 @@ router.get('/', async (req, res) => {
     }
 
     const result = await pool.query(query, params)
-    res.json({ alerts: result.rows })
+    const alerts = result.rows.map(a =>
+      a.lmp_date !== undefined ? enrichPatient(a) : a
+    )
+    res.json({ alerts })
   } catch (err) {
     console.error('Get alerts error:', err)
     res.status(500).json({ error: 'Internal server error' })

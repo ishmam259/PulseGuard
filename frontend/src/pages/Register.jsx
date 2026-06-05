@@ -14,7 +14,7 @@ const dashboardRoutes = {
 export default function Register() {
   const { role } = useParams()
   const navigate = useNavigate()
-  const { register, locale, theme, toggleTheme } = useApp()
+  const { register, locale, setLocale, theme, toggleTheme } = useApp()
   const roleLabels = {
     patient: $('ROLE_PATIENT_TITLE', locale),
     worker: $('ROLE_WORKER_TITLE', locale),
@@ -69,6 +69,23 @@ export default function Register() {
 
   return (
     <div className="onboarding-container animate-fade-in">
+      <button
+        type="button"
+        className="icon-btn"
+        onClick={() => setLocale(prev => (prev === 'en' ? 'bn' : 'en'))}
+        style={{
+          position: 'fixed',
+          top: '1.5rem',
+          right: '4.5rem',
+          zIndex: 1000,
+          fontSize: '12px',
+          width: 'auto',
+          padding: '0 10px',
+        }}
+        title="Switch language"
+      >
+        {$('LANG_TOGGLE', locale)}
+      </button>
       <button
         type="button"
         className="icon-btn theme-toggle-btn"
@@ -152,7 +169,7 @@ export default function Register() {
             <label>
               {$('REGISTER_LABEL_PHONE', locale)}
               <div className="input-wrapper">
-                <img src="/assets/icons/user.svg" alt="phone" className="input-icon" style={{ filter: 'opacity(0.5)' }} />
+                <img src="/assets/icons/user.svg" alt="phone" className="input-icon" />
                 <input
                   type="tel"
                   className="input"
@@ -198,7 +215,7 @@ export default function Register() {
       </div>
 
       <div className="onboarding-image-pane">
-        <img src="/assets/images/register-img.png" alt="Healthcare Illustration" />
+        <img src={theme === 'dark' ? "/assets/images/onboarding-img.png" : "/assets/images/onboarding-img_light_mode.png"} alt="Healthcare Illustration" />
       </div>
     </div>
   )

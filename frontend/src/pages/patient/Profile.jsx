@@ -117,10 +117,11 @@ export default function Profile() {
 
       // 2. If patient, update patient details (village, gestational_week)
       if (isPatient && patient) {
-        const patientRes = await api.updatePatient(patient.id, {
-          village: editForm.village,
-          gestational_week: editForm.gestational_week ? parseInt(editForm.gestational_week) : null,
-        })
+        const patientUpdate = { village: editForm.village }
+        if (!patient.lmp_date && editForm.gestational_week) {
+          patientUpdate.gestational_week = parseInt(editForm.gestational_week)
+        }
+        const patientRes = await api.updatePatient(patient.id, patientUpdate)
 
         if (!patientRes.ok) {
           throw new Error(patientRes.error || 'Failed to update patient details')
@@ -263,20 +264,22 @@ export default function Profile() {
                       />
                     </div>
                   </label>
-                  <label>
-                    {$('PROFILE_EDIT_LABEL_WEEK', locale)}
-                    <div className="input-wrapper">
-                      <input
-                        type="number"
-                        className="input"
-                        value={editForm.gestational_week}
-                        onChange={handleChange('gestational_week')}
-                        placeholder={$('PROFILE_EDIT_PH_WEEK', locale)}
-                        min="1"
-                        max="45"
-                      />
-                    </div>
-                  </label>
+                  {!patient.lmp_date && (
+                    <label>
+                      {$('PROFILE_EDIT_LABEL_WEEK', locale)}
+                      <div className="input-wrapper">
+                        <input
+                          type="number"
+                          className="input"
+                          value={editForm.gestational_week}
+                          onChange={handleChange('gestational_week')}
+                          placeholder={$('PROFILE_EDIT_PH_WEEK', locale)}
+                          min="1"
+                          max="45"
+                        />
+                      </div>
+                    </label>
+                  )}
                 </>
               )}
             </div>
@@ -287,6 +290,15 @@ export default function Profile() {
                 <div className="profile-detail-card">
                   <span className="profile-detail-label">{$('PROFILE_LABEL_PREG_WEEK', locale)}</span>
                   <span className="profile-detail-value--accent">{patient.gestational_week || 'N/A'}</span>
+                  {patient.lmp_recorded_date != null && patient.initial_gestational_week != null && (
+                    <span className="muted" style={{ fontSize: '11px', marginTop: '2px' }}>
+                      {$('PREG_WEEK_INITIAL', locale).replace('$W', patient.initial_gestational_week)}{' '}
+                      {new Date(patient.lmp_recorded_date).toLocaleDateString(
+                        locale === 'bn' ? 'bn-BD' : 'en-GB',
+                        { day: 'numeric', month: 'short', year: 'numeric' }
+                      )}
+                    </span>
+                  )}
                 </div>
                 <div className="profile-detail-card">
                   <span className="profile-detail-label">{$('PROFILE_LABEL_RISK', locale)}</span>

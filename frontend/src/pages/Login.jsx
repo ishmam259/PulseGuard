@@ -14,7 +14,7 @@ const dashboardRoutes = {
 export default function Login() {
   const { role } = useParams()
   const navigate = useNavigate()
-  const { login, locale, theme, toggleTheme } = useApp()
+  const { login, locale, setLocale, theme, toggleTheme } = useApp()
   const roleLabels = {
     patient: $('ROLE_PATIENT_TITLE', locale),
     worker: $('ROLE_WORKER_TITLE', locale),
@@ -51,6 +51,23 @@ export default function Login() {
 
   return (
     <div className="onboarding-container animate-fade-in">
+      <button
+        type="button"
+        className="icon-btn"
+        onClick={() => setLocale(prev => (prev === 'en' ? 'bn' : 'en'))}
+        style={{
+          position: 'fixed',
+          top: '1.5rem',
+          right: '4.5rem',
+          zIndex: 1000,
+          fontSize: '12px',
+          width: 'auto',
+          padding: '0 10px',
+        }}
+        title="Switch language"
+      >
+        {$('LANG_TOGGLE', locale)}
+      </button>
       <button
         type="button"
         className="icon-btn theme-toggle-btn"
