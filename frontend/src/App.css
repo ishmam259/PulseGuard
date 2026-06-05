@@ -6,7 +6,7 @@
 .app {
   min-height: 100vh;
   position: relative;
-  background-color: var(--color-bg-start);
+  background: transparent;
   color: var(--color-text);
 }
 
@@ -61,12 +61,12 @@
   background: var(--gradient-primary);
   color: #FFFFFF;
   border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 16px rgba(219, 39, 119, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 16px rgba(204, 43, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .btn--primary:hover {
-  background: linear-gradient(135deg, #f43f5e 0%, #db2777 100%);
-  box-shadow: 0 6px 20px rgba(219, 39, 119, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, #e13354 0%, #cc2b5e 100%);
+  box-shadow: 0 6px 20px rgba(204, 43, 94, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   transform: translateY(-1.5px);
 }
 
@@ -144,7 +144,7 @@
 .badge--online {
   background: var(--color-primary-dim);
   color: var(--color-primary);
-  border: 1px solid rgba(219, 39, 119, 0.25);
+  border: 1px solid rgba(204, 43, 94, 0.25);
 }
 .badge--online::before {
   content: '';
@@ -197,7 +197,7 @@
 .badge--low {
   background: var(--color-primary-dim);
   color: var(--color-primary);
-  border: 1px solid rgba(219, 39, 119, 0.3);
+  border: 1px solid rgba(204, 43, 94, 0.3);
 }
 
 .input {
@@ -230,8 +230,8 @@ input[type=number].input::-webkit-outer-spin-button {
 
 /* Global browser autofill style overrides to force background transparency */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
 input:-webkit-autofill:active,
 textarea:-webkit-autofill,
 textarea:-webkit-autofill:hover,
@@ -645,7 +645,7 @@ select.input option {
 }
 
 .bottom-nav a.active, .nav-link.active {
-  background: var(--color-primary-dim);
+  background: var(--color-surface-hover);
   color: var(--color-primary);
   font-weight: 700;
   box-shadow: none;
@@ -785,7 +785,7 @@ select.input option {
 
 .chat-bubble.ai {
   background: var(--color-primary-dim);
-  border: 1px solid rgba(219, 39, 119, 0.15);
+  border: 1px solid rgba(204, 43, 94, 0.15);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
@@ -829,7 +829,7 @@ select.input option {
 
 .chat-bubble.user {
   background: var(--color-secondary-dim);
-  border: 1px solid rgba(219, 39, 119, 0.08);
+  border: 1px solid rgba(204, 43, 94, 0.08);
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
@@ -839,7 +839,7 @@ select.input option {
   gap: 4px;
   padding: 12px 16px;
   background: var(--color-primary-dim);
-  border: 1px solid rgba(219, 39, 119, 0.15);
+  border: 1px solid rgba(204, 43, 94, 0.15);
   border-radius: var(--radius-lg);
   border-bottom-left-radius: 4px;
   align-self: flex-start;
@@ -886,7 +886,7 @@ select.input option {
 }
 
 .chip:hover {
-  background: rgba(219, 39, 119, 0.25);
+  background: rgba(204, 43, 94, 0.25);
   border-color: var(--color-primary);
 }
 
@@ -909,7 +909,7 @@ select.input option {
   color: var(--color-primary);
   font-size: 13px;
   font-weight: 600;
-  border: 1px solid rgba(219, 39, 119, 0.15);
+  border: 1px solid rgba(204, 43, 94, 0.15);
 }
 
 .pill.warning {
@@ -929,8 +929,6 @@ select.input option {
   text-align: center;
   display: grid;
   gap: var(--spacing-4);
-  background: rgba(239, 68, 68, 0.06);
-  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .sos-btn {
@@ -1082,7 +1080,40 @@ select.input option {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr;
-  background-color: var(--color-bg-start);
+  background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
+}
+
+.onboarding-page-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
+}
+
+.onboarding-error-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  border-left: 4px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.onboarding-error-alert .error-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.onboarding-error-alert .error-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-text);
+  text-align: left;
 }
 
 .onboarding-page-wrapper {
@@ -1218,7 +1249,9 @@ select.input option {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 280px 1fr;
-  background-color: var(--color-bg-start);
+  background: var(--gradient-shell);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
 }
 
 .sidebar {
@@ -1260,7 +1293,7 @@ select.input option {
 }
 
 .sidebar-nav a.active {
-  background: var(--color-primary-dim);
+  background: var(--color-surface-hover);
   color: var(--color-primary);
   position: relative;
   box-shadow: none;
@@ -1479,7 +1512,9 @@ select.input option {
 /* ── Responsive Patient/Worker Shell Layout ── */
 .app-layout-shell {
   min-height: 100vh;
-  background-color: var(--color-bg-start);
+  background: var(--gradient-shell);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
   color: var(--color-text);
   display: block; /* Mobile default */
 }
@@ -1542,7 +1577,7 @@ select.input option {
 }
 
 .mobile-bottom-nav a.active {
-  background: var(--color-primary-dim);
+  background: var(--color-surface-hover);
   color: var(--color-primary);
   font-weight: 700;
   box-shadow: none;
@@ -1612,7 +1647,7 @@ select.input option {
   }
 
   .desktop-sidebar-nav a.active {
-    background: var(--color-primary-dim);
+    background: var(--color-surface-hover);
     color: var(--color-primary);
     position: relative;
     box-shadow: none;

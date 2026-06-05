@@ -360,3 +360,51 @@ export async function checkHealth() {
     return false
   }
 }
+
+// ── Community Chat API (proxied to Conduit via /api/chat) ──
+
+export async function getChatSession() {
+  const res = await apiFetch('/chat/get-chat-token')
+  return res.ok ? res.json() : null
+}
+
+export async function loginChat() {
+  const res = await apiFetch('/chat/login', { method: 'POST' })
+  return { ok: res.ok, body: res.ok ? await res.json() : await res.json().catch(() => ({})) }
+}
+
+export async function joinChatRoom() {
+  const res = await apiFetch('/chat/rooms/join', { method: 'POST' })
+  return { ok: res.ok, body: res.ok ? await res.json() : await res.json().catch(() => ({})) }
+}
+
+export async function getChatMessages(since = null, { dir = 'b', limit = 30 } = {}) {
+  const params = new URLSearchParams({ dir, limit: String(limit) })
+  if (since) params.set('from', since)
+  const res = await apiFetch(`/chat/messages?${params.toString()}`)
+  if (!res.ok) return { ok: false, messages: [], end: null, start: null, error: await res.json().catch(() => ({})) }
+  return { ok: true, ...(await res.json()) }
+}
+
+export async function sendChatMessage(body) {
+  const res = await apiFetch('/chat/messages', {
+    method: 'POST',
+    body: JSON.stringify({ body }),
+  })
+  if (!res.ok) return { ok: false, error: await res.json().catch(() => ({})) }
+  return { ok: true, ...(await res.json()) }
+}
+
+export async function setChatTyping(typing) {
+  const res = await apiFetch('/chat/typing', {
+    method: 'POST',
+    body: JSON.stringify({ typing }),
+  })
+  return { ok: res.ok, body: res.ok ? await res.json().catch(() => ({})) : await res.json().catch(() => ({})) }
+}
+
+export async function getChatPresence() {
+  const res = await apiFetch('/chat/presence')
+  if (!res.ok) return { ok: false, online: [], typing: [], error: await res.json().catch(() => ({})) }
+  return { ok: true, ...(await res.json()) }
+}

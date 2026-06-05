@@ -5,6 +5,7 @@ import { useApp } from '../../context/AppContext'
 import { workerNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
 import $ from '../../config/strings'
+import { formatDate } from '../../utils/date'
 
 export default function PatientDetails() {
   const { id } = useParams()
@@ -195,7 +196,7 @@ export default function PatientDetails() {
               {history.map((v, i) => (
                 <div className="list-item" key={v.id || i}>
                   <div>
-                    <strong>{new Date(v.recorded_at).toLocaleDateString()}</strong>
+                    <strong>{formatDate(v.recorded_at)}</strong>
                     <p className="muted">
                       BP: {v.bp_systolic}/{v.bp_diastolic} • Weight: {v.weight_kg}kg • Pulse: {v.pulse}
                     </p>
@@ -280,7 +281,7 @@ export default function PatientDetails() {
               {history.slice(0, 5).map((v, i) => (
                 <div className="list-item" key={v.id || i}>
                   <div>
-                    <strong>{new Date(v.recorded_at).toLocaleDateString()}</strong>
+                    <strong>{formatDate(v.recorded_at)}</strong>
                     <p className="muted">{patient.village || 'Village'} • {$('W_DETAILS_HISTORY_VILLAGE_PREFIX', locale)} {v.recorded_by_name || 'Worker'}</p>
                   </div>
                   <span className="badge badge--online">{$('W_DETAILS_HISTORY_COMPLETE', locale)}</span>

@@ -5,6 +5,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
+import { formatDate } from '../../utils/date'
 
 export default function Dashboard() {
   const { currentUser, connectivity, locale } = useApp()
@@ -116,6 +117,13 @@ export default function Dashboard() {
             <h4>{$('DASH_ACTION_EMERGENCY_TITLE', locale)}</h4>
             <p className="muted">{$('DASH_ACTION_EMERGENCY_DESC', locale)}</p>
           </Link>
+          <Link to="/patient/community-chat" className="card action-card stagger" style={{ animationDelay: '0.4s' }}>
+            <svg style={{ width: '40px', height: '40px', color: 'var(--color-primary)', marginBottom: '4px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2v4l-4-4H7a2 2 0 0 1-2-2v-1M7 8a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 4v-4H7" />
+            </svg>
+            <h4>{$('DASH_ACTION_COMMUNITY_TITLE', locale)}</h4>
+            <p className="muted">{$('DASH_ACTION_COMMUNITY_DESC', locale)}</p>
+          </Link>
         </div>
 
         <div className="section-header" style={{ marginTop: '1.5rem' }}>
@@ -144,7 +152,7 @@ export default function Dashboard() {
             <div className="kpi-card">
               <span className="muted">{$('DASH_KPI_LAST_CHECKUP', locale)}</span>
               <span className={latestVitals ? "kpi" : "kpi-empty"}>
-                {latestVitals ? new Date(latestVitals.recorded_at).toLocaleDateString() : $('DASH_KPI_NO_RECORDS', locale)}
+                {latestVitals ? formatDate(latestVitals.recorded_at) : $('DASH_KPI_NO_RECORDS', locale)}
               </span>
             </div>
           </div>

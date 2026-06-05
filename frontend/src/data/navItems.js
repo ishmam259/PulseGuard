@@ -1,12 +1,13 @@
 import $ from '../config/strings'
 
 export const patientNavItems = (locale) => [
-  { label: $('NAV_P_HOME', locale),    to: '/patient/dashboard',   icon: '' },
-  { label: $('NAV_P_AICHAT', locale),  to: '/patient/ai-chat',     icon: '' },
-  { label: $('NAV_P_HEALTH', locale),  to: '/patient/daily-check', icon: '' },
-  { label: $('NAV_P_ALERTS', locale),  to: '/patient/alerts',      icon: '' },
-  { label: $('NAV_P_WELLNESS', locale), to: '/patient/wellness',   icon: '' },
-  { label: $('NAV_P_PROFILE', locale),  to: '/patient/profile',   icon: '' },
+  { label: $('NAV_P_HOME', locale),      to: '/patient/dashboard',      icon: '' },
+  { label: $('NAV_P_AICHAT', locale),    to: '/patient/ai-chat',        icon: '' },
+  { label: $('NAV_P_COMMUNITY', locale), to: '/patient/community-chat', icon: '' },
+  { label: $('NAV_P_HEALTH', locale),    to: '/patient/daily-check',    icon: '' },
+  { label: $('NAV_P_ALERTS', locale),    to: '/patient/alerts',         icon: '' },
+  { label: $('NAV_P_WELLNESS', locale),  to: '/patient/wellness',       icon: '' },
+  { label: $('NAV_P_PROFILE', locale),   to: '/patient/profile',        icon: '' },
 ]
 
 export const workerNavItems = (locale) => [

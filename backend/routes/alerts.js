@@ -1,10 +1,57 @@
 const express = require('express')
+const path = require('path')
+const fs = require('fs')
+const ejs = require('ejs')
 const pool = require('../db/pool')
 const { authenticate, requireRole } = require('../middleware/auth')
-const { alertWorkersByEmail } = require('../services/emailSender')
+const { SMTPEmailSender } = require('../external/adapters/SMTPEmailSender')
 const { enrichPatient } = require('../services/gestation')
 
 const router = express.Router()
+
+// Load the SOS alert HTML template at module load time.
+// Template is rendered here (the call site), not inside IEmailSender/SMTPEmailSender.
+const SOS_ALERT_TEMPLATE_PATH = path.join(
+    __dirname,
+    '..',
+    'external',
+    'templates',
+    'sosAlert.html'
+)
+const sosAlertTemplate = fs.readFileSync(SOS_ALERT_TEMPLATE_PATH, 'utf-8')
+
+/**
+ * Renders the SOS alert HTML email body using the external EJS template.
+ * Returns the rendered HTML string to be passed into SMTPEmailSender.sendEmail.
+ */
+const renderSosAlertEmail = ({ workerName, patientName, patientId, latitude, longitude, message }) => {
+    const hasCoords =
+        latitude !== null &&
+        latitude !== undefined &&
+        longitude !== null &&
+        longitude !== undefined
+
+    const mapsUrl = hasCoords
+        ? `https://www.google.com/maps?q=${latitude},${longitude}`
+        : null
+
+    const triggeredAt = new Date().toLocaleString('en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+    })
+
+    return ejs.render(sosAlertTemplate, {
+        workerName,
+        patientName,
+        patientId,
+        latitude,
+        longitude,
+        message,
+        mapsUrl,
+        hasCoords,
+        triggeredAt,
+    })
+}
 
 // All alert routes require authentication
 router.use(authenticate)
@@ -34,7 +81,31 @@ router.post('/', async (req, res) => {
       [patientId, patientName, latitude || null, longitude || null, message || 'SOS Emergency Alert']
     )
 
-    alertWorkersByEmail({ patientId, latitude, longitude, message});
+    // Notify all workers by email using the HTML template rendered at the call site.
+    try {
+      const workersResult = await pool.query(
+        `SELECT name, email FROM users WHERE role = 'worker'`
+      )
+      const mailSender = new SMTPEmailSender()
+      for (const worker of workersResult.rows) {
+        const htmlBody = renderSosAlertEmail({
+          workerName: worker.name,
+          patientName,
+          patientId,
+          latitude: latitude || null,
+          longitude: longitude || null,
+          message: message || 'SOS Emergency Alert',
+        })
+        await mailSender.sendEmail(
+          process.env.SMTP_USER,
+          worker.email,
+          'SOS Alert',
+          htmlBody
+        )
+      }
+    } catch (emailErr) {
+      console.error('Failed to send SOS alert emails:', emailErr)
+    }
 
     const alert = result.rows[0]
 

@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext'
 import { workerNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
 import $ from '../../config/strings'
+import { formatDateTime } from '../../utils/date'
 
 export default function WorkerAlerts() {
   const { connectivity, locale } = useApp()
@@ -95,7 +96,7 @@ export default function WorkerAlerts() {
                       "{alert.message}"
                     </p>
                     <span className="muted" style={{ fontSize: '0.75rem', display: 'block', marginTop: '4px' }}>
-                      {$('W_ALERTS_TRIGGERED_PREFIX', locale)} {new Date(alert.created_at).toLocaleString()}
+                      {$('W_ALERTS_TRIGGERED_PREFIX', locale)} {formatDateTime(alert.created_at)}
                     </span>
                   </div>
 
@@ -171,7 +172,7 @@ export default function WorkerAlerts() {
                       {alert.message}
                     </p>
                     <span className="muted" style={{ fontSize: '0.75rem' }}>
-                      {$('W_ALERTS_RESOLVED_PREFIX', locale)} {new Date(alert.resolved_at || alert.created_at).toLocaleString()}
+                      {$('W_ALERTS_RESOLVED_PREFIX', locale)} {formatDateTime(alert.resolved_at || alert.created_at)}
                     </span>
                   </div>
                 </div>

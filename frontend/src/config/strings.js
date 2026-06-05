@@ -18,6 +18,7 @@ const strings = {
     // ─── Nav Items (Patient) ───
     NAV_P_HOME: 'Home',
     NAV_P_AICHAT: 'AI Chat',
+    NAV_P_COMMUNITY: 'Community Chat',
     NAV_P_HEALTH: 'Health',
     NAV_P_ALERTS: 'Alerts',
     NAV_P_WELLNESS: 'Wellness',
@@ -191,6 +192,22 @@ const strings = {
     // ─── Patient Alerts ───
     PAGE_TITLE_ALERTS: 'Alerts',
     ALERTS_HEADING: 'Notifications',
+
+    // ─── Community Chat ───
+    PAGE_TITLE_COMMUNITY_CHAT: 'Community Chat',
+    COMMUNITY_LOADING: 'Connecting to the community…',
+    COMMUNITY_DISCLAIMER: 'You are chatting with all PulseGuard patients. Be kind, do not share personal medical advice, and contact a health worker for emergencies.',
+    COMMUNITY_ONLINE_SUFFIX: 'online',
+    COMMUNITY_TYPING: 'is typing…',
+    COMMUNITY_TYPING_MULTI: 'are typing…',
+    COMMUNITY_PH: 'Say something supportive…',
+    COMMUNITY_SEND: 'Send',
+    COMMUNITY_EMPTY: 'No messages yet. Be the first to say hello!',
+    COMMUNITY_ERR_LOAD: 'Community chat is temporarily unavailable. Please try again later.',
+    COMMUNITY_ERR_SEND: 'Message failed to send. Please try again.',
+    COMMUNITY_DISPLAY_NAME_PREFIX: 'User',
+    DASH_ACTION_COMMUNITY_TITLE: 'Community Chat',
+    DASH_ACTION_COMMUNITY_DESC: 'Chat with all PulseGuard patients',
 
     // ─── Patient Profile ───
     PAGE_TITLE_PROFILE: 'Profile',
@@ -587,6 +604,7 @@ const strings = {
     // ─── Nav Items (Patient) ───
     NAV_P_HOME: 'হোম',
     NAV_P_AICHAT: 'এআই চ্যাট',
+    NAV_P_COMMUNITY: 'কমিউনিটি চ্যাট',
     NAV_P_HEALTH: 'স্বাস্থ্য',
     NAV_P_ALERTS: 'সতর্কতা',
     NAV_P_WELLNESS: 'সুস্থতা',
@@ -760,6 +778,22 @@ const strings = {
     // ─── Patient Alerts ───
     PAGE_TITLE_ALERTS: 'সতর্কতা',
     ALERTS_HEADING: 'বিজ্ঞপ্তি',
+
+    // ─── Community Chat ───
+    PAGE_TITLE_COMMUNITY_CHAT: 'কমিউনিটি চ্যাট',
+    COMMUNITY_LOADING: 'কমিউনিটির সাথে সংযুক্ত হচ্ছে…',
+    COMMUNITY_DISCLAIMER: 'আপনি সব পালসগার্ড রোগীদের সাথে চ্যাট করছেন। দয়া করুন, ব্যক্তিগত চিকিৎসা পরামর্শ শেয়ার করবেন না এবং জরুরি অবস্থায় একজন স্বাস্থ্যকর্মীর সাথে যোগাযোগ করুন।',
+    COMMUNITY_ONLINE_SUFFIX: 'অনলাইন',
+    COMMUNITY_TYPING: 'টাইপ করছে…',
+    COMMUNITY_TYPING_MULTI: 'টাইপ করছে…',
+    COMMUNITY_PH: 'কিছু সহায়ক বার্তা লিখুন…',
+    COMMUNITY_SEND: 'পাঠান',
+    COMMUNITY_EMPTY: 'এখনো কোনো বার্তা নেই। প্রথম বার্তাটি আপনি দিন!',
+    COMMUNITY_ERR_LOAD: 'কমিউনিটি চ্যাট সাময়িকভাবে অনুপলব্ধ। পরে আবার চেষ্টা করুন।',
+    COMMUNITY_ERR_SEND: 'বার্তা পাঠানো যায়নি। আবার চেষ্টা করুন।',
+    COMMUNITY_DISPLAY_NAME_PREFIX: 'ব্যবহারকারী',
+    DASH_ACTION_COMMUNITY_TITLE: 'কমিউনিটি চ্যাট',
+    DASH_ACTION_COMMUNITY_DESC: 'সব পালসগার্ড রোগীদের সাথে চ্যাট করুন',
 
     // ─── Patient Profile ───
     PAGE_TITLE_PROFILE: 'প্রোফাইল',

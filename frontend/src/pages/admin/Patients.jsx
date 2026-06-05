@@ -4,6 +4,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import * as api from '../../services/api'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
+import { formatDate } from '../../utils/date'
 
 export default function Patients() {
   const navigate = useNavigate()
@@ -160,7 +161,7 @@ export default function Patients() {
                     <td>{patient.gestational_week || 'N/A'}</td>
                     <td>{patient.worker_name || 'Unassigned'}</td>
                     <td style={{ color: 'var(--color-muted)' }}>
-                      {new Date(patient.last_updated).toLocaleDateString()}
+                      {formatDate(patient.last_updated)}
                     </td>
                     <td>
                       <div className="inline-actions">

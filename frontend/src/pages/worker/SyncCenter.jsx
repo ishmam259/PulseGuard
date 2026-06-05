@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext'
 import { workerNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
 import $ from '../../config/strings'
+import { formatDateTime } from '../../utils/date'
 
 export default function SyncCenter() {
   const { connectivity, locale } = useApp()
@@ -91,7 +92,7 @@ export default function SyncCenter() {
                 <div className="list-item" style={{ marginBottom: 'var(--spacing-2)' }}>
                   <div>
                     <strong>{conflict.patient_name || 'Patient'}</strong>
-                    <p className="muted">{conflict.record_type} • {new Date(conflict.created_at).toLocaleString()}</p>
+                    <p className="muted">{conflict.record_type} • {formatDateTime(conflict.created_at)}</p>
                   </div>
                   <span className="badge badge--high">Conflict</span>
                 </div>

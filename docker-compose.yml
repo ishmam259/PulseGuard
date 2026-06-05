@@ -36,6 +36,8 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
       CHAT_SECRET: ${CHAT_SECRET}
+      MATRIX_BASE_URL: http://matrix-chat:6167
+      GLOBAL_CHAT_ROOM_ID: !pulseguard-global:localhost
 
   ai-worker:
     build: ./ai
@@ -60,21 +62,19 @@ services:
       - api
 
   matrix-chat:
-    image: matrixconduit/matrix-conduit:latest
+    image: matrixconduit/matrix-conduit:v0.10.0
     container_name: matrix_conduit
     ports:
       - "8008:6167" # Maps port 8008 on your machine to Conduit's internal port
     environment:
-      CONDUIT_CONFIG: ""
-      # 1. Your Server Identity (Change this to your Public IP when you deploy later)
-      CONDUIT_SERVER_NAME: "${CHAT_DOMAIN}:8008"
+      # Required by Conduit v0.10+. Points at the toml we mount below.
+      CONDUIT_CONFIG: /etc/conduit/conduit.toml
+      # JWT secret used by PulseGuard's /api/chat/get-chat-token endpoint.
       CONDUIT_JWT_SECRET: "${CHAT_SECRET}"
-      
-      # 3. Server Engine Settings (Don't change these)
-      CONDUIT_PORT: "6167"
-      CONDUIT_ADDRESS: "0.0.0.0"
-      CONDUIT_ALLOW_REGISTRATION: "true"
     volumes:
+      # Conduit config (read-only).
+      - ./matrix/conduit.toml:/etc/conduit/conduit.toml:ro
+      # Persistent data (RocksDB lives here).
       - ./matrix_data:/srv/conduit/data
     restart: unless-stopped
 
