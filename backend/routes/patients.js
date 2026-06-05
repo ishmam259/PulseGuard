@@ -2,6 +2,7 @@ const express = require('express')
 const pool = require('../db/pool')
 const { authenticate, requireRole } = require('../middleware/auth')
 const { patientSchema, vitalsSchema } = require('../schemas/patient.schema')
+const { lmpDateFromWeek, enrichPatient } = require('../services/gestation')
 
 function formatDate(dateInput) {
   if (!dateInput) return ''
@@ -28,7 +29,7 @@ router.get('/', async (req, res) => {
       ORDER BY p.name ASC;
     `
     const result = await pool.query(query)
-    res.json({ patients: result.rows })
+    res.json({ patients: result.rows.map(enrichPatient) })
   } catch (err) {
     console.error('List patients error:', err)
     res.status(500).json({ error: 'Internal server error' })
@@ -52,7 +53,7 @@ router.get('/my-profile', async (req, res) => {
       return res.json({ patient: null, latestVitals: null })
     }
 
-    const patient = result.rows[0]
+    const patient = enrichPatient(result.rows[0])
 
     const vitalsResult = await pool.query(
       'SELECT * FROM vitals WHERE patient_id = $1 ORDER BY recorded_at DESC LIMIT 1',
@@ -102,13 +103,15 @@ router.post('/', async (req, res) => {
       }
     }
 
+    const lmp_date = data.gestational_week != null ? lmpDateFromWeek(data.gestational_week) : null
+
     const result = await pool.query(
-      `INSERT INTO patients (name, age, village, gestational_week, assigned_worker, user_id)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO patients (name, age, village, gestational_week, lmp_date, assigned_worker, user_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [data.name, data.age, data.village, data.gestational_week, assigned_worker, user_id]
+      [data.name, data.age, data.village, data.gestational_week, lmp_date, assigned_worker, user_id]
     )
-    res.status(201).json({ patient: result.rows[0] })
+    res.status(201).json({ patient: enrichPatient(result.rows[0]) })
   } catch (err) {
     if (err.name === 'ZodError') {
       return res.status(400).json({ error: 'Validation failed', details: err.errors })
@@ -133,7 +136,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Patient not found' })
     }
 
-    const patient = patientResult.rows[0]
+    const patient = enrichPatient(patientResult.rows[0])
     if (req.user.role === 'patient' && patient.user_id !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' })
     }
@@ -165,7 +168,20 @@ router.put('/:id', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' })
     }
 
+    // Patients may not change their gestational week once it has been anchored.
+    if (req.user.role === 'patient') {
+      const existing = await pool.query('SELECT lmp_date FROM patients WHERE id = $1', [req.params.id])
+      if (existing.rows[0]?.lmp_date) {
+        delete req.body.gestational_week
+      }
+    }
+
     const data = patientSchema.partial().parse(req.body)
+
+    // Re-anchor the gestational week whenever it is updated so it keeps advancing.
+    if (data.gestational_week != null) {
+      data.lmp_date = lmpDateFromWeek(data.gestational_week)
+    }
 
     const fields = []
     const values = []
@@ -193,7 +209,7 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Patient not found' })
     }
 
-    res.json({ patient: result.rows[0] })
+    res.json({ patient: enrichPatient(result.rows[0]) })
   } catch (err) {
     if (err.name === 'ZodError') {
       return res.status(400).json({ error: 'Validation failed', details: err.errors })
@@ -217,9 +233,9 @@ router.post('/:id/vitals', async (req, res) => {
 
     const data = vitalsSchema.parse(req.body)
 
-    // Fetch patient's gestational week for AI prediction
-    const patientData = await pool.query('SELECT gestational_week FROM patients WHERE id = $1', [req.params.id])
-    const gestationalWeek = patientData.rows[0]?.gestational_week || 24
+    // Fetch patient's anchor and compute the live gestational week for AI prediction
+    const patientData = await pool.query('SELECT gestational_week, lmp_date FROM patients WHERE id = $1', [req.params.id])
+    const gestationalWeek = enrichPatient(patientData.rows[0]).gestational_week || 24
 
     // Load dynamic AI config thresholds from DB
     let cfg = { high_bp_systolic: 140, high_bp_diastolic: 90, moderate_bp_systolic: 130, moderate_bp_diastolic: 85, high_risk_cutoff: 0.70, moderate_risk_cutoff: 0.40, alert_threshold: 0.70 }

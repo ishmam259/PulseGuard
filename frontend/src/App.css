@@ -216,21 +216,35 @@
   color: var(--color-muted);
 }
 
+input[type=number].input::-webkit-inner-spin-button,
+input[type=number].input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .input:focus {
   border-color: var(--color-primary);
   box-shadow: var(--shadow-card), var(--shadow-glow-primary);
   background: var(--color-surface-hover);
 }
 
-/* Chrome/Safari browser autofill custom styles to remove the default light-blue/whitish background */
-.input:-webkit-autofill,
-.input:-webkit-autofill:hover, 
-.input:-webkit-autofill:focus, 
-.input:-webkit-autofill:active {
+/* Global browser autofill style overrides to force background transparency */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: var(--color-text) !important;
-  transition: background-color 5000s ease-in-out 0s;
+  transition: background-color 600000s ease-in-out 0s !important;
 }
 
 /* ── Input Wrapper with Icon ── */
@@ -252,13 +266,26 @@
   box-shadow: var(--shadow-card), var(--shadow-glow-primary);
   background: var(--color-surface-hover);
 }
-
 .input-wrapper .input-icon {
   width: 20px;
   height: 20px;
   margin-right: 12px;
-  opacity: 0.7;
   flex-shrink: 0;
+  opacity: 0.85;
+  filter: brightness(0.35) contrast(1.2) saturate(1.5);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+:root.dark .input-wrapper .input-icon {
+  filter: brightness(1.2) contrast(1.1) saturate(1.1);
+  opacity: 0.95;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .input-wrapper .input-icon {
+    filter: brightness(1.2) contrast(1.1) saturate(1.1);
+    opacity: 0.95;
+  }
 }
 
 .input-wrapper .input {
@@ -748,11 +775,11 @@ select.input option {
 }
 
 .chat-bubble {
-  padding: 12px 16px;
+  padding: 16px 18px;
   border-radius: var(--radius-lg);
   max-width: 85%;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 15px;
+  line-height: 1.65;
   animation: fadeIn var(--duration-normal) var(--ease-out) both;
 }
 
@@ -761,6 +788,43 @@ select.input option {
   border: 1px solid rgba(204, 43, 94, 0.15);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
+}
+
+/* Markdown readability inside AI bubble */
+.chat-bubble.ai p {
+  margin: 0 0 0.8rem 0;
+  line-height: 1.75;
+}
+.chat-bubble.ai p:last-child { margin-bottom: 0; }
+
+.chat-bubble.ai strong {
+  display: block;
+  margin-top: 1.1rem;
+  margin-bottom: 0.15rem;
+  font-size: 0.95rem;
+  color: #f9a8d4;
+}
+
+.chat-bubble.ai ol,
+.chat-bubble.ai ul {
+  margin: 0.4rem 0 0.8rem 1.2rem;
+  padding-left: 0.5rem;
+  list-style: decimal;
+}
+
+.chat-bubble.ai li {
+  margin-bottom: 0.55rem;
+  line-height: 1.7;
+}
+
+.chat-bubble.ai .ai-warning {
+  background: rgba(239, 68, 68, 0.12);
+  border-left: 3px solid #ef4444;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 1.1rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
 }
 
 .chat-bubble.user {
@@ -1023,6 +1087,39 @@ select.input option {
   min-height: 100vh;
   width: 100%;
   background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
+}
+
+.onboarding-error-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  border-left: 4px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.onboarding-error-alert .error-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.onboarding-error-alert .error-text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-text);
+  text-align: left;
+}
+
+.onboarding-page-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-start);
 }
 
 .onboarding-error-alert {
@@ -1813,6 +1910,9 @@ select.input option {
 }
 :root.dark .greeting-card h2 {
   background: linear-gradient(120deg, #FFFFFF 50%, #ABB8C4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 :root.dark .card h2,
 :root.dark .card h3 {
@@ -1843,6 +1943,9 @@ select.input option {
   }
   :root:not(.light) .greeting-card h2 {
     background: linear-gradient(120deg, #FFFFFF 50%, #ABB8C4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   :root:not(.light) .card h2,
   :root:not(.light) .card h3 {

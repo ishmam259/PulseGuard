@@ -69,6 +69,15 @@ export default function Dashboard() {
           <div className="card greeting-card">
             <h2>{$('DASH_GREETING_PREFIX', locale)} {patient.name}</h2>
             <p className="muted">{$('DASH_WEEK_LABEL', locale)} <strong>{patient.gestational_week || 'N/A'}</strong></p>
+            {patient.lmp_recorded_date != null && patient.initial_gestational_week != null && (
+              <p className="muted" style={{ fontSize: '12px', marginTop: '0.25rem' }}>
+                {$('PREG_WEEK_INITIAL', locale).replace('$W', patient.initial_gestational_week)}{' '}
+                {new Date(patient.lmp_recorded_date).toLocaleDateString(
+                  locale === 'bn' ? 'bn-BD' : 'en-GB',
+                  { day: 'numeric', month: 'short', year: 'numeric' }
+                )}
+              </p>
+            )}
             <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.5rem' }}>
               {(patient.risk_level || 'Low').charAt(0).toUpperCase() + (patient.risk_level || 'low').slice(1)} {$('W_DETAILS_RISK_SUFFIX', locale)}
             </span>
