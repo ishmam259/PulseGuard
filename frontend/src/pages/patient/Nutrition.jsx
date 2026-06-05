@@ -72,8 +72,8 @@ export default function Nutrition() {
           ) : (
             <div className="pill-list" style={{ marginTop: '1rem' }}>
               {recommendedFoods.map((food) => (
-                <span key={food.name} className="pill good" title={food.benefit}>
-                  {food.icon} {food.name} <span style={{ opacity: 0.7, fontSize: '0.8rem' }}>({food.benefit})</span>
+                <span key={food.name} className="pill good" title={locale === 'bn' ? (food.benefitBn || food.benefit) : food.benefit}>
+                  {food.icon} {locale === 'bn' ? (food.nameBn || food.name) : food.name} <span style={{ opacity: 0.7, fontSize: '0.8rem' }}>({locale === 'bn' ? (food.benefitBn || food.benefit) : food.benefit})</span>
                 </span>
               ))}
             </div>
@@ -86,8 +86,8 @@ export default function Nutrition() {
           <p className="muted">{$('NUTRITION_SECTION_AVOID_DESC', locale)}</p>
           <div className="pill-list" style={{ marginTop: '1rem' }}>
             {nutritionData.avoid.map((food) => (
-              <span key={food.name} className="pill warning" title={food.reason}>
-                {food.icon} {food.name} <span style={{ opacity: 0.7, fontSize: '0.8rem' }}>({food.reason})</span>
+              <span key={food.name} className="pill warning" title={locale === 'bn' ? (food.reasonBn || food.reason) : food.reason}>
+                {food.icon} {locale === 'bn' ? (food.nameBn || food.name) : food.name} <span style={{ opacity: 0.7, fontSize: '0.8rem' }}>({locale === 'bn' ? (food.reasonBn || food.reason) : food.reason})</span>
               </span>
             ))}
           </div>
@@ -102,8 +102,8 @@ export default function Nutrition() {
           ) : (
             <div className="pill-list" style={{ marginTop: '1rem' }}>
               {localFoods.map((food) => (
-                <span key={food.name} className="pill" title={food.tag}>
-                  {food.icon} {food.name} <span style={{ opacity: 0.7, fontSize: '0.8rem' }}>({food.tag})</span>
+                <span key={food.name} className="pill" title={locale === 'bn' ? (food.tagBn || food.tag) : food.tag}>
+                  {food.icon} {locale === 'bn' ? (food.nameBn || food.name) : food.name} <span style={{ opacity: 0.7, fontSize: '0.8rem' }}>({locale === 'bn' ? (food.tagBn || food.tag) : food.tag})</span>
                 </span>
               ))}
             </div>

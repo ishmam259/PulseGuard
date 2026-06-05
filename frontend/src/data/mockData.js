@@ -199,26 +199,26 @@ export const chatMessages = [
 
 export const nutritionData = {
   recommended: [
-    { name: 'Leafy Greens (Spinach, Kale)', benefit: 'Iron & Folate', icon: '' },
-    { name: 'Lentils (Dal)', benefit: 'Protein & Iron', icon: '' },
-    { name: 'Eggs', benefit: 'Protein & Choline', icon: '' },
-    { name: 'Fish (Low Mercury)', benefit: 'Omega-3 & DHA', icon: '' },
-    { name: 'Sweet Potatoes', benefit: 'Vitamin A', icon: '' },
-    { name: 'Yogurt', benefit: 'Calcium & Probiotics', icon: '' },
+    { name: 'Leafy Greens (Spinach, Kale)', nameBn: 'পাতাজাতীয় সবজি (পালং শাক)', benefit: 'Iron & Folate', benefitBn: 'আয়রন ও ফোলেট', icon: '' },
+    { name: 'Lentils (Dal)', nameBn: 'ডাল', benefit: 'Protein & Iron', benefitBn: 'প্রোটিন ও আয়রন', icon: '' },
+    { name: 'Eggs', nameBn: 'ডিম', benefit: 'Protein & Choline', benefitBn: 'প্রোটিন ও কোলিন', icon: '' },
+    { name: 'Fish (Low Mercury)', nameBn: 'মাছ (কম পারদ)', benefit: 'Omega-3 & DHA', benefitBn: 'ওমেগা-৩ ও ডিএইচএ', icon: '' },
+    { name: 'Sweet Potatoes', nameBn: 'মিষ্টি আলু', benefit: 'Vitamin A', benefitBn: 'ভিটামিন এ', icon: '' },
+    { name: 'Yogurt', nameBn: 'দই', benefit: 'Calcium & Probiotics', benefitBn: 'ক্যালসিয়াম ও প্রোবায়োটিক', icon: '' },
   ],
   avoid: [
-    { name: 'High Mercury Fish', reason: 'Fetal neurotoxicity risk', icon: '' },
-    { name: 'Unpasteurized Dairy', reason: 'Listeria risk', icon: '' },
-    { name: 'Raw Sprouts', reason: 'Bacterial contamination', icon: '' },
-    { name: 'Excessive Caffeine', reason: 'Growth restriction risk', icon: '' },
+    { name: 'High Mercury Fish', nameBn: 'বেশি পারদযুক্ত মাছ', reason: 'Fetal neurotoxicity risk', reasonBn: 'ভ্রূণের স্নায়ু ক্ষতির ঝুঁকি', icon: '' },
+    { name: 'Unpasteurized Dairy', nameBn: 'অপাস্তুরিত দুগ্ধজাত পণ্য', reason: 'Listeria risk', reasonBn: 'লিস্টেরিয়ার ঝুঁকি', icon: '' },
+    { name: 'Raw Sprouts', nameBn: 'কাঁচা অঙ্কুর', reason: 'Bacterial contamination', reasonBn: 'ব্যাকটেরিয়া দূষণ', icon: '' },
+    { name: 'Excessive Caffeine', nameBn: 'অতিরিক্ত ক্যাফেইন', reason: 'Growth restriction risk', reasonBn: 'বৃদ্ধি ব্যাহত হওয়ার ঝুঁকি', icon: '' },
   ],
   local: [
-    { name: 'Spinach (Palong Shak)', tag: 'High Iron', icon: '' },
-    { name: 'Red Lentils (Masoor Dal)', tag: 'Protein Rich', icon: '' },
-    { name: 'Rice + Lentils', tag: 'Complete Protein', icon: '' },
-    { name: 'Seasonal Fruits', tag: 'Low Cost', icon: '' },
-    { name: 'Chickpeas (Chola)', tag: 'Folate Rich', icon: '' },
-    { name: 'Milk', tag: 'Calcium', icon: '' },
+    { name: 'Spinach (Palong Shak)', nameBn: 'পালং শাক', tag: 'High Iron', tagBn: 'উচ্চ আয়রন', icon: '' },
+    { name: 'Red Lentils (Masoor Dal)', nameBn: 'মসুর ডাল', tag: 'Protein Rich', tagBn: 'প্রোটিন সমৃদ্ধ', icon: '' },
+    { name: 'Rice + Lentils', nameBn: 'ভাত + ডাল', tag: 'Complete Protein', tagBn: 'সম্পূর্ণ প্রোটিন', icon: '' },
+    { name: 'Seasonal Fruits', nameBn: 'মৌসুমি ফল', tag: 'Low Cost', tagBn: 'কম খরচ', icon: '' },
+    { name: 'Chickpeas (Chola)', nameBn: 'ছোলা', tag: 'Folate Rich', tagBn: 'ফোলেট সমৃদ্ধ', icon: '' },
+    { name: 'Milk', nameBn: 'দুধ', tag: 'Calcium', tagBn: 'ক্যালসিয়াম', icon: '' },
   ],
 }
 

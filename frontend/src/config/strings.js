@@ -113,6 +113,11 @@ const strings = {
     AI_CHAT_SEND: 'Send',
     AI_CHAT_ERR_OFFLINE: 'Sorry, the AI service is currently offline or unreachable. Please try again later.',
     AI_CHAT_ERR_FAILED: "Sorry, I couldn't process that request.",
+    AI_CHAT_CHIP_HEADACHE: 'Headache',
+    AI_CHAT_CHIP_FEVER: 'Fever',
+    AI_CHAT_CHIP_DIZZINESS: 'Dizziness',
+    AI_CHAT_CHIP_NAUSEA: 'Nausea',
+    AI_CHAT_CHIP_SWELLING: 'Swelling',
 
     // ─── Daily Health Check ───
     PAGE_TITLE_DAILY_CHECK: 'Daily Health Check',
@@ -192,6 +197,12 @@ const strings = {
     // ─── Patient Alerts ───
     PAGE_TITLE_ALERTS: 'Alerts',
     ALERTS_HEADING: 'Notifications',
+    ALERTS_WELCOME_TITLE: 'Welcome to PulseGuard',
+    ALERTS_WELCOME_MSG: 'Monitor your blood pressure daily and stay connected with your healthcare worker.',
+    ALERTS_SYNC_TITLE: 'Sync Complete',
+    ALERTS_SYNC_MSG: 'All your offline health logs have been safely backed up to the server.',
+    ALERTS_TIME_NOW: 'Just now',
+    ALERTS_TIME_1H: '1 hour ago',
 
     // ─── Community Chat ───
     PAGE_TITLE_COMMUNITY_CHAT: 'Community Chat',
@@ -699,6 +710,11 @@ const strings = {
     AI_CHAT_SEND: 'পাঠান',
     AI_CHAT_ERR_OFFLINE: 'দুঃখিত, এআই সেবা বর্তমানে অফলাইন বা নাগালের বাইরে। পরে আবার চেষ্টা করুন।',
     AI_CHAT_ERR_FAILED: 'দুঃখিত, আপনার অনুরোধ প্রক্রিয়া করা সম্ভব হয়নি।',
+    AI_CHAT_CHIP_HEADACHE: 'মাথাব্যথা',
+    AI_CHAT_CHIP_FEVER: 'জ্বর',
+    AI_CHAT_CHIP_DIZZINESS: 'মাথাঘোরা',
+    AI_CHAT_CHIP_NAUSEA: 'বমিভাব',
+    AI_CHAT_CHIP_SWELLING: 'ফোলা',
 
     // ─── Daily Health Check ───
     PAGE_TITLE_DAILY_CHECK: 'দৈনিক স্বাস্থ্য পরীক্ষা',
@@ -778,6 +794,12 @@ const strings = {
     // ─── Patient Alerts ───
     PAGE_TITLE_ALERTS: 'সতর্কতা',
     ALERTS_HEADING: 'বিজ্ঞপ্তি',
+    ALERTS_WELCOME_TITLE: 'পালসগার্ডে স্বাগতম',
+    ALERTS_WELCOME_MSG: 'প্রতিদিন আপনার রক্তচাপ পরিমাপ করুন এবং আপনার স্বাস্থ্যকর্মীর সাথে যোগাযোগ রাখুন।',
+    ALERTS_SYNC_TITLE: 'সিঙ্ক সম্পন্ন',
+    ALERTS_SYNC_MSG: 'আপনার সমস্ত অফলাইন স্বাস্থ্য তথ্য সার্ভারে নিরাপদে সংরক্ষিত হয়েছে।',
+    ALERTS_TIME_NOW: 'এইমাত্র',
+    ALERTS_TIME_1H: '১ ঘন্টা আগে',
 
     // ─── Community Chat ───
     PAGE_TITLE_COMMUNITY_CHAT: 'কমিউনিটি চ্যাট',

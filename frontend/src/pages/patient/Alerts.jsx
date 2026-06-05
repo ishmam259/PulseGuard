@@ -18,17 +18,17 @@ export default function Alerts() {
     {
       id: 1,
       type: 'info',
-      title: 'Welcome to PulseGuard',
-      message: 'Monitor your blood pressure daily and stay connected with your healthcare worker.',
-      time: 'Just now',
+      title: $('ALERTS_WELCOME_TITLE', locale),
+      message: $('ALERTS_WELCOME_MSG', locale),
+      time: $('ALERTS_TIME_NOW', locale),
       read: true
     },
     {
       id: 2,
       type: 'sync',
-      title: 'Sync Complete',
-      message: 'All your offline health logs have been safely backed up to the server.',
-      time: '1 hour ago',
+      title: $('ALERTS_SYNC_TITLE', locale),
+      message: $('ALERTS_SYNC_MSG', locale),
+      time: $('ALERTS_TIME_1H', locale),
       read: true
     }
   ]

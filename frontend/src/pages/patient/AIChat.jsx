@@ -6,7 +6,14 @@ import ReactMarkdown from 'react-markdown';
 import $ from '../../config/strings'
 import { useApp } from '../../context/AppContext'
 
-const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
+const CHIP_KEYS = [
+  'AI_CHAT_CHIP_HEADACHE',
+  'AI_CHAT_CHIP_FEVER',
+  'AI_CHAT_CHIP_DIZZINESS',
+  'AI_CHAT_CHIP_NAUSEA',
+  'AI_CHAT_CHIP_SWELLING',
+]
+const CHIP_EN = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
 
 const SOURCE_BADGE = {
   offline: { label: 'Offline Answer', style: { background: '#f59e0b', color: '#fff' } },
@@ -133,14 +140,14 @@ export default function AIChat() {
         </form>
 
         <div className="chip-row" style={{ marginTop: '1rem' }}>
-          {quickChips.map((chip) => (
+          {CHIP_KEYS.map((key, i) => (
             <button
               type="button"
-              key={chip}
+              key={key}
               className="chip"
-              onClick={() => sendMessage(chip)}
+              onClick={() => sendMessage(CHIP_EN[i])}
             >
-              {chip}
+              {$(key, locale)}
             </button>
           ))}
         </div>
