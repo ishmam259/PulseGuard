@@ -25,7 +25,9 @@ export default function AIChat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [isListening, setIsListening] = useState(false)
   const bottomRef = useRef(null)
+  const recognitionRef = useRef(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -67,6 +69,35 @@ export default function AIChat() {
   const handleSubmit = (e) => {
     e.preventDefault()
     sendMessage(input)
+  }
+
+  const startVoice = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      alert($('AI_CHAT_VOICE_NOT_SUPPORTED', locale))
+      return
+    }
+    if (isListening) {
+      recognitionRef.current?.stop()
+      return
+    }
+    const recognition = new SpeechRecognition()
+    recognition.lang = locale === 'bn' ? 'bn-BD' : 'en-US'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+    recognition.onstart = () => setIsListening(true)
+    recognition.onend   = () => setIsListening(false)
+    recognition.onerror = () => setIsListening(false)
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript
+      if (locale === 'bn') {
+        setInput(transcript)
+      } else {
+        sendMessage(transcript)
+      }
+    }
+    recognitionRef.current = recognition
+    recognition.start()
   }
 
   return (
@@ -130,8 +161,14 @@ export default function AIChat() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
             />
-            <button type="button" className="icon-btn" title="Voice input" aria-label="Voice input">
-              
+            <button
+              type="button"
+              className={`icon-btn${isListening ? ' icon-btn--listening' : ''}`}
+              title={isListening ? $('AI_CHAT_VOICE_LISTENING', locale) : 'Voice input'}
+              aria-label={isListening ? $('AI_CHAT_VOICE_LISTENING', locale) : 'Voice input'}
+              onClick={startVoice}
+            >
+              {isListening ? '⏹' : '🎙'}
             </button>
             <button type="submit" className="btn btn--primary">
               {$('AI_CHAT_SEND', locale)}

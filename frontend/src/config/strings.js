@@ -118,6 +118,8 @@ const strings = {
     AI_CHAT_CHIP_DIZZINESS: 'Dizziness',
     AI_CHAT_CHIP_NAUSEA: 'Nausea',
     AI_CHAT_CHIP_SWELLING: 'Swelling',
+    AI_CHAT_VOICE_LISTENING: 'Listening...',
+    AI_CHAT_VOICE_NOT_SUPPORTED: 'Voice input not supported in this browser',
 
     // ─── Daily Health Check ───
     PAGE_TITLE_DAILY_CHECK: 'Daily Health Check',
@@ -715,6 +717,8 @@ const strings = {
     AI_CHAT_CHIP_DIZZINESS: 'মাথাঘোরা',
     AI_CHAT_CHIP_NAUSEA: 'বমিভাব',
     AI_CHAT_CHIP_SWELLING: 'ফোলা',
+    AI_CHAT_VOICE_LISTENING: 'শুনছি...',
+    AI_CHAT_VOICE_NOT_SUPPORTED: 'এই ব্রাউজারে ভয়েস ইনপুট সমর্থিত নয়',
 
     // ─── Daily Health Check ───
     PAGE_TITLE_DAILY_CHECK: 'দৈনিক স্বাস্থ্য পরীক্ষা',

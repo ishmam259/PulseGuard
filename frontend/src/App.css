@@ -547,6 +547,17 @@ select.input option {
   border-color: var(--color-border-light);
 }
 
+.icon-btn--listening {
+  border-color: #cc2b5e;
+  background: rgba(204, 43, 94, 0.1);
+  animation: pulse-ring 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(204, 43, 94, 0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(204, 43, 94, 0); }
+}
+
 .avatar {
   width: 36px;
   height: 36px;
