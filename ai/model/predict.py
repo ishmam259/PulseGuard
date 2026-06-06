@@ -42,7 +42,7 @@ def load_model():
             meta = json.load(f)
             _features = meta.get('features', [])
 
-    print(f"✅ XGBoost model loaded from {MODEL_PATH}")
+    print(f"[OK] XGBoost model loaded from {MODEL_PATH}")
     return True
 
 

@@ -188,6 +188,14 @@ export async function resolveConflict(id, resolution) {
 
 // ── AI API ──
 
+export async function medicineCheck(payload) {
+  const res = await apiFetch('/medicine/check', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+  return res.ok ? res.json() : { error: 'offline', offline: true }
+}
+
 export async function aiChat(message, language = 'en') {
   const res = await apiFetch('/ai/chat', {
     method: 'POST',

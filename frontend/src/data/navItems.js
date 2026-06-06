@@ -7,6 +7,7 @@ export const patientNavItems = (locale) => [
   { label: $('NAV_P_HEALTH', locale),    to: '/patient/daily-check',    icon: '' },
   { label: $('NAV_P_ALERTS', locale),    to: '/patient/alerts',         icon: '' },
   { label: $('NAV_P_WELLNESS', locale),  to: '/patient/wellness',       icon: '' },
+  { label: $('NAV_P_MEDICINE', locale), to: '/patient/medicine-check', icon: '' },
   { label: $('NAV_P_PROFILE', locale),   to: '/patient/profile',        icon: '' },
 ]
 
@@ -15,5 +16,6 @@ export const workerNavItems = (locale) => [
   { label: $('NAV_W_PATIENTS', locale), to: '/worker/patients',    icon: '' },
   { label: $('NAV_W_AI', locale),       to: '/worker/ai-analysis', icon: '' },
   { label: $('NAV_W_SYNC', locale),     to: '/worker/sync',        icon: '' },
+  { label: $('NAV_W_MEDICINE', locale), to: '/worker/medicine-verify', icon: '' },
   { label: $('NAV_W_PROFILE', locale),  to: '/worker/profile',     icon: '' },
 ]

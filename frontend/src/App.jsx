@@ -29,6 +29,8 @@ import WorkerVitalsEntry from './pages/worker/VitalsEntry'
 import WorkerAIAnalysis from './pages/worker/AIAnalysis'
 import SyncCenter from './pages/worker/SyncCenter'
 import WorkerAlerts from './pages/worker/Alerts'
+import MedicineCheck from './pages/patient/MedicineCheck'
+import MedicineVerify from './pages/worker/MedicineVerify'
 
 
 // Admin pages
@@ -65,6 +67,7 @@ function App() {
         <Route path="/patient/alerts" element={<ProtectedRoute allowedRoles={['patient']}><PatientAlerts /></ProtectedRoute>} />
         <Route path="/patient/wellness" element={<ProtectedRoute allowedRoles={['patient']}><PatientWellness /></ProtectedRoute>} />
         <Route path="/patient/profile" element={<ProtectedRoute allowedRoles={['patient']}><PatientProfile /></ProtectedRoute>} />
+        <Route path="/patient/medicine-check" element={<ProtectedRoute allowedRoles={['patient']}><MedicineCheck /></ProtectedRoute>} />
 
         {/* Worker — protected */}
         <Route path="/worker/dashboard" element={<ProtectedRoute allowedRoles={['worker']}><WorkerDashboard /></ProtectedRoute>} />
@@ -75,6 +78,7 @@ function App() {
         <Route path="/worker/ai-analysis" element={<ProtectedRoute allowedRoles={['worker']}><WorkerAIAnalysis /></ProtectedRoute>} />
         <Route path="/worker/sync" element={<ProtectedRoute allowedRoles={['worker']}><SyncCenter /></ProtectedRoute>} />
         <Route path="/worker/alerts" element={<ProtectedRoute allowedRoles={['worker']}><WorkerAlerts /></ProtectedRoute>} />
+        <Route path="/worker/medicine-verify" element={<ProtectedRoute allowedRoles={['worker']}><MedicineVerify /></ProtectedRoute>} />
         <Route path="/worker/profile" element={<ProtectedRoute allowedRoles={['worker']}><PatientProfile /></ProtectedRoute>} />
 
 

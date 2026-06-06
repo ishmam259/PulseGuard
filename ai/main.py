@@ -12,6 +12,7 @@ import os
 import json
 
 from external.llm_cascade import LLMCascade
+from medicine_check import handle_medicine_check, MedicineCheckRequest
 
 # Add parent directory for model imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -167,6 +168,12 @@ def _get_cascade() -> LLMCascade:
     if _cascade is None:
         _cascade = LLMCascade(system_prompt=_CHAT_SYSTEM_PROMPT)
     return _cascade
+
+
+@app.post("/ai/medicine-check")
+async def medicine_check_endpoint(req: MedicineCheckRequest):
+    """Medicine safety checker — Gemini multimodal or text."""
+    return await handle_medicine_check(req, _get_cascade())
 
 
 @app.post("/ai/chat")
