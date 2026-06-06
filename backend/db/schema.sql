@@ -121,6 +121,19 @@ CREATE TABLE IF NOT EXISTS alerts (
 CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
 CREATE INDEX IF NOT EXISTS idx_alerts_patient ON alerts(patient_id);
 
+-- Emergency contacts
+CREATE TABLE IF NOT EXISTS emergency_contacts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  relationship TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_emergency_contacts_user ON emergency_contacts(user_id);
+
 -- Daily water intake log
 CREATE TABLE IF NOT EXISTS water_logs (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),

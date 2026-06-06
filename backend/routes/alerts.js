@@ -114,7 +114,7 @@ const getPlaceName = async (latitude, longitude, defaultVillage, clientLocationN
  * Renders the SOS alert HTML email body using the external EJS template.
  * Returns the rendered HTML string to be passed into SMTPEmailSender.sendEmail.
  */
-const renderSosAlertEmail = ({ workerName, patientName, patientId, latitude, longitude, locationPlace, message }) => {
+const renderSosAlertEmail = ({ workerName, patientName, patientId, latitude, longitude, locationPlace, message, intro, messageLabel }) => {
     const hasCoords =
         latitude !== null &&
         latitude !== undefined &&
@@ -142,6 +142,8 @@ const renderSosAlertEmail = ({ workerName, patientName, patientId, latitude, lon
         mapsUrl,
         hasCoords,
         triggeredAt,
+        intro,
+        messageLabel,
     })
 }
 
@@ -191,6 +193,10 @@ router.post('/', async (req, res) => {
           longitude: longitude || null,
           locationPlace,
           message: message || 'SOS Emergency Alert',
+          intro: `An SOS alert has just been triggered by a patient under your care.
+                    Please review the details below and respond as quickly as possible &mdash;
+                    every second counts.`,
+          messageLabel: 'Patient Message',
         })
         await mailSender.sendEmail(
           process.env.SMTP_USER,
@@ -198,6 +204,37 @@ router.post('/', async (req, res) => {
           'SOS Alert',
           htmlBody
         )
+      }
+
+      // Also notify emergency contacts for this user
+      try {
+        const contactsResult = await pool.query(
+          `SELECT name, email FROM emergency_contacts WHERE user_id = $1`,
+          [req.user.id]
+        )
+        for (const contact of contactsResult.rows) {
+          const htmlBody = renderSosAlertEmail({
+            workerName: contact.name,
+            patientName,
+            patientId,
+            latitude: latitude || null,
+            longitude: longitude || null,
+            locationPlace,
+            message: 'I need urgent help',
+            intro: `An SOS alert has just been triggered by ${patientName}.
+                    Please review the details below and respond as quickly as possible &mdash;
+                    every second counts.`,
+            messageLabel: 'Message',
+          })
+          await mailSender.sendEmail(
+            process.env.SMTP_USER,
+            contact.email,
+            'SOS Emergency Alert — PulseGuard',
+            htmlBody
+          )
+        }
+      } catch (contactErr) {
+        console.error('Failed to send SOS alert to emergency contacts:', contactErr)
       }
     } catch (emailErr) {
       console.error('Failed to send SOS alert emails:', emailErr)

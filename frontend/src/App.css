@@ -968,6 +968,270 @@ select.input option {
   transform: scale(0.95);
 }
 
+/* ── Emergency Contacts — Add Card ── */
+.ec-add-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  position: relative;
+}
+
+.ec-add-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 30%, rgba(204, 43, 94, 0.06));
+  pointer-events: none;
+}
+
+.ec-add-card-inner {
+  padding: var(--spacing-5);
+  position: relative;
+}
+
+.ec-add-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 var(--spacing-2) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.ec-add-title-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.ec-add-desc {
+  font-size: 14px;
+  color: var(--color-muted);
+  margin: 0 0 var(--spacing-5) 0;
+  line-height: 1.6;
+}
+
+/* ── Inline Form ── */
+.ec-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.ec-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-4);
+}
+
+.ec-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ec-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ec-input {
+  width: 100%;
+  padding: 12px 18px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 14px;
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ec-input::placeholder {
+  color: var(--color-muted);
+  opacity: 0.6;
+}
+
+.ec-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(204, 43, 94, 0.1);
+}
+
+.ec-input--error {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.ec-error {
+  font-size: 12px;
+  color: var(--color-danger);
+  font-weight: 500;
+}
+
+.ec-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  width: fit-content;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.3);
+}
+
+.ec-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+.ec-submit-btn:active {
+  transform: translateY(0);
+}
+
+.ec-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Contacts List Section ── */
+.ec-list-section {
+  padding-bottom: var(--spacing-4);
+}
+
+.ec-list-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 var(--spacing-4) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.ec-list-title-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* ── Empty State ── */
+.ec-empty-card {
+  border: 1.5px dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-5) var(--spacing-4);
+  text-align: center;
+  background: rgba(204, 43, 94, 0.02);
+}
+
+.ec-empty-card p {
+  font-size: 14px;
+  color: var(--color-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Contact Cards ── */
+.ec-contacts-list {
+  display: grid;
+  gap: var(--spacing-3);
+}
+
+.ec-contact-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.ec-contact-card:hover {
+  border-color: var(--color-border-light);
+  box-shadow: var(--shadow-card);
+}
+
+.ec-contact-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ec-contact-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ec-contact-relationship {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ec-contact-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.ec-meta-row {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.ec-delete-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(236, 72, 153, 0.2);
+  background: rgba(236, 72, 153, 0.06);
+  color: #ec4899;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all var(--duration-fast);
+  flex-shrink: 0;
+}
+
+.ec-delete-btn:hover {
+  background: rgba(236, 72, 153, 0.12);
+  border-color: #ec4899;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .ec-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── List ── */
 .list {
   display: grid;

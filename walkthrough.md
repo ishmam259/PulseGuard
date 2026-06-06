@@ -130,3 +130,17 @@ Once logged in, verify the key visual design updates:
 2. **Input Fields**: Input forms (Login, Register, Daily Check, Vitals Entry) display the premium high-contrast dark border outlines and SVG prefixes.
 3. **KPI Stat Cards**: The Admin and Worker Dashboards render stats using CarePulse colored borders and high-contrast background templates.
 4. **Header Navigation**: The mobile layouts feature clean status banners, initials avatar indicators, and central page titles centered perfectly on small viewports.
+
+---
+
+## ✉️ SOS Alert Email Customization
+
+The SOS alert email template and dispatcher have been updated to send distinct notification bodies based on whether the recipient is a Health Worker or an Emergency Contact:
+
+| Field | Health Worker Notification | Emergency Contact Notification |
+| :--- | :--- | :--- |
+| **Intro Paragraph** | *"An SOS alert has just been triggered by a patient under your care. Please review the details below..."* | *"An SOS alert has just been triggered by **[Patient Name]**. Please review the details below..."* |
+| **Message Header** | Displays the header: **"PATIENT MESSAGE"** (cased dynamically). | Displays the header: **"MESSAGE"** (cased dynamically). |
+| **Message Content** | Displays the actual custom text entered by the patient. | Displays the fixed text: **"I need urgent help"**. |
+| **Greeting** | Addressed to the worker (`Hello [workerName]`). | Addressed to the contact (`Hello [contactName]`). |
+
