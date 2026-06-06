@@ -9,7 +9,6 @@ import { Save, WifiOff } from 'lucide-react'
 
 export default function DailyCheck() {
   const { connectivity, locale } = useApp()
-  const t = (en, bn) => (locale === 'en' ? en : bn)
   const navigate = useNavigate()
   const [patientData, setPatientData] = useState(null)  // holds { patient, latestVitals }
   const [loading, setLoading] = useState(true)
@@ -170,24 +169,6 @@ export default function DailyCheck() {
           </div>
         ) : (
           <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
-            <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <span style={{
-                borderRadius: '9999px',
-                background: 'var(--gradient-primary)',
-                padding: '6px 14px',
-                fontSize: '11px',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                color: 'white',
-                boxShadow: 'var(--shadow-glow-primary)'
-              }}>
-                {t("Record Today's Vitals", "আজকের ভাইটাল রেকর্ড করুন")}
-              </span>
-            </div>
-            
             <p className="muted" style={{ fontSize: '13.5px', marginBottom: '24px' }}>
               {currentDateStr} &middot; {$('DAILY_FORM_DATE_PREFIX', locale)} <strong style={{ color: 'var(--color-text)' }}>{patientData.patient.gestational_week || 'N/A'}</strong>
             </p>
@@ -226,24 +207,16 @@ export default function DailyCheck() {
 
             <div className="form-grid" style={{ gap: '16px' }}>
               <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
-                {$('DAILY_LABEL_BP', locale)} <span style={{ color: 'var(--color-primary)' }}>*</span>
+                <span>
+                  {$('DAILY_LABEL_BP', locale)} <span style={{ color: 'var(--color-primary)' }}>*</span>
+                </span>
                 <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="text"
+                    className="input"
                     placeholder={$('DAILY_PH_BP', locale)}
                     value={form.bp}
                     onChange={handleChange('bp')}
-                    style={{
-                      height: '48px',
-                      borderRadius: '16px',
-                      border: '1px solid var(--color-border)',
-                      backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                      padding: '0 16px',
-                      fontSize: '14px',
-                      outline: 'none',
-                      width: '100%',
-                      color: 'var(--color-text)'
-                    }}
                   />
                 </div>
               </label>
@@ -253,21 +226,11 @@ export default function DailyCheck() {
                 <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="number"
+                    className="input"
                     placeholder={$('DAILY_PH_WEIGHT', locale)}
                     step="0.1"
                     value={form.weight_kg}
                     onChange={handleChange('weight_kg')}
-                    style={{
-                      height: '48px',
-                      borderRadius: '16px',
-                      border: '1px solid var(--color-border)',
-                      backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                      padding: '0 16px',
-                      fontSize: '14px',
-                      outline: 'none',
-                      width: '100%',
-                      color: 'var(--color-text)'
-                    }}
                   />
                 </div>
               </label>
@@ -277,21 +240,11 @@ export default function DailyCheck() {
                 <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="number"
+                    className="input"
                     placeholder={$('DAILY_PH_TEMP', locale)}
                     step="0.1"
                     value={form.temperature_c}
                     onChange={handleChange('temperature_c')}
-                    style={{
-                      height: '48px',
-                      borderRadius: '16px',
-                      border: '1px solid var(--color-border)',
-                      backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                      padding: '0 16px',
-                      fontSize: '14px',
-                      outline: 'none',
-                      width: '100%',
-                      color: 'var(--color-text)'
-                    }}
                   />
                 </div>
               </label>
@@ -301,20 +254,10 @@ export default function DailyCheck() {
                 <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="number"
+                    className="input"
                     placeholder={$('DAILY_PH_PULSE', locale)}
                     value={form.pulse}
                     onChange={handleChange('pulse')}
-                    style={{
-                      height: '48px',
-                      borderRadius: '16px',
-                      border: '1px solid var(--color-border)',
-                      backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                      padding: '0 16px',
-                      fontSize: '14px',
-                      outline: 'none',
-                      width: '100%',
-                      color: 'var(--color-text)'
-                    }}
                   />
                 </div>
               </label>
@@ -324,20 +267,10 @@ export default function DailyCheck() {
                 <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="text"
+                    className="input"
                     placeholder={$('DAILY_PH_SYMPTOMS', locale)}
                     value={form.symptoms}
                     onChange={handleChange('symptoms')}
-                    style={{
-                      height: '48px',
-                      borderRadius: '16px',
-                      border: '1px solid var(--color-border)',
-                      backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                      padding: '0 16px',
-                      fontSize: '14px',
-                      outline: 'none',
-                      width: '100%',
-                      color: 'var(--color-text)'
-                    }}
                   />
                 </div>
               </label>

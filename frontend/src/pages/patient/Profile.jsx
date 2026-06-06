@@ -5,10 +5,10 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import { patientNavItems, workerNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
-import { Pencil, LogOut, Check, ShieldAlert, Save } from 'lucide-react'
+import { Pencil, Check, ShieldAlert, Save } from 'lucide-react'
 
 export default function Profile() {
-  const { currentUser, setCurrentUser, logout, connectivity, locale } = useApp()
+  const { currentUser, setCurrentUser, connectivity, locale } = useApp()
   const navigate = useNavigate()
   const [patient, setPatient] = useState(null)
   const [patientCount, setPatientCount] = useState(0)
@@ -48,10 +48,6 @@ export default function Profile() {
     loadProfileData()
   }, [currentUser])
 
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
 
   const getInitials = (name) => {
     if (!name) return '??'
@@ -168,18 +164,6 @@ export default function Profile() {
 
   const nameParts = splitDisplayName(currentUser?.name)
 
-  const inputStyle = {
-    height: '48px',
-    borderRadius: '16px',
-    border: '1px solid var(--color-border)',
-    backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-    padding: '0 16px',
-    fontSize: '14px',
-    outline: 'none',
-    width: '100%',
-    color: 'var(--color-text)',
-    marginTop: '8px'
-  }
 
   return (
     <MobileLayout
@@ -207,7 +191,6 @@ export default function Profile() {
 
         {/* Identity Header Card */}
         <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px', textAlign: 'center' }}>
-          <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
           
           {/* Circular gradient initials avatar */}
           <div className="relative" style={{ display: 'grid', height: '96px', width: '96px', placeItems: 'center', borderRadius: '50%', background: 'var(--gradient-primary)', fontSize: '24px', fontWeight: 'bold', color: 'white', boxShadow: 'var(--shadow-glow-primary)', margin: '0 auto 20px' }}>
@@ -237,11 +220,21 @@ export default function Profile() {
 
         {/* Details or Edit Form Container */}
         <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
-          <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
           
           <h3 className="font-display" style={{ fontSize: '1.6rem', letterSpacing: '-0.01em', marginBottom: '24px' }}>
             {isEditing ? $('PROFILE_SECTION_EDIT', locale) : $('PROFILE_SECTION_DETAILS', locale)}
           </h3>
+
+          {!loading && !isEditing && (
+            <button
+              type="button"
+              onClick={handleStartEdit}
+              title={$('PROFILE_BTN_EDIT', locale)}
+              className="profile-edit-btn-top"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
+          )}
 
           {loading ? (
             <p className="muted text-center" style={{ padding: '24px 0', animation: 'pulse 2s infinite' }}>{$('PROFILE_LOADING', locale)}</p>
@@ -254,10 +247,10 @@ export default function Profile() {
                 <div className="input-wrapper">
                   <input
                     type="text"
+                    className="input"
                     value={editForm.name}
                     onChange={handleChange('name')}
                     placeholder={$('PROFILE_EDIT_PH_NAME', locale)}
-                    style={inputStyle}
                   />
                 </div>
               </label>
@@ -267,10 +260,10 @@ export default function Profile() {
                 <div className="input-wrapper">
                   <input
                     type="email"
+                    className="input"
                     value={editForm.email}
                     onChange={handleChange('email')}
                     placeholder={$('PROFILE_EDIT_PH_EMAIL', locale)}
-                    style={inputStyle}
                   />
                 </div>
               </label>
@@ -280,10 +273,10 @@ export default function Profile() {
                 <div className="input-wrapper">
                   <input
                     type="text"
+                    className="input"
                     value={editForm.phone}
                     onChange={handleChange('phone')}
                     placeholder={$('PROFILE_EDIT_PH_PHONE', locale)}
-                    style={inputStyle}
                   />
                 </div>
               </label>
@@ -295,10 +288,10 @@ export default function Profile() {
                     <div className="input-wrapper">
                       <input
                         type="text"
+                        className="input"
                         value={editForm.village}
                         onChange={handleChange('village')}
                         placeholder={$('PROFILE_EDIT_PH_VILLAGE', locale)}
-                        style={inputStyle}
                       />
                     </div>
                   </label>
@@ -309,12 +302,12 @@ export default function Profile() {
                       <div className="input-wrapper">
                         <input
                           type="number"
+                          className="input"
                           value={editForm.gestational_week}
                           onChange={handleChange('gestational_week')}
                           placeholder={$('PROFILE_EDIT_PH_WEEK', locale)}
                           min="1"
                           max="45"
-                          style={inputStyle}
                         />
                       </div>
                     </label>
@@ -326,7 +319,7 @@ export default function Profile() {
             
             /* ── Profile Details Grid View ── */
             isPatient && patient ? (
-              <div className="detail-cards-grid">
+              <div className="detail-cards-grid two-cols">
                 
                 {/* Gestational Week Card */}
                 <div className="detail-card">
@@ -353,7 +346,8 @@ export default function Profile() {
                     {$('PROFILE_LABEL_RISK', locale)}
                   </p>
                   <div style={{ marginTop: '12px' }}>
-                    <span className={`badge ${riskLevelClass(patient.risk_level)}`} style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>
+                    <span className={`badge ${riskLevelClass(patient.risk_level)}`} style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }} />
                       {patient.risk_level || 'Low'}
                     </span>
                   </div>
@@ -392,7 +386,7 @@ export default function Profile() {
               </div>
             ) : isWorker ? (
               /* Worker details grid */
-              <div className="detail-cards-grid">
+              <div className="detail-cards-grid two-cols">
                 
                 {/* Patients Count Card */}
                 <div className="detail-card">
@@ -427,7 +421,7 @@ export default function Profile() {
               </div>
             ) : isAdmin ? (
               /* Admin details grid */
-              <div className="detail-cards-grid">
+              <div className="detail-cards-grid two-cols">
                 
                 {/* System Role Card */}
                 <div className="detail-card">
@@ -462,7 +456,7 @@ export default function Profile() {
               </div>
             ) : (
               /* Registration pending details grid */
-              <div className="detail-cards-grid">
+              <div className="detail-cards-grid two-cols">
                 
                 {/* Profile pending Card */}
                 <div className="detail-card" style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
@@ -508,98 +502,50 @@ export default function Profile() {
         </div>
 
         {/* Action button triggers */}
-        <div style={{ display: 'flex', gap: '16px', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-          {isEditing ? (
-            <>
-              <button
-                type="button"
-                onClick={handleSaveProfile}
-                disabled={saving}
-                className="btn btn--primary"
-                style={{
-                  flex: 1,
-                  height: '48px',
-                  borderRadius: '9999px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  fontWeight: '600'
-                }}
-              >
-                <Save className="h-4 w-4" />
-                <span>{saving ? $('PROFILE_BTN_SAVING', locale) : $('PROFILE_BTN_SAVE_CHANGES', locale)}</span>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                disabled={saving}
-                className="btn btn--secondary"
-                style={{
-                  flex: 1,
-                  height: '48px',
-                  borderRadius: '9999px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: '600',
-                  border: '1px solid var(--color-border)',
-                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                  color: 'var(--color-text)'
-                }}
-              >
-                {$('PROFILE_BTN_CANCEL', locale)}
-              </button>
-            </>
-          ) : (
-            <>
-              <button 
-                type="button" 
-                onClick={handleStartEdit}
-                className="btn btn--secondary"
-                style={{
-                  flex: 1,
-                  height: '48px',
-                  borderRadius: '9999px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  fontWeight: '600',
-                  border: '1px solid var(--color-border)',
-                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                  color: 'var(--color-text)'
-                }}
-              >
-                <Pencil className="h-4 w-4" />
-                <span>{$('PROFILE_BTN_EDIT', locale)}</span>
-              </button>
-              
-              <button 
-                type="button" 
-                onClick={handleLogout}
-                className="btn btn--secondary"
-                style={{
-                  flex: 1,
-                  height: '48px',
-                  borderRadius: '9999px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  fontWeight: '600',
-                  border: '1px solid var(--color-border)',
-                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                  color: 'var(--color-destructive)'
-                }}
-              >
-                <LogOut className="h-4 w-4" />
-                <span>{$('PROFILE_BTN_LOGOUT', locale)}</span>
-              </button>
-            </>
-          )}
-        </div>
+        {isEditing && (
+          <div style={{ display: 'flex', gap: '16px', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={handleSaveProfile}
+              disabled={saving}
+              className="btn btn--primary"
+              style={{
+                flex: 1,
+                height: '48px',
+                borderRadius: '9999px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                fontWeight: '600'
+              }}
+            >
+              <Save className="h-4 w-4" />
+              <span>{saving ? $('PROFILE_BTN_SAVING', locale) : $('PROFILE_BTN_SAVE_CHANGES', locale)}</span>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              disabled={saving}
+              className="btn btn--secondary"
+              style={{
+                flex: 1,
+                height: '48px',
+                borderRadius: '9999px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: '600',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                color: 'var(--color-text)'
+              }}
+            >
+              {$('PROFILE_BTN_CANCEL', locale)}
+            </button>
+          </div>
+        )}
 
       </div>
     </MobileLayout>

@@ -141,7 +141,7 @@ export default function RoleSelection() {
             }}
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>{$('ROLE_BACK', locale)}</span>
+            <span>{$('ROLE_BACK', locale).replace('← ', '')}</span>
           </Link>
         </div>
       </section>

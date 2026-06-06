@@ -29,6 +29,7 @@ export default function CommunityChat() {
   const [sending, setSending] = useState(false)
   const [connected, setConnected] = useState(false)
   const bottomRef = useRef(null)
+  const messagesContainerRef = useRef(null)
   const typingTimerRef = useRef(null)
   const typingStopRef = useRef(null)
   const isTypingRef = useRef(false)
@@ -79,7 +80,12 @@ export default function CommunityChat() {
 
   // Auto-scroll
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    if (messages.length > 0 && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
   }, [messages, typing])
 
   // Polling: live tail via `dir=f&from=<end>`. In Conduit's pagination
@@ -270,6 +276,7 @@ export default function CommunityChat() {
             {/* Chat Thread */}
             <div 
               data-testid="community-chat-thread" 
+              ref={messagesContainerRef}
               style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}
             >
               {rendered.length === 0 ? (

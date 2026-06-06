@@ -274,7 +274,7 @@ export default function Dashboard() {
               <p className="detail-card-label">
                 {$('DASH_KPI_LAST_CHECKUP', locale)}
               </p>
-              <p className="detail-card-value" style={{ lineBreak: 'anywhere' }}>
+              <p className="detail-card-value--accent" style={{ lineBreak: 'anywhere' }}>
                 {latestVitals ? formatDate(latestVitals.recorded_at) : $('DASH_KPI_NO_RECORDS', locale)}
               </p>
             </div>

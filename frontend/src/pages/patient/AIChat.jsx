@@ -5,7 +5,7 @@ import { patientNavItems } from '../../data/navItems'
 import ReactMarkdown from 'react-markdown'
 import $ from '../../config/strings'
 import { useApp } from '../../context/AppContext'
-import { Send, Sparkles, Mic, AlertTriangle } from 'lucide-react'
+import { Send, Sparkles, AlertTriangle } from 'lucide-react'
 
 const quickChips = ['Headache', 'Fever', 'Dizziness', 'Nausea', 'Swelling']
 
@@ -22,9 +22,15 @@ export default function AIChat() {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const bottomRef = useRef(null)
+  const messagesContainerRef = useRef(null)
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messages.length > 0 && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
   }, [messages, isTyping])
 
   const sendMessage = async (text) => {
@@ -78,11 +84,11 @@ export default function AIChat() {
         <div style={{ height: 'calc(100vh - 240px)', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid color-mix(in oklab, var(--color-primary) 6%, transparent)', boxShadow: '0 4px 24px -2px rgba(0, 0, 0, 0.01)' }}>
           
           {/* Scrollable messages zone */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div ref={messagesContainerRef} style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {messages.length === 0 ? (
               /* Empty state placeholder */
               <div style={{ display: 'flex', height: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '32px', margin: 'auto' }}>
-                <div style={{ display: 'grid', height: '64px', width: '64px', placeItems: 'center', borderRadius: '50%', background: 'color-mix(in oklab, var(--color-primary) 8%, transparent)', color: 'var(--color-primary)', marginBottom: '20px' }}>
+                <div style={{ display: 'grid', height: '64px', width: '64px', placeItems: 'center', borderRadius: '16px', background: 'color-mix(in oklab, var(--color-primary) 8%, transparent)', color: 'var(--color-primary)', marginBottom: '20px' }}>
                   <Sparkles className="h-7 w-7" />
                 </div>
                 <h3 className="font-display" style={{ fontSize: '1.6rem', fontWeight: 750, color: 'var(--color-text)' }}>
@@ -169,7 +175,7 @@ export default function AIChat() {
           </div>
 
           {/* Bottom input area */}
-          <div style={{ borderTop: '1px solid var(--color-border)', padding: '16px 24px', background: 'color-mix(in oklab, var(--color-surface) 95%, transparent)', backdropFilter: 'blur(10px)' }}>
+          <div style={{ padding: '16px 24px', background: 'transparent' }}>
             
             {/* Quick Chips Row */}
             <div className="chip-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
@@ -210,35 +216,14 @@ export default function AIChat() {
                   height: '48px',
                   borderRadius: '9999px',
                   border: '1px solid var(--color-border)',
-                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 80%, transparent)',
+                  backgroundColor: 'var(--color-surface)',
                   padding: '0 20px',
                   fontSize: '14px',
                   outline: 'none',
-                  backdropFilter: 'blur(8px)',
                   color: 'var(--color-text)',
                   transition: 'border-color var(--duration-fast)'
                 }}
               />
-              
-              <button 
-                type="button" 
-                title="Voice input" 
-                aria-label="Voice input"
-                style={{
-                  height: '48px',
-                  width: '48px',
-                  borderRadius: '50%',
-                  border: '1px solid var(--color-border)',
-                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                  color: 'var(--color-text-secondary)',
-                  display: 'grid',
-                  placeItems: 'center',
-                  cursor: 'pointer',
-                  flexShrink: 0
-                }}
-              >
-                <Mic className="h-4.5 w-4.5" />
-              </button>
 
               <button
                 type="submit"

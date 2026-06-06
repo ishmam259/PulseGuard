@@ -72,7 +72,7 @@
   --scrollbar-thumb-hover: oklch(0.18 0.03 320 / 0.25);
 
   /* ── Typography ── */
-  --font-display: "Inter", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Georgia", "Noto Sans Bengali", serif;
   --font-sans: "Inter", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 

@@ -23,7 +23,7 @@ export default function AdminLayout({ title, children }) {
   }
 
   return (
-    <div className="admin-shell" style={{ position: 'relative', overflow: 'hidden' }}>
+    <div className="admin-shell" style={{ position: 'relative' }}>
       {/* ── Ambient Glow Blobs ── */}
       <div style={{ pointerEvents: 'none', position: 'absolute', top: '-160px', right: '-160px', height: '500px', width: '500px', borderRadius: '50%', background: 'var(--color-primary)', opacity: 0.08, filter: 'blur(120px)', zIndex: 0 }} />
       <div style={{ pointerEvents: 'none', position: 'absolute', top: '50%', left: '-160px', height: '400px', width: '400px', borderRadius: '50%', background: 'var(--color-bg-accent)', opacity: 0.15, filter: 'blur(100px)', zIndex: 0 }} />

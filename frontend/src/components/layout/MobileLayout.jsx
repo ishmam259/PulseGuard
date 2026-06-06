@@ -43,7 +43,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
   }
 
   return (
-    <div className="app-layout-shell" style={{ position: 'relative', overflow: 'hidden' }}>
+    <div className="app-layout-shell" style={{ position: 'relative' }}>
       {/* ── Ambient Glow Blobs ── */}
       <div style={{ pointerEvents: 'none', position: 'absolute', top: '-150px', right: '-150px', height: '600px', width: '600px', borderRadius: '50%', background: 'radial-gradient(circle, color-mix(in oklab, var(--color-primary) 12%, transparent) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
       <div style={{ pointerEvents: 'none', position: 'absolute', top: '50%', left: '-150px', height: '500px', width: '500px', borderRadius: '50%', background: 'radial-gradient(circle, color-mix(in oklab, var(--color-bg-accent) 20%, transparent) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
