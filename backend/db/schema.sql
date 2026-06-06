@@ -175,3 +175,17 @@ CREATE TABLE IF NOT EXISTS conduit_credentials (
   password_ciphertext TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- AI Chat history
+CREATE TABLE IF NOT EXISTS ai_chats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  messages JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_chats_user ON ai_chats(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_chats_updated ON ai_chats(updated_at DESC);
+

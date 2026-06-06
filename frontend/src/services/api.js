@@ -217,6 +217,39 @@ export async function aiChat(message, language = 'en') {
   return res.ok ? await res.json() : { response: 'AI service unavailable', offline: true }
 }
 
+export async function getAIChats(q = '') {
+  const res = await apiFetch(`/ai/chats?q=${encodeURIComponent(q)}`)
+  return res.ok ? (await res.json()).chats : []
+}
+
+export async function createAIChat(title) {
+  const res = await apiFetch('/ai/chats', {
+    method: 'POST',
+    body: JSON.stringify({ title }),
+  })
+  return res.ok ? await res.json() : null
+}
+
+export async function getAIChat(id) {
+  const res = await apiFetch(`/ai/chats/${id}`)
+  return res.ok ? await res.json() : null
+}
+
+export async function sendAIChatMessage(id, message, language = 'en') {
+  const res = await apiFetch(`/ai/chats/${id}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ message, language }),
+  })
+  return res.ok ? await res.json() : { response: 'AI service unavailable', offline: true }
+}
+
+export async function deleteAIChat(id) {
+  const res = await apiFetch(`/ai/chats/${id}`, {
+    method: 'DELETE',
+  })
+  return res.ok
+}
+
 export async function aiPredict(vitals) {
   const res = await apiFetch('/ai/predict', {
     method: 'POST',

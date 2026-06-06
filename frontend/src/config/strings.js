@@ -120,6 +120,11 @@ const strings = {
     AI_CHAT_CHIP_SWELLING: 'Swelling',
     AI_CHAT_VOICE_LISTENING: 'Listening...',
     AI_CHAT_VOICE_NOT_SUPPORTED: 'Voice input not supported in this browser',
+    AI_CHAT_NEW_CHAT: 'New Chat',
+    AI_CHAT_SEARCH_CHATS: 'Search chats...',
+    AI_CHAT_RECENT: 'Recent',
+    AI_CHAT_NO_CHATS: 'No chats found',
+    AI_CHAT_DELETE_CONFIRM: 'Are you sure you want to delete this chat?',
 
     // ─── Daily Health Check ───
     PAGE_TITLE_DAILY_CHECK: 'Daily Health Check',
@@ -758,6 +763,11 @@ const strings = {
     AI_CHAT_CHIP_SWELLING: 'ফোলা',
     AI_CHAT_VOICE_LISTENING: 'শুনছি...',
     AI_CHAT_VOICE_NOT_SUPPORTED: 'এই ব্রাউজারে ভয়েস ইনপুট সমর্থিত নয়',
+    AI_CHAT_NEW_CHAT: 'নতুন চ্যাট',
+    AI_CHAT_SEARCH_CHATS: 'চ্যাট খুঁজুন...',
+    AI_CHAT_RECENT: 'সাম্প্রতিক',
+    AI_CHAT_NO_CHATS: 'কোনো চ্যাট পাওয়া যায়নি',
+    AI_CHAT_DELETE_CONFIRM: 'আপনি কি এই চ্যাটটি মুছে ফেলতে চান?',
 
     // ─── Daily Health Check ───
     PAGE_TITLE_DAILY_CHECK: 'দৈনিক স্বাস্থ্য পরীক্ষা',
