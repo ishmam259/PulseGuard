@@ -20,6 +20,8 @@ import PatientAlerts from './pages/patient/Alerts'
 import PatientProfile from './pages/patient/Profile'
 import PatientOnboarding from './pages/patient/Onboarding'
 import PatientWellness from './pages/patient/Wellness'
+import PatientEducation from './pages/patient/Education'
+import PregnancyCalendar from './pages/patient/PregnancyCalendar'
 
 // Worker pages
 import WorkerDashboard from './pages/worker/Dashboard'
@@ -55,6 +57,7 @@ function App() {
 
         {/* Patient — protected */}
         <Route path="/patient/dashboard" element={<ProtectedRoute allowedRoles={['patient']}><PatientDashboard /></ProtectedRoute>} />
+        <Route path="/patient/calendar" element={<ProtectedRoute allowedRoles={['patient']}><PregnancyCalendar /></ProtectedRoute>} />
         <Route path="/patient/onboarding" element={<ProtectedRoute allowedRoles={['patient']}><PatientOnboarding /></ProtectedRoute>} />
         <Route path="/patient/ai-chat" element={<ProtectedRoute allowedRoles={['patient']}><PatientChat /></ProtectedRoute>} />
         <Route path="/patient/community-chat" element={<ProtectedRoute allowedRoles={['patient']}><PatientCommunityChat /></ProtectedRoute>} />
@@ -64,6 +67,7 @@ function App() {
         <Route path="/patient/records" element={<ProtectedRoute allowedRoles={['patient']}><PatientRecords /></ProtectedRoute>} />
         <Route path="/patient/alerts" element={<ProtectedRoute allowedRoles={['patient']}><PatientAlerts /></ProtectedRoute>} />
         <Route path="/patient/wellness" element={<ProtectedRoute allowedRoles={['patient']}><PatientWellness /></ProtectedRoute>} />
+        <Route path="/patient/education" element={<ProtectedRoute allowedRoles={['patient']}><PatientEducation /></ProtectedRoute>} />
         <Route path="/patient/profile" element={<ProtectedRoute allowedRoles={['patient']}><PatientProfile /></ProtectedRoute>} />
 
         {/* Worker — protected */}

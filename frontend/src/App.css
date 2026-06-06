@@ -1971,4 +1971,203 @@ select.input option {
 }
 
 
+/* ═══════════════════════════════════════════════════════════
+   Education page (FAQ accordion, library, hospital bag checklist)
+   Appended at the end of App.css — does not modify any rule above.
+   ═══════════════════════════════════════════════════════════ */
+
+.edu-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: var(--gradient-primary, linear-gradient(135deg, var(--color-primary), var(--color-primary-light)));
+  color: #fff;
+  box-shadow: 0 6px 18px var(--color-primary-glow, rgba(204, 43, 94, 0.25));
+  margin-bottom: 1rem;
+}
+.edu-banner__week {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.edu-banner__trimester {
+  font-size: 0.85rem;
+  opacity: 0.92;
+  margin-top: 2px;
+}
+.edu-banner__rec {
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Accordion used for FAQ items and library articles */
+.edu-accordion {
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  background: var(--color-surface, rgba(255, 255, 255, 0.35));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.4));
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.edu-accordion:hover {
+  background: var(--color-surface-hover, rgba(255, 255, 255, 0.5));
+}
+.edu-accordion__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-text, #0f172a);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.edu-accordion__head:focus-visible {
+  outline: 2px solid var(--color-primary, #cc2b5e);
+  outline-offset: -2px;
+}
+.edu-accordion__chev {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: var(--color-primary, #cc2b5e);
+}
+.edu-accordion[data-open='true'] .edu-accordion__chev {
+  transform: rotate(180deg);
+}
+.edu-accordion__body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 1rem;
+}
+.edu-accordion[data-open='true'] .edu-accordion__body {
+  max-height: 1200px;
+  padding: 0 1rem 1rem 1rem;
+}
+.edu-accordion__body p {
+  margin: 0 0 0.75rem 0;
+  color: var(--color-text-secondary, #475569);
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
+.edu-accordion__body p:last-child { margin-bottom: 0; }
+.edu-accordion__body strong {
+  color: var(--color-text, #0f172a);
+}
+
+/* Rec badge inside accordion heads */
+.edu-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-primary-dim, rgba(204, 43, 94, 0.14));
+  color: var(--color-primary, #cc2b5e);
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Hospital Bag checklist */
+.edu-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.edu-check {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: var(--color-surface, rgba(255, 255, 255, 0.25));
+  border: 1px solid var(--color-border-light, rgba(255, 255, 255, 0.3));
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.9rem;
+  color: var(--color-text, #0f172a);
+  transition: background 0.15s ease, opacity 0.2s ease;
+}
+.edu-check:hover {
+  background: var(--color-surface-hover, rgba(255, 255, 255, 0.45));
+}
+.edu-check__box {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 2px solid var(--color-border, rgba(148, 163, 184, 0.6));
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  color: #fff;
+}
+.edu-check[data-packed='true'] {
+  opacity: 0.65;
+  text-decoration: line-through;
+}
+.edu-check[data-packed='true'] .edu-check__box {
+  background: var(--color-success, #059669);
+  border-color: var(--color-success, #059669);
+}
+.edu-check__label {
+  flex: 1;
+  line-height: 1.3;
+}
+
+/* Progress bar */
+.edu-progress {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: var(--color-border, rgba(148, 163, 184, 0.25));
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+.edu-progress__bar {
+  height: 100%;
+  background: var(--gradient-primary, linear-gradient(90deg, var(--color-primary), var(--color-primary-light)));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.edu-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Group heading inside a checklist card */
+.edu-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  color: var(--color-text, #0f172a);
+  font-size: 1rem;
+}
+.edu-group__count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-muted, #64748b);
+  margin-left: auto;
+}
 
