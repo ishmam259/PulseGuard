@@ -188,6 +188,11 @@ export async function resolveConflict(id, resolution) {
 
 // ── AI API ──
 
+export async function medicineSearch(q) {
+  const res = await apiFetch(`/medicine/search?q=${encodeURIComponent(q)}`)
+  return res.ok ? res.json() : { results: [], error: 'unreachable' }
+}
+
 export async function medicineCheck(payload) {
   const res = await apiFetch('/medicine/check', {
     method: 'POST',
