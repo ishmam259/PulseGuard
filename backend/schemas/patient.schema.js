@@ -10,6 +10,9 @@ const patientSchema = z.object({
   gestational_week: z.number().int().min(0).max(45).optional(),
   assigned_worker: z.string().uuid().optional(),
   user_id: z.string().uuid().optional(),
+  height: z.number().min(50).max(300).optional().or(z.null()),
+  blood_type: z.string().max(10).optional().or(z.null()),
+  profile_picture_url: z.string().url().optional().or(z.null()).or(z.literal('')),
 })
 
 const vitalsSchema = z.object({

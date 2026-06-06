@@ -115,6 +115,14 @@ export async function updateProfile(data) {
   return { ok: res.ok, ...(await res.json()) }
 }
 
+export async function uploadProfileImage(base64DataUri) {
+  const res = await apiFetch('/auth/upload-image', {
+    method: 'POST',
+    body: JSON.stringify({ image: base64DataUri }),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
 
 // ── Patients API ──
 

@@ -106,10 +106,10 @@ router.post('/', async (req, res) => {
     const lmp_date = data.gestational_week != null ? lmpDateFromWeek(data.gestational_week) : null
 
     const result = await pool.query(
-      `INSERT INTO patients (name, age, village, gestational_week, lmp_date, assigned_worker, user_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO patients (name, age, village, gestational_week, lmp_date, assigned_worker, user_id, height, blood_type, profile_picture_url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
-      [data.name, data.age, data.village, data.gestational_week, lmp_date, assigned_worker, user_id]
+      [data.name, data.age, data.village, data.gestational_week, lmp_date, assigned_worker, user_id, data.height || null, data.blood_type || null, data.profile_picture_url || null]
     )
     res.status(201).json({ patient: enrichPatient(result.rows[0]) })
   } catch (err) {

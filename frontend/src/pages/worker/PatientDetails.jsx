@@ -80,13 +80,23 @@ export default function PatientDetails() {
   const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??'
   const riskLevel = patient.risk_level || 'low'
   const riskScore = patient.risk_score || 0
+  const FALLBACK_AVATAR = '/assets/images/No_pf.png'
 
   return (
     <MobileLayout title={$('W_PAGE_TITLE_PATIENT_DETAILS', locale)} navItems={workerNavItems(locale)}>
       {/* ── Patient Header ── */}
       <section className="card animate-fade-in">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-          <div className="avatar large">{getInitials(patient.name)}</div>
+          {patient.profile_picture_url ? (
+            <img
+              src={patient.profile_picture_url}
+              alt={patient.name}
+              style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--color-primary)', flexShrink: 0 }}
+              onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_AVATAR }}
+            />
+          ) : (
+            <div className="avatar large">{getInitials(patient.name)}</div>
+          )}
           <div>
             <h3 style={{ margin: 0 }}>{patient.name}</h3>
             <p className="muted">{$('W_DETAILS_AGE_PREFIX', locale)} {patient.age || '—'} • {$('W_DETAILS_WEEK_PREFIX', locale)} {patient.gestational_week || '—'}</p>
@@ -147,6 +157,24 @@ export default function PatientDetails() {
                   <p className="muted">{$('W_DETAILS_TEMPERATURE', locale)}</p>
                   <strong>{latestVitals.temperature_c || '—'}°C</strong>
                 </div>
+              </div>
+            )}
+
+            {/* Height & Blood Type */}
+            {(patient.height || patient.blood_type) && (
+              <div className="summary-grid" style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--color-border)' }}>
+                {patient.height && (
+                  <div>
+                    <p className="muted">Height</p>
+                    <strong>{patient.height} cm</strong>
+                  </div>
+                )}
+                {patient.blood_type && (
+                  <div>
+                    <p className="muted">Blood Type</p>
+                    <strong style={{ color: 'var(--color-primary)' }}>{patient.blood_type}</strong>
+                  </div>
+                )}
               </div>
             )}
 

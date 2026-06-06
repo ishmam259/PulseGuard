@@ -15,6 +15,10 @@ CREATE TABLE IF NOT EXISTS users (
   phone TEXT UNIQUE,
   password_hash TEXT NOT NULL,
   role TEXT CHECK (role IN ('patient', 'worker', 'admin')) NOT NULL,
+  address TEXT,
+  blood_type TEXT,
+  height NUMERIC(5,2),
+  profile_picture_url TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -38,6 +42,9 @@ CREATE TABLE IF NOT EXISTS patients (
   village TEXT,
   gestational_week INT,
   lmp_date DATE,
+  height NUMERIC(5,2),
+  blood_type TEXT,
+  profile_picture_url TEXT,
   risk_level TEXT DEFAULT 'low',
   risk_score NUMERIC(4,3) DEFAULT 0,
   last_updated TIMESTAMPTZ DEFAULT now(),
@@ -49,6 +56,16 @@ CREATE TABLE IF NOT EXISTS patients (
 ALTER TABLE patients ADD COLUMN IF NOT EXISTS lmp_date DATE;
 UPDATE patients SET lmp_date = CURRENT_DATE - (gestational_week * 7)
   WHERE lmp_date IS NULL AND gestational_week IS NOT NULL;
+
+-- Idempotent migration: profile enhancement fields
+ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS blood_type TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS height NUMERIC(5,2);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture_url TEXT;
+
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS height NUMERIC(5,2);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS blood_type TEXT;
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS profile_picture_url TEXT;
 
 -- Vitals entries
 CREATE TABLE IF NOT EXISTS vitals (

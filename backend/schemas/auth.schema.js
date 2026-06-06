@@ -37,6 +37,10 @@ const profileUpdateSchema = z.object({
     .optional()
     .or(z.literal(''))
     .or(z.null()),
+  address: z.string().max(500).optional().or(z.null()),
+  blood_type: z.string().max(10).optional().or(z.null()),
+  height: z.number().min(50).max(300).optional().or(z.null()),
+  profile_picture_url: z.string().url().optional().or(z.null()).or(z.literal('')),
 }).refine(data => data.email || data.phone, {
   message: 'Either email or phone is required',
 })
