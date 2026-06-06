@@ -169,9 +169,10 @@ router.put('/:id', async (req, res) => {
     }
 
     // Patients may not change their gestational week once it has been anchored.
+    // However, they may update their LMP date directly so the live week recomputes.
     if (req.user.role === 'patient') {
       const existing = await pool.query('SELECT lmp_date FROM patients WHERE id = $1', [req.params.id])
-      if (existing.rows[0]?.lmp_date) {
+      if (existing.rows[0]?.lmp_date && req.body.lmp_date == null) {
         delete req.body.gestational_week
       }
     }
