@@ -29,7 +29,6 @@ import WorkerPatientList from './pages/worker/PatientList'
 import WorkerPatientDetails from './pages/worker/PatientDetails'
 import WorkerVitalsEntry from './pages/worker/VitalsEntry'
 import WorkerAIAnalysis from './pages/worker/AIAnalysis'
-import SyncCenter from './pages/worker/SyncCenter'
 import WorkerAlerts from './pages/worker/Alerts'
 
 
@@ -77,7 +76,6 @@ function App() {
         <Route path="/worker/vitals/:patientId" element={<ProtectedRoute allowedRoles={['worker']}><WorkerVitalsEntry /></ProtectedRoute>} />
         <Route path="/worker/vitals" element={<ProtectedRoute allowedRoles={['worker']}><WorkerVitalsEntry /></ProtectedRoute>} />
         <Route path="/worker/ai-analysis" element={<ProtectedRoute allowedRoles={['worker']}><WorkerAIAnalysis /></ProtectedRoute>} />
-        <Route path="/worker/sync" element={<ProtectedRoute allowedRoles={['worker']}><SyncCenter /></ProtectedRoute>} />
         <Route path="/worker/alerts" element={<ProtectedRoute allowedRoles={['worker']}><WorkerAlerts /></ProtectedRoute>} />
         <Route path="/worker/profile" element={<ProtectedRoute allowedRoles={['worker']}><PatientProfile /></ProtectedRoute>} />
 

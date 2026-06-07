@@ -52,10 +52,10 @@ export default function MobileLayout({ title, status, banner, children, navItems
       {navItems && navItems.length > 0 && (
         <aside className="desktop-sidebar">
           <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem', padding: '0 8px' }}>
-            <span style={{ position: 'relative', display: 'grid', placeItems: 'center', width: '36px', height: '36px', borderRadius: '12px', backgroundColor: 'var(--color-primary)', color: 'var(--color-primary-foreground)', boxShadow: 'var(--shadow-glow-primary)', transition: 'transform 0.2s' }}>
+            <span style={{ position: 'relative', display: 'grid', placeItems: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: 'var(--color-primary-foreground)', boxShadow: 'var(--shadow-glow-primary)', transition: 'transform 0.2s' }}>
               <HeartPulse className="h-5 w-5" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
             </span>
-            <span className="logo-text" style={{ fontSize: '18px', fontWeight: '600', fontFamily: 'var(--font-display)', color: 'var(--color-text)', letterSpacing: '-0.02em' }}>PulseGuard</span>
+            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '700', fontFamily: 'var(--font-sans)', color: 'var(--color-text)', letterSpacing: '-0.02em' }}>PulseGuard</span>
           </div>
 
           <nav className="desktop-sidebar-nav" style={{ marginTop: '8px' }}>
@@ -160,10 +160,10 @@ export default function MobileLayout({ title, status, banner, children, navItems
         </header>
 
         {/* ── Desktop Header ── */}
-        <header className="desktop-header" style={{ borderBottom: '1px solid color-mix(in oklab, var(--color-border) 60%, transparent)', paddingBottom: '20px' }}>
+        <header className="desktop-header" style={{ borderBottom: 'none', paddingBottom: '0px', marginBottom: '24px' }}>
           <div style={{ minWidth: 0 }}>
             <h1 className="font-display" style={{ fontSize: '1.875rem', letterSpacing: '-0.02em', fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.2 }}>{title}</h1>
-            <p style={{ marginTop: '4px', fontSize: '13px', color: 'var(--color-muted)' }}>PulseGuard AI · {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
+            <p style={{ marginTop: '4px', fontSize: '17px', color: 'var(--color-muted)' }}>PulseGuard AI · {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
           </div>
           <div className="top-actions" style={{ gap: '12px' }}>
             <button 
@@ -176,8 +176,8 @@ export default function MobileLayout({ title, status, banner, children, navItems
                 borderRadius: '9999px',
                 border: '1px solid var(--color-border)',
                 backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                padding: '8px 16px',
-                fontSize: '13px',
+                padding: '6px 14px',
+                fontSize: '14px',
                 fontWeight: '500',
                 cursor: 'pointer',
                 color: 'var(--color-text-secondary)',
@@ -195,8 +195,8 @@ export default function MobileLayout({ title, status, banner, children, navItems
                 borderRadius: '9999px',
                 border: '1px solid var(--color-border)',
                 backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                padding: '8px 16px',
-                fontSize: '13px',
+                padding: '6px 14px',
+                fontSize: '14px',
                 fontWeight: '500',
                 cursor: 'pointer',
                 color: 'var(--color-text-secondary)',
@@ -212,8 +212,8 @@ export default function MobileLayout({ title, status, banner, children, navItems
               style={{
                 display: 'grid',
                 placeItems: 'center',
-                height: '40px',
-                width: '40px',
+                height: '34px',
+                width: '34px',
                 borderRadius: '50%',
                 border: '1px solid var(--color-border)',
                 backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',

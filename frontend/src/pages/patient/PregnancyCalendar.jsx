@@ -7,6 +7,20 @@ import * as api from '../../services/api'
 import $ from '../../config/strings'
 import { weekContent } from '../../data/pregnancyCalendar'
 import { trimesterOfWeek, TRIMESTER_LABEL_KEY } from '../../data/education'
+import './PregnancyCalendar.css'
+import {
+  CalendarDays,
+  Baby,
+  HeartPulse,
+  Sparkles,
+  AlertTriangle,
+  CheckCircle2,
+  Apple,
+  Activity,
+  Brain,
+  ClipboardList,
+  Pencil,
+} from 'lucide-react'
 
 // ─── Date / time helpers ──────────────────────────────────
 const MS_PER_DAY = 86400000
@@ -180,7 +194,7 @@ export default function PregnancyCalendar() {
 
   function renderLoading() {
     return (
-      <div className="card text-center" style={{ padding: '1.5rem' }}>
+      <div className="pc-card text-center" style={{ padding: '1.5rem' }}>
         <p className="muted animate-pulse">{$('CAL_LOADING', locale)}</p>
       </div>
     )
@@ -188,15 +202,14 @@ export default function PregnancyCalendar() {
 
   function renderEmpty() {
     return (
-      <div className="card" style={{ padding: '1.25rem' }}>
-        <h3>{$('CAL_NO_RECORD_TITLE', locale)}</h3>
-        <p className="muted" style={{ marginTop: '0.5rem' }}>
+      <div className="pc-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+        <h3 className="pc-title" style={{ marginBottom: '0.5rem' }}>{$('CAL_NO_RECORD_TITLE', locale)}</h3>
+        <p className="muted" style={{ marginBottom: '1.25rem' }}>
           {$('CAL_NO_RECORD_BODY', locale)}
         </p>
         <button
           type="button"
           className="btn btn--primary"
-          style={{ marginTop: '1rem' }}
           onClick={() => navigate('/patient/onboarding')}
         >
           {$('CAL_NO_RECORD_CTA', locale)}
@@ -207,73 +220,66 @@ export default function PregnancyCalendar() {
 
   function renderDatesCard() {
     return (
-      <div className="card" style={{ padding: '1rem', marginBottom: '0.75rem' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '0.75rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div>
-            <div className="section-header" style={{ marginBottom: '0.25rem' }}>
-              <h4 style={{ margin: 0 }}>{$('CAL_DATES_TITLE', locale)}</h4>
+      <div className="pc-card">
+        <div className="pc-dates-header">
+          <div className="pc-icon-title-group">
+            <div className="pc-icon-wrapper">
+              <CalendarDays />
             </div>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <div>
-                <div className="muted" style={{ fontSize: '0.75rem' }}>{$('CAL_LMP', locale)}</div>
-                <div style={{ fontWeight: 600 }}>{fmtDate(lmpDate)}</div>
-              </div>
-              <div>
-                <div className="muted" style={{ fontSize: '0.75rem' }}>{$('CAL_EDD', locale)}</div>
-                <div style={{ fontWeight: 600 }}>{fmtDate(eddDate)}</div>
+            <div>
+              <h3 className="pc-title">{$('CAL_DATES_TITLE', locale)}</h3>
+              <div className="pc-dates-info">
+                <div>
+                  <div className="pc-date-label">{$('CAL_LMP', locale)}</div>
+                  <div className="pc-date-value">{fmtDate(lmpDate)}</div>
+                </div>
+                <div>
+                  <div className="pc-date-label">{$('CAL_EDD', locale)}</div>
+                  <div className="pc-date-value">{fmtDate(eddDate)}</div>
+                </div>
               </div>
             </div>
           </div>
           {!editOpen && (
             <button
               type="button"
-              className="btn btn--ghost"
+              className="pc-btn-edit"
               onClick={() => {
                 setFormError(null)
                 setEditOpen(true)
               }}
             >
+              <Pencil />
               {$('CAL_SET_DATES', locale)}
             </button>
           )}
         </div>
 
         {editOpen && (
-          <div style={{ marginTop: '0.85rem' }}>
-            <div className="input-wrapper">
-              <input
-                type="date"
-                className="input"
-                value={draft}
-                max={todayIso}
-                onChange={(e) => setDraft(e.target.value)}
-                aria-label={$('CAL_LMP', locale)}
-              />
+          <div className="pc-edit-form">
+            <div className="pc-form-grid">
+              <div className="pc-form-field">
+                <label htmlFor="lmp-input" className="pc-input-label">{$('CAL_LMP', locale)}</label>
+                <input
+                  id="lmp-input"
+                  type="date"
+                  className="pc-date-input"
+                  value={draft}
+                  max={todayIso}
+                  onChange={(e) => setDraft(e.target.value)}
+                  aria-label={$('CAL_LMP', locale)}
+                />
+              </div>
             </div>
             {formError && (
-              <div
-                role="alert"
-                style={{
-                  color: 'var(--color-danger)',
-                  marginTop: '0.5rem',
-                  fontSize: '0.85rem',
-                }}
-              >
+              <div role="alert" className="pc-form-error">
                 {formError}
               </div>
             )}
-            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+            <div className="pc-form-actions">
               <button
                 type="button"
-                className="btn btn--primary"
+                className="pc-btn-save"
                 onClick={handleSave}
                 disabled={saving}
               >
@@ -281,7 +287,7 @@ export default function PregnancyCalendar() {
               </button>
               <button
                 type="button"
-                className="btn btn--ghost"
+                className="pc-btn-cancel"
                 onClick={() => {
                   setEditOpen(false)
                   setFormError(null)
@@ -302,36 +308,45 @@ export default function PregnancyCalendar() {
     const weekDayText = $('CAL_WEEK_DAY', locale)
       .replace('{W}', String(week))
       .replace('{D}', String(day))
-    const daysText = $('CAL_WEEK_DAY_VALUES', locale).replace('{N}', String(daysUntilDue))
     const pctText = $('CAL_PCT_VALUES', locale).replace('{P}', String(pct))
 
+    const parts = weekDayText.split('•')
+    const weekStr = parts[0]?.trim() || ''
+    const dayStr = parts[1]?.trim() || ''
+
     return (
-      <div className="edu-banner" data-testid="cal-summary">
-        <div>
-          <div className="edu-banner__week">{weekDayText}</div>
-          {trimester && (
-            <div className="edu-banner__trimester">
-              {$(TRIMESTER_LABEL_KEY[trimester], locale)}
+      <div className="pc-week-hero" data-testid="cal-summary">
+        <div className="pc-hero-main">
+          <div className="pc-hero-left">
+            {trimester && (
+              <div className="pc-hero-trimester">
+                {$(TRIMESTER_LABEL_KEY[trimester], locale)}
+              </div>
+            )}
+            <h2 className="pc-hero-week">
+              {weekStr} <span className="pc-hero-week-dot">•</span> <span className="pc-hero-day">{dayStr}</span>
+            </h2>
+          </div>
+          <div className="pc-hero-right">
+            <div>
+              <div className="pc-hero-stat-value">{daysUntilDue}</div>
+              <div className="pc-hero-stat-label">
+                {$('CAL_DAYS_UNTIL_DUE', locale)}
+              </div>
             </div>
-          )}
+            <div>
+              <div className="pc-hero-stat-value percent">{pctText}</div>
+              <div className="pc-hero-stat-label">
+                {$('CAL_PCT_COMPLETE', locale)}
+              </div>
+            </div>
+          </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>{daysText}</div>
-          <div style={{ fontSize: '0.78rem', opacity: 0.92 }}>
-            {$('CAL_DAYS_UNTIL_DUE', locale)}
-          </div>
+        <div className="pc-hero-progress-track">
           <div
-            style={{
-              marginTop: '0.35rem',
-              fontSize: '0.95rem',
-              fontWeight: 700,
-            }}
-          >
-            {pctText}
-          </div>
-          <div style={{ fontSize: '0.72rem', opacity: 0.92 }}>
-            {$('CAL_PCT_COMPLETE', locale)}
-          </div>
+            className="pc-hero-progress-bar"
+            style={{ width: `${pct}%` }}
+          />
         </div>
       </div>
     )
@@ -339,55 +354,42 @@ export default function PregnancyCalendar() {
 
   function renderBaby() {
     if (!content) return null
+
+    const sizeStr = content.baby.size
+    const match = sizeStr.match(/^(.*?)(\s*\(.*?\))\s*$/)
+    let displayName = sizeStr
+    let displayMetric = ''
+    if (match) {
+      displayName = match[1]
+      displayMetric = match[2]
+    }
+
     return (
-      <section className="card" style={{ padding: '1rem', marginBottom: '0.75rem' }}>
-        <div className="section-header">
-          <h3 style={{ margin: 0 }}>{$('CAL_BABY', locale)}</h3>
+      <section className="pc-card">
+        <div className="pc-section-heading">
+          <Baby />
+          <h3>{$('CAL_BABY', locale)}</h3>
         </div>
 
-        {/* Hero placeholder — gradient card with the size label. Real fetal
-            illustrations can replace this <div> with an <img> when assets
-            become available, keyed by week via a static import map. */}
-        <div
-          aria-label={$('CAL_BABY_SIZE', locale)}
-          style={{
-            marginTop: '0.6rem',
-            marginBottom: '0.6rem',
-            height: '120px',
-            borderRadius: 'var(--radius-lg)',
-            background:
-              'linear-gradient(135deg, var(--color-primary-dim), var(--color-secondary-dim))',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            padding: '0.75rem',
-            border: '1px dashed var(--color-border)',
-          }}
-        >
-          <div>
-            <div
-              className="muted"
-              style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}
-            >
-              {$('CAL_BABY_SIZE', locale)}
-            </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '0.25rem' }}>
-              {content.baby.size}
-            </div>
+        <div className="pc-baby-size-card" aria-label={$('CAL_BABY_SIZE', locale)}>
+          <div className="pc-baby-size-label">
+            {$('CAL_BABY_SIZE', locale)}
+          </div>
+          <div className="pc-baby-size-value">
+            {displayName} {displayMetric && <span className="pc-baby-size-metric">{displayMetric}</span>}
           </div>
         </div>
 
-        <p style={{ marginTop: '0.4rem' }}>{content.baby.caption}</p>
+        <p className="pc-section-summary">{content.baby.caption}</p>
 
-        <div className="muted" style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>
+        <div className="pc-sub-heading">
           {$('CAL_BABY_HIGHLIGHTS', locale)}
         </div>
-        <ul className="list" style={{ marginTop: '0.25rem' }}>
+        <div className="pc-pill-container">
           {content.baby.highlights.map((h, i) => (
-            <li key={i} className="list-item">{h}</li>
+            <div key={i} className="pc-pill-item">{h}</div>
           ))}
-        </ul>
+        </div>
       </section>
     )
   }
@@ -395,15 +397,16 @@ export default function PregnancyCalendar() {
   function renderBody() {
     if (!content) return null
     return (
-      <section className="card" style={{ padding: '1rem', marginBottom: '0.75rem' }}>
-        <div className="section-header">
-          <h3 style={{ margin: 0 }}>{$('CAL_BODY', locale)}</h3>
+      <section className="pc-card">
+        <div className="pc-section-heading">
+          <HeartPulse />
+          <h3>{$('CAL_BODY', locale)}</h3>
         </div>
-        <ul className="list" style={{ marginTop: '0.4rem' }}>
+        <div className="pc-pill-container" style={{ marginTop: '1.25rem' }}>
           {content.body.changes.map((c, i) => (
-            <li key={i} className="list-item">{c}</li>
+            <div key={i} className="pc-pill-item">{c}</div>
           ))}
-        </ul>
+        </div>
       </section>
     )
   }
@@ -411,66 +414,35 @@ export default function PregnancyCalendar() {
   function renderSymptoms() {
     if (!content) return null
     return (
-      <section className="card" style={{ padding: '1rem', marginBottom: '0.75rem' }}>
-        <div className="section-header">
-          <h3 style={{ margin: 0 }}>{$('CAL_SYMPTOMS_TITLE', locale)}</h3>
+      <section className="pc-card">
+        <div className="pc-section-heading">
+          <h3>{$('CAL_SYMPTOMS_TITLE', locale)}</h3>
         </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '0.75rem',
-            marginTop: '0.5rem',
-          }}
-        >
-          <div
-            className="card"
-            style={{
-              padding: '0.75rem',
-              borderLeft: '4px solid var(--color-success)',
-              background: 'var(--color-success-dim)',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                marginBottom: '0.4rem',
-              }}
-            >
-              <span className="badge badge--low">{$('CAL_SYMPTOMS_NORMAL', locale)}</span>
-            </div>
-            <ul className="list">
+        <div className="pc-symptoms-grid">
+          <div className="pc-symptom-card">
+            <div className="pc-symptom-indicator normal" />
+            <span className="pc-symptom-badge normal">
+              <CheckCircle2 />
+              {$('CAL_SYMPTOMS_NORMAL', locale)}
+            </span>
+            <div className="pc-symptom-list">
               {content.symptoms.normal.map((s, i) => (
-                <li key={i} className="list-item">{s}</li>
+                <div key={i} className="pc-symptom-item">{s}</div>
               ))}
-            </ul>
+            </div>
           </div>
 
-          <div
-            className="card"
-            style={{
-              padding: '0.75rem',
-              borderLeft: '4px solid var(--color-danger)',
-              background: 'var(--color-danger-dim)',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                marginBottom: '0.4rem',
-              }}
-            >
-              <span className="badge badge--high">{$('CAL_SYMPTOMS_WARNING', locale)}</span>
-            </div>
-            <ul className="list">
+          <div className="pc-symptom-card">
+            <div className="pc-symptom-indicator warning" />
+            <span className="pc-symptom-badge warning">
+              <AlertTriangle />
+              {$('CAL_SYMPTOMS_WARNING', locale)}
+            </span>
+            <div className="pc-symptom-list">
               {content.symptoms.warning.map((s, i) => (
-                <li key={i} className="list-item">{s}</li>
+                <div key={i} className="pc-symptom-item">{s}</div>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -479,53 +451,33 @@ export default function PregnancyCalendar() {
 
   function renderTips() {
     if (!content) return null
-    const groups = [
-      { key: 'nutrition', label: $('CAL_TIPS_NUTRITION', locale) },
-      { key: 'exercise', label: $('CAL_TIPS_EXERCISE', locale) },
-      { key: 'mentalHealth', label: $('CAL_TIPS_MENTAL', locale) },
-      { key: 'preparation', label: $('CAL_TIPS_PREP', locale) },
+    const tips = [
+      { icon: Apple, label: $('CAL_TIPS_NUTRITION', locale), body: content.tips.nutrition[0] },
+      { icon: Activity, label: $('CAL_TIPS_EXERCISE', locale), body: content.tips.exercise[0] },
+      { icon: Brain, label: $('CAL_TIPS_MENTAL', locale), body: content.tips.mentalHealth[0] },
+      { icon: ClipboardList, label: $('CAL_TIPS_PREP', locale), body: content.tips.preparation[0] },
     ]
     return (
-      <section className="card" style={{ padding: '1rem', marginBottom: '1.5rem' }}>
-        <div className="section-header">
-          <h3 style={{ margin: 0 }}>{$('CAL_TIPS_TITLE', locale)}</h3>
+      <section style={{ marginTop: '0.75rem' }}>
+        <div className="pc-section-heading">
+          <Sparkles />
+          <h3>{$('CAL_TIPS_TITLE', locale)}</h3>
         </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '0.6rem',
-            marginTop: '0.5rem',
-          }}
-        >
-          {groups.map((g) => (
-            <div
-              key={g.key}
-              className="card"
-              style={{
-                padding: '0.75rem',
-                background: 'var(--color-surface)',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.05em',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-primary)',
-                  marginBottom: '0.4rem',
-                }}
-              >
-                {g.label}
+        <div className="pc-tips-grid">
+          {tips.map((tip) => {
+            const IconComponent = tip.icon
+            return (
+              <div key={tip.label} className="pc-tip-card">
+                <div className="pc-tip-icon-container">
+                  <IconComponent />
+                </div>
+                <div className="pc-tip-label">
+                  {tip.label}
+                </div>
+                <p className="pc-tip-body">{tip.body}</p>
               </div>
-              <ul className="list">
-                {content.tips[g.key].map((t, i) => (
-                  <li key={i} className="list-item">{t}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
     )
@@ -533,17 +485,8 @@ export default function PregnancyCalendar() {
 
   function renderPostTerm() {
     return (
-      <div
-        className="card"
-        role="alert"
-        style={{
-          padding: '0.75rem',
-          marginBottom: '0.75rem',
-          borderLeft: '4px solid var(--color-danger)',
-          background: 'var(--color-danger-dim)',
-        }}
-      >
-        <span className="badge badge--high">{$('CAL_POST_TERM_NOTICE', locale)}</span>
+      <div role="alert" className="pc-post-term-alert">
+        {$('CAL_POST_TERM_NOTICE', locale)}
       </div>
     )
   }
@@ -556,11 +499,11 @@ export default function PregnancyCalendar() {
       status={connectivity}
       navItems={patientNavItems(locale)}
     >
-      <div className="animate-fade-in">
+      <div className="animate-fade-in pc-container">
         {loading ? (
           renderLoading()
         ) : error ? (
-          <div className="card" style={{ padding: '1rem', color: 'var(--color-danger)' }}>
+          <div className="pc-card" style={{ padding: '1rem', color: 'var(--color-danger)' }}>
             {error}
           </div>
         ) : !patient?.lmp_date ? (

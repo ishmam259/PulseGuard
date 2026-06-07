@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext';
 import { workerNavItems } from '../../data/navItems';
 import * as api from '../../services/api';
 import $ from '../../config/strings';
-import { Users, AlertTriangle, ShieldAlert, CheckCircle, Sparkles, RefreshCw, ArrowRight } from 'lucide-react';
+import { Users, AlertTriangle, ShieldAlert, CheckCircle, Sparkles, RefreshCw, ArrowRight, Activity } from 'lucide-react';
 
 export default function WorkerDashboard() {
   const { currentUser, locale } = useApp();
@@ -38,66 +38,87 @@ export default function WorkerDashboard() {
   return (
     <MobileLayout
       title={$('W_PAGE_TITLE_DASHBOARD', locale)}
-      banner={{
-        tone: 'syncing',
-        title: $('W_DASH_BANNER_TITLE', locale),
-        message: `${total} ${$('W_DASH_PATIENTS_SUFFIX', locale)}`,
-        action: { label: $('W_DASH_BANNER_ACTION', locale), onClick: () => navigate('/worker/sync') },
-      }}
       navItems={workerNavItems(locale)}
     >
       <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         {/* Greeting Card */}
         <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
-          <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
-          <h2 className="font-display" style={{ fontSize: '2.2rem', fontWeight: '700', marginBottom: '8px', letterSpacing: '-0.01em' }}>
-            {$('W_DASH_GREETING_PREFIX', locale)} {firstName} {lastName && <span className="italic text-gradient-primary">{lastName}</span>}
+          <span style={{ fontSize: '14px', color: 'var(--color-muted)', display: 'block', marginBottom: '4px' }}>
+            {$('W_DASH_GREETING_PREFIX', locale)}
+          </span>
+          <h2 className="font-display" style={{ fontSize: '2.6rem', fontWeight: '700', marginBottom: '8px', letterSpacing: '-0.02em', color: 'var(--color-text)', lineHeight: 1.2 }}>
+            {firstName} {lastName && <span className="italic text-gradient-primary" style={{ fontWeight: '500' }}>{lastName}</span>}
           </h2>
-          <p className="muted" style={{ fontSize: '14px', lineHeight: 1.5 }}>{summaryText}</p>
+          <p className="muted" style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{summaryText}</p>
+          
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', border: '1px solid rgba(249, 115, 22, 0.25)', backgroundColor: 'rgba(249, 115, 22, 0.08)', color: '#f97316', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '16px' }}>
+            <Activity className="h-3.5 w-3.5" strokeWidth={2.5} style={{ animation: 'pulse 1.5s infinite' }} />
+            <span>{$('W_DASH_ON_DUTY', locale)}</span>
+          </div>
         </div>
 
         {/* Vitals Summary Statistics */}
         <section>
-          <h3 className="font-display" style={{ fontSize: '1.4rem', marginBottom: '16px' }}>{$('W_DASH_KPI_HEADING', locale)}</h3>
+          <h3 className="font-display" style={{ fontSize: '1.45rem', marginBottom: '16px', fontWeight: '700' }}>{$('W_DASH_KPI_HEADING', locale)}</h3>
           <div className="detail-cards-grid">
             
             {/* Total Patients */}
-            <div className="detail-card" style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="detail-card-label">{$('W_DASH_KPI_TOTAL', locale)}</span>
-                <span style={{ color: 'var(--color-primary)' }}><Users className="h-5 w-5" /></span>
+            <div className="detail-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.01)', minHeight: '130px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span className="detail-card-label" style={{ fontSize: '10px', color: 'var(--color-muted)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', margin: 0 }}>
+                  {$('W_DASH_KPI_TOTAL', locale)}
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(219, 39, 119, 0.08)', color: 'var(--color-primary)' }}>
+                  <Users className="h-5 w-5" />
+                </div>
               </div>
-              <p className="detail-card-value--accent" style={{ marginTop: '12px' }}>{loading ? '—' : total}</p>
+              <p className="font-display" style={{ fontSize: '2.8rem', fontWeight: '700', color: 'var(--color-primary)', margin: '12px 0 0 0', lineHeight: 1 }}>
+                {loading ? '—' : total}
+              </p>
             </div>
 
             {/* High Risk */}
-            <div className="detail-card" style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="detail-card-label">{$('W_DASH_KPI_HIGH', locale)}</span>
-                <span style={{ color: 'var(--color-danger)' }}><AlertTriangle className="h-5 w-5" /></span>
+            <div className="detail-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.01)', minHeight: '130px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span className="detail-card-label" style={{ fontSize: '10px', color: 'var(--color-muted)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', margin: 0 }}>
+                  {$('W_DASH_KPI_HIGH', locale)}
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(220, 38, 38, 0.08)', color: 'var(--color-danger)' }}>
+                  <AlertTriangle className="h-5 w-5" />
+                </div>
               </div>
-              <p className="detail-card-value--accent" style={{ marginTop: '12px', color: 'var(--color-danger)' }}>{loading ? '—' : highRisk}</p>
+              <p className="font-display" style={{ fontSize: '2.8rem', fontWeight: '700', color: 'var(--color-danger)', margin: '12px 0 0 0', lineHeight: 1 }}>
+                {loading ? '—' : highRisk}
+              </p>
             </div>
 
             {/* Moderate Risk */}
-            <div className="detail-card" style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="detail-card-label">{$('W_DASH_KPI_MODERATE', locale)}</span>
-                <span style={{ color: 'var(--color-warning)' }}><ShieldAlert className="h-5 w-5" /></span>
+            <div className="detail-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.01)', minHeight: '130px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span className="detail-card-label" style={{ fontSize: '10px', color: 'var(--color-muted)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', margin: 0 }}>
+                  {$('W_DASH_KPI_MODERATE', locale)}
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(249, 115, 22, 0.08)', color: 'var(--color-warning)' }}>
+                  <ShieldAlert className="h-5 w-5" />
+                </div>
               </div>
-              <p className="detail-card-value--accent" style={{ marginTop: '12px', color: 'var(--color-warning)' }}>
+              <p className="font-display" style={{ fontSize: '2.8rem', fontWeight: '700', color: 'var(--color-warning)', margin: '12px 0 0 0', lineHeight: 1 }}>
                 {loading ? '—' : (patients || []).filter((p) => p.risk_level === 'moderate').length}
               </p>
             </div>
 
             {/* Low Risk */}
-            <div className="detail-card" style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="detail-card-label">{$('W_DASH_KPI_LOW', locale)}</span>
-                <span style={{ color: 'var(--color-success)' }}><CheckCircle className="h-5 w-5" /></span>
+            <div className="detail-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.01)', minHeight: '130px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span className="detail-card-label" style={{ fontSize: '10px', color: 'var(--color-muted)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', margin: 0 }}>
+                  {$('W_DASH_KPI_LOW', locale)}
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(16, 185, 129, 0.08)', color: 'var(--color-success)' }}>
+                  <CheckCircle className="h-5 w-5" />
+                </div>
               </div>
-              <p className="detail-card-value--accent" style={{ marginTop: '12px', color: 'var(--color-success)' }}>
+              <p className="font-display" style={{ fontSize: '2.8rem', fontWeight: '700', color: 'var(--color-success)', margin: '12px 0 0 0', lineHeight: 1 }}>
                 {loading ? '—' : (patients || []).filter((p) => p.risk_level === 'low').length}
               </p>
             </div>
@@ -107,58 +128,54 @@ export default function WorkerDashboard() {
 
         {/* Quick Actions */}
         <section>
-          <h3 className="font-display" style={{ fontSize: '1.4rem', marginBottom: '16px' }}>{$('W_DASH_SECTION_QUICK', locale)}</h3>
-          <div className="grid three" style={{ gap: '16px' }}>
+          <h3 className="font-display" style={{ fontSize: '1.45rem', marginBottom: '16px', fontWeight: '700' }}>{$('W_DASH_SECTION_QUICK', locale)}</h3>
+          <div className="grid two" style={{ gap: '16px' }}>
             
             {/* Patients List */}
-            <Link className="action-card" to="/worker/patients" style={{ textDecoration: 'none' }}>
-              <div className="action-card-header">
-                <div className="action-card-icon-wrapper">
-                  <Users style={{ height: '20px', width: '20px' }} />
+            <Link className="action-card" to="/worker/patients" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px', borderRadius: '24px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', minHeight: '160px', transition: 'all 0.2s' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(219, 39, 119, 0.08)', color: 'var(--color-primary)' }}>
+                  <Users className="h-5 w-5" />
                 </div>
-                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px' }} />
+                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px', color: 'var(--color-muted)' }} />
               </div>
-              <h4 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)', marginTop: '12px' }}>
-                {$('W_DASH_QUICK_PATIENTS', locale)}
-              </h4>
+              <div style={{ marginTop: '16px' }}>
+                <h4 className="font-display" style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-text)', margin: '0 0 4px 0' }}>
+                  {$('W_DASH_QUICK_PATIENTS', locale)}
+                </h4>
+                <p className="muted" style={{ fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.4' }}>
+                  {$('W_DASH_QUICK_PATIENTS_DESC', locale)}
+                </p>
+              </div>
             </Link>
 
             {/* AI Risk Analysis */}
-            <Link className="action-card" to="/worker/ai-analysis" style={{ textDecoration: 'none' }}>
-              <div className="action-card-header">
-                <div className="action-card-icon-wrapper">
-                  <Sparkles style={{ height: '20px', width: '20px' }} />
+            <Link className="action-card" to="/worker/ai-analysis" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px', borderRadius: '24px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', minHeight: '160px', transition: 'all 0.2s' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(219, 39, 119, 0.08)', color: 'var(--color-primary)' }}>
+                  <Sparkles className="h-5 w-5" />
                 </div>
-                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px' }} />
+                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px', color: 'var(--color-muted)' }} />
               </div>
-              <h4 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)', marginTop: '12px' }}>
-                {$('W_DASH_QUICK_AI', locale)}
-              </h4>
-            </Link>
-
-            {/* Offline Sync */}
-            <Link className="action-card" to="/worker/sync" style={{ textDecoration: 'none' }}>
-              <div className="action-card-header">
-                <div className="action-card-icon-wrapper">
-                  <RefreshCw style={{ height: '20px', width: '20px' }} />
-                </div>
-                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px' }} />
+              <div style={{ marginTop: '16px' }}>
+                <h4 className="font-display" style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-text)', margin: '0 0 4px 0' }}>
+                  {$('W_DASH_QUICK_AI', locale)}
+                </h4>
+                <p className="muted" style={{ fontSize: '13px', color: 'var(--color-muted)', lineHeight: '1.4' }}>
+                  {$('W_DASH_QUICK_AI_DESC', locale)}
+                </p>
               </div>
-              <h4 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)', marginTop: '12px' }}>
-                {$('W_DASH_QUICK_SYNC', locale)}
-              </h4>
             </Link>
 
           </div>
         </section>
 
         {/* High Risk Patients */}
-        <section className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
-          <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
+        <section className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px', borderLeft: '4px solid var(--color-danger)', borderTopLeftRadius: '4px', borderBottomLeftRadius: '4px' }}>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <h3 className="font-display" style={{ fontSize: '1.4rem', margin: 0 }}>{$('W_DASH_SECTION_HIGH_RISK', locale)}</h3>
-            <span className="badge badge--high" style={{ padding: '4px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700' }}>
+            <h3 className="font-display" style={{ fontSize: '1.45rem', margin: 0, fontWeight: '700' }}>{$('W_DASH_SECTION_HIGH_RISK', locale)}</h3>
+            <span className="badge badge--high" style={{ padding: '6px 14px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', backgroundColor: 'rgba(220, 38, 38, 0.08)', color: 'var(--color-danger)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {highRisk} {$('W_DASH_HIGH_RISK_SUFFIX', locale)}
             </span>
           </div>
@@ -172,22 +189,22 @@ export default function WorkerDashboard() {
               (patients || []).flatMap((patient) =>
                 patient.risk_level === 'high'
                   ? [
-                      <div key={patient.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderRadius: '16px', border: '1px solid var(--color-border)', backgroundColor: 'color-mix(in oklab, var(--color-surface) 50%, transparent)' }}>
+                      <div key={patient.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderRadius: '16px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', transition: 'all 0.2s' }}>
                         <div>
-                          <strong style={{ fontSize: '15px', color: 'var(--color-text)' }}>{patient.name}</strong>
-                          <p className="muted" style={{ fontSize: '12px', marginTop: '4px', margin: '4px 0 0' }}>
+                          <strong style={{ fontSize: '15px', color: 'var(--color-text)', fontWeight: '600' }}>{patient.name}</strong>
+                          <p className="muted" style={{ fontSize: '12px', marginTop: '4px', color: 'var(--color-muted)' }}>
                             {$('W_PATIENTS_WEEK_PREFIX', locale)} {patient.gestational_week || '—'} &middot;{' '}
                             {patient.village || $('W_PATIENTS_UNKNOWN', locale)}
                           </p>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span className="badge badge--high" style={{ fontWeight: '700', fontSize: '11px' }}>
+                          <span className="badge badge--high" style={{ fontWeight: '700', fontSize: '11px', padding: '4px 10px', borderRadius: '9999px', backgroundColor: 'rgba(220, 38, 38, 0.08)', color: 'var(--color-danger)' }}>
                             {((patient.risk_score || 0) * 100).toFixed(0)}%
                           </span>
                           <Link
                             className="btn btn--secondary"
                             to={`/worker/patient/${patient.id}`}
-                            style={{ borderRadius: '9999px', padding: '8px 16px', fontSize: '12px', fontWeight: '600', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', textDecoration: 'none' }}
+                            style={{ borderRadius: '9999px', padding: '6px 16px', fontSize: '12px', fontWeight: '600', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', textDecoration: 'none', transition: 'all 0.2s' }}
                           >
                             {$('W_DASH_VIEW_BTN', locale)}
                           </Link>

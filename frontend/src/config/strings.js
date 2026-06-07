@@ -318,6 +318,9 @@ const strings = {
     W_DASH_NO_HIGH_RISK: 'No high risk patients',
     W_DASH_VIEW_BTN: 'View',
     W_DASH_SUMMARY_A: 'You have',
+    W_DASH_ON_DUTY: 'ON DUTY',
+    W_DASH_QUICK_PATIENTS_DESC: 'Review assigned mothers and vitals',
+    W_DASH_QUICK_AI_DESC: 'Ask clinical questions, get risk insights',
     W_DASH_SUMMARY_B: 'patients assigned, including',
     W_DASH_SUMMARY_C: '',
 
@@ -1019,6 +1022,9 @@ const strings = {
     W_DASH_NO_HIGH_RISK: 'কোনো উচ্চ ঝুঁকির রোগী নেই',
     W_DASH_VIEW_BTN: 'দেখুন',
     W_DASH_SUMMARY_A: 'আপনার',
+    W_DASH_ON_DUTY: 'অন ডিউটি',
+    W_DASH_QUICK_PATIENTS_DESC: 'নির্ধারিত মা এবং ভাইটাল পর্যালোচনা করুন',
+    W_DASH_QUICK_AI_DESC: 'ক্লিনিকাল প্রশ্ন জিজ্ঞাসা করুন, ঝুঁকির অন্তর্দৃষ্টি পান',
     W_DASH_SUMMARY_B: 'জন রোগী নির্ধারিত, এর মধ্যে',
     W_DASH_SUMMARY_C: 'জন উচ্চ ঝুঁকির রোগী আজকে।',
 
