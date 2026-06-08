@@ -297,6 +297,36 @@ export async function resolveAlert(id, status) {
   return { ok: res.ok, ...(await res.json()) }
 }
 
+// ── Emergency Contacts API ──
+
+export async function getEmergencyContacts() {
+  const res = await apiFetch('/emergency-contacts')
+  return res.ok ? (await res.json()).contacts : []
+}
+
+export async function createEmergencyContact(data) {
+  const res = await apiFetch('/emergency-contacts', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function updateEmergencyContact(id, data) {
+  const res = await apiFetch(`/emergency-contacts/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function deleteEmergencyContact(id) {
+  const res = await apiFetch(`/emergency-contacts/${id}`, {
+    method: 'DELETE',
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
 // ── Users (Admin) ──
 
 export async function getUsers() {

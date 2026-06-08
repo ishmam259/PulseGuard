@@ -5,72 +5,75 @@
 
 :root {
   /* ── Color Palette (PulseGuard Pink/Rose Theme - Light Mode Default) ── */
-  --color-bg-start: #eef2f7;
-  --color-bg-end: #eff2f6;
-  --color-bg-accent: rgba(255, 255, 255, 0.45);
+  --color-bg-start: oklch(0.985 0.005 320);
+  --color-bg-end: oklch(0.985 0.005 320);
+  --color-bg-accent: oklch(0.95 0.04 350 / 0.1);
 
-  --color-surface: rgba(255, 255, 255, 0.35);
-  --color-surface-hover: rgba(255, 255, 255, 0.50);
-  --color-surface-active: rgba(255, 255, 255, 0.65);
-  --color-surface-solid: rgba(255, 255, 255, 0.45);
-  --color-surface-elevated: rgba(255, 255, 255, 0.55);
+  --color-surface: oklch(1 0 0);
+  --color-surface-hover: oklch(0.99 0.005 320);
+  --color-surface-active: oklch(0.96 0.01 320);
+  --color-surface-solid: oklch(1 0 0);
+  --color-surface-elevated: oklch(0.99 0.005 320);
 
-  --color-blob-1: radial-gradient(ellipse, rgba(204, 43, 94, 0.10) 0%, rgba(148, 163, 184, 0.10) 40%, transparent 70%);
-  --color-blob-2: radial-gradient(ellipse, rgba(148, 163, 184, 0.12) 0%, transparent 70%);
-  --color-blob-3: radial-gradient(ellipse, rgba(204, 43, 94, 0.06) 0%, rgba(148, 163, 184, 0.06) 50%, transparent 70%);
-  --color-blob-4: radial-gradient(ellipse, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
-  --color-blob-5: radial-gradient(ellipse, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+  --color-blob-1: radial-gradient(ellipse, oklch(0.62 0.22 0 / 0.1) 0%, oklch(0.5 0.02 320 / 0.1) 40%, transparent 70%);
+  --color-blob-2: radial-gradient(ellipse, oklch(0.5 0.02 320 / 0.12) 0%, transparent 70%);
+  --color-blob-3: radial-gradient(ellipse, oklch(0.62 0.22 0 / 0.06) 0%, oklch(0.5 0.02 320 / 0.06) 50%, transparent 70%);
+  --color-blob-4: radial-gradient(ellipse, oklch(0.6 0.18 250 / 0.05) 0%, transparent 70%);
+  --color-blob-5: radial-gradient(ellipse, oklch(0.62 0.17 150 / 0.05) 0%, transparent 70%);
 
-  --color-primary: #cc2b5e;
-  --color-primary-light: #be1a4c;
-  --color-primary-dim: rgba(204, 43, 94, 0.14);
-  --color-primary-glow: rgba(204, 43, 94, 0.25);
+  --color-primary: oklch(0.62 0.22 0);
+  --color-primary-light: oklch(0.66 0.24 5);
+  --color-primary-dim: oklch(0.62 0.22 0 / 0.14);
+  --color-primary-glow: oklch(0.62 0.22 0 / 0.25);
 
-  --color-secondary: #cb4e65;
-  --color-secondary-dim: rgba(204, 43, 94, 0.08);
+  --color-secondary: oklch(0.96 0.01 320);
+  --color-secondary-dim: oklch(0.96 0.01 320 / 0.4);
 
-  --color-success: #059669;
-  --color-success-dim: rgba(16, 185, 129, 0.13);
+  --color-success: oklch(0.62 0.17 150);
+  --color-success-dim: oklch(0.62 0.17 150 / 0.13);
 
-  --color-warning: #f59e0b;
-  --color-warning-dim: rgba(245, 158, 11, 0.15);
+  --color-warning: oklch(0.72 0.16 50);
+  --color-warning-dim: oklch(0.72 0.16 50 / 0.15);
 
-  --color-danger: #dc2626;
-  --color-danger-light: #ef4444;
-  --color-danger-dim: rgba(239, 68, 68, 0.1);
-  --color-danger-glow: rgba(239, 68, 68, 0.25);
+  --color-danger: oklch(0.6 0.22 27);
+  --color-danger-light: oklch(0.64 0.22 27);
+  --color-danger-dim: oklch(0.6 0.22 27 / 0.1);
+  --color-danger-glow: oklch(0.6 0.22 27 / 0.25);
 
-  --color-text: #0f172a;
-  --color-text-secondary: #475569;
-  --color-muted: #64748b;
-  --color-border: rgba(255, 255, 255, 0.40);
-  --color-border-light: rgba(255, 255, 255, 0.60);
+  --color-text: oklch(0.18 0.03 320);
+  --color-text-secondary: oklch(0.35 0.02 320);
+  --color-muted: oklch(0.5 0.02 320);
+  --color-border: oklch(0.92 0.01 320);
+  --color-border-light: oklch(0.92 0.01 320 / 0.6);
 
   /* ── Gradients ── */
-  --gradient-primary: linear-gradient(135deg, #cc2b5e, #be1a4c);
-  --gradient-danger: linear-gradient(135deg, #dc2626, #ef4444);
-  --gradient-warning: linear-gradient(135deg, #f59e0b, #fbbf24);
-  --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.20));
-  --gradient-shell: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
-  --gradient-bg: linear-gradient(to right, #ece7e8 0%, #ece7e8 100%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.66 0.24 5) 0%, oklch(0.55 0.22 350) 100%);
+  --gradient-danger: linear-gradient(135deg, oklch(0.6 0.22 27), oklch(0.64 0.22 27));
+  --gradient-warning: linear-gradient(135deg, oklch(0.72 0.16 50), oklch(0.78 0.16 60));
+  --gradient-surface: linear-gradient(135deg, oklch(1 0 0 / 0.7), oklch(1 0 0 / 0.4));
+  --gradient-shell: linear-gradient(135deg, oklch(1 0 0 / 0.4), oklch(1 0 0 / 0.1));
+  --gradient-bg: linear-gradient(to right, oklch(0.985 0.005 320) 0%, oklch(0.985 0.005 320) 100%);
+  --gradient-hero: radial-gradient(1200px 600px at 80% 20%, oklch(0.95 0.04 350 / 0.6), transparent 60%),
+                   radial-gradient(800px 500px at 0% 100%, oklch(0.94 0.05 320 / 0.5), transparent 60%);
 
   /* ── Shadows ── */
-  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
-  --shadow-card: 0 12px 30px -10px rgba(15, 23, 42, 0.15), 0 1.5px 4px rgba(15, 23, 42, 0.08), inset 0 1.5px 0 rgba(255, 255, 255, 0.85);
-  --shadow-elevated: 0 25px 50px -12px rgba(15, 23, 42, 0.18), inset 0 1.5px 0 rgba(255, 255, 255, 0.85);
-  --shadow-glow-primary: 0 0 20px rgba(204, 43, 94, 0.08);
-  --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.08);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  --shadow-nav: 3px 0 30px rgba(204, 43, 94, 0.07), inset -1px 0 0 rgba(255, 255, 255, 0.9);
+  --shadow-sm: 0 2px 8px oklch(0.18 0.03 320 / 0.04);
+  --shadow-card: 0 1px 0 0 oklch(1 0 0 / 0.6) inset, 0 20px 60px -30px oklch(0.18 0.03 320 / 0.25);
+  --shadow-elevated: 0 1px 0 0 oklch(1 0 0 / 0.6) inset, 0 20px 60px -30px oklch(0.18 0.03 320 / 0.25);
+  --shadow-glow-primary: 0 30px 80px -20px oklch(0.62 0.22 0 / 0.35);
+  --shadow-glow-danger: 0 30px 80px -20px oklch(0.6 0.22 27 / 0.35);
+  --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.8);
+  --shadow-nav: 0 10px 30px -10px oklch(0.18 0.03 320 / 0.1), inset -1px 0 0 oklch(0.92 0.01 320 / 0.9);
 
   /* ── Grid/Scrollbar ── */
-  --grid-color: rgba(0, 0, 0, 0.06);
+  --grid-color: oklch(0.18 0.03 320 / 0.06);
   --grid-opacity: 1;
-  --scrollbar-thumb: rgba(0, 0, 0, 0.15);
-  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+  --scrollbar-thumb: oklch(0.18 0.03 320 / 0.15);
+  --scrollbar-thumb-hover: oklch(0.18 0.03 320 / 0.25);
 
   /* ── Typography ── */
-  --font-sans: 'Plus Jakarta Sans', 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
+  --font-display: "Georgia", "Noto Sans Bengali", serif;
+  --font-sans: "Inter", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* ── Spacing (8px grid) ── */
@@ -115,68 +118,70 @@
 
 :root.dark {
   /* ── Color Palette (PulseGuard Pink/Rose Theme - Dark Mode Overrides) ── */
-  --color-bg-start: #050608;
-  --color-bg-end: #060709;
-  --color-bg-accent: rgba(255, 255, 255, 0.05);
+  --color-bg-start: oklch(0.13 0.02 320);
+  --color-bg-end: oklch(0.13 0.02 320);
+  --color-bg-accent: oklch(0.28 0.08 350 / 0.15);
 
-  --color-surface: rgba(255, 255, 255, 0.055);
-  --color-surface-hover: rgba(255, 255, 255, 0.085);
-  --color-surface-active: rgba(255, 255, 255, 0.12);
-  --color-surface-solid: rgba(255, 255, 255, 0.07);
-  --color-surface-elevated: rgba(255, 255, 255, 0.09);
+  --color-surface: oklch(0.16 0.025 320);
+  --color-surface-hover: oklch(0.22 0.03 320);
+  --color-surface-active: oklch(0.25 0.03 320);
+  --color-surface-solid: oklch(0.16 0.025 320);
+  --color-surface-elevated: oklch(0.19 0.03 320);
 
-  --color-blob-1: radial-gradient(ellipse, rgba(204, 43, 94, 0.12) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
-  --color-blob-2: radial-gradient(ellipse, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
-  --color-blob-3: radial-gradient(ellipse, rgba(204, 43, 94, 0.08) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
-  --color-blob-4: radial-gradient(ellipse, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
-  --color-blob-5: radial-gradient(ellipse, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
+  --color-blob-1: radial-gradient(ellipse, oklch(0.68 0.24 5 / 0.12) 0%, oklch(0.25 0.12 320 / 0.08) 40%, transparent 70%);
+  --color-blob-2: radial-gradient(ellipse, oklch(0.25 0.12 320 / 0.08) 0%, transparent 70%);
+  --color-blob-3: radial-gradient(ellipse, oklch(0.68 0.24 5 / 0.08) 0%, oklch(0.25 0.12 320 / 0.05) 50%, transparent 70%);
+  --color-blob-4: radial-gradient(ellipse, oklch(0.25 0.12 320 / 0.05) 0%, transparent 70%);
+  --color-blob-5: radial-gradient(ellipse, oklch(0.74 0.16 150 / 0.03) 0%, transparent 70%);
 
-  --color-primary: #cc2b5e;
-  --color-primary-light: #be1a4c;
-  --color-primary-dim: rgba(204, 43, 94, 0.12);
-  --color-primary-glow: rgba(204, 43, 94, 0.2);
+  --color-primary: oklch(0.68 0.24 5);
+  --color-primary-light: oklch(0.72 0.26 5);
+  --color-primary-dim: oklch(0.68 0.24 5 / 0.12);
+  --color-primary-glow: oklch(0.68 0.24 5 / 0.2);
 
-  --color-secondary: #cb4e65;
-  --color-secondary-dim: rgba(204, 43, 94, 0.08);
+  --color-secondary: oklch(0.22 0.03 320);
+  --color-secondary-dim: oklch(0.22 0.03 320 / 0.08);
 
-  --color-success: #34d399;
-  --color-success-dim: rgba(16, 185, 129, 0.12);
+  --color-success: oklch(0.74 0.16 150);
+  --color-success-dim: oklch(0.74 0.16 150 / 0.12);
 
-  --color-warning: #f59e0b;
-  --color-warning-dim: rgba(245, 158, 11, 0.15);
+  --color-warning: oklch(0.78 0.16 60);
+  --color-warning-dim: oklch(0.78 0.16 60 / 0.15);
 
-  --color-danger: #f87171;
-  --color-danger-light: #f87171;
-  --color-danger-dim: rgba(239, 68, 68, 0.1);
-  --color-danger-glow: rgba(239, 68, 68, 0.2);
+  --color-danger: oklch(0.68 0.22 22);
+  --color-danger-light: oklch(0.72 0.22 22);
+  --color-danger-dim: oklch(0.68 0.22 22 / 0.1);
+  --color-danger-glow: oklch(0.68 0.22 22 / 0.2);
 
-  --color-text: #f1f5f9;
-  --color-text-secondary: #cbd5e1;
-  --color-muted: #64748b;
-  --color-border: rgba(255, 255, 255, 0.09);
-  --color-border-light: rgba(255, 255, 255, 0.18);
+  --color-text: oklch(0.97 0.005 320);
+  --color-text-secondary: oklch(0.85 0.01 320);
+  --color-muted: oklch(0.7 0.02 320);
+  --color-border: oklch(1 0 0 / 0.08);
+  --color-border-light: oklch(1 0 0 / 0.18);
 
   /* ── Gradients ── */
-  --gradient-primary: linear-gradient(135deg, #cc2b5e, #be1a4c);
-  --gradient-danger: linear-gradient(135deg, #f87171, #ef4444);
-  --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-  --gradient-shell: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-  --gradient-bg: linear-gradient(to right, #0e0a0b 0%, #0e0a0b 100%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.72 0.26 5) 0%, oklch(0.6 0.24 350) 100%);
+  --gradient-danger: linear-gradient(135deg, oklch(0.68 0.22 22), oklch(0.72 0.22 22));
+  --gradient-surface: linear-gradient(135deg, oklch(1 0 0 / 0.075), oklch(1 0 0 / 0.035));
+  --gradient-shell: linear-gradient(135deg, oklch(1 0 0 / 0.075), oklch(1 0 0 / 0.035));
+  --gradient-bg: linear-gradient(to right, oklch(0.13 0.02 320) 0%, oklch(0.13 0.02 320) 100%);
+  --gradient-hero: radial-gradient(1200px 700px at 80% 10%, oklch(0.35 0.18 5 / 0.45), transparent 60%),
+                   radial-gradient(900px 600px at 0% 100%, oklch(0.25 0.12 320 / 0.5), transparent 60%);
 
   /* ── Shadows ── */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --shadow-elevated: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  --shadow-glow-primary: 0 0 20px rgba(204, 43, 94, 0.1);
-  --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.1);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
-  --shadow-nav: 0 10px 30px -10px rgba(0, 0, 0, 0.3), inset -1px 0 0 rgba(255, 255, 255, 0.02);
+  --shadow-sm: 0 2px 8px oklch(0 0 0 / 0.2);
+  --shadow-card: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 30px 80px -30px oklch(0 0 0 / 0.7);
+  --shadow-elevated: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 30px 80px -30px oklch(0 0 0 / 0.7);
+  --shadow-glow-primary: 0 40px 120px -20px oklch(0.68 0.24 5 / 0.55);
+  --shadow-glow-danger: 0 40px 120px -20px oklch(0.68 0.22 22 / 0.55);
+  --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.02);
+  --shadow-nav: 0 10px 30px -10px oklch(0 0 0 / 0.3), inset -1px 0 0 oklch(1 0 0 / 0.02);
 
   /* ── Grid/Scrollbar ── */
-  --grid-color: rgba(255, 255, 255, 0.1);
+  --grid-color: oklch(1 0 0 / 0.1);
   --grid-opacity: 0.018;
-  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb: oklch(1 0 0 / 0.1);
+  --scrollbar-thumb-hover: oklch(1 0 0 / 0.2);
 
   /* ── Backdrop ── */
   --blur-glass: blur(24px) saturate(190%);
@@ -186,68 +191,70 @@
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
     /* ── Color Palette (PulseGuard Pink/Rose Theme - Dark Mode Overrides) ── */
-    --color-bg-start: #050608;
-    --color-bg-end: #060709;
-    --color-bg-accent: rgba(255, 255, 255, 0.05);
+    --color-bg-start: oklch(0.13 0.02 320);
+    --color-bg-end: oklch(0.13 0.02 320);
+    --color-bg-accent: oklch(0.28 0.08 350 / 0.15);
 
-    --color-surface: rgba(255, 255, 255, 0.055);
-    --color-surface-hover: rgba(255, 255, 255, 0.085);
-    --color-surface-active: rgba(255, 255, 255, 0.12);
-    --color-surface-solid: rgba(255, 255, 255, 0.07);
-    --color-surface-elevated: rgba(255, 255, 255, 0.09);
+    --color-surface: oklch(0.16 0.025 320);
+    --color-surface-hover: oklch(0.22 0.03 320);
+    --color-surface-active: oklch(0.25 0.03 320);
+    --color-surface-solid: oklch(0.16 0.025 320);
+    --color-surface-elevated: oklch(0.19 0.03 320);
 
-    --color-blob-1: radial-gradient(ellipse, rgba(204, 43, 94, 0.12) 0%, rgba(99, 102, 241, 0.08) 40%, transparent 70%);
-    --color-blob-2: radial-gradient(ellipse, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
-    --color-blob-3: radial-gradient(ellipse, rgba(204, 43, 94, 0.08) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
-    --color-blob-4: radial-gradient(ellipse, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
-    --color-blob-5: radial-gradient(ellipse, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
+    --color-blob-1: radial-gradient(ellipse, oklch(0.68 0.24 5 / 0.12) 0%, oklch(0.25 0.12 320 / 0.08) 40%, transparent 70%);
+    --color-blob-2: radial-gradient(ellipse, oklch(0.25 0.12 320 / 0.08) 0%, transparent 70%);
+    --color-blob-3: radial-gradient(ellipse, oklch(0.68 0.24 5 / 0.08) 0%, oklch(0.25 0.12 320 / 0.05) 50%, transparent 70%);
+    --color-blob-4: radial-gradient(ellipse, oklch(0.25 0.12 320 / 0.05) 0%, transparent 70%);
+    --color-blob-5: radial-gradient(ellipse, oklch(0.74 0.16 150 / 0.03) 0%, transparent 70%);
 
-    --color-primary: #cc2b5e;
-    --color-primary-light: #be1a4c;
-    --color-primary-dim: rgba(204, 43, 94, 0.12);
-    --color-primary-glow: rgba(204, 43, 94, 0.2);
+    --color-primary: oklch(0.68 0.24 5);
+    --color-primary-light: oklch(0.72 0.26 5);
+    --color-primary-dim: oklch(0.68 0.24 5 / 0.12);
+    --color-primary-glow: oklch(0.68 0.24 5 / 0.2);
 
-    --color-secondary: #cb4e65;
-    --color-secondary-dim: rgba(204, 43, 94, 0.08);
+    --color-secondary: oklch(0.22 0.03 320);
+    --color-secondary-dim: oklch(0.22 0.03 320 / 0.08);
 
-    --color-success: #34d399;
-    --color-success-dim: rgba(16, 185, 129, 0.12);
+    --color-success: oklch(0.74 0.16 150);
+    --color-success-dim: oklch(0.74 0.16 150 / 0.12);
 
-    --color-warning: #f59e0b;
-    --color-warning-dim: rgba(245, 158, 11, 0.15);
+    --color-warning: oklch(0.78 0.16 60);
+    --color-warning-dim: oklch(0.78 0.16 60 / 0.15);
 
-    --color-danger: #f87171;
-    --color-danger-light: #f87171;
-    --color-danger-dim: rgba(239, 68, 68, 0.1);
-    --color-danger-glow: rgba(239, 68, 68, 0.2);
+    --color-danger: oklch(0.68 0.22 22);
+    --color-danger-light: oklch(0.72 0.22 22);
+    --color-danger-dim: oklch(0.68 0.22 22 / 0.1);
+    --color-danger-glow: oklch(0.68 0.22 22 / 0.2);
 
-    --color-text: #f1f5f9;
-    --color-text-secondary: #cbd5e1;
-    --color-muted: #64748b;
-    --color-border: rgba(255, 255, 255, 0.09);
-    --color-border-light: rgba(255, 255, 255, 0.18);
+    --color-text: oklch(0.97 0.005 320);
+    --color-text-secondary: oklch(0.85 0.01 320);
+    --color-muted: oklch(0.7 0.02 320);
+    --color-border: oklch(1 0 0 / 0.08);
+    --color-border-light: oklch(1 0 0 / 0.18);
 
     /* ── Gradients ── */
-    --gradient-primary: linear-gradient(135deg, #cc2b5e, #be1a4c);
-    --gradient-danger: linear-gradient(135deg, #f87171, #ef4444);
-    --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-    --gradient-shell: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-    --gradient-bg: linear-gradient(to right, #0e0a0b 0%, #0e0a0b 100%);
+    --gradient-primary: linear-gradient(135deg, oklch(0.72 0.26 5) 0%, oklch(0.6 0.24 350) 100%);
+    --gradient-danger: linear-gradient(135deg, oklch(0.68 0.22 22), oklch(0.72 0.22 22));
+    --gradient-surface: linear-gradient(135deg, oklch(1 0 0 / 0.075), oklch(1 0 0 / 0.035));
+    --gradient-shell: linear-gradient(135deg, oklch(1 0 0 / 0.075), oklch(1 0 0 / 0.035));
+    --gradient-bg: linear-gradient(to right, oklch(0.13 0.02 320) 0%, oklch(0.13 0.02 320) 100%);
+    --gradient-hero: radial-gradient(1200px 700px at 80% 10%, oklch(0.35 0.18 5 / 0.45), transparent 60%),
+                     radial-gradient(900px 600px at 0% 100%, oklch(0.25 0.12 320 / 0.5), transparent 60%);
 
     /* ── Shadows ── */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-    --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --shadow-elevated: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    --shadow-glow-primary: 0 0 20px rgba(204, 43, 94, 0.1);
-    --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.1);
-    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.02);
-    --shadow-nav: 0 10px 30px -10px rgba(0, 0, 0, 0.3), inset -1px 0 0 rgba(255, 255, 255, 0.02);
+    --shadow-sm: 0 2px 8px oklch(0 0 0 / 0.2);
+    --shadow-card: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 30px 80px -30px oklch(0 0 0 / 0.7);
+    --shadow-elevated: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 30px 80px -30px oklch(0 0 0 / 0.7);
+    --shadow-glow-primary: 0 40px 120px -20px oklch(0.68 0.24 5 / 0.55);
+    --shadow-glow-danger: 0 40px 120px -20px oklch(0.68 0.22 22 / 0.55);
+    --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.02);
+    --shadow-nav: 0 10px 30px -10px oklch(0 0 0 / 0.3), inset -1px 0 0 oklch(1 0 0 / 0.02);
 
     /* ── Grid/Scrollbar ── */
-    --grid-color: rgba(255, 255, 255, 0.1);
+    --grid-color: oklch(1 0 0 / 0.1);
     --grid-opacity: 0.018;
-    --scrollbar-thumb: rgba(255, 255, 255, 0.1);
-    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+    --scrollbar-thumb: oklch(1 0 0 / 0.1);
+    --scrollbar-thumb-hover: oklch(1 0 0 / 0.2);
 
     /* ── Backdrop ── */
     --blur-glass: blur(24px) saturate(190%);
@@ -307,8 +314,9 @@ ul, ol {
 }
 
 /* ── Typography ── */
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, .font-display {
   color: var(--color-text);
+  font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.3;
 }
@@ -321,11 +329,20 @@ h4 { font-size: 16px; }
 p { margin: 0; }
 
 /* ── Utility ── */
-.text-gradient {
+.text-gradient,
+.text-gradient-primary {
   background: var(--gradient-primary);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.glass {
+  background: color-mix(in oklab, var(--color-surface) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--color-border);
 }
 
 .muted {
@@ -432,17 +449,17 @@ p { margin: 0; }
 .stagger > *:nth-child(7) { animation-delay: 360ms; }
 .stagger > *:nth-child(8) { animation-delay: 420ms; }
 
-/* Desktop background layout zones (places neutral backdrop behind the sidebar only when visible) */
+/* Desktop background layout zones (uniform soft backdrop) */
 @media (min-width: 768px) {
   :root {
-    --gradient-bg: linear-gradient(to right, #e2e8f0 0px, #e2e8f0 280px, #ece7e8 290px, #ece7e8 100%);
+    --gradient-bg: linear-gradient(135deg, #faf7f9 0%, #f4eff2 100%);
   }
   :root.dark {
-    --gradient-bg: linear-gradient(to right, #050608 0px, #050608 280px, #0e0a0b 290px, #0e0a0b 100%);
+    --gradient-bg: linear-gradient(135deg, #0d0c0e 0%, #080709 100%);
   }
   @media (prefers-color-scheme: dark) {
     :root:not(.light) {
-      --gradient-bg: linear-gradient(to right, #050608 0px, #050608 280px, #0e0a0b 290px, #0e0a0b 100%);
+      --gradient-bg: linear-gradient(135deg, #0d0c0e 0%, #080709 100%);
     }
   }
 }

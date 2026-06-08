@@ -2,11 +2,10 @@ import { useState, useRef, useEffect } from 'react'
 import MobileLayout from '../../components/layout/MobileLayout'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from 'react-markdown'
 import $ from '../../config/strings'
 import { useApp } from '../../context/AppContext'
-import { FaHistory, FaEdit, FaTrash, FaMicrophone, FaStop } from 'react-icons/fa'
-import { CiSearch } from 'react-icons/ci'
+import { History, Pencil, Trash2, Mic, Square, Search } from 'lucide-react'
 
 const CHIP_KEYS = [
   'AI_CHAT_CHIP_HEADACHE',
@@ -17,9 +16,11 @@ const CHIP_KEYS = [
 ]
 
 const SOURCE_BADGE = {
-  offline: { label: 'Offline Answer', style: { background: '#f59e0b', color: '#fff' } },
-  gemini:  { label: 'Gemini',         style: { background: '#4f46e5', color: '#fff' } },
+  offline: { label: 'Offline Answer', style: { background: 'oklch(0.72 0.16 50)', color: '#fff' } },
+  gemini:  { label: 'Gemini AI',         style: { background: 'oklch(0.6 0.18 250)', color: '#fff' } },
 }
+
+const generateMsgId = (prefix) => `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000000)}`
 
 export default function AIChat() {
   const { locale, connectivity } = useApp()
@@ -27,6 +28,7 @@ export default function AIChat() {
   const [activeChatId, setActiveChatId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+
 
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
@@ -186,6 +188,8 @@ export default function AIChat() {
     recognition.start()
   }
 
+  const t = (en, bn) => (locale === 'en' ? en : bn)
+
   return (
     <MobileLayout
       title={$('PAGE_TITLE_AI_CHAT', locale)}
@@ -338,9 +342,9 @@ export default function AIChat() {
             type="button"
             onClick={() => setIsHistoryOpen(true)}
             title={$('AI_CHAT_RECENT', locale)}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)' }}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)' }}
           >
-            <FaHistory />
+            <History size={20} />
           </button>
           <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--color-text)' }}>
             {activeChatId
@@ -351,9 +355,9 @@ export default function AIChat() {
             type="button"
             onClick={handleCreateNewChat}
             title={$('AI_CHAT_NEW_CHAT', locale)}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)' }}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)' }}
           >
-            <FaEdit />
+            <Pencil size={20} />
           </button>
         </div>
 
@@ -432,7 +436,7 @@ export default function AIChat() {
               onClick={startVoice}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              {isListening ? <FaStop /> : <FaMicrophone />}
+              {isListening ? <Square size={16} /> : <Mic size={16} />}
             </button>
             <button type="submit" className="btn btn--primary">
               {$('AI_CHAT_SEND', locale)}
@@ -470,7 +474,7 @@ export default function AIChat() {
               {/* Search Bar inside Modal */}
               <div className="modal-search-wrapper">
                 <span className="modal-search-icon">
-                  <CiSearch />
+                  <Search size={16} />
                 </span>
                 <input
                   type="text"
@@ -506,7 +510,7 @@ export default function AIChat() {
                         onClick={(e) => handleDeleteChat(chat.id, e)}
                         title="Delete Chat"
                       >
-                        <FaTrash />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   ))

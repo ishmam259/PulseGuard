@@ -8,6 +8,7 @@ const patientSchema = z.object({
   age: z.number().int().min(10).max(60).optional(),
   village: z.string().max(200).optional(),
   gestational_week: z.number().int().min(0).max(45).optional(),
+  lmp_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'lmp_date must be a YYYY-MM-DD string' }).optional(),
   assigned_worker: z.string().uuid().optional(),
   user_id: z.string().uuid().optional(),
   height: z.number().min(50).max(300).optional().or(z.null()),

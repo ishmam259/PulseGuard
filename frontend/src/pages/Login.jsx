@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import $ from '../config/strings'
-
-// Removed static roleLabels in favor of dynamic lookup within component
+import { Mail, Lock, ArrowRight, Sun, Moon, HeartPulse, ShieldAlert } from 'lucide-react'
 
 const dashboardRoutes = {
   patient: '/patient/dashboard',
@@ -15,6 +14,7 @@ export default function Login() {
   const { role } = useParams()
   const navigate = useNavigate()
   const { login, locale, setLocale, theme, toggleTheme } = useApp()
+  
   const roleLabels = {
     patient: $('ROLE_PATIENT_TITLE', locale),
     worker: $('ROLE_WORKER_TITLE', locale),
@@ -49,129 +49,125 @@ export default function Login() {
     setSubmitting(false)
   }
 
+  const t = (en, bn) => (locale === 'en' ? en : bn)
+
   return (
-    <div className="onboarding-container animate-fade-in">
-      <button
-        type="button"
-        className="icon-btn"
-        onClick={() => setLocale(prev => (prev === 'en' ? 'bn' : 'en'))}
-        style={{
-          position: 'fixed',
-          top: '1.5rem',
-          right: '4.5rem',
-          zIndex: 1000,
-          fontSize: '12px',
-          width: 'auto',
-          padding: '0 10px',
-        }}
-        title="Switch language"
-      >
-        {$('LANG_TOGGLE', locale)}
-      </button>
-      <button
-        type="button"
-        className="icon-btn theme-toggle-btn"
-        onClick={toggleTheme}
-        style={{
-          position: 'fixed',
-          top: '1.5rem',
-          right: '1.5rem',
-          zIndex: 1000,
-        }}
-        title="Toggle theme"
-      >
-        {theme === 'dark' ? '☀️' : '🌙'}
-      </button>
-      <div className="onboarding-form-pane">
-        <div style={{ marginBottom: '2rem' }}>
-          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem' }}>
-            <img src="/assets/icons/logo-icon_transparent.svg" alt="logo" style={{ height: '32px', width: '32px' }} />
-            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '800', color: 'var(--color-primary)' }}>PulseGuard</span>
+    <main className="auth-page">
+      {/* Right-side pink gradient wash */}
+      <div className="auth-page__gradient-wash" />
+
+      {/* Top right controls */}
+      <div className="auth-page__controls">
+        <button
+          type="button"
+          onClick={() => setLocale(prev => (prev === 'en' ? 'bn' : 'en'))}
+          className="auth-page__lang-btn"
+        >
+          {locale === 'en' ? 'বাংলা' : 'English'}
+        </button>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="auth-page__theme-btn"
+          title="Toggle theme"
+        >
+          {theme === 'dark' ? <Sun style={{ height: 16, width: 16 }} /> : <Moon style={{ height: 16, width: 16 }} />}
+        </button>
+      </div>
+
+      {/* Main content */}
+      <section className="auth-page__content">
+        <div className="auth-page__inner">
+          
+          {/* Logo */}
+          <Link to="/" className="auth-page__logo">
+            <span className="auth-page__logo-icon">
+              <HeartPulse strokeWidth={2.5} style={{ height: 20, width: 20, color: 'var(--color-surface)' }} />
+            </span>
+            <span className="auth-page__logo-text">PulseGuard</span>
+          </Link>
+
+          {/* Heading */}
+          <div className="auth-page__heading">
+            <h1 className="auth-page__title">
+              {t("Welcome", "স্বাগতম")}{" "}
+              <em className="auth-page__title-accent">{t("Back", "ফিরে")}</em>
+            </h1>
+            <p className="auth-page__subtitle">
+              {$('LOGIN_SUBHEADING_PREFIX', locale)}{" "}
+              <strong>{roleLabel}</strong>{" "}
+              {$('LOGIN_SUBHEADING_SUFFIX', locale)}
+            </p>
           </div>
 
-          <h2 style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-            {$('LOGIN_HEADING', locale)}
-          </h2>
-          <p className="muted">{$('LOGIN_SUBHEADING_PREFIX', locale)} <strong>{roleLabel}</strong> {$('LOGIN_SUBHEADING_SUFFIX', locale)}</p>
-        </div>
+          {/* Error */}
+          {error && (
+            <div className="auth-page__error">
+              <ShieldAlert style={{ height: 18, width: 18, flexShrink: 0, marginTop: 1 }} />
+              <span>{$('LOGIN_ERR_PREFIX', locale)} {error}</span>
+            </div>
+          )}
 
-        {error && (
-          <div className="onboarding-error-alert animate-fade-in">
-            <svg 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="var(--color-danger)" 
-              strokeWidth="2.2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-              className="error-icon"
-            >
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-            <span className="error-text">{$('LOGIN_ERR_PREFIX', locale)} {error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <div className="form-grid">
-            <label>
-              {$('LOGIN_LABEL_EMAIL', locale)}
-              <div className="input-wrapper">
-                <img src="/assets/icons/email.svg" alt="email" className="input-icon" />
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="auth-page__form">
+            <div className="auth-page__field">
+              <label className="auth-page__label">
+                {$('LOGIN_LABEL_EMAIL', locale)}
+              </label>
+              <div className="auth-page__input-wrap">
+                <Mail className="auth-page__input-icon" />
                 <input
                   type="email"
-                  className="input"
-                  placeholder={$('LOGIN_PH_EMAIL', locale)}
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder={$('LOGIN_PH_EMAIL', locale)}
                   disabled={submitting}
-                  required
+                  className="auth-page__input"
                 />
               </div>
-            </label>
-            <label>
-              {$('LOGIN_LABEL_PASSWORD', locale)}
-              <div className="input-wrapper">
+            </div>
+
+            <div className="auth-page__field">
+              <label className="auth-page__label">
+                {$('LOGIN_LABEL_PASSWORD', locale)}
+              </label>
+              <div className="auth-page__input-wrap">
+                <Lock className="auth-page__input-icon" />
                 <input
                   type="password"
-                  className="input"
-                  placeholder={$('LOGIN_PH_PASSWORD', locale)}
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder={$('LOGIN_PH_PASSWORD', locale)}
                   disabled={submitting}
-                  required
+                  className="auth-page__input"
                 />
               </div>
-            </label>
+            </div>
+
+            <button
+              type="submit"
+              className="auth-page__submit-btn"
+              disabled={submitting}
+            >
+              <span>{submitting ? $('LOGIN_BTN_LOADING', locale) : $('LOGIN_BTN', locale)}</span>
+              <ArrowRight style={{ height: 16, width: 16 }} />
+            </button>
+          </form>
+
+          {/* Footer links */}
+          <div className="auth-page__footer">
+            <Link to={`/register/${role}`} className="auth-page__footer-link auth-page__footer-link--primary">
+              {$('LOGIN_LINK_REGISTER', locale)}
+            </Link>
+            <Link to="/role" className="auth-page__footer-link auth-page__footer-link--muted">
+              {$('LOGIN_LINK_CHANGE_ROLE', locale)}
+            </Link>
           </div>
 
-          <button
-            type="submit"
-            className="btn btn--primary btn--large"
-            disabled={submitting}
-            style={{ marginTop: '1.5rem' }}
-          >
-            {submitting ? $('LOGIN_BTN_LOADING', locale) : $('LOGIN_BTN', locale)}
-          </button>
-        </form>
-
-        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between', fontSize: '13px', width: '100%' }}>
-          <Link to={`/register/${role}`} className="link">
-            {$('LOGIN_LINK_REGISTER', locale)}
-          </Link>
-          <Link to="/role" className="link" style={{ color: 'var(--color-muted)' }}>
-            {$('LOGIN_LINK_CHANGE_ROLE', locale)}
-          </Link>
         </div>
-      </div>
-
-      <div className="onboarding-image-pane">
-        <img src={theme === 'dark' ? "/assets/images/onboarding-img.png" : "/assets/images/onboarding-img_light_mode.png"} alt="Healthcare Illustration" />
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }

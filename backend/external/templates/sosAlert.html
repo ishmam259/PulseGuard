@@ -254,9 +254,7 @@
             <div class="content">
                 <p class="greeting">Hello <strong><%= workerName %></strong>,</p>
                 <p class="intro">
-                    An SOS alert has just been triggered by a patient under your care.
-                    Please review the details below and respond as quickly as possible &mdash;
-                    every second counts.
+                    <%- intro %>
                 </p>
 
                 <!-- Alert Card -->
@@ -302,7 +300,7 @@
 
                 <!-- Message -->
                 <div class="message-section">
-                    <p class="message-label">Patient Message</p>
+                    <p class="message-label"><%- messageLabel %></p>
                     <div class="message-box">
                         &ldquo;<%= message %>&rdquo;
                     </div>
