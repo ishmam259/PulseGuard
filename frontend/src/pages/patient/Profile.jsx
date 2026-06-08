@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import { patientNavItems, workerNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
-import { Pencil, Check, ShieldAlert, Save } from 'lucide-react'
+import { Pencil, Check, ShieldAlert, Save, Camera } from 'lucide-react'
 
 const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 const FALLBACK_AVATAR = '/assets/images/No_pf.png'
@@ -227,8 +227,17 @@ export default function Profile() {
       status={connectivity}
       navItems={navItems}
     >
+      {/* Hidden file input for profile picture */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        accept="image/*"
+        style={{ display: 'none' }}
+      />
+
       <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        
+
         {/* Error Alert */}
         {error && (
           <div style={{ borderRadius: '16px', border: '1px solid rgba(239, 68, 68, 0.2)', backgroundColor: 'var(--color-danger-dim)', padding: '16px 20px', fontSize: '13px', color: 'var(--color-danger-light)', display: 'flex', alignItems: 'start', gap: '12px' }}>
@@ -248,9 +257,25 @@ export default function Profile() {
         {/* Identity Header Card */}
         <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px', textAlign: 'center' }}>
 
-          {/* Circular gradient initials avatar */}
-          <div className="relative" style={{ display: 'grid', height: '96px', width: '96px', placeItems: 'center', borderRadius: '50%', background: 'var(--gradient-primary)', fontSize: '24px', fontWeight: 'bold', color: 'white', boxShadow: 'var(--shadow-glow-primary)', margin: '0 auto 20px' }}>
-            {getInitials(currentUser?.name)}
+          {/* Circular avatar — shows photo/preview when available, initials otherwise */}
+          <div
+            className="relative"
+            style={{ position: 'relative', display: 'grid', height: '96px', width: '96px', placeItems: 'center', borderRadius: '50%', background: 'var(--gradient-primary)', fontSize: '24px', fontWeight: 'bold', color: 'white', boxShadow: 'var(--shadow-glow-primary)', margin: '0 auto 20px', cursor: isEditing ? 'pointer' : 'default', overflow: 'hidden' }}
+            onClick={isEditing ? () => fileInputRef.current?.click() : undefined}
+            title={isEditing ? 'Change profile photo' : undefined}
+          >
+            {previewUrl ? (
+              <img src={previewUrl} alt="Preview" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : currentUser?.profile_picture_url ? (
+              <img src={currentUser.profile_picture_url} alt="Profile" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : (
+              getInitials(currentUser?.name)
+            )}
+            {isEditing && (
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+                <Camera style={{ width: '28px', height: '28px', color: 'white' }} />
+              </div>
+            )}
           </div>
 
           {/* Serif font name with gradient first name highlight */}

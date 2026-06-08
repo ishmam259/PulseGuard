@@ -411,6 +411,28 @@ export async function getWellnessSummary(patientId) {
   return res.ok ? await res.json() : null
 }
 
+// ── Nutrition API ──
+
+export async function logNutrition(data) {
+  const res = await apiFetch('/nutrition/log', { method: 'POST', body: JSON.stringify(data) })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function deleteNutritionEntry(id) {
+  const res = await apiFetch(`/nutrition/log/${id}`, { method: 'DELETE' })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function getNutritionDaily() {
+  const res = await apiFetch('/nutrition/daily')
+  return res.ok ? await res.json() : null
+}
+
+export async function getNutritionSummary(patientId) {
+  const res = await apiFetch(`/nutrition/summary/${patientId}`)
+  return res.ok ? await res.json() : null
+}
+
 // ── AI Config API ──
 
 export async function getAIConfig() {

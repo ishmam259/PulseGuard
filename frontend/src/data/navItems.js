@@ -1,5 +1,5 @@
 import $ from '../config/strings'
-import { Home, MessageCircle, Users, HeartPulse, BellRing, Droplets, User, Sparkles, CalendarHeart, GraduationCap, Pill } from 'lucide-react'
+import { Home, MessageCircle, Users, HeartPulse, BellRing, Droplets, User, Sparkles, CalendarHeart, GraduationCap, Pill, Salad } from 'lucide-react'
 
 export const patientNavItems = (locale) => [
   { label: $('NAV_P_HOME', locale),      to: '/patient/dashboard',      icon: '', Icon: Home },
@@ -9,6 +9,7 @@ export const patientNavItems = (locale) => [
   { label: $('NAV_P_HEALTH', locale),    to: '/patient/daily-check',    icon: '', Icon: HeartPulse },
   { label: $('NAV_P_ALERTS', locale),    to: '/patient/alerts',         icon: '', Icon: BellRing },
   { label: $('NAV_P_WELLNESS', locale),  to: '/patient/wellness',       icon: '', Icon: Droplets },
+  { label: $('NAV_P_NUTRITION', locale), to: '/patient/nutrition',      icon: '', Icon: Salad },
   { label: $('NAV_P_MEDICINE', locale),  to: '/patient/medicine-check', icon: '', Icon: Pill },
   { label: $('NAV_P_EDUCATION', locale), to: '/patient/education',      icon: '', Icon: GraduationCap },
   { label: $('NAV_P_PROFILE', locale),   to: '/patient/profile',        icon: '', Icon: User },

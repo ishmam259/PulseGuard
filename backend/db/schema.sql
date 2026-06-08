@@ -174,6 +174,22 @@ CREATE INDEX IF NOT EXISTS idx_water_logs_patient
 CREATE INDEX IF NOT EXISTS idx_vomit_logs_patient
   ON vomit_logs (patient_id, logged_at DESC);
 
+-- Daily nutrition log (5-nutrient pregnancy tracker)
+CREATE TABLE IF NOT EXISTS nutrition_logs (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id      UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  food_name       TEXT NOT NULL,
+  meal_type       TEXT NOT NULL CHECK (meal_type IN ('breakfast','lunch','dinner','snack')),
+  calories_kcal   NUMERIC(6,1) DEFAULT 0,
+  protein_g       NUMERIC(5,2) DEFAULT 0,
+  iron_mg         NUMERIC(5,2) DEFAULT 0,
+  folic_acid_mcg  NUMERIC(6,1) DEFAULT 0,
+  calcium_mg      NUMERIC(6,1) DEFAULT 0,
+  logged_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_nutrition_logs_patient
+  ON nutrition_logs (patient_id, logged_at DESC);
+
 -- ═══════════════════════════════════════════════════════════
 -- Conduit (matrix) credentials for community chat
 -- ═══════════════════════════════════════════════════════════
