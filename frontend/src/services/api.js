@@ -102,6 +102,16 @@ export async function login(data) {
   return { ok: res.ok, ...result }
 }
 
+export async function googleSignIn(credential, role) {
+  const res = await apiFetch('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential, role }),
+  })
+  const result = await res.json()
+  if (res.ok) setTokens(result.token, result.refreshToken)
+  return { ok: res.ok, ...result }
+}
+
 export async function getMe() {
   const res = await apiFetch('/auth/me')
   return res.ok ? (await res.json()).user : null
@@ -111,6 +121,14 @@ export async function updateProfile(data) {
   const res = await apiFetch('/auth/profile', {
     method: 'PUT',
     body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function uploadProfileImage(base64DataUri) {
+  const res = await apiFetch('/auth/upload-image', {
+    method: 'POST',
+    body: JSON.stringify({ image: base64DataUri }),
   })
   return { ok: res.ok, ...(await res.json()) }
 }
@@ -188,12 +206,66 @@ export async function resolveConflict(id, resolution) {
 
 // ── AI API ──
 
+export async function medicineSearch(q) {
+  const res = await apiFetch(`/medicine/search?q=${encodeURIComponent(q)}`)
+  return res.ok ? res.json() : { results: [], error: 'unreachable' }
+}
+
+export async function medicineCheck(payload) {
+  const res = await apiFetch('/medicine/check', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+  return res.ok ? res.json() : { error: 'offline', offline: true }
+}
+
+export async function medicineSafety(name, pregnancyWeek, language) {
+  const res = await apiFetch('/medicine/safety', {
+    method: 'POST',
+    body: JSON.stringify({ name, pregnancyWeek, language }),
+  })
+  return res.ok ? res.json() : { error: 'AI unavailable' }
+}
+
 export async function aiChat(message, language = 'en') {
   const res = await apiFetch('/ai/chat', {
     method: 'POST',
     body: JSON.stringify({ message, language }),
   })
   return res.ok ? await res.json() : { response: 'AI service unavailable', offline: true }
+}
+
+export async function getAIChats(q = '') {
+  const res = await apiFetch(`/ai/chats?q=${encodeURIComponent(q)}`)
+  return res.ok ? (await res.json()).chats : []
+}
+
+export async function createAIChat(title) {
+  const res = await apiFetch('/ai/chats', {
+    method: 'POST',
+    body: JSON.stringify({ title }),
+  })
+  return res.ok ? await res.json() : null
+}
+
+export async function getAIChat(id) {
+  const res = await apiFetch(`/ai/chats/${id}`)
+  return res.ok ? await res.json() : null
+}
+
+export async function sendAIChatMessage(id, message, language = 'en') {
+  const res = await apiFetch(`/ai/chats/${id}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ message, language }),
+  })
+  return res.ok ? await res.json() : { response: 'AI service unavailable', offline: true }
+}
+
+export async function deleteAIChat(id) {
+  const res = await apiFetch(`/ai/chats/${id}`, {
+    method: 'DELETE',
+  })
+  return res.ok
 }
 
 export async function aiPredict(vitals) {
@@ -239,6 +311,36 @@ export async function resolveAlert(id, status) {
   const res = await apiFetch(`/alerts/${id}/resolve`, {
     method: 'PUT',
     body: JSON.stringify({ status }),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+// ── Emergency Contacts API ──
+
+export async function getEmergencyContacts() {
+  const res = await apiFetch('/emergency-contacts')
+  return res.ok ? (await res.json()).contacts : []
+}
+
+export async function createEmergencyContact(data) {
+  const res = await apiFetch('/emergency-contacts', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function updateEmergencyContact(id, data) {
+  const res = await apiFetch(`/emergency-contacts/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function deleteEmergencyContact(id) {
+  const res = await apiFetch(`/emergency-contacts/${id}`, {
+    method: 'DELETE',
   })
   return { ok: res.ok, ...(await res.json()) }
 }
@@ -364,6 +466,46 @@ export async function getWaterWeekTrend() {
 export async function getWellnessSummary(patientId) {
   const res = await apiFetch(`/wellness/summary/${patientId}`)
   return res.ok ? await res.json() : null
+}
+
+// ── Nutrition API ──
+
+export async function logNutrition(data) {
+  const res = await apiFetch('/nutrition/log', { method: 'POST', body: JSON.stringify(data) })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function deleteNutritionEntry(id) {
+  const res = await apiFetch(`/nutrition/log/${id}`, { method: 'DELETE' })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function getNutritionDaily() {
+  const res = await apiFetch('/nutrition/daily')
+  return res.ok ? await res.json() : null
+}
+
+export async function getNutritionSummary(patientId) {
+  const res = await apiFetch(`/nutrition/summary/${patientId}`)
+  return res.ok ? await res.json() : null
+}
+
+export async function searchNutritionFoods(q, category) {
+  const params = new URLSearchParams()
+  if (q) params.set('q', q)
+  if (category) params.set('category', category)
+  const res = await apiFetch(`/nutrition/foods/search?${params}`)
+  return res.ok ? (await res.json()).foods : []
+}
+
+export async function getNutritionWeekly() {
+  const res = await apiFetch('/nutrition/weekly')
+  return res.ok ? await res.json() : null
+}
+
+export async function updateNutritionEntry(id, data) {
+  const res = await apiFetch(`/nutrition/log/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  return { ok: res.ok, ...(await res.json()) }
 }
 
 // ── AI Config API ──

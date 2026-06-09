@@ -1,0 +1,609 @@
+/* ═══════════════════════════════════════════════════════════
+   PulseGuard AI – Patient Education Stylesheet
+   Premium redesign utilizing existing design system variables
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Banner ── */
+.edu-banner {
+  background: color-mix(in oklab, var(--color-surface) 60%, transparent);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.edu-banner__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.edu-banner__rec {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}
+
+.edu-banner__week {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.edu-banner__week-num {
+  font-style: italic;
+  font-family: var(--font-display);
+  color: var(--color-primary);
+  padding-left: 2px;
+}
+
+.edu-banner__trimester {
+  font-size: 17px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.edu-banner__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(204, 43, 94, 0.08);
+  border: 1px solid rgba(204, 43, 94, 0.2);
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.edu-banner__badge-icon {
+  width: 12px;
+  height: 12px;
+  fill: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ── Tabs Navigation ── */
+.edu-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 16px 0;
+}
+
+.edu-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background: color-mix(in oklab, var(--color-surface) 60%, transparent);
+  color: var(--color-text-secondary);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.edu-tab-btn:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.edu-tab-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: var(--shadow-glow-primary);
+}
+
+.edu-tab-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Filter Chips ── */
+.edu-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 4px;
+}
+
+.edu-chip-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background: color-mix(in oklab, var(--color-surface) 60%, transparent);
+  color: var(--color-muted);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.edu-chip-btn:hover {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+}
+
+.edu-chip-btn.active {
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  border-color: var(--color-primary-light);
+}
+
+/* ── Accordion List ── */
+.edu-accordion-container {
+  border-radius: 24px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  overflow: hidden;
+  margin-top: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.edu-accordion-item {
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--duration-fast);
+}
+
+.edu-accordion-item:last-child {
+  border-bottom: none;
+}
+
+.edu-accordion-trigger {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 24px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-fast);
+}
+
+.edu-accordion-trigger:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.edu-accordion-title {
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--color-text);
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.edu-accordion-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.edu-accordion-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--color-muted);
+  transition: transform var(--duration-normal) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.edu-accordion-item.open .edu-accordion-chevron {
+  transform: rotate(180deg);
+  color: var(--color-primary);
+}
+
+.edu-accordion-content {
+  padding: 0 24px 20px 24px;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.edu-accordion-content p {
+  margin-bottom: 8px;
+}
+
+.edu-accordion-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── FAQ Grid Layout ── */
+.edu-faq-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  align-items: stretch;
+}
+
+@media (min-width: 1024px) {
+  .edu-faq-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+.edu-faq-grid .edu-accordion-item,
+.edu-faq-grid .edu-accordion-item:last-child {
+  border: 1px solid var(--color-border);
+  border-radius: 28px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.edu-faq-grid .edu-accordion-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-light);
+}
+
+.edu-faq-grid .edu-accordion-item.open {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-glow-primary-dim);
+}
+
+.edu-faq-grid .edu-accordion-trigger {
+  padding: 22px 24px;
+  flex: 1;
+}
+
+.edu-faq-grid .edu-accordion-content {
+  padding: 0 24px 22px 24px;
+}
+
+.edu-tag-trimester {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid rgba(204, 43, 94, 0.12);
+}
+
+.edu-tag-rec {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.edu-tag-rec svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--color-primary);
+}
+
+/* ── Library Section ── */
+.edu-lib-section {
+  margin-top: 32px;
+}
+
+.edu-lib-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.edu-lib-section-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: 700;
+}
+
+.edu-lib-section-count {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ── Hospital Bag Progress Card ── */
+.edu-progress-card {
+  background: color-mix(in oklab, var(--color-surface) 65%, transparent);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.edu-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.edu-progress-meta-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.edu-progress-meta-title span {
+  font-family: var(--font-sans);
+}
+
+.edu-progress-meta-percentage {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-left: 8px;
+}
+
+.edu-progress-sub {
+  font-size: 17px;
+  color: var(--color-muted);
+  margin-top: 4px;
+}
+
+.edu-progress-bar-container {
+  height: 8px;
+  background: var(--color-surface-hover);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--color-border);
+}
+
+.edu-progress-bar {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 999px;
+  transition: width var(--duration-slow) var(--ease-out);
+  position: relative;
+}
+
+.edu-progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(255, 255, 255, 0.15) 8px,
+    rgba(255, 255, 255, 0.15) 16px
+  );
+  animation: progressStripe 1.5s linear infinite;
+}
+
+.edu-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-muted);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.edu-reset-btn:hover:not(:disabled) {
+  background: var(--color-surface);
+  border-color: var(--color-border-light);
+  color: var(--color-text);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.edu-reset-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.edu-reset-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Checklist Grid & Cards ── */
+.edu-checklist-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (min-width: 768px) {
+  .edu-checklist-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .edu-checklist-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.edu-checklist-card {
+  border-radius: 24px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edu-checklist-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 12px;
+}
+
+.edu-checklist-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edu-checklist-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.edu-checklist-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.edu-checklist-card-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.edu-checklist-card-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.edu-checklist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edu-checklist-item-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-hover);
+  cursor: pointer;
+  font-size: 17px;
+  color: var(--color-text-secondary);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.edu-checklist-item-btn:hover {
+  background: var(--color-surface);
+  border-color: var(--color-border-light);
+  color: var(--color-text);
+  transform: translateX(2px);
+}
+
+.edu-checklist-item-btn.packed {
+  background: var(--color-primary-dim);
+  border-color: rgba(204, 43, 94, 0.15);
+  color: var(--color-text);
+}
+
+.edu-checklist-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: all var(--duration-fast);
+  flex-shrink: 0;
+}
+
+.edu-checklist-item-btn.packed .edu-checklist-checkbox {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.edu-checklist-checkbox svg {
+  width: 12px;
+  height: 12px;
+}
+
+.edu-checklist-item-text {
+  text-align: left;
+  flex: 1;
+  transition: opacity var(--duration-fast);
+}
+
+.edu-checklist-item-btn.packed .edu-checklist-item-text {
+  text-decoration: line-through;
+  opacity: 0.6;
+}

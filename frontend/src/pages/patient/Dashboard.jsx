@@ -6,6 +6,15 @@ import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
 import { formatDate } from '../../utils/date'
+import { 
+  Heart, 
+  MessageCircle, 
+  Sparkles, 
+  AlertTriangle, 
+  Users, 
+  ArrowRight, 
+  HeartPulse 
+} from 'lucide-react'
 
 export default function Dashboard() {
   const { currentUser, connectivity, locale } = useApp()
@@ -31,146 +40,259 @@ export default function Dashboard() {
     loadPatientData()
   }, [])
 
+  const riskLevelClass = (level) => {
+    const l = (level || 'low').toLowerCase();
+    if (l === 'high') return 'badge--high';
+    if (l === 'moderate') return 'badge--moderate';
+    return 'badge--low';
+  }
+
   return (
     <MobileLayout
       title={$('PAGE_TITLE_DASHBOARD', locale)}
       status={connectivity}
       navItems={patientNavItems(locale)}
     >
-      <div className="animate-fade-in">
+      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {loading ? (
-          <div className="card text-center" style={{ padding: '2rem' }}>
+          <div className="card text-center" style={{ padding: '3rem 2rem' }}>
             <p className="muted animate-pulse">{$('DASH_LOADING', locale)}</p>
           </div>
         ) : !patient ? (
-          <div className="card" style={{
-            background: 'var(--gradient-surface)',
-            border: '1px solid var(--color-border)',
-            borderLeft: '4px solid var(--color-primary)',
-            padding: '2rem 1.5rem',
-            textAlign: 'center',
-          }}>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary)', marginBottom: '0.75rem' }}>
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-            <h2 style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>{$('DASH_WELCOME_HEADING_PREFIX', locale)} {currentUser?.name?.split(' ')[0] || 'Mother'}!</h2>
-            <p className="muted" style={{ marginBottom: '1.5rem', lineHeight: 1.6 }}>
+          /* Profile incomplete welcome state */
+          <div className="card card-highlight-left text-center" style={{ padding: '2.5rem 1.5rem' }}>
+            <div className="mx-auto" style={{ display: 'grid', height: '64px', width: '64px', placeItems: 'center', borderRadius: '16px', background: 'var(--color-primary-dim)', color: 'var(--color-primary)', margin: '0 auto 1.5rem' }}>
+              <HeartPulse style={{ height: '32px', width: '32px' }} />
+            </div>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+              {$('DASH_WELCOME_HEADING_PREFIX', locale)} {currentUser?.name?.split(' ')[0] || 'Mother'}!
+            </h2>
+            <p className="muted" style={{ marginBottom: '1.5rem', lineHeight: 1.6, maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
               {$('DASH_WELCOME_BODY', locale)}
             </p>
             <button
               type="button"
-              className="btn btn--primary btn--large"
+              className="btn btn--primary"
               onClick={() => navigate('/patient/onboarding')}
             >
               {$('DASH_COMPLETE_PROFILE_BTN', locale)}
             </button>
           </div>
         ) : (
-          <div className="card greeting-card">
-            <h2>{$('DASH_GREETING_PREFIX', locale)} {patient.name}</h2>
-            <p className="muted">{$('DASH_WEEK_LABEL', locale)} <strong>{patient.gestational_week || 'N/A'}</strong></p>
-            {patient.lmp_recorded_date != null && patient.initial_gestational_week != null && (
-              <p className="muted" style={{ fontSize: '12px', marginTop: '0.25rem' }}>
-                {$('PREG_WEEK_INITIAL', locale).replace('$W', patient.initial_gestational_week)}{' '}
-                {new Date(patient.lmp_recorded_date).toLocaleDateString(
-                  locale === 'bn' ? 'bn-BD' : 'en-GB',
-                  { day: 'numeric', month: 'short', year: 'numeric' }
-                )}
-              </p>
-            )}
-            <span className={`badge badge--${(patient.risk_level || 'low').toLowerCase()}`} style={{ marginTop: '0.5rem' }}>
-              {(patient.risk_level || 'Low').charAt(0).toUpperCase() + (patient.risk_level || 'low').slice(1)} {$('W_DETAILS_RISK_SUFFIX', locale)}
+          /* Main welcome greeting card */
+          <div className="card" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px', backgroundColor: 'var(--color-surface)', border: '1px solid color-mix(in oklab, var(--color-primary) 6%, transparent)', boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.01)' }}>
+            <p className="muted" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-muted)' }}>
+              {$('DASH_GREETING_PREFIX', locale).trim()}
+            </p>
+            <h2 className="font-display" style={{ fontSize: '2.2rem', fontWeight: '700', marginTop: '8px', marginBottom: '8px', letterSpacing: '-0.01em', color: 'var(--color-text)' }}>
+              {(() => {
+                const name = patient.name;
+                if (name.includes('Ishmam')) {
+                  const parts = name.split('Ishmam');
+                  return (
+                    <>
+                      {parts[0]}<span className="italic" style={{ color: 'var(--color-primary)', fontWeight: '700' }}>Ishmam</span>{parts[1]}
+                    </>
+                  );
+                }
+                const words = name.split(' ');
+                if (words.length <= 1) return name;
+                const lastWord = words[words.length - 1];
+                const rest = words.slice(0, -1).join(' ');
+                return (
+                  <>
+                    {rest} <span className="italic" style={{ color: 'var(--color-primary)', fontWeight: '700' }}>{lastWord}</span>
+                  </>
+                );
+              })()}
+            </h2>
+            
+            <div className="muted" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', marginBottom: '16px' }}>
+              <span>
+                {$('DASH_WEEK_LABEL', locale)} <strong style={{ color: 'var(--color-text)' }}>{patient.gestational_week || 'N/A'}</strong>
+              </span>
+              {patient.lmp_recorded_date != null && patient.initial_gestational_week != null && (
+                <>
+                  <span style={{ height: '4px', width: '4px', borderRadius: '50%', background: 'var(--color-border)' }} />
+                  <span>
+                    {$('PREG_WEEK_INITIAL', locale).replace('$W', patient.initial_gestational_week)}{' '}
+                    {new Date(patient.lmp_recorded_date).toLocaleDateString(
+                      locale === 'bn' ? 'bn-BD' : 'en-GB',
+                      { day: 'numeric', month: 'short', year: 'numeric' }
+                    )}
+                  </span>
+                </>
+              )}
+            </div>
+
+            <span className={`badge ${riskLevelClass(patient.risk_level)}`} style={{ textTransform: 'uppercase', fontWeight: '700', fontSize: '11px', letterSpacing: '0.05em', display: 'inline-flex', alignItems: 'center', backgroundColor: 'var(--color-surface)', border: '1px solid', borderColor: 'currentColor', padding: '6px 12px', borderRadius: '9999px' }}>
+              <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: 'currentColor', marginRight: '6px' }} />
+              {(patient.risk_level || 'Low').toUpperCase()} {$('W_DETAILS_RISK_SUFFIX', locale).toUpperCase()}
             </span>
           </div>
         )}
 
         {/* Quick Actions */}
-        <div className="section-header" style={{ marginTop: '1.5rem' }}>
-          <h3>{$('DASH_SECTION_QUICK_ACTIONS', locale)}</h3>
-        </div>
-        <div className="grid two">
-          <Link to="/patient/daily-check" className="card action-card stagger" style={{ animationDelay: '0s' }}>
-            <svg style={{ width: '40px', height: '40px', color: 'var(--color-primary)', marginBottom: '4px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            <h4>{$('DASH_ACTION_DAILY_TITLE', locale)}</h4>
-            <p className="muted">{$('DASH_ACTION_DAILY_DESC', locale)}</p>
-          </Link>
-          <Link to="/patient/ai-chat" className="card action-card stagger" style={{ animationDelay: '0.1s' }}>
-            <svg style={{ width: '40px', height: '40px', color: 'var(--color-secondary)', marginBottom: '4px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-            </svg>
-            <h4>{$('DASH_ACTION_AI_TITLE', locale)}</h4>
-            <p className="muted">{$('DASH_ACTION_AI_DESC', locale)}</p>
-          </Link>
-          <Link to="/patient/nutrition" className="card action-card stagger" style={{ animationDelay: '0.2s' }}>
-            <svg style={{ width: '40px', height: '40px', color: 'var(--color-primary)', marginBottom: '4px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
-            </svg>
-            <h4>{$('DASH_ACTION_NUTRITION_TITLE', locale)}</h4>
-            <p className="muted">{$('DASH_ACTION_NUTRITION_DESC', locale)}</p>
-          </Link>
-          <Link to="/patient/emergency" className="card action-card alert stagger" style={{ animationDelay: '0.3s' }}>
-            <svg style={{ width: '40px', height: '40px', color: 'var(--color-danger)', marginBottom: '4px', animation: 'pulse 0.9s infinite' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <h4>{$('DASH_ACTION_EMERGENCY_TITLE', locale)}</h4>
-            <p className="muted">{$('DASH_ACTION_EMERGENCY_DESC', locale)}</p>
-          </Link>
-          <Link to="/patient/community-chat" className="card action-card stagger" style={{ animationDelay: '0.4s' }}>
-            <svg style={{ width: '40px', height: '40px', color: 'var(--color-primary)', marginBottom: '4px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2v4l-4-4H7a2 2 0 0 1-2-2v-1M7 8a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 4v-4H7" />
-            </svg>
-            <h4>{$('DASH_ACTION_COMMUNITY_TITLE', locale)}</h4>
-            <p className="muted">{$('DASH_ACTION_COMMUNITY_DESC', locale)}</p>
-          </Link>
-          <Link to="/patient/education" className="card action-card stagger" style={{ animationDelay: '0.5s' }}>
-            <svg style={{ width: '40px', height: '40px', color: 'var(--color-primary)', marginBottom: '4px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            <h4>{$('DASH_ACTION_EDUCATION_TITLE', locale)}</h4>
-            <p className="muted">{$('DASH_ACTION_EDUCATION_DESC', locale)}</p>
-          </Link>
-        </div>
-
-        <div className="section-header" style={{ marginTop: '1.5rem' }}>
-          <h3>{$('DASH_SECTION_HEALTH_SUMMARY', locale)}</h3>
-        </div>
-        <div className="card">
-          <div className="summary-grid">
-            <div className="kpi-card">
-              <span className="muted">{$('DASH_KPI_BP', locale)}</span>
-              <span className={latestVitals ? "kpi" : "kpi-empty"}>
-                {latestVitals ? `${latestVitals.bp_systolic}/${latestVitals.bp_diastolic}` : 'N/A'}
-              </span>
-            </div>
-            <div className="kpi-card">
-              <span className="muted">{$('DASH_KPI_WEIGHT', locale)}</span>
-              <span className={latestVitals?.weight_kg ? "kpi" : "kpi-empty"}>
-                {latestVitals?.weight_kg ? `${latestVitals.weight_kg} kg` : 'N/A'}
-              </span>
-            </div>
-            <div className="kpi-card">
-              <span className={latestVitals?.temperature_c ? "muted" : "muted"}>{$('DASH_KPI_TEMP', locale)}</span>
-              <span className={latestVitals?.temperature_c ? "kpi" : "kpi-empty"}>
-                {latestVitals?.temperature_c ? `${latestVitals.temperature_c} °C` : 'N/A'}
-              </span>
-            </div>
-            <div className="kpi-card">
-              <span className="muted">{$('DASH_KPI_LAST_CHECKUP', locale)}</span>
-              <span className={latestVitals ? "kpi" : "kpi-empty"}>
-                {latestVitals ? formatDate(latestVitals.recorded_at) : $('DASH_KPI_NO_RECORDS', locale)}
-              </span>
-            </div>
+        <section>
+          <div className="section-header">
+            <h3 className="font-display">{$('DASH_SECTION_QUICK_ACTIONS', locale)}</h3>
           </div>
+          <div className="grid two">
+            
+            {/* Daily check */}
+            <Link to="/patient/daily-check" className="action-card">
+              <div className="action-card-header">
+                <div className="action-card-icon-wrapper">
+                  <Heart style={{ height: '20px', width: '20px' }} />
+                </div>
+                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px' }} />
+              </div>
+              <div>
+                <h4 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)' }}>
+                  {$('DASH_ACTION_DAILY_TITLE', locale)}
+                </h4>
+                <p className="muted" style={{ marginTop: '4px', fontSize: '12px' }}>
+                  {$('DASH_ACTION_DAILY_DESC', locale)}
+                </p>
+              </div>
+            </Link>
+
+            {/* AI Chat */}
+            <Link to="/patient/ai-chat" className="action-card">
+              <div className="action-card-header">
+                <div className="action-card-icon-wrapper">
+                  <MessageCircle style={{ height: '20px', width: '20px' }} />
+                </div>
+                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px' }} />
+              </div>
+              <div>
+                <h4 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)' }}>
+                  {$('DASH_ACTION_AI_TITLE', locale)}
+                </h4>
+                <p className="muted" style={{ marginTop: '4px', fontSize: '12px' }}>
+                  {$('DASH_ACTION_AI_DESC', locale)}
+                </p>
+              </div>
+            </Link>
+
+            {/* Wellness (Nutrition/Water/Vomit) */}
+            <Link to="/patient/wellness" className="action-card">
+              <div className="action-card-header">
+                <div className="action-card-icon-wrapper">
+                  <Sparkles style={{ height: '20px', width: '20px' }} />
+                </div>
+                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px' }} />
+              </div>
+              <div>
+                <h4 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)' }}>
+                  {locale === 'en' ? 'Wellness Tracker' : 'ওয়েলনেস ট্র্যাকার'}
+                </h4>
+                <p className="muted" style={{ marginTop: '4px', fontSize: '12px' }}>
+                  {$('DASH_ACTION_NUTRITION_DESC', locale)}
+                </p>
+              </div>
+            </Link>
+
+            {/* Emergency SOS */}
+            <Link to="/patient/emergency" className="action-card alert">
+              <div className="action-card-header">
+                <div className="action-card-icon-wrapper" style={{ animation: 'pulse 1s infinite' }}>
+                  <AlertTriangle style={{ height: '20px', width: '20px' }} />
+                </div>
+                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px', color: 'var(--color-danger)' }} />
+              </div>
+              <div>
+                <h4 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-danger)' }}>
+                  {$('DASH_ACTION_EMERGENCY_TITLE', locale)}
+                </h4>
+                <p className="muted" style={{ marginTop: '4px', fontSize: '12px', color: 'var(--color-danger-light)' }}>
+                  {$('DASH_ACTION_EMERGENCY_DESC', locale)}
+                </p>
+              </div>
+            </Link>
+
+            {/* Community Chat */}
+            <Link to="/patient/community-chat" className="action-card" style={{ gridColumn: 'span 2' }}>
+              <div className="action-card-header">
+                <div className="action-card-icon-wrapper">
+                  <Users style={{ height: '20px', width: '20px' }} />
+                </div>
+                <ArrowRight className="arrow-icon" style={{ height: '16px', width: '16px' }} />
+              </div>
+              <div>
+                <h4 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)' }}>
+                  {$('DASH_ACTION_COMMUNITY_TITLE', locale)}
+                </h4>
+                <p className="muted" style={{ marginTop: '4px', fontSize: '12px' }}>
+                  {$('DASH_ACTION_COMMUNITY_DESC', locale)}
+                </p>
+              </div>
+            </Link>
+
+          </div>
+        </section>
+
+        {/* Health Summary */}
+        <section>
+          <div className="section-header">
+            <h3 className="font-display">{$('DASH_SECTION_HEALTH_SUMMARY', locale)}</h3>
+          </div>
+          <div className="detail-cards-grid">
+            
+            {/* Blood Pressure */}
+            <div className="detail-card">
+              <p className="detail-card-label">
+                {$('DASH_KPI_BP', locale)}
+              </p>
+              <p className="detail-card-value--accent">
+                {latestVitals ? `${latestVitals.bp_systolic}/${latestVitals.bp_diastolic}` : 'N/A'}
+              </p>
+            </div>
+
+            {/* Weight */}
+            <div className="detail-card">
+              <p className="detail-card-label">
+                {$('DASH_KPI_WEIGHT', locale)}
+              </p>
+              <p className="detail-card-value--accent">
+                {latestVitals?.weight_kg ? `${latestVitals.weight_kg} kg` : 'N/A'}
+              </p>
+            </div>
+
+            {/* Temperature */}
+            <div className="detail-card">
+              <p className="detail-card-label">
+                {$('DASH_KPI_TEMP', locale)}
+              </p>
+              <p className="detail-card-value--accent">
+                {latestVitals?.temperature_c ? `${latestVitals.temperature_c} °C` : 'N/A'}
+              </p>
+            </div>
+
+            {/* Last Checkup */}
+            <div className="detail-card">
+              <p className="detail-card-label">
+                {$('DASH_KPI_LAST_CHECKUP', locale)}
+              </p>
+              <p className="detail-card-value--accent" style={{ lineBreak: 'anywhere' }}>
+                {latestVitals ? formatDate(latestVitals.recorded_at) : $('DASH_KPI_NO_RECORDS', locale)}
+              </p>
+            </div>
+
+          </div>
+
           {patient && (
-            <div style={{ marginTop: '1rem', textAlign: 'right' }}>
-              <Link to="/patient/records" className="btn btn--ghost" style={{ fontSize: '0.85rem' }}>
-                {$('DASH_VIEW_ALL_RECORDS', locale)}
+            <div style={{ marginTop: '1.25rem', textAlign: 'right' }}>
+              <Link 
+                to="/patient/records" 
+                className="btn btn--secondary"
+              >
+                <span>{$('DASH_VIEW_ALL_RECORDS', locale)}</span>
+                <ArrowRight style={{ height: '14px', width: '14px' }} />
               </Link>
             </div>
           )}
-        </div>
+        </section>
       </div>
     </MobileLayout>
   )

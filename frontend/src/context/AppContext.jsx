@@ -43,6 +43,14 @@ export function AppProvider({ children }) {
     return result
   }, [])
 
+  const loginWithGoogle = useCallback(async (credential, role) => {
+    const result = await api.googleSignIn(credential, role)
+    if (result.ok) {
+      setCurrentUser(result.user)
+    }
+    return result
+  }, [])
+
   // Manage WebSocket connection for real-time notifications
   useEffect(() => {
     if (!currentUser) return
@@ -206,6 +214,7 @@ export function AppProvider({ children }) {
     setCurrentUser,
     loading,
     login,
+    loginWithGoogle,
     register,
     logout,
     notifications,

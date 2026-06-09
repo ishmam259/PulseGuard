@@ -4,6 +4,19 @@ import { useApp } from '../../context/AppContext'
 import { patientNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
 import $ from '../../config/strings'
+import './Education.css'
+import {
+  ChevronDown,
+  Sparkles,
+  BookOpen,
+  Briefcase,
+  Star,
+  Check,
+  RotateCcw,
+  Baby,
+  HeartPulse,
+  FileText,
+} from 'lucide-react'
 import {
   FAQ_CATEGORIES,
   LIBRARY_CATEGORIES,
@@ -14,15 +27,18 @@ import {
   TRIMESTER_LABEL_KEY,
 } from '../../data/education'
 
-// ─── Sub-components (kept inside this file to keep the new
-// feature self-contained and not require any other file change) ───
+function loc(obj, field, locale) {
+  return locale === 'bn' && obj[field + '_bn'] ? obj[field + '_bn'] : obj[field]
+}
+
+// ─── Sub-components ───
 
 function PregnancyBanner({ patient, trimester, locale }) {
   if (!patient || !patient.gestational_week) {
     return (
       <div className="edu-banner">
-        <div>
-          <div className="edu-banner__week">{$('EDU_BANNER_NO_PROFILE', locale)}</div>
+        <div className="edu-banner__content">
+          <p className="edu-banner__trimester">{$('EDU_BANNER_NO_PROFILE', locale)}</p>
         </div>
       </div>
     )
@@ -31,29 +47,36 @@ function PregnancyBanner({ patient, trimester, locale }) {
   const tLabel = tKey ? $(tKey, locale) : ''
   return (
     <div className="edu-banner">
-      <div>
-        <div className="edu-banner__week">
-          {$('EDU_BANNER_WEEK_PREFIX', locale)} {patient.gestational_week}
-        </div>
-        {tLabel && <div className="edu-banner__trimester">{tLabel}</div>}
-      </div>
-      {trimester && (
+      <div className="edu-banner__content">
         <span className="edu-banner__rec">{$('EDU_BANNER_RECOMMENDED', locale)}</span>
-      )}
+        <h2 className="edu-banner__week">
+          {$('EDU_BANNER_WEEK_PREFIX', locale)}
+          <span className="edu-banner__week-num"> {patient.gestational_week}</span>
+        </h2>
+        {tLabel && (
+          <p className="edu-banner__trimester">
+            {tLabel} · {locale === 'bn' ? 'এই সপ্তাহের নির্বাচিত পড়া' : 'curated reads for this week'}
+          </p>
+        )}
+      </div>
+      <span className="edu-banner__badge">
+        <Star className="edu-banner__badge-icon" />
+        {locale === 'bn' ? 'নির্বাচিত' : 'Curated'}
+      </span>
     </div>
   )
 }
 
 function ChipRow({ options, value, onChange }) {
   return (
-    <div className="chip-row" role="tablist" aria-label="filter">
+    <div className="edu-chip-row" role="tablist" aria-label="filter">
       {options.map((opt) => (
         <button
           key={opt.id}
           type="button"
           role="tab"
           aria-selected={value === opt.id}
-          className={'chip' + (value === opt.id ? ' active' : '')}
+          className={'edu-chip-btn' + (value === opt.id ? ' active' : '')}
           onClick={() => onChange(opt.id)}
         >
           {opt.label}
@@ -63,44 +86,41 @@ function ChipRow({ options, value, onChange }) {
   )
 }
 
-function Chevron() {
+function FaqItem({ item, isOpen, onToggle, trimester, recKey, locale }) {
   return (
-    <svg
-      className="edu-accordion__chev"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  )
-}
-
-function FaqItem({ item, isOpen, onToggle, trimester, recKey }) {
-  return (
-    <div className="edu-accordion" data-open={isOpen ? 'true' : 'false'}>
+    <div className={`edu-accordion-item ${isOpen ? 'open' : ''}`}>
       <button
         type="button"
-        className="edu-accordion__head"
+        className="edu-accordion-trigger"
         onClick={onToggle}
         aria-expanded={isOpen}
       >
-        <span style={{ flex: 1 }}>
-          {item.q}
-          {recKey && <span className="edu-tag">★</span>}
-          {trimester && <span className="edu-tag">{trimester}</span>}
+        <span className="edu-accordion-title" style={{ flex: 1, minWidth: 0, lineHeight: 1.4 }}>{loc(item, 'q', locale)}</span>
+        <span className="edu-accordion-meta" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+          {recKey && (
+            <span className="edu-tag-rec" title={locale === 'bn' ? 'প্রস্তাবিত' : 'Recommended'}>
+              <Star />
+            </span>
+          )}
+          {trimester && (
+            <span className="edu-tag-trimester">
+              {locale === 'bn'
+                ? trimester === 'first'
+                  ? '১ম ত্রৈমাসিক'
+                  : trimester === 'second'
+                    ? '২য় ত্রৈমাসিক'
+                    : '৩য় ত্রৈমাসিক'
+                : trimester}
+            </span>
+          )}
+          <ChevronDown className="edu-accordion-chevron" />
         </span>
-        <Chevron />
       </button>
-      <div className="edu-accordion__body" role="region">
-        <p>{item.a}</p>
-      </div>
+      {isOpen && (
+        <div className="edu-accordion-content" role="region">
+          <p>{loc(item, 'a', locale)}</p>
+        </div>
+      )}
     </div>
   )
 }
@@ -147,7 +167,7 @@ function FaqSection({ trimester, locale }) {
           {$('EDU_FAQ_EMPTY', locale)}
         </p>
       ) : (
-        <div style={{ marginTop: '0.75rem' }}>
+        <div className="edu-faq-grid animate-fade-in">
           {filtered.map((row) => (
             <FaqItem
               key={row.key}
@@ -167,48 +187,64 @@ function FaqSection({ trimester, locale }) {
 
 function LibraryArticle({ article, locale, recKey }) {
   const [open, setOpen] = useState(false)
-  // Resolve the structured field labels by category id
+  
   const fields = []
-  if (article.definition) fields.push({ label: $('EDU_LIB_ARTICLE_DEF', locale), value: article.definition })
-  if (article.symptoms) fields.push({ label: $('EDU_LIB_ARTICLE_SYMPTOMS', locale), value: article.symptoms })
-  if (article.risk_factors) fields.push({ label: $('EDU_LIB_ARTICLE_RISK_FACTORS', locale), value: article.risk_factors })
-  if (article.prevention) fields.push({ label: $('EDU_LIB_ARTICLE_PREVENTION', locale), value: article.prevention })
-  if (article.seek_help) fields.push({ label: $('EDU_LIB_ARTICLE_SEEK_HELP', locale), value: article.seek_help })
-  if (article.benefits) fields.push({ label: $('EDU_LIB_ARTICLE_BENEFITS', locale), value: article.benefits })
-  if (article.precautions) fields.push({ label: $('EDU_LIB_ARTICLE_PRECAUTIONS', locale), value: article.precautions })
-  if (article.contraindications) fields.push({ label: $('EDU_LIB_ARTICLE_CONTRAINDICATIONS', locale), value: article.contraindications })
-  if (article.meaning) fields.push({ label: $('EDU_LIB_ARTICLE_MEANING', locale), value: article.meaning })
-  if (article.why_it_matters) fields.push({ label: $('EDU_LIB_ARTICLE_WHY', locale), value: article.why_it_matters })
-  if (article.normal_range) fields.push({ label: $('EDU_LIB_ARTICLE_NORMAL_RANGE', locale), value: article.normal_range })
-  // Free-text body articles (categories B/C/F) fall back to `body`
+  if (article.definition) fields.push({ label: $('EDU_LIB_ARTICLE_DEF', locale), value: loc(article, 'definition', locale) })
+  if (article.symptoms) fields.push({ label: $('EDU_LIB_ARTICLE_SYMPTOMS', locale), value: loc(article, 'symptoms', locale) })
+  if (article.risk_factors) fields.push({ label: $('EDU_LIB_ARTICLE_RISK_FACTORS', locale), value: loc(article, 'risk_factors', locale) })
+  if (article.prevention) fields.push({ label: $('EDU_LIB_ARTICLE_PREVENTION', locale), value: loc(article, 'prevention', locale) })
+  if (article.seek_help) fields.push({ label: $('EDU_LIB_ARTICLE_SEEK_HELP', locale), value: loc(article, 'seek_help', locale) })
+  if (article.benefits) fields.push({ label: $('EDU_LIB_ARTICLE_BENEFITS', locale), value: loc(article, 'benefits', locale) })
+  if (article.precautions) fields.push({ label: $('EDU_LIB_ARTICLE_PRECAUTIONS', locale), value: loc(article, 'precautions', locale) })
+  if (article.contraindications) fields.push({ label: $('EDU_LIB_ARTICLE_CONTRAINDICATIONS', locale), value: loc(article, 'contraindications', locale) })
+  if (article.meaning) fields.push({ label: $('EDU_LIB_ARTICLE_MEANING', locale), value: loc(article, 'meaning', locale) })
+  if (article.why_it_matters) fields.push({ label: $('EDU_LIB_ARTICLE_WHY', locale), value: loc(article, 'why_it_matters', locale) })
+  if (article.normal_range) fields.push({ label: $('EDU_LIB_ARTICLE_NORMAL_RANGE', locale), value: loc(article, 'normal_range', locale) })
+
   if (fields.length === 0 && article.body) {
-    fields.push({ label: null, value: article.body })
+    fields.push({ label: null, value: loc(article, 'body', locale) })
   }
 
-  const title = article.title || article.term
+  const title = loc(article, article.title !== undefined ? 'title' : 'term', locale)
   return (
-    <div className="edu-accordion" data-open={open ? 'true' : 'false'}>
+    <div className={`edu-accordion-item ${open ? 'open' : ''}`}>
       <button
         type="button"
-        className="edu-accordion__head"
+        className="edu-accordion-trigger"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
-        <span style={{ flex: 1 }}>
-          {title}
-          {recKey && <span className="edu-tag">★</span>}
-          {article.trimester && <span className="edu-tag">{article.trimester}</span>}
+        <span className="edu-accordion-title" style={{ flex: 1, minWidth: 0, lineHeight: 1.4 }}>{title}</span>
+        <span className="edu-accordion-meta" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+          {recKey && (
+            <span className="edu-tag-rec" title={locale === 'bn' ? 'প্রস্তাবিত' : 'Recommended'}>
+              <Star />
+            </span>
+          )}
+          {article.trimester && (
+            <span className="edu-tag-trimester">
+              {locale === 'bn'
+                ? article.trimester === 'first'
+                  ? '১ম ত্রৈমাসিক'
+                  : article.trimester === 'second'
+                    ? '২য় ত্রৈমাসিক'
+                    : '৩য় ত্রৈমাসিক'
+                : article.trimester}
+            </span>
+          )}
+          <ChevronDown className="edu-accordion-chevron" />
         </span>
-        <Chevron />
       </button>
-      <div className="edu-accordion__body" role="region">
-        {fields.map((f, i) => (
-          <p key={i}>
-            {f.label && <strong>{f.label}: </strong>}
-            {f.value}
-          </p>
-        ))}
-      </div>
+      {open && (
+        <div className="edu-accordion-content" role="region">
+          {fields.map((f, i) => (
+            <p key={i}>
+              {f.label && <strong>{f.label}: </strong>}
+              {f.value}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -236,63 +272,62 @@ function LibrarySection({ trimester, locale }) {
     <div>
       <ChipRow options={options} value={catId} onChange={setCatId} />
       {visibleCategories.map((cat) => (
-        <div key={cat.id} style={{ marginTop: '1rem' }}>
-          <h3 className="text-gradient" style={{ margin: '0 0 0.5rem 0', fontSize: '1.05rem' }}>
-            {$(cat.key, locale)}
-          </h3>
-          {cat.articles.map((a) => (
-            <LibraryArticle
-              key={a.id}
-              article={a}
-              locale={locale}
-              recKey={trimester && a.trimester && a.trimester === trimester}
-            />
-          ))}
+        <div key={cat.id} className="edu-lib-section animate-fade-in">
+          <div className="edu-lib-section-header">
+            <h3 className="edu-lib-section-title">
+              {$(cat.key, locale)}
+            </h3>
+            <span className="edu-lib-section-count">
+              {cat.articles.length} {locale === 'bn' ? 'নিবন্ধ' : 'articles'}
+            </span>
+          </div>
+          <div className="edu-accordion-container">
+            {cat.articles.map((a) => (
+              <LibraryArticle
+                key={a.id}
+                article={a}
+                locale={locale}
+                recKey={trimester && a.trimester && a.trimester === trimester}
+              />
+            ))}
+          </div>
         </div>
       ))}
     </div>
   )
 }
 
-function ChecklistGroup({ title, items, packed, onToggle }) {
+function ChecklistGroup({ title, items, icon: Icon, packed, onToggle, locale }) {
   const groupTotal = items.length
   const groupPacked = items.filter((it) => packed[it.id]).length
   return (
-    <div className="card" style={{ marginBottom: '0.75rem' }}>
-      <div className="edu-group">
-        <span>{title}</span>
-        <span className="edu-group__count">
+    <div className="edu-checklist-card">
+      <div className="edu-checklist-card-header">
+        <div className="edu-checklist-card-title-group">
+          <span className="edu-checklist-card-icon">
+            <Icon />
+          </span>
+          <h4 className="edu-checklist-card-title">{title}</h4>
+        </div>
+        <span className="edu-checklist-card-count">
           {groupPacked}/{groupTotal}
         </span>
       </div>
-      <div className="edu-check-list">
+      <div className="edu-checklist-items">
         {items.map((it) => {
           const isPacked = !!packed[it.id]
           return (
-            <div
+            <button
               key={it.id}
-              className="edu-check"
-              data-packed={isPacked ? 'true' : 'false'}
-              role="checkbox"
-              aria-checked={isPacked}
-              tabIndex={0}
+              type="button"
+              className={`edu-checklist-item-btn ${isPacked ? 'packed' : ''}`}
               onClick={() => onToggle(it.id)}
-              onKeyDown={(e) => {
-                if (e.key === ' ' || e.key === 'Enter') {
-                  e.preventDefault()
-                  onToggle(it.id)
-                }
-              }}
             >
-              <span className="edu-check__box" aria-hidden="true">
-                {isPacked && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                )}
+              <span className="edu-checklist-checkbox">
+                {isPacked && <Check size={12} strokeWidth={3} />}
               </span>
-              <span className="edu-check__label">{it.label}</span>
-            </div>
+              <span className="edu-checklist-item-text">{loc(it, 'label', locale)}</span>
+            </button>
           )
         })}
       </div>
@@ -338,56 +373,74 @@ function ChecklistSection({ locale }) {
   const isComplete = totalPacked === HOSPITAL_BAG_TOTAL && HOSPITAL_BAG_TOTAL > 0
 
   return (
-    <div>
-      <div className="card" style={{ marginBottom: '0.75rem' }}>
-        <div className="edu-progress-meta">
+    <div className="animate-fade-in">
+      <div className="edu-progress-card">
+        <div className="edu-progress-header">
           <div>
-            <strong>{progressText}</strong>
-            <span className="muted text-sm" style={{ marginLeft: '0.5rem' }}>· {pctText}</span>
+            <h3 className="edu-progress-title">
+              {progressText}
+              <span className="edu-progress-meta-percentage">· {pctText}</span>
+            </h3>
+            <p className="edu-progress-sub">
+              {locale === 'bn'
+                ? 'ব্যাগ গোছানোর সাথে সাথে আপনার প্রয়োজনীয় জিনিসগুলো চিহ্নিত করুন।'
+                : 'Check items off as you pack your hospital bag.'}
+            </p>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             {isComplete && (
-              <span className="badge badge--online">{$('EDU_CHECK_DONE_BADGE', locale)}</span>
+              <span className="edu-banner__badge" style={{ background: 'var(--color-success-dim)', color: 'var(--color-success)', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
+                <Check size={12} strokeWidth={3} style={{ marginRight: '4px' }} />
+                {$('EDU_CHECK_DONE_BADGE', locale)}
+              </span>
             )}
             <button
               type="button"
-              className="btn btn--ghost"
+              className="edu-reset-btn"
               onClick={reset}
               disabled={totalPacked === 0}
-              style={{ fontSize: '0.8rem', padding: '4px 10px' }}
             >
+              <RotateCcw size={14} />
               {$('EDU_CHECK_RESET', locale)}
             </button>
           </div>
         </div>
-        <div className="edu-progress" aria-label="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-          <div className="edu-progress__bar" style={{ width: pct + '%' }} />
+        <div className="edu-progress-bar-container">
+          <div className="edu-progress-bar" style={{ width: `${pct}%` }} />
         </div>
       </div>
 
-      <ChecklistGroup
-        title={$('EDU_LIB_GROUP_MOTHER', locale)}
-        items={HOSPITAL_BAG.mother}
-        packed={packed}
-        onToggle={toggle}
-      />
-      <ChecklistGroup
-        title={$('EDU_LIB_GROUP_BABY', locale)}
-        items={HOSPITAL_BAG.baby}
-        packed={packed}
-        onToggle={toggle}
-      />
-      <ChecklistGroup
-        title={$('EDU_LIB_GROUP_DOCS', locale)}
-        items={HOSPITAL_BAG.documents}
-        packed={packed}
-        onToggle={toggle}
-      />
+      <div className="edu-checklist-grid">
+        <ChecklistGroup
+          title={$('EDU_LIB_GROUP_MOTHER', locale)}
+          items={HOSPITAL_BAG.mother}
+          icon={HeartPulse}
+          packed={packed}
+          onToggle={toggle}
+          locale={locale}
+        />
+        <ChecklistGroup
+          title={$('EDU_LIB_GROUP_BABY', locale)}
+          items={HOSPITAL_BAG.baby}
+          icon={Baby}
+          packed={packed}
+          onToggle={toggle}
+          locale={locale}
+        />
+        <ChecklistGroup
+          title={$('EDU_LIB_GROUP_DOCS', locale)}
+          items={HOSPITAL_BAG.documents}
+          icon={FileText}
+          packed={packed}
+          onToggle={toggle}
+          locale={locale}
+        />
+      </div>
     </div>
   )
 }
 
-// ─── Top-level page ─────────────────────────────────────────
+// ─── Top-level page ───
 
 export default function Education() {
   const { connectivity, locale } = useApp()
@@ -411,11 +464,11 @@ export default function Education() {
 
   const trimester = trimesterOfWeek(patient?.gestational_week)
 
-  const tabOptions = useMemo(
+  const tabs = useMemo(
     () => [
-      { id: 'faq', label: $('EDU_TAB_FAQ', locale) },
-      { id: 'library', label: $('EDU_TAB_LIBRARY', locale) },
-      { id: 'checklist', label: $('EDU_TAB_CHECKLIST', locale) },
+      { id: 'faq', label: $('EDU_TAB_FAQ', locale), icon: Sparkles },
+      { id: 'library', label: $('EDU_TAB_LIBRARY', locale), icon: BookOpen },
+      { id: 'checklist', label: $('EDU_TAB_CHECKLIST', locale), icon: Briefcase },
     ],
     [locale]
   )
@@ -435,10 +488,23 @@ export default function Education() {
           <>
             <PregnancyBanner patient={patient} trimester={trimester} locale={locale} />
 
-            <div className="section-header" style={{ marginTop: '0.5rem' }}>
-              <h3> </h3>
+            <div className="edu-tabs">
+              {tabs.map((tb) => {
+                const Icon = tb.icon
+                const active = tab === tb.id
+                return (
+                  <button
+                    key={tb.id}
+                    type="button"
+                    onClick={() => setTab(tb.id)}
+                    className={`edu-tab-btn ${active ? 'active' : ''}`}
+                  >
+                    <Icon />
+                    {tb.label}
+                  </button>
+                )
+              })}
             </div>
-            <ChipRow options={tabOptions} value={tab} onChange={setTab} />
 
             <div style={{ marginTop: '1rem' }}>
               {tab === 'faq' && <FaqSection trimester={trimester} locale={locale} />}

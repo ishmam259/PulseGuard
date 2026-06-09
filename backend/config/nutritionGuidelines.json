@@ -1,0 +1,52 @@
+{
+  "_comment": "All RDA values are daily targets for pregnant women",
+  "base_by_trimester": {
+    "1": {
+      "calories_kcal": 1800,
+      "protein_g": 60,
+      "carb_g": 175,
+      "fat_g": 55
+    },
+    "2": {
+      "calories_kcal": 2200,
+      "protein_g": 71,
+      "carb_g": 210,
+      "fat_g": 65
+    },
+    "3": {
+      "calories_kcal": 2400,
+      "protein_g": 71,
+      "carb_g": 225,
+      "fat_g": 70
+    }
+  },
+  "bmi_calorie_delta": {
+    "underweight": 200,
+    "normal": 0,
+    "overweight": -100,
+    "obese": -200
+  },
+  "activity_calorie_delta": {
+    "sedentary": 0,
+    "light": 100,
+    "moderate": 200,
+    "active": 300
+  },
+  "twin_multipliers": {
+    "calories_kcal": 1.20,
+    "protein_g": 1.30,
+    "iron_mg": 1.15,
+    "calcium_mg": 1.10
+  },
+  "micronutrients": {
+    "iron_mg": 27,
+    "calcium_mg": 1000,
+    "folic_acid_mcg": 600,
+    "zinc_mg": 11,
+    "vitamin_d_mcg": 15,
+    "vitamin_c_mg": 85
+  },
+  "deficiency_threshold_pct": 70,
+  "deficiency_consecutive_days": 3,
+  "strength_threshold_pct": 90
+}

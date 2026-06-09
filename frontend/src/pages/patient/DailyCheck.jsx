@@ -5,6 +5,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
+import { Save, WifiOff } from 'lucide-react'
 
 export default function DailyCheck() {
   const { connectivity, locale } = useApp()
@@ -26,7 +27,6 @@ export default function DailyCheck() {
     async function loadPatient() {
       try {
         const data = await api.getMyPatientProfile()
-        // data = { patient: {...} | null, latestVitals: {...} | null }
         if (data && data.patient) {
           setPatientData(data)
         }
@@ -122,11 +122,10 @@ export default function DailyCheck() {
     }
   }
 
-  const currentDateStr = new Date().toLocaleDateString(undefined, {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  const currentDateStr = new Date().toLocaleDateString(
+    locale === 'bn' ? 'bn-BD' : 'en-GB',
+    { day: 'numeric', month: 'long', year: 'numeric' }
+  )
 
   return (
     <MobileLayout
@@ -136,74 +135,82 @@ export default function DailyCheck() {
     >
       <div className="animate-fade-in">
         {loading ? (
-          <div className="card text-center" style={{ padding: '2rem' }}>
+          <div className="glass text-center" style={{ padding: '3rem 2rem', borderRadius: '24px' }}>
             <p className="muted animate-pulse">{$('DAILY_LOADING', locale)}</p>
           </div>
         ) : !patientData ? (
-          <div className="card" style={{
-            background: 'var(--gradient-surface)',
-            border: '1px solid var(--color-border)',
-            borderLeft: '4px solid var(--color-primary)',
-            padding: '2rem 1.5rem',
-            textAlign: 'center',
+          <div className="glass text-center" style={{
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: '24px',
+            padding: '40px 32px',
           }}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary)', marginBottom: '0.75rem', display: 'inline-block' }}>
-              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-              <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-            </svg>
-            <h3 style={{ marginBottom: '0.5rem' }}>{$('DAILY_NO_PROFILE_HEADING', locale)}</h3>
-            <p className="muted" style={{ marginBottom: '1.5rem', lineHeight: 1.6 }}>
+            <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
+            
+            <div className="mx-auto" style={{ display: 'grid', height: '64px', width: '64px', placeItems: 'center', borderRadius: '16px', background: 'var(--color-primary-dim)', color: 'var(--color-primary)', marginBottom: '20px', marginLeft: 'auto', marginRight: 'auto' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+              </svg>
+            </div>
+            
+            <h3 className="font-display" style={{ fontSize: '1.6rem', marginBottom: '8px' }}>{$('DAILY_NO_PROFILE_HEADING', locale)}</h3>
+            <p className="muted" style={{ marginBottom: '24px', lineHeight: 1.6, maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
               {$('DAILY_NO_PROFILE_BODY', locale)}
             </p>
             <button
               type="button"
               className="btn btn--primary"
               onClick={() => navigate('/patient/onboarding')}
+              style={{ borderRadius: '9999px', padding: '12px 28px' }}
             >
               {$('DAILY_NO_PROFILE_BTN', locale)}
             </button>
           </div>
         ) : (
-          <div className="card">
-            <h3 className="text-gradient">{$('DAILY_FORM_HEADING', locale)}</h3>
-            <p className="muted">
-              {currentDateStr}, {$('DAILY_FORM_DATE_PREFIX', locale)} {patientData.patient.gestational_week || 'N/A'}
+          <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
+            <p className="muted" style={{ fontSize: '13.5px', marginBottom: '24px' }}>
+              {currentDateStr} &middot; {$('DAILY_FORM_DATE_PREFIX', locale)} <strong style={{ color: 'var(--color-text)' }}>{patientData.patient.gestational_week || 'N/A'}</strong>
             </p>
 
             {error && (
               <div
-                className="alert-panel"
                 style={{
-                  background: 'rgba(239,68,68,0.1)',
-                  borderColor: 'rgba(239,68,68,0.3)',
-                  marginBottom: '1rem',
-                  padding: '0.75rem',
-                  borderRadius: '6px',
+                  background: 'var(--color-danger-dim)',
+                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                  marginBottom: '20px',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  color: 'var(--color-danger-light)'
                 }}
               >
-                <strong style={{ color: '#ef4444' }}>{error}</strong>
+                <strong>{error}</strong>
               </div>
             )}
 
             {success && (
               <div
-                className="alert-panel"
                 style={{
-                  background: 'rgba(16,185,129,0.1)',
-                  borderColor: 'rgba(16,185,129,0.3)',
-                  marginBottom: '1rem',
-                  padding: '0.75rem',
-                  borderRadius: '6px',
+                  background: 'var(--color-success-dim)',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  marginBottom: '20px',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  color: 'var(--color-success)'
                 }}
               >
-                <strong style={{ color: 'var(--color-success)' }}>{success}</strong>
+                <strong>{success}</strong>
               </div>
             )}
 
-            <div className="form-grid">
-              <label>
-                {$('DAILY_LABEL_BP', locale)}
-                <div className="input-wrapper">
+            <div className="form-grid" style={{ gap: '16px' }}>
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
+                <span>
+                  {$('DAILY_LABEL_BP', locale)} <span style={{ color: 'var(--color-primary)' }}>*</span>
+                </span>
+                <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="text"
                     className="input"
@@ -213,9 +220,10 @@ export default function DailyCheck() {
                   />
                 </div>
               </label>
-              <label>
+              
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                 {$('DAILY_LABEL_WEIGHT', locale)}
-                <div className="input-wrapper">
+                <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="number"
                     className="input"
@@ -226,9 +234,10 @@ export default function DailyCheck() {
                   />
                 </div>
               </label>
-              <label>
+
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                 {$('DAILY_LABEL_TEMP', locale)}
-                <div className="input-wrapper">
+                <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="number"
                     className="input"
@@ -239,9 +248,10 @@ export default function DailyCheck() {
                   />
                 </div>
               </label>
-              <label>
+
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                 {$('DAILY_LABEL_PULSE', locale)}
-                <div className="input-wrapper">
+                <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="number"
                     className="input"
@@ -251,9 +261,10 @@ export default function DailyCheck() {
                   />
                 </div>
               </label>
-              <label>
+
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
                 {$('DAILY_LABEL_SYMPTOMS', locale)}
-                <div className="input-wrapper">
+                <div className="input-wrapper" style={{ marginTop: '8px' }}>
                   <input
                     type="text"
                     className="input"
@@ -265,21 +276,46 @@ export default function DailyCheck() {
               </label>
             </div>
 
-            <div className="button-row" style={{ marginTop: '1.5rem' }}>
+            <div className="button-row" style={{ marginTop: '28px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 className="btn btn--primary"
                 onClick={() => handleSave(false)}
                 disabled={saving}
+                style={{
+                  borderRadius: '9999px',
+                  padding: '12px 28px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontWeight: '600',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
               >
-                {saving ? $('DAILY_BTN_SAVING', locale) : $('DAILY_BTN_SAVE', locale)}
+                <Save className="h-4 w-4" />
+                <span>{saving ? $('DAILY_BTN_SAVING', locale) : $('DAILY_BTN_SAVE', locale)}</span>
               </button>
+              
               <button
                 type="button"
                 className="btn btn--secondary"
                 onClick={() => handleSave(true)}
+                style={{
+                  borderRadius: '9999px',
+                  padding: '12px 28px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  border: '1px solid var(--color-border)',
+                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
+                  color: 'var(--color-text)'
+                }}
               >
-                {$('DAILY_BTN_SAVE_OFFLINE', locale)}
+                <WifiOff className="h-4 w-4" />
+                <span>{$('DAILY_BTN_SAVE_OFFLINE', locale)}</span>
               </button>
             </div>
           </div>

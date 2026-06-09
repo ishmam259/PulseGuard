@@ -15,6 +15,10 @@ CREATE TABLE IF NOT EXISTS users (
   phone TEXT UNIQUE,
   password_hash TEXT NOT NULL,
   role TEXT CHECK (role IN ('patient', 'worker', 'admin')) NOT NULL,
+  address TEXT,
+  blood_type TEXT,
+  height NUMERIC(5,2),
+  profile_picture_url TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -38,6 +42,9 @@ CREATE TABLE IF NOT EXISTS patients (
   village TEXT,
   gestational_week INT,
   lmp_date DATE,
+  height NUMERIC(5,2),
+  blood_type TEXT,
+  profile_picture_url TEXT,
   risk_level TEXT DEFAULT 'low',
   risk_score NUMERIC(4,3) DEFAULT 0,
   last_updated TIMESTAMPTZ DEFAULT now(),
@@ -49,6 +56,16 @@ CREATE TABLE IF NOT EXISTS patients (
 ALTER TABLE patients ADD COLUMN IF NOT EXISTS lmp_date DATE;
 UPDATE patients SET lmp_date = CURRENT_DATE - (gestational_week * 7)
   WHERE lmp_date IS NULL AND gestational_week IS NOT NULL;
+
+-- Idempotent migration: profile enhancement fields
+ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS blood_type TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS height NUMERIC(5,2);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture_url TEXT;
+
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS height NUMERIC(5,2);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS blood_type TEXT;
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS profile_picture_url TEXT;
 
 -- Vitals entries
 CREATE TABLE IF NOT EXISTS vitals (
@@ -121,6 +138,19 @@ CREATE TABLE IF NOT EXISTS alerts (
 CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
 CREATE INDEX IF NOT EXISTS idx_alerts_patient ON alerts(patient_id);
 
+-- Emergency contacts
+CREATE TABLE IF NOT EXISTS emergency_contacts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  relationship TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_emergency_contacts_user ON emergency_contacts(user_id);
+
 -- Daily water intake log
 CREATE TABLE IF NOT EXISTS water_logs (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -144,6 +174,88 @@ CREATE INDEX IF NOT EXISTS idx_water_logs_patient
 CREATE INDEX IF NOT EXISTS idx_vomit_logs_patient
   ON vomit_logs (patient_id, logged_at DESC);
 
+-- Food items table from FCDB
+CREATE TABLE IF NOT EXISTS food_items (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  fcdb_code     TEXT UNIQUE NOT NULL,   -- e.g. '01_0001'
+  name_en       TEXT NOT NULL,
+  name_bn       TEXT,
+  category      TEXT NOT NULL,          -- e.g. 'Cereals', 'Vegetables', 'Fish'
+
+  -- Per 100g nutrient values (9 tracked nutrients)
+  energy_kcal   NUMERIC(7,1),
+  protein_g     NUMERIC(6,2),
+  carb_g        NUMERIC(6,2),
+  fat_g         NUMERIC(5,2),
+  calcium_mg    NUMERIC(7,2),
+  iron_mg       NUMERIC(6,2),
+  zinc_mg       NUMERIC(6,2),
+  vitamin_d_mcg NUMERIC(6,2),
+  folate_mcg    NUMERIC(7,1),
+  vitamin_c_mg  NUMERIC(7,2),
+
+  is_active     BOOLEAN NOT NULL DEFAULT true,
+  created_at    TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_food_items_search ON food_items
+  USING gin(to_tsvector('simple', name_en || ' ' || COALESCE(name_bn,'')));
+CREATE INDEX IF NOT EXISTS idx_food_items_category ON food_items(category);
+
+-- Food serving sizes mapping table
+CREATE TABLE IF NOT EXISTS food_serving_sizes (
+  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  food_item_id     UUID NOT NULL REFERENCES food_items(id) ON DELETE CASCADE,
+  unit_name        TEXT NOT NULL,        -- 'piece', 'bowl', 'cup', etc.
+  grams_equivalent NUMERIC(7,2) NOT NULL,
+  display_label    TEXT NOT NULL         -- '1 Bowl (200g)'
+);
+
+-- Drop and recreate nutrition_logs with 9 nutrients and food reference
+DROP TABLE IF EXISTS nutrition_logs CASCADE;
+
+CREATE TABLE nutrition_logs (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id      UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+
+  -- How was this logged?
+  entry_method    TEXT NOT NULL DEFAULT 'direct'
+                    CHECK (entry_method IN ('direct', 'food_based')),
+
+  -- Food reference (food_based only)
+  food_item_id    UUID REFERENCES food_items(id) ON DELETE SET NULL,
+  quantity        NUMERIC(7,3),       -- e.g. 1.5
+  serving_unit    TEXT,               -- e.g. 'bowl'
+  food_name       TEXT NOT NULL,      -- display name (auto-filled from food_items or user-provided)
+  meal_type       TEXT NOT NULL
+                    CHECK (meal_type IN ('breakfast','lunch','dinner','snack')),
+
+  -- Macronutrients
+  calories_kcal   NUMERIC(7,1) NOT NULL DEFAULT 0,
+  protein_g       NUMERIC(6,2) NOT NULL DEFAULT 0,
+  carb_g          NUMERIC(6,2) NOT NULL DEFAULT 0,
+  fat_g           NUMERIC(5,2) NOT NULL DEFAULT 0,
+
+  -- Micronutrients (9 tracked total: calories, protein, carb, fat, iron, calcium, folic_acid, zinc, vitamin_d, vitamin_c)
+  iron_mg         NUMERIC(6,2) NOT NULL DEFAULT 0,
+  calcium_mg      NUMERIC(6,1) NOT NULL DEFAULT 0,
+  folic_acid_mcg  NUMERIC(7,1) NOT NULL DEFAULT 0,
+  zinc_mg         NUMERIC(5,2) NOT NULL DEFAULT 0,
+  vitamin_d_mcg   NUMERIC(6,2) NOT NULL DEFAULT 0,
+  vitamin_c_mg    NUMERIC(6,2) NOT NULL DEFAULT 0,
+
+  logged_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_nutrition_logs_patient_day
+  ON nutrition_logs (patient_id, logged_at DESC);
+
+-- Patient profile additions for nutrition tracking
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS activity_level     TEXT DEFAULT 'sedentary'
+  CHECK (activity_level IN ('sedentary', 'light', 'moderate', 'active'));
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS is_twin_pregnancy  BOOLEAN DEFAULT false;
+
+
 -- ═══════════════════════════════════════════════════════════
 -- Conduit (matrix) credentials for community chat
 -- ═══════════════════════════════════════════════════════════
@@ -158,3 +270,21 @@ CREATE TABLE IF NOT EXISTS conduit_credentials (
   password_ciphertext TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- AI Chat history
+CREATE TABLE IF NOT EXISTS ai_chats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  messages JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_chats_user ON ai_chats(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_chats_updated ON ai_chats(updated_at DESC);
+
+-- Idempotent migration: Google OAuth support
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT UNIQUE;
+

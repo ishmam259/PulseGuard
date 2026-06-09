@@ -5,6 +5,7 @@ import RegionChart from '../../components/charts/RegionChart'
 import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import $ from '../../config/strings'
+import { Users, AlertTriangle, ShieldAlert, HeartPulse, Bell } from 'lucide-react'
 
 export default function Dashboard() {
   const { currentUser, notifications, locale } = useApp()
@@ -76,100 +77,127 @@ export default function Dashboard() {
   ]
 
   const regionCount = getRegionInfo().labels.length
+  const nameParts = currentUser?.name ? currentUser.name.split(' ') : ['System', 'Administrator']
+  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
 
   return (
     <AdminLayout title={$('ADMIN_TITLE_DASHBOARD', locale)}>
-      <div className="card greeting-card" style={{ marginBottom: 'var(--spacing-4)' }}>
-        <h2>{$('ADMIN_DASH_HELLO', locale)} {currentUser?.name || 'Admin'}</h2>
-        <p className="muted">
-          {loading
-            ? $('ADMIN_DASH_LOADING', locale)
-            : $('ADMIN_DASH_SUMMARY', locale)
-                .replace('{total}', totalPatients)
-                .replace('{regions}', regionCount)
-                .replace('{high}', highRiskCases)
-          }
-        </p>
-        <span className="badge badge--online" style={{ marginTop: '0.5rem' }}>
-          {$('LAYOUT_ADMIN_CONSOLE', locale)}
-        </span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }} className="animate-fade-in">
+        
+        {/* Greeting Card */}
+        <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
+          <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
+          <h2 className="font-display" style={{ fontSize: '2.2rem', fontWeight: '700', marginBottom: '8px', letterSpacing: '-0.01em' }}>
+            {$('ADMIN_DASH_HELLO', locale)} {firstName} {lastName && <span className="italic text-gradient-primary">{lastName}</span>}
+          </h2>
+          <p className="muted" style={{ fontSize: '14px', lineHeight: 1.5 }}>
+            {loading
+              ? $('ADMIN_DASH_LOADING', locale)
+              : $('ADMIN_DASH_SUMMARY', locale)
+                  .replace('{total}', totalPatients)
+                  .replace('{regions}', regionCount)
+                  .replace('{high}', highRiskCases)
+            }
+          </p>
+          <span className="badge badge--online" style={{ marginTop: '12px', display: 'inline-flex', textTransform: 'uppercase', fontSize: '10px', fontWeight: '700' }}>
+            {$('LAYOUT_ADMIN_CONSOLE', locale)}
+          </span>
+        </div>
+
+        {/* KPI Row */}
+        {loading ? (
+          <div className="glass text-center animate-pulse" style={{ padding: '3rem 2rem', borderRadius: '24px' }}>
+            <p className="muted">{$('ADMIN_DASH_LOADING', locale)}</p>
+          </div>
+        ) : (
+          <section>
+            <div className="detail-cards-grid">
+              
+              {/* Total Patients */}
+              <div className="detail-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="detail-card-label">{$('ADMIN_DASH_KPI_PATIENTS', locale)}</span>
+                  <span style={{ color: 'var(--color-primary)' }}><Users className="h-5 w-5" /></span>
+                </div>
+                <p className="detail-card-value--accent" style={{ marginTop: '12px' }}>{totalPatients}</p>
+              </div>
+
+              {/* High Risk Cases */}
+              <div className="detail-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="detail-card-label">{$('ADMIN_DASH_KPI_HIGH', locale)}</span>
+                  <span style={{ color: 'var(--color-danger)' }}><AlertTriangle className="h-5 w-5" /></span>
+                </div>
+                <p className="detail-card-value--accent" style={{ marginTop: '12px', color: 'var(--color-danger)' }}>{highRiskCases}</p>
+              </div>
+
+              {/* Moderate Risk Cases */}
+              <div className="detail-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="detail-card-label">{$('ADMIN_DASH_KPI_MODERATE', locale)}</span>
+                  <span style={{ color: 'var(--color-warning)' }}><ShieldAlert className="h-5 w-5" /></span>
+                </div>
+                <p className="detail-card-value--accent" style={{ marginTop: '12px', color: 'var(--color-warning)' }}>{moderateRiskCases}</p>
+              </div>
+
+              {/* Health Workers Count */}
+              <div className="detail-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="detail-card-label">{$('ADMIN_DASH_KPI_WORKERS', locale)}</span>
+                  <span style={{ color: 'var(--color-primary)' }}><HeartPulse className="h-5 w-5" /></span>
+                </div>
+                <p className="detail-card-value--accent" style={{ marginTop: '12px' }}>{workerCount}</p>
+              </div>
+
+            </div>
+          </section>
+        )}
+
+        {/* Charts */}
+        {!loading && patients.length > 0 && (
+          <section className="grid two" style={{ gap: '24px' }}>
+            <div className="glass animate-fade-in" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
+              <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
+              <h3 className="font-display" style={{ fontSize: '1.4rem', marginBottom: '20px' }}>{$('ADMIN_DASH_CHART_TRENDS', locale)}</h3>
+              <RiskTrendChart />
+            </div>
+            <div className="glass animate-fade-in" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
+              <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
+              <h3 className="font-display" style={{ fontSize: '1.4rem', marginBottom: '20px' }}>{$('ADMIN_DASH_CHART_REGION', locale)}</h3>
+              <RegionChart regionInfo={getRegionInfo()} />
+            </div>
+          </section>
+        )}
+
+        {/* Real-time Alerts */}
+        <section className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
+          <div className="absolute top-0 left-0 h-full w-1 bg-[var(--gradient-primary)]" style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '4px', background: 'var(--gradient-primary)' }} />
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <h3 className="font-display" style={{ fontSize: '1.4rem', margin: 0 }}>{$('ADMIN_DASH_ALERTS', locale)}</h3>
+            <span className="badge badge--high" style={{ padding: '4px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Bell className="h-3.5 w-3.5" />
+              <span>{activeAlerts.length} {$('ADMIN_DASH_ACTIVE', locale)}</span>
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {activeAlerts.map((alert) => (
+              <div key={alert.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderRadius: '16px', border: '1px solid var(--color-border)', backgroundColor: 'color-mix(in oklab, var(--color-surface) 50%, transparent)' }}>
+                <div>
+                  <strong style={{ fontSize: '15px', color: 'var(--color-text)' }}>{alert.title}</strong>
+                  <p className="muted" style={{ fontSize: '12px', marginTop: '4px', margin: '4px 0 0' }}>{alert.message}</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="muted" style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>{alert.time}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
       </div>
-
-      {/* KPI Row */}
-      {loading ? (
-        <div className="card text-center animate-pulse" style={{ padding: '2rem', marginBottom: 'var(--spacing-4)' }}>
-          <p className="muted">{$('ADMIN_DASH_LOADING', locale)}</p>
-        </div>
-      ) : (
-        <section className="kpi-row stagger">
-          <div className="stat-card bg-appointments animate-fade-in" style={{ animationDelay: '0ms' }}>
-            <div className="stat-card-header">
-              <img src="/assets/icons/appointments.svg" alt="appointments" className="stat-card-icon" />
-              <h2 className="stat-card-count">{totalPatients}</h2>
-            </div>
-            <p className="stat-card-label">{$('ADMIN_DASH_KPI_PATIENTS', locale)}</p>
-          </div>
-
-          <div className="stat-card bg-pending animate-fade-in" style={{ animationDelay: '60ms' }}>
-            <div className="stat-card-header">
-              <img src="/assets/icons/pending.svg" alt="pending" className="stat-card-icon" />
-              <h2 className="stat-card-count">{highRiskCases}</h2>
-            </div>
-            <p className="stat-card-label">{$('ADMIN_DASH_KPI_HIGH', locale)}</p>
-          </div>
-
-          <div className="stat-card bg-cancelled animate-fade-in" style={{ animationDelay: '120ms' }}>
-            <div className="stat-card-header">
-              <img src="/assets/icons/cancelled.svg" alt="cancelled" className="stat-card-icon" />
-              <h2 className="stat-card-count">{moderateRiskCases}</h2>
-            </div>
-            <p className="stat-card-label">{$('ADMIN_DASH_KPI_MODERATE', locale)}</p>
-          </div>
-
-          <div className="stat-card bg-workers animate-fade-in" style={{ animationDelay: '180ms' }}>
-            <div className="stat-card-header">
-              <img src="/assets/icons/user.svg" alt="workers" className="stat-card-icon" />
-              <h2 className="stat-card-count">{workerCount}</h2>
-            </div>
-            <p className="stat-card-label">{$('ADMIN_DASH_KPI_WORKERS', locale)}</p>
-          </div>
-        </section>
-      )}
-
-      {/* Charts */}
-      {!loading && patients.length > 0 && (
-        <section className="grid two" style={{ marginBottom: 'var(--spacing-5)' }}>
-          <div className="card animate-fade-in" style={{ animationDelay: '200ms' }}>
-            <h3>{$('ADMIN_DASH_CHART_TRENDS', locale)}</h3>
-            <RiskTrendChart />
-          </div>
-          <div className="card animate-fade-in" style={{ animationDelay: '260ms' }}>
-            <h3>{$('ADMIN_DASH_CHART_REGION', locale)}</h3>
-            <RegionChart regionInfo={getRegionInfo()} />
-          </div>
-        </section>
-      )}
-
-      {/* Real-time Alerts */}
-      <section className="card alert-panel animate-fade-in" style={{ animationDelay: '320ms' }}>
-        <div className="card-row" style={{ marginTop: 0 }}>
-          <h3>{$('ADMIN_DASH_ALERTS', locale)}</h3>
-          <span className="badge badge--high">{activeAlerts.length} {$('ADMIN_DASH_ACTIVE', locale)}</span>
-        </div>
-        <div className="list stagger">
-          {activeAlerts.map((alert, i) => (
-            <div className="list-item" key={alert.id} style={{ animationDelay: `${i * 60}ms` }}>
-              <div>
-                <strong>{alert.title}</strong>
-                <p className="muted">{alert.message}</p>
-              </div>
-              <div className="inline-actions">
-                <span className="muted" style={{ fontSize: '12px', whiteSpace: 'nowrap' }}>{alert.time}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
     </AdminLayout>
   )
 }
