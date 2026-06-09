@@ -244,7 +244,7 @@
   grid-template-columns: 1fr;
   gap: 16px;
   margin-top: 16px;
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (min-width: 1024px) {
@@ -262,6 +262,9 @@
   box-shadow: var(--shadow-sm);
   transition: all var(--duration-normal) var(--ease-out);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .edu-faq-grid .edu-accordion-item:hover {
@@ -277,6 +280,7 @@
 
 .edu-faq-grid .edu-accordion-trigger {
   padding: 22px 24px;
+  flex: 1;
 }
 
 .edu-faq-grid .edu-accordion-content {
