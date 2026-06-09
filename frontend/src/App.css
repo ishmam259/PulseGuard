@@ -3777,6 +3777,88 @@ select.input option {
   cursor: not-allowed;
 }
 
+/* Google sign-in divider */
+.auth-page__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.auth-page__divider::before,
+.auth-page__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* Custom Google button wrap */
+.auth-page__google-custom-wrap {
+  position: relative;
+  width: 100%;
+  height: 52px;
+  margin-top: 8px;
+}
+
+.auth-page__google-custom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-normal) var(--ease-out),
+              background-color var(--duration-normal) var(--ease-out),
+              border-color var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
+  pointer-events: none; /* Let click pass through to invisible iframe */
+}
+
+/* Hover/active effects driven by parent wrap */
+.auth-page__google-custom-wrap:hover .auth-page__google-custom-btn {
+  background: var(--color-surface-hover);
+  border-color: color-mix(in oklab, var(--color-border) 70%, var(--color-primary));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px oklch(0.18 0.03 320 / 0.12);
+}
+
+.auth-page__google-custom-wrap:active .auth-page__google-custom-btn {
+  transform: translateY(0);
+}
+
+.auth-page__google-invisible-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.01; /* Invisible but clickable */
+  z-index: 10;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.auth-page__google-invisible-overlay iframe {
+  transform: scale(1.6);
+  transform-origin: center;
+  width: 100% !important;
+  height: 100% !important;
+  cursor: pointer !important;
+}
+
 /* Footer links */
 .auth-page__footer {
   margin-top: 28px;

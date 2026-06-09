@@ -218,3 +218,7 @@ CREATE TABLE IF NOT EXISTS ai_chats (
 CREATE INDEX IF NOT EXISTS idx_ai_chats_user ON ai_chats(user_id);
 CREATE INDEX IF NOT EXISTS idx_ai_chats_updated ON ai_chats(updated_at DESC);
 
+-- Idempotent migration: Google OAuth support
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT UNIQUE;
+
