@@ -4,14 +4,12 @@ import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
 import { useApp } from '../../context/AppContext'
-import { Users } from 'lucide-react'
 
 const TYPING_DEBOUNCE_MS = 1500
 const TYPING_STOP_MS = 5000
 
 const typingAudio = new Audio('/assets/sounds/typing.mp3')
 typingAudio.volume = 0.2
-
 
 function displayName(userId) {
   if (!userId) return 'User'
@@ -29,9 +27,8 @@ export default function CommunityChat() {
   const [error, setError] = useState(null)
   const [sending, setSending] = useState(false)
   const [connected, setConnected] = useState(false)
+  
   const bottomRef = useRef(null)
-  const messagesContainerRef = useRef(null)
-  const typingTimerRef = useRef(null)
   const typingStopRef = useRef(null)
   const isTypingRef = useRef(false)
   const lastTypingSentRef = useRef(0)
@@ -50,7 +47,7 @@ export default function CommunityChat() {
       try {
         const history = await api.getCommunityChatHistory('global')
         if (cancelled) return
-
+        
         // Only show actual messages in the history
         const messagesOnly = history.filter(m => m.type === 'MESSAGE')
 
@@ -194,12 +191,7 @@ export default function CommunityChat() {
 
   // Auto-scroll
   useEffect(() => {
-    if (messages.length > 0 && messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTo({
-        top: messagesContainerRef.current.scrollHeight,
-        behavior: 'smooth',
-      })
-    }
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }, [messages, typing])
 
   const onInputChange = (e) => {
@@ -293,145 +285,94 @@ export default function CommunityChat() {
       status={connectivity}
       navItems={patientNavItems(locale)}
     >
-      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div className="animate-fade-in">
+        <div className="card" style={{ padding: '0.85rem 1rem', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
+            <span aria-hidden="true">{connected ? '🟢' : '⚪'}</span>
+            <strong>{online.length}</strong>
+            <span className="muted">{$('COMMUNITY_ONLINE_SUFFIX', locale)}</span>
+            {!connected && !loading && !error && (
+              <span className="muted" style={{ marginLeft: 'auto', fontSize: '0.75rem' }}>Disconnected</span>
+            )}
+          </div>
+          <p className="muted" style={{ fontSize: '0.78rem', marginTop: '0.5rem', lineHeight: 1.4 }}>
+            {$('COMMUNITY_DISCLAIMER', locale)}
+          </p>
+        </div>
+
         {loading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 280px)', minHeight: '400px', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid color-mix(in oklab, var(--color-primary) 6%, transparent)', boxShadow: '0 4px 24px -2px rgba(0, 0, 0, 0.01)', padding: '4rem 2rem', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="card text-center" style={{ padding: '2rem' }}>
             <p className="muted animate-pulse">{$('COMMUNITY_LOADING', locale)}</p>
           </div>
         ) : error ? (
-          <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 280px)', minHeight: '400px', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-danger)', padding: '24px' }}>
-            <p style={{ margin: 0, color: 'var(--color-danger)' }}>{error}</p>
+          <div className="card" style={{ padding: '1rem', borderLeft: '4px solid var(--color-danger)' }}>
+            <p style={{ margin: 0, fontSize: '0.9rem' }}>{error}</p>
+            <button className="btn btn--ghost" style={{ marginTop: '0.5rem', padding: '4px 12px', fontSize: '0.8rem' }} onClick={() => window.location.reload()}>Retry</button>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 280px)', minHeight: '400px', borderRadius: '24px', overflow: 'hidden', backgroundColor: 'var(--color-surface)', border: '1px solid color-mix(in oklab, var(--color-primary) 6%, transparent)', boxShadow: '0 4px 24px -2px rgba(0, 0, 0, 0.01)' }}>
-            
-            {/* Integrated Chat Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
-              <div style={{ display: 'grid', height: '40px', width: '40px', placeItems: 'center', borderRadius: '50%', backgroundColor: 'color-mix(in oklab, var(--color-primary) 8%, transparent)', color: 'var(--color-primary)' }}>
-                <Users className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: 'var(--color-text)' }}>
-                  {locale === 'en' ? 'All PulseGuard Mothers' : 'সকল পালসগার্ড মায়েরা'}
-                </h4>
-                <p className="muted" style={{ fontSize: '12px', color: 'var(--color-muted)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
-                  {online.length} {locale === 'en' ? 'online' : 'অনলাইন'}
-                  {typingLabel && <span style={{ fontStyle: 'italic', marginLeft: '8px' }}>· {typingLabel}</span>}
-                </p>
-              </div>
-            </div>
-            
-            {/* Chat Thread */}
-            <div 
-              data-testid="community-chat-thread" 
-              ref={messagesContainerRef}
-              style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}
-            >
-              {rendered.length === 0 ? (
-                <p className="muted text-center" style={{ padding: '3rem 0' }}>
-                  {$('COMMUNITY_EMPTY', locale)}
-                </p>
-              ) : (
-                rendered.map((m) => {
-                  const self = isSelf(m.sender);
-                  return (
-                    <div
-                      key={m.id}
-                      style={{
-                        alignSelf: self ? 'flex-end' : 'flex-start',
-                        maxWidth: '75%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: self ? 'flex-end' : 'flex-start'
-                      }}
-                    >
-                      {m._groupStart && (
-                        <span className="muted" style={{ fontSize: '11px', marginBottom: '4px', fontWeight: '500', padding: '0 4px' }}>
-                          {self ? $('COMMUNITY_DISPLAY_NAME_PREFIX', locale) : displayName(m.sender)}
-                        </span>
-                      )}
-                      <div 
-                        style={{ 
-                          whiteSpace: 'pre-wrap', 
-                          wordBreak: 'break-word',
-                          padding: '12px 18px',
-                          borderRadius: '16px',
-                          fontSize: '14px',
-                          lineHeight: '1.45',
-                          background: self ? 'var(--gradient-primary)' : 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                          color: self ? '#ffffff' : 'var(--color-text)',
-                          border: self ? 'none' : '1px solid var(--color-border)',
-                          boxShadow: self ? 'var(--shadow-glow-primary)' : 'none'
-                        }}
-                      >
-                        {m.body}
+          <div className="card chat-card" data-testid="community-chat-thread" style={{ height: '55vh', minHeight: '350px' }}>
+            {rendered.length === 0 && typing.length === 0 ? (
+              <p className="muted text-center" style={{ padding: '1.5rem 0' }}>
+                {$('COMMUNITY_EMPTY', locale)}
+              </p>
+            ) : (
+              <>
+                {rendered.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`chat-bubble ${isSelf(m.sender) ? 'user' : 'ai'}`}
+                    style={{ marginBottom: '0.4rem' }}
+                  >
+                    {m._groupStart && (
+                      <div className="muted" style={{ fontSize: '0.7rem', marginBottom: '2px' }}>
+                        {isSelf(m.sender) ? $('COMMUNITY_DISPLAY_NAME_PREFIX', locale) : displayName(m.sender)}
                       </div>
+                    )}
+                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{m.body}</div>
+                  </div>
+                ))}
+
+                {typing.length > 0 && (
+                  <div className="chat-bubble ai" style={{ marginBottom: '0.4rem', background: 'transparent', border: 'none', padding: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="typing-indicator" style={{ padding: '8px 12px' }}>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                      <span className="muted" style={{ fontSize: '0.75rem', fontStyle: 'italic' }}>
+                        {typingLabel}
+                      </span>
                     </div>
-                  );
-                })
-              )}
-              <div ref={bottomRef} />
-            </div>
-
-            {/* Input area */}
-            <form 
-              onSubmit={sendMessage} 
-              style={{ 
-                padding: '16px 24px', 
-                borderTop: '1px solid var(--color-border)', 
-                background: 'color-mix(in oklab, var(--color-surface) 80%, transparent)',
-                backdropFilter: 'blur(8px)'
-              }}
-            >
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <input
-                  type="text"
-                  style={{
-                    flex: 1,
-                    height: '48px',
-                    borderRadius: '9999px',
-                    border: '1px solid var(--color-border)',
-                    backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                    padding: '0 20px',
-                    fontSize: '14px',
-                    outline: 'none',
-                    color: 'var(--color-text)',
-                    transition: 'border-color 0.2s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                  onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
-                  placeholder={$('COMMUNITY_PH', locale)}
-                  aria-label="Community message"
-                  value={input}
-                  onChange={onInputChange}
-                  disabled={!connected || loading || !!error}
-                  maxLength={4000}
-                />
-                <button
-                  type="submit"
-                  className="btn btn--primary"
-                  style={{
-                    position: 'relative',
-                    overflow: 'hidden',
-                    borderRadius: '9999px',
-                    padding: '0 24px',
-                    height: '48px',
-                    boxShadow: 'var(--shadow-glow-primary)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: '600'
-                  }}
-                  disabled={!connected || !input.trim() || sending}
-                >
-                  {$('COMMUNITY_SEND', locale)}
-                </button>
-              </div>
-            </form>
-
+                  </div>
+                )}
+              </>
+            )}
+            <div ref={bottomRef} />
           </div>
         )}
+
+        <form onSubmit={sendMessage} style={{ margin: '1rem 0' }}>
+          <div className="input-row">
+            <input
+              type="text"
+              className="input"
+              placeholder={$('COMMUNITY_PH', locale)}
+              aria-label="Community message"
+              value={input}
+              onChange={onInputChange}
+              disabled={loading || !!error || sending}
+              maxLength={4000}
+            />
+            <button
+              type="submit"
+              className="btn btn--primary"
+              disabled={!connected || !input.trim() || sending}
+            >
+              {$('COMMUNITY_SEND', locale)}
+            </button>
+          </div>
+        </form>
       </div>
     </MobileLayout>
   )
