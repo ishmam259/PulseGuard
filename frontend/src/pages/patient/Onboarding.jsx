@@ -14,7 +14,6 @@ export default function Onboarding() {
   const fileInputRef = useRef(null)
 
   const [form, setForm] = useState({
-    gestational_week: '',
     village: '',
     age: '',
     height: '',
@@ -50,17 +49,6 @@ export default function Onboarding() {
     e.preventDefault()
     setError('')
 
-    if (!form.gestational_week) {
-      setError($('ONBOARD_ERR_WEEK_REQUIRED', locale))
-      return
-    }
-
-    const week = parseInt(form.gestational_week)
-    if (isNaN(week) || week < 1 || week > 45) {
-      setError($('ONBOARD_ERR_WEEK_RANGE', locale))
-      return
-    }
-
     setSaving(true)
     try {
       // 1. Upload profile picture if selected
@@ -80,7 +68,6 @@ export default function Onboarding() {
       // 2. Create patient profile with all the new fields
       const res = await api.createPatient({
         name: currentUser.name,
-        gestational_week: week,
         village: form.village.trim() || undefined,
         age: form.age ? parseInt(form.age) : undefined,
         height: form.height ? parseFloat(form.height) : undefined,
@@ -173,27 +160,6 @@ export default function Onboarding() {
               </span>
               <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileSelect} />
             </div>
-
-            {/* Gestational Week */}
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
-              {$('ONBOARD_LABEL_WEEK', locale)}
-              <div className="input-wrapper">
-                <input
-                  id="gestational_week"
-                  type="number"
-                  className="input"
-                  value={form.gestational_week}
-                  onChange={handleChange('gestational_week')}
-                  placeholder={$('ONBOARD_PH_WEEK', locale)}
-                  min="1"
-                  max="45"
-                  required
-                />
-              </div>
-              <span style={{ fontSize: '12px', color: 'var(--color-muted)', fontWeight: 400 }}>
-                {$('ONBOARD_HINT_WEEK', locale)}
-              </span>
-            </label>
 
             {/* Age */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>

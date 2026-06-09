@@ -9,12 +9,10 @@ import { Users } from 'lucide-react'
 const TYPING_DEBOUNCE_MS = 1500
 const TYPING_STOP_MS = 5000
 
-<<<<<<< HEAD
 const typingAudio = new Audio('/assets/sounds/typing.mp3')
 typingAudio.volume = 0.2
 
-=======
->>>>>>> cfa5b138b4a1158effe8cf402fb94141fe66ca85
+
 function displayName(userId) {
   if (!userId) return 'User'
   const id = userId.startsWith('@') ? userId.slice(1).split(':')[0] : userId
@@ -31,14 +29,9 @@ export default function CommunityChat() {
   const [error, setError] = useState(null)
   const [sending, setSending] = useState(false)
   const [connected, setConnected] = useState(false)
-<<<<<<< HEAD
-  
-  const bottomRef = useRef(null)
-=======
   const bottomRef = useRef(null)
   const messagesContainerRef = useRef(null)
   const typingTimerRef = useRef(null)
->>>>>>> cfa5b138b4a1158effe8cf402fb94141fe66ca85
   const typingStopRef = useRef(null)
   const isTypingRef = useRef(false)
   const lastTypingSentRef = useRef(0)
@@ -57,8 +50,7 @@ export default function CommunityChat() {
       try {
         const history = await api.getCommunityChatHistory('global')
         if (cancelled) return
-<<<<<<< HEAD
-        
+
         // Only show actual messages in the history
         const messagesOnly = history.filter(m => m.type === 'MESSAGE')
 
@@ -72,16 +64,6 @@ export default function CommunityChat() {
         // Sort ascending by time
         mapped.sort((a, b) => a.ts - b.ts)
         setMessages(mapped)
-=======
-        if (first.ok) {
-          const ascending = [...(first.messages || [])].reverse()
-          setMessages(ascending)
-          lastEndRef.current = first.end || null
-          setConnected(true)
-        } else {
-          setError(first.error?.error || $('COMMUNITY_ERR_LOAD', locale))
-        }
->>>>>>> cfa5b138b4a1158effe8cf402fb94141fe66ca85
       } catch (err) {
         console.error('Failed to load history', err)
       }
@@ -220,82 +202,6 @@ export default function CommunityChat() {
     }
   }, [messages, typing])
 
-<<<<<<< HEAD
-=======
-  // Polling: live tail via `dir=f&from=<end>`. In Conduit's pagination
-  // model, the `end` token returned by any messages query is the
-  // anchor for forward pagination — passing it as `from` with `dir=f`
-  // returns only events strictly newer than that anchor. This picks
-  // up new messages from any sender within ~POLL_MS.
-  useEffect(() => {
-    if (!connected) return
-    const t = setInterval(async () => {
-      try {
-        const r = await api.getChatMessages(lastEndRef.current, { dir: 'f', limit: 50 })
-        if (!r.ok) return
-        if (r.messages && r.messages.length > 0) {
-          // `dir=f` returns events in chronological order. Merge with
-          // de-dup, then re-sort the full list by `ts` so optimistic
-          // sends (which use Date.now()) and server messages line up
-          // correctly even if the client clock is slightly off.
-          setMessages((prev) => {
-            const seen = new Set(prev.map((m) => m.id))
-            const fresh = r.messages.filter((m) => !seen.has(m.id))
-            if (fresh.length === 0) return prev
-            const merged = [...prev, ...fresh]
-            merged.sort((a, b) => (a.ts || 0) - (b.ts || 0))
-            return merged
-          })
-        }
-        // Always advance the cursor, even when the message list is
-        // empty — otherwise we'd re-poll the same anchor and never
-        // make forward progress.
-        if (r.end) {
-          lastEndRef.current = r.end
-        }
-      } catch {
-        // swallow — next tick will retry
-      }
-    }, POLL_MS)
-    return () => clearInterval(t)
-  }, [connected])
-
-  // Polling: presence + typing (every 5s)
-  useEffect(() => {
-    if (!connected) return
-    const fetchOnce = async () => {
-      const r = await api.getChatPresence()
-      if (r.ok) {
-        setOnline(r.online || [])
-        setTyping((r.typing || []).filter((u) => u !== selfConduitId))
-      }
-    }
-    fetchOnce()
-    const t = setInterval(fetchOnce, POLL_MS)
-    return () => clearInterval(t)
-  }, [connected, selfConduitId])
-
-  // Cleanup: send typing=false on unmount and on tab close
-  useEffect(() => {
-    function stopTyping() {
-      if (isTypingRef.current) {
-        isTypingRef.current = false
-        api.setChatTyping(false)
-      }
-    }
-    function onVisibility() {
-      if (document.visibilityState === 'hidden') stopTyping()
-    }
-    window.addEventListener('beforeunload', stopTyping)
-    document.addEventListener('visibilitychange', onVisibility)
-    return () => {
-      stopTyping()
-      window.removeEventListener('beforeunload', stopTyping)
-      document.removeEventListener('visibilitychange', onVisibility)
-    }
-  }, [])
-
->>>>>>> cfa5b138b4a1158effe8cf402fb94141fe66ca85
   const onInputChange = (e) => {
     const v = e.target.value
     setInput(v)
@@ -387,100 +293,12 @@ export default function CommunityChat() {
       status={connectivity}
       navItems={patientNavItems(locale)}
     >
-<<<<<<< HEAD
-      <div className="animate-fade-in">
-        <div className="card" style={{ padding: '0.85rem 1rem', marginBottom: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
-            <span aria-hidden="true">{connected ? '🟢' : '⚪'}</span>
-            <strong>{online.length}</strong>
-            <span className="muted">{$('COMMUNITY_ONLINE_SUFFIX', locale)}</span>
-            {!connected && !loading && !error && (
-              <span className="muted" style={{ marginLeft: 'auto', fontSize: '0.75rem' }}>Disconnected</span>
-            )}
-          </div>
-          <p className="muted" style={{ fontSize: '0.78rem', marginTop: '0.5rem', lineHeight: 1.4 }}>
-            {$('COMMUNITY_DISCLAIMER', locale)}
-          </p>
-        </div>
-
-=======
       <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
->>>>>>> cfa5b138b4a1158effe8cf402fb94141fe66ca85
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 280px)', minHeight: '400px', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid color-mix(in oklab, var(--color-primary) 6%, transparent)', boxShadow: '0 4px 24px -2px rgba(0, 0, 0, 0.01)', padding: '4rem 2rem', alignItems: 'center', justifyContent: 'center' }}>
             <p className="muted animate-pulse">{$('COMMUNITY_LOADING', locale)}</p>
           </div>
         ) : error ? (
-<<<<<<< HEAD
-          <div className="card" style={{ padding: '1rem', borderLeft: '4px solid var(--color-danger)' }}>
-            <p style={{ margin: 0, fontSize: '0.9rem' }}>{error}</p>
-            <button className="btn btn--ghost" style={{ marginTop: '0.5rem', padding: '4px 12px', fontSize: '0.8rem' }} onClick={() => window.location.reload()}>Retry</button>
-          </div>
-        ) : (
-          <div className="card chat-card" data-testid="community-chat-thread" style={{ height: '55vh', minHeight: '350px' }}>
-            {rendered.length === 0 && typing.length === 0 ? (
-              <p className="muted text-center" style={{ padding: '1.5rem 0' }}>
-                {$('COMMUNITY_EMPTY', locale)}
-              </p>
-            ) : (
-              <>
-                {rendered.map((m) => (
-                  <div
-                    key={m.id}
-                    className={`chat-bubble ${isSelf(m.sender) ? 'user' : 'ai'}`}
-                    style={{ marginBottom: '0.4rem' }}
-                  >
-                    {m._groupStart && (
-                      <div className="muted" style={{ fontSize: '0.7rem', marginBottom: '2px' }}>
-                        {isSelf(m.sender) ? $('COMMUNITY_DISPLAY_NAME_PREFIX', locale) : displayName(m.sender)}
-                      </div>
-                    )}
-                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{m.body}</div>
-                  </div>
-                ))}
-
-                {typing.length > 0 && (
-                  <div className="chat-bubble ai" style={{ marginBottom: '0.4rem', background: 'transparent', border: 'none', padding: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div className="typing-indicator" style={{ padding: '8px 12px' }}>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                      </div>
-                      <span className="muted" style={{ fontSize: '0.75rem', fontStyle: 'italic' }}>
-                        {typingLabel}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-            <div ref={bottomRef} />
-          </div>
-        )}
-
-        <form onSubmit={sendMessage} style={{ margin: '1rem 0' }}>
-          <div className="input-row">
-            <input
-              type="text"
-              className="input"
-              placeholder={$('COMMUNITY_PH', locale)}
-              aria-label="Community message"
-              value={input}
-              onChange={onInputChange}
-              disabled={loading || !!error || sending}
-              maxLength={4000}
-            />
-            <button
-              type="submit"
-              className="btn btn--primary"
-              disabled={!connected || !input.trim() || sending}
-            >
-              {$('COMMUNITY_SEND', locale)}
-            </button>
-          </div>
-        </form>
-=======
           <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 280px)', minHeight: '400px', borderRadius: '24px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-danger)', padding: '24px' }}>
             <p style={{ margin: 0, color: 'var(--color-danger)' }}>{error}</p>
           </div>
@@ -614,7 +432,6 @@ export default function CommunityChat() {
 
           </div>
         )}
->>>>>>> cfa5b138b4a1158effe8cf402fb94141fe66ca85
       </div>
     </MobileLayout>
   )

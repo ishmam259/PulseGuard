@@ -4,5 +4,5 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 COPY . .
 EXPOSE 5000
-RUN chmod +x entrypoint.sh
+RUN sed -i 's/\r//' entrypoint.sh && chmod +x entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
