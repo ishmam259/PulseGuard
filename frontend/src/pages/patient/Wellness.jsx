@@ -183,19 +183,19 @@ export default function Wellness() {
                   {/* KPI Row */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '1.5rem' }}>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+                      <p style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-muted)' }}>
                         {$('WELLNESS_WATER_TOTAL', locale)}
                       </p>
-                      <p className="kpi" style={{ fontSize: '3rem', marginTop: '0.25rem' }}>
+                      <p className="kpi" style={{ fontSize: '3rem', marginTop: '0.25rem', fontFamily: 'var(--font-display)' }}>
                         {fmtN(water.total_ml)}
-                        <span className="muted" style={{ fontSize: '1rem', marginLeft: '4px' }}>{$('WELLNESS_WATER_ML_SUFFIX', locale)}</span>
+                        <span className="muted" style={{ fontSize: '1rem', marginLeft: '4px', fontFamily: 'var(--font-display)' }}>{$('WELLNESS_WATER_ML_SUFFIX', locale)}</span>
                       </p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+                      <p style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-muted)' }}>
                         {$('WELLNESS_WATER_GOAL', locale)}
                       </p>
-                      <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text)', marginTop: '0.25rem' }}>
+                      <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text)', marginTop: '0.25rem', fontFamily: 'var(--font-display)' }}>
                         {fmtN(water.goal_ml)} {$('WELLNESS_WATER_ML_SUFFIX', locale)}
                       </p>
                     </div>
@@ -264,11 +264,11 @@ export default function Wellness() {
                   </form>
 
                   {/* Today's log list */}
-                  <div style={{ marginTop: '2rem', borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem' }}>
-                    <p style={{ fontSize: '14px', fontWeight: '700', marginBottom: '1rem' }}>{t("Today's Entries", "আজকের ভুক্তিসমূহ")}</p>
-                    {water.entries.length === 0 ? (
-                      <p className="muted" style={{ textAlign: 'center', padding: '1.5rem 0' }}>{$('WELLNESS_WATER_EMPTY', locale)}</p>
-                    ) : (
+                  {water.entries.length === 0 ? (
+                    <p className="muted" style={{ textAlign: 'center', margin: '2rem 0' }}>{$('WELLNESS_WATER_EMPTY', locale)}</p>
+                  ) : (
+                    <div style={{ marginTop: '2rem', borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem' }}>
+                      <p style={{ fontSize: '14px', fontWeight: '700', marginBottom: '1rem' }}>{t("Today's Entries", "আজকের ভুক্তিসমূহ")}</p>
                       <div className="list stagger">
                         {[...water.entries].reverse().map((e, i) => (
                           <div key={e.id || i} className="list-item">
@@ -289,8 +289,8 @@ export default function Wellness() {
                           </div>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* 7-day trend chart */}
                   {trend.length > 0 && (
@@ -300,7 +300,7 @@ export default function Wellness() {
                         {trend.map((day, i) => {
                           const pct = Math.min(100, Math.round((day.total_ml / day.goal_ml) * 100))
                           const isToday = i === trend.length - 1
-                          const barH = Math.max(6, Math.round((pct / 100) * 50))
+                          const barH = Math.max(4, Math.round((pct / 100) * 50))
                           return (
                             <div key={day.date} className="trend-col">
                               <div className="trend-bar-wrapper">
@@ -310,7 +310,7 @@ export default function Wellness() {
                                     height: `${barH}px`,
                                     background: isToday
                                       ? undefined
-                                      : pct >= 80 ? 'oklch(0.62 0.17 150)' : pct >= 40 ? 'oklch(0.72 0.16 50)' : 'oklch(0.6 0.22 27 / 0.5)',
+                                      : pct >= 80 ? 'oklch(0.62 0.17 150)' : pct >= 40 ? 'oklch(0.72 0.16 50)' : 'var(--color-primary-dim)',
                                   }}
                                 />
                               </div>
