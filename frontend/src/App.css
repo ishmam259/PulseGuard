@@ -232,6 +232,21 @@ input[type=number].input::-webkit-outer-spin-button {
   background: var(--color-surface-hover);
 }
 
+.input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  transition: filter var(--duration-fast);
+}
+
+:root.dark .input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
+
 /* Global browser autofill style overrides to force background transparency */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
