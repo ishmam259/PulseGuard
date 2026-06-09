@@ -405,7 +405,7 @@ export default function AIChat() {
           0%, 100% { box-shadow: 0 0 0 0 var(--color-primary-glow); }
           50%       { box-shadow: 0 0 0 6px transparent; }
         }
-      `}</style>,StartLine:369,TargetContent:
+      `}</style>
 
       <div className="animate-fade-in ai-chat-wrapper">
         {/* Header Actions Bar sitting outside/above the card */}
