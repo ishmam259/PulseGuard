@@ -37,6 +37,8 @@ export default function AIChat() {
   
   const bottomRef = useRef(null)
   const recognitionRef = useRef(null)
+  const chatCardRef = useRef(null)
+  const sendingFirstMessageRef = useRef(false)
 
   // 1. Load chat sessions list on mount & query changes
   useEffect(() => {
@@ -48,6 +50,12 @@ export default function AIChat() {
     async function loadChatMessages() {
       if (!activeChatId) {
         setMessages([])
+        return
+      }
+      if (sendingFirstMessageRef.current) {
+        // Skip fetching because we just dynamically created this chat session
+        // and handleSend is actively posting the first message.
+        sendingFirstMessageRef.current = false
         return
       }
       try {
@@ -64,7 +72,12 @@ export default function AIChat() {
 
   // Scroll to bottom on new messages
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (chatCardRef.current) {
+      chatCardRef.current.scrollTo({
+        top: chatCardRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
   }, [messages, isTyping])
 
   const loadChatsList = async () => {
@@ -121,6 +134,7 @@ export default function AIChat() {
         const res = await api.createAIChat(sessionTitle)
         if (!res || !res.chat) throw new Error('Could not create new session')
         currentId = res.chat.id
+        sendingFirstMessageRef.current = true
         setActiveChatId(currentId)
       }
 
@@ -333,11 +347,69 @@ export default function AIChat() {
           color: #ef4444;
           background: rgba(239, 68, 68, 0.1);
         }
-      `}</style>
+        .ai-chat-wrapper {
+          display: flex;
+          flex-direction: column;
+          height: calc(100vh - 240px);
+          min-height: 400px;
+        }
+        @media (min-width: 768px) {
+          .ai-chat-wrapper {
+            height: calc(100vh - 180px);
+            min-height: 480px;
+          }
+        }
+        .ai-chat-wrapper .chat-card {
+          flex: 1;
+          min-height: 0 !important;
+          height: auto !important;
+          box-shadow: none !important;
+          transform: none !important;
+        }
+        .ai-chat-wrapper .text-gradient {
+          background: none !important;
+          -webkit-background-clip: initial !important;
+          background-clip: initial !important;
+          -webkit-text-fill-color: var(--color-primary) !important;
+          color: var(--color-primary) !important;
+        }
+        .ai-chat-wrapper .btn--primary {
+          background: var(--color-primary) !important;
+          background-image: none !important;
+          border-color: var(--color-primary) !important;
+        }
+        .ai-chat-wrapper .btn--primary:hover {
+          background: var(--color-primary-light) !important;
+          background-image: none !important;
+          border-color: var(--color-primary-light) !important;
+        }
+        .ai-chat-wrapper .chat-bubble.user {
+          background: var(--color-primary) !important;
+          background-image: none !important;
+          border-color: var(--color-primary) !important;
+        }
+        .ai-chat-wrapper .icon-btn--listening {
+          border-color: var(--color-primary) !important;
+          background: var(--color-primary-dim) !important;
+          animation: pulse-ring-primary 1.2s ease-in-out infinite !important;
+        }
+        .ai-chat-wrapper .typing-indicator {
+          background: var(--color-primary-dim) !important;
+          border-color: var(--color-primary-glow) !important;
+        }
+        .ai-chat-wrapper .chip:hover {
+          background: color-mix(in oklab, var(--color-primary) 25%, transparent) !important;
+          border-color: var(--color-primary) !important;
+        }
+        @keyframes pulse-ring-primary {
+          0%, 100% { box-shadow: 0 0 0 0 var(--color-primary-glow); }
+          50%       { box-shadow: 0 0 0 6px transparent; }
+        }
+      `}</style>,StartLine:369,TargetContent:
 
-      <div className="animate-fade-in">
+      <div className="animate-fade-in ai-chat-wrapper">
         {/* Header Actions Bar sitting outside/above the card */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', padding: '0 0.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', padding: '0 0.5rem', flexShrink: 0 }}>
           <button
             type="button"
             onClick={() => setIsHistoryOpen(true)}
@@ -362,7 +434,7 @@ export default function AIChat() {
         </div>
 
         {/* NATIVE chat-card: Identical to original code sizing */}
-        <div className="card chat-card">
+        <div ref={chatCardRef} className="card chat-card">
           {messages.length === 0 ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>
               <h3 className="text-gradient" style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>PulseGuard AI</h3>
@@ -418,7 +490,7 @@ export default function AIChat() {
         </div>
 
         {/* Input row sitting outside card */}
-        <form onSubmit={handleSubmit} style={{ margin: '1.5rem 0' }}>
+        <form onSubmit={handleSubmit} style={{ margin: '1rem 0', flexShrink: 0 }}>
           <div className="input-row">
             <input
               type="text"
@@ -445,7 +517,7 @@ export default function AIChat() {
         </form>
 
         {/* Chips row sitting below form */}
-        <div className="chip-row" style={{ marginTop: '1rem' }}>
+        <div className="chip-row" style={{ marginTop: '0.5rem', flexShrink: 0 }}>
           {CHIP_KEYS.map((key) => (
             <button
               type="button"

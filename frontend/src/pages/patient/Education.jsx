@@ -91,8 +91,8 @@ function FaqItem({ item, isOpen, onToggle, trimester, recKey, locale }) {
         onClick={onToggle}
         aria-expanded={isOpen}
       >
-        <span className="edu-accordion-title-area">
-          <span className="edu-accordion-title">{item.q}</span>
+        <span className="edu-accordion-title" style={{ flex: 1, minWidth: 0, lineHeight: 1.4 }}>{item.q}</span>
+        <span className="edu-accordion-meta" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
           {recKey && (
             <span className="edu-tag-rec" title={locale === 'bn' ? 'প্রস্তাবিত' : 'Recommended'}>
               <Star />
@@ -109,8 +109,8 @@ function FaqItem({ item, isOpen, onToggle, trimester, recKey, locale }) {
                 : trimester}
             </span>
           )}
+          <ChevronDown className="edu-accordion-chevron" />
         </span>
-        <ChevronDown className="edu-accordion-chevron" />
       </button>
       {isOpen && (
         <div className="edu-accordion-content" role="region">
@@ -163,7 +163,7 @@ function FaqSection({ trimester, locale }) {
           {$('EDU_FAQ_EMPTY', locale)}
         </p>
       ) : (
-        <div className="edu-accordion-container animate-fade-in">
+        <div className="edu-faq-grid animate-fade-in">
           {filtered.map((row) => (
             <FaqItem
               key={row.key}
@@ -210,8 +210,8 @@ function LibraryArticle({ article, locale, recKey }) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
-        <span className="edu-accordion-title-area">
-          <span className="edu-accordion-title">{title}</span>
+        <span className="edu-accordion-title" style={{ flex: 1, minWidth: 0, lineHeight: 1.4 }}>{title}</span>
+        <span className="edu-accordion-meta" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
           {recKey && (
             <span className="edu-tag-rec" title={locale === 'bn' ? 'প্রস্তাবিত' : 'Recommended'}>
               <Star />
@@ -228,8 +228,8 @@ function LibraryArticle({ article, locale, recKey }) {
                 : article.trimester}
             </span>
           )}
+          <ChevronDown className="edu-accordion-chevron" />
         </span>
-        <ChevronDown className="edu-accordion-chevron" />
       </button>
       {open && (
         <div className="edu-accordion-content" role="region">

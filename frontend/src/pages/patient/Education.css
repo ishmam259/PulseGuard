@@ -193,19 +193,20 @@
   background-color: var(--color-surface-hover);
 }
 
-.edu-accordion-title-area {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
-}
-
 .edu-accordion-title {
   font-size: 19px;
   font-weight: 500;
   color: var(--color-text);
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.edu-accordion-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .edu-accordion-chevron {
@@ -237,19 +238,65 @@
   margin-bottom: 0;
 }
 
+/* ── FAQ Grid Layout ── */
+.edu-faq-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .edu-faq-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+.edu-faq-grid .edu-accordion-item,
+.edu-faq-grid .edu-accordion-item:last-child {
+  border: 1px solid var(--color-border);
+  border-radius: 28px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+  overflow: hidden;
+}
+
+.edu-faq-grid .edu-accordion-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-light);
+}
+
+.edu-faq-grid .edu-accordion-item.open {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-glow-primary-dim);
+}
+
+.edu-faq-grid .edu-accordion-trigger {
+  padding: 22px 24px;
+}
+
+.edu-faq-grid .edu-accordion-content {
+  padding: 0 24px 22px 24px;
+}
+
 .edu-tag-trimester {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: var(--color-secondary);
-  color: var(--color-text-secondary);
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   line-height: 1;
   white-space: nowrap;
+  border: 1px solid rgba(204, 43, 94, 0.12);
 }
 
 .edu-tag-rec {
