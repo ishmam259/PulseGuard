@@ -673,3 +673,64 @@
     border-radius: var(--radius-3xl);
   }
 }
+
+/* ── Dark Mode Contrast & Theme Harmonization ── */
+:root.dark .pc-icon-wrapper,
+:root:not(.light) .pc-icon-wrapper {
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+}
+
+:root.dark .pc-baby-size-card,
+:root:not(.light) .pc-baby-size-card {
+  background: oklch(0.22 0.05 350);
+  border-color: oklch(0.32 0.08 350 / 0.4);
+}
+
+:root.dark .pc-baby-size-label,
+:root:not(.light) .pc-baby-size-label {
+  color: oklch(0.75 0.05 350);
+}
+
+:root.dark .pc-baby-size-value,
+:root:not(.light) .pc-baby-size-value {
+  color: oklch(0.95 0.01 350);
+}
+
+:root.dark .pc-baby-size-metric,
+:root:not(.light) .pc-baby-size-metric {
+  color: oklch(0.75 0.04 350);
+}
+
+:root.dark .pc-hero-progress-track,
+:root:not(.light) .pc-hero-progress-track {
+  background: oklch(0.25 0.02 320);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .pc-icon-wrapper {
+    background: var(--color-primary-dim);
+    color: var(--color-primary);
+  }
+
+  :root:not(.light) .pc-baby-size-card {
+    background: oklch(0.22 0.05 350);
+    border-color: oklch(0.32 0.08 350 / 0.4);
+  }
+
+  :root:not(.light) .pc-baby-size-label {
+    color: oklch(0.75 0.05 350);
+  }
+
+  :root:not(.light) .pc-baby-size-value {
+    color: oklch(0.95 0.01 350);
+  }
+
+  :root:not(.light) .pc-baby-size-metric {
+    color: oklch(0.75 0.04 350);
+  }
+
+  :root:not(.light) .pc-hero-progress-track {
+    background: oklch(0.25 0.02 320);
+  }
+}
