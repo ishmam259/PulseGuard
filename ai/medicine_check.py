@@ -56,12 +56,21 @@ CONTRAINDICATIONS: (key contraindications, comma-separated)
 CHW_NOTE: (one sentence: how to counsel the patient about this medicine)"""
     else:
         week_ctx = f" at week {req.pregnancyWeek} of pregnancy" if req.pregnancyWeek else " during pregnancy"
-        prompt = f"""You are a maternal health assistant for rural Bangladesh.
+        prompt = f"""You are a maternal health assistant for rural Bangladesh. Base your answer strictly on established medical consensus (WHO, NHS, and standard obstetrics guidelines).
+
+Key reference facts:
+- Paracetamol (acetaminophen, Napa, ACE, Renova) is SAFE for short-term use at standard doses throughout pregnancy — it is the first-line analgesic recommended by WHO and NHS for pregnant women.
+- Ibuprofen, aspirin, and NSAIDs are CAUTION in first trimester and AVOID after 20 weeks.
+- Metronidazole (Flagyl) is CAUTION in first trimester, SAFE in second/third trimester.
+- Amoxicillin, Azithromycin are generally SAFE in pregnancy.
+- Methotrexate, Thalidomide, Isotretinoin, Warfarin, ACE inhibitors are AVOID throughout pregnancy.
+- Do NOT confuse short-term occasional paracetamol use (SAFE) with prolonged daily use concerns (CAUTION).
+
 A pregnant woman{week_ctx} asks: is "{medicine_name}" safe to take?
 Answer in {lang_label}. Use simple, plain language that a non-medical person can understand.
 Use exactly this format (one line each, no extra text):
 SAFETY: SAFE | CAUTION | AVOID
-REASON: (1-2 sentences explaining the safety verdict)
+REASON: (1-2 sentences explaining the safety verdict based on established guidelines)
 WEEK_NOTE: (specific advice for this stage of pregnancy, or "N/A" if not applicable)
 ALTERNATIVES: (if AVOID, list 1-2 safer alternatives; otherwise write "None needed")"""
 

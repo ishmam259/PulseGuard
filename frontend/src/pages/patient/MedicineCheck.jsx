@@ -15,6 +15,8 @@ export default function MedicineCheck() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState(null)
   const [identified, setIdentified] = useState(null)
+  const [safety, setSafety] = useState(null)
+  const [safetyLoading, setSafetyLoading] = useState(false)
   const [error, setError] = useState(null)
   const fileInputRef = useRef(null)
 
@@ -47,6 +49,8 @@ export default function MedicineCheck() {
     setError(null)
     setResults(null)
     setIdentified(null)
+    setSafety(null)
+    setSafetyLoading(false)
     setLoading(true)
     try {
       const data = await api.medicineSearch(query.trim())
@@ -56,6 +60,12 @@ export default function MedicineCheck() {
         setResults(data.results || [])
         if ((data.results || []).length === 0) {
           setError(`No medicines found for "${query}". Try a different name.`)
+        } else {
+          setSafetyLoading(true)
+          api.medicineSafety(query.trim(), week, locale)
+            .then(s => setSafety(s))
+            .catch(() => {})
+            .finally(() => setSafetyLoading(false))
         }
       }
     } catch {
@@ -71,6 +81,8 @@ export default function MedicineCheck() {
     setError(null)
     setResults(null)
     setIdentified(null)
+    setSafety(null)
+    setSafetyLoading(false)
     setLoading(true)
     try {
       const base64 = imagePreview.split(',')[1]
@@ -80,6 +92,7 @@ export default function MedicineCheck() {
       } else {
         setIdentified(data.identified)
         setResults(data.results || [])
+        setSafety(data.safety || null)
         if ((data.results || []).length === 0) {
           setError(`No medicines found for "${data.identified}". Try searching by name.`)
         }
@@ -124,7 +137,7 @@ export default function MedicineCheck() {
                   type="button"
                   className={`btn ${activeTab === tab ? 'btn--primary' : 'btn--secondary'}`}
                   style={{ flex: 1, fontSize: '0.85rem' }}
-                  onClick={() => { setActiveTab(tab); setResults(null); setError(null); setIdentified(null) }}
+                  onClick={() => { setActiveTab(tab); setResults(null); setError(null); setIdentified(null); setSafety(null); setSafetyLoading(false) }}
                 >
                   {tab === 'search' ? $('MEDICINE_TAB_SEARCH', locale) : $('MEDICINE_TAB_PHOTO', locale)}
                 </button>
@@ -199,6 +212,9 @@ export default function MedicineCheck() {
           </div>
         )}
 
+        {/* Safety card */}
+        <SafetyCard safety={safety} loading={safetyLoading} locale={locale} />
+
         {/* Medex results */}
         {results && results.length > 0 && (
           <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -210,6 +226,98 @@ export default function MedicineCheck() {
 
       </div>
     </MobileLayout>
+  )
+}
+
+function SafetyCard({ safety, loading, locale }) {
+  if (loading) {
+    return (
+      <div className="card animate-fade-in" style={{
+        marginTop: '1rem',
+        borderLeft: '4px solid var(--color-primary)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+        padding: '1rem 1.25rem',
+      }}>
+        <span style={{ fontSize: '1.2rem', opacity: 0.5 }}>⏳</span>
+        <span style={{ fontSize: '0.875rem', color: 'var(--color-muted)' }}>
+          {locale === 'bn' ? 'নিরাপত্তা পরীক্ষা করা হচ্ছে…' : 'Checking pregnancy safety…'}
+        </span>
+      </div>
+    )
+  }
+  if (!safety?.SAFETY) return null
+
+  const map = {
+    SAFE:    { border: '#16a34a', iconBg: '#dcfce7', icon: '✅', color: '#15803d', label: locale === 'bn' ? 'নিরাপদ'         : 'SAFE'    },
+    CAUTION: { border: '#d97706', iconBg: '#fef3c7', icon: '⚠️', color: '#92400e', label: locale === 'bn' ? 'সতর্কতার সাথে' : 'CAUTION' },
+    AVOID:   { border: '#dc2626', iconBg: '#fee2e2', icon: '🚫', color: '#991b1b', label: locale === 'bn' ? 'এড়িয়ে চলুন'    : 'AVOID'   },
+  }
+  const s = map[safety.SAFETY] || map['CAUTION']
+
+  return (
+    <div className="card animate-fade-in" style={{
+      marginTop: '1rem',
+      borderLeft: `4px solid ${s.border}`,
+      padding: '1rem 1.25rem',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.6rem',
+    }}>
+      {/* Badge row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '2rem',
+          height: '2rem',
+          borderRadius: '50%',
+          background: s.iconBg,
+          fontSize: '1rem',
+          flexShrink: 0,
+        }}>{s.icon}</span>
+        <span style={{
+          fontWeight: 700,
+          fontSize: '0.95rem',
+          color: s.color,
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+        }}>{s.label}</span>
+      </div>
+
+      {/* Reason */}
+      {safety.REASON && (
+        <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6, color: 'var(--color-text)' }}>
+          {safety.REASON}
+        </p>
+      )}
+
+      {/* Week-specific note */}
+      {safety.WEEK_NOTE && safety.WEEK_NOTE !== 'N/A' && (
+        <p style={{
+          margin: 0,
+          fontSize: '0.8rem',
+          lineHeight: 1.5,
+          color: 'var(--color-muted)',
+          paddingLeft: '0.75rem',
+          borderLeft: '2px solid var(--color-border)',
+        }}>
+          {safety.WEEK_NOTE}
+        </p>
+      )}
+
+      {/* Alternatives (only for AVOID) */}
+      {safety.ALTERNATIVES && safety.ALTERNATIVES !== 'None needed' && (
+        <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-muted)' }}>
+          <strong style={{ color: 'var(--color-text)' }}>
+            {locale === 'bn' ? 'বিকল্প: ' : 'Alternatives: '}
+          </strong>
+          {safety.ALTERNATIVES}
+        </p>
+      )}
+    </div>
   )
 }
 

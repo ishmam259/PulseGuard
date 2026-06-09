@@ -57,8 +57,9 @@ router.post('/check', async (req, res) => {
     })
 
     let identified = null
+    let aiData = null
     if (aiRes.ok) {
-      const aiData = await aiRes.json()
+      aiData = await aiRes.json()
       identified = aiData.identified || null
     }
 
@@ -74,10 +75,31 @@ router.post('/check', async (req, res) => {
     }))
     const results = await enrichWithImages(top5)
 
-    res.json({ identified, results })
+    const { SAFETY, REASON, WEEK_NOTE, ALTERNATIVES } = aiData || {}
+    res.json({ identified, safety: { SAFETY, REASON, WEEK_NOTE, ALTERNATIVES }, results })
   } catch (err) {
     console.error('Medicine check error:', err.message)
     res.status(502).json({ error: 'Service unavailable' })
+  }
+})
+
+// POST /api/medicine/safety — text-query pregnancy safety (search tab)
+router.post('/safety', async (req, res) => {
+  const { name, pregnancyWeek, language } = req.body
+  if (!name) return res.status(400).json({ error: 'name is required' })
+  try {
+    const aiUrl = process.env.AI_WORKER_URL || 'http://localhost:8000'
+    const aiRes = await fetch(`${aiUrl}/ai/medicine-check`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: name, role: 'patient', pregnancyWeek, language }),
+    })
+    if (!aiRes.ok) return res.status(502).json({ error: 'AI unavailable' })
+    const { SAFETY, REASON, WEEK_NOTE, ALTERNATIVES } = await aiRes.json()
+    res.json({ SAFETY, REASON, WEEK_NOTE, ALTERNATIVES })
+  } catch (err) {
+    console.error('Medicine safety error:', err.message)
+    res.status(502).json({ error: 'AI unavailable' })
   }
 })
 

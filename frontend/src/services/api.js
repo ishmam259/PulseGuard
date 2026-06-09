@@ -219,6 +219,14 @@ export async function medicineCheck(payload) {
   return res.ok ? res.json() : { error: 'offline', offline: true }
 }
 
+export async function medicineSafety(name, pregnancyWeek, language) {
+  const res = await apiFetch('/medicine/safety', {
+    method: 'POST',
+    body: JSON.stringify({ name, pregnancyWeek, language }),
+  })
+  return res.ok ? res.json() : { error: 'AI unavailable' }
+}
+
 export async function aiChat(message, language = 'en') {
   const res = await apiFetch('/ai/chat', {
     method: 'POST',
