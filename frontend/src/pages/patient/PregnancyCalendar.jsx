@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext'
 import { patientNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
 import $ from '../../config/strings'
-import { weekContent } from '../../data/pregnancyCalendar'
+import { weekContent, weekContentBn } from '../../data/pregnancyCalendar'
 import { trimesterOfWeek, TRIMESTER_LABEL_KEY } from '../../data/education'
 import './PregnancyCalendar.css'
 import {
@@ -153,7 +153,13 @@ export default function PregnancyCalendar() {
 
   // Content for the current week, clamped via the data file's selector
   const content = useMemo(() => weekContent(week), [week])
+  const contentBn = useMemo(() => weekContentBn(week), [week])
   const isPostTerm = week >= 41
+
+  // Pick Bengali value from flat BN object if locale is 'bn', else fall back to English
+  function bn(enValue, bnKey) {
+    return locale === 'bn' && contentBn?.[bnKey] ? contentBn[bnKey] : enValue
+  }
 
   // Save handler for LMP
   async function handleSave() {
@@ -355,7 +361,7 @@ export default function PregnancyCalendar() {
   function renderBaby() {
     if (!content) return null
 
-    const sizeStr = content.baby.size
+    const sizeStr = bn(content.baby.size, 'size_bn')
     const match = sizeStr.match(/^(.*?)(\s*\(.*?\))\s*$/)
     let displayName = sizeStr
     let displayMetric = ''
@@ -380,13 +386,13 @@ export default function PregnancyCalendar() {
           </div>
         </div>
 
-        <p className="pc-section-summary">{content.baby.caption}</p>
+        <p className="pc-section-summary">{bn(content.baby.caption, 'caption_bn')}</p>
 
         <div className="pc-sub-heading">
           {$('CAL_BABY_HIGHLIGHTS', locale)}
         </div>
         <div className="pc-pill-container">
-          {content.baby.highlights.map((h, i) => (
+          {bn(content.baby.highlights, 'highlights_bn').map((h, i) => (
             <div key={i} className="pc-pill-item">{h}</div>
           ))}
         </div>
@@ -403,7 +409,7 @@ export default function PregnancyCalendar() {
           <h3>{$('CAL_BODY', locale)}</h3>
         </div>
         <div className="pc-pill-container" style={{ marginTop: '1.25rem' }}>
-          {content.body.changes.map((c, i) => (
+          {bn(content.body.changes, 'changes_bn').map((c, i) => (
             <div key={i} className="pc-pill-item">{c}</div>
           ))}
         </div>
@@ -426,7 +432,7 @@ export default function PregnancyCalendar() {
               {$('CAL_SYMPTOMS_NORMAL', locale)}
             </span>
             <div className="pc-symptom-list">
-              {content.symptoms.normal.map((s, i) => (
+              {bn(content.symptoms.normal, 'normal_bn').map((s, i) => (
                 <div key={i} className="pc-symptom-item">{s}</div>
               ))}
             </div>
@@ -439,7 +445,7 @@ export default function PregnancyCalendar() {
               {$('CAL_SYMPTOMS_WARNING', locale)}
             </span>
             <div className="pc-symptom-list">
-              {content.symptoms.warning.map((s, i) => (
+              {bn(content.symptoms.warning, 'warning_bn').map((s, i) => (
                 <div key={i} className="pc-symptom-item">{s}</div>
               ))}
             </div>
@@ -452,10 +458,10 @@ export default function PregnancyCalendar() {
   function renderTips() {
     if (!content) return null
     const tips = [
-      { icon: Apple, label: $('CAL_TIPS_NUTRITION', locale), body: content.tips.nutrition[0] },
-      { icon: Activity, label: $('CAL_TIPS_EXERCISE', locale), body: content.tips.exercise[0] },
-      { icon: Brain, label: $('CAL_TIPS_MENTAL', locale), body: content.tips.mentalHealth[0] },
-      { icon: ClipboardList, label: $('CAL_TIPS_PREP', locale), body: content.tips.preparation[0] },
+      { icon: Apple, label: $('CAL_TIPS_NUTRITION', locale), body: bn(content.tips.nutrition, 'nutrition_bn')[0] },
+      { icon: Activity, label: $('CAL_TIPS_EXERCISE', locale), body: bn(content.tips.exercise, 'exercise_bn')[0] },
+      { icon: Brain, label: $('CAL_TIPS_MENTAL', locale), body: bn(content.tips.mentalHealth, 'mentalHealth_bn')[0] },
+      { icon: ClipboardList, label: $('CAL_TIPS_PREP', locale), body: bn(content.tips.preparation, 'preparation_bn')[0] },
     ]
     return (
       <section style={{ marginTop: '0.75rem' }}>
