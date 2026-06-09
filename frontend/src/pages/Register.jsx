@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
+import { GoogleLogin } from '@react-oauth/google'
 import { useApp } from '../context/AppContext'
 import $ from '../config/strings'
 import { User, Mail, Phone, Lock, ArrowRight, Sun, Moon, HeartPulse, ShieldAlert } from 'lucide-react'
@@ -13,7 +14,7 @@ const dashboardRoutes = {
 export default function Register() {
   const { role } = useParams()
   const navigate = useNavigate()
-  const { register, locale, setLocale, theme, toggleTheme } = useApp()
+  const { register, loginWithGoogle, locale, setLocale, theme, toggleTheme } = useApp()
   
   const roleLabels = {
     patient: $('ROLE_PATIENT_TITLE', locale),
@@ -208,6 +209,32 @@ export default function Register() {
               <ArrowRight style={{ height: 16, width: 16 }} />
             </button>
           </form>
+
+          {/* Google Sign-In */}
+          <div className="auth-page__divider"><span>or</span></div>
+          <div className="auth-page__google-wrap">
+            <GoogleLogin
+              onSuccess={async ({ credential }) => {
+                setError('')
+                try {
+                  const result = await loginWithGoogle(credential, role)
+                  if (result.ok) {
+                    const dashRoute = dashboardRoutes[result.user?.role] || dashboardRoutes[role] || '/patient/dashboard'
+                    navigate(dashRoute, { replace: true })
+                  } else {
+                    setError(result.error || 'Google sign-in failed')
+                  }
+                } catch {
+                  setError('Google sign-in failed. Please try again.')
+                }
+              }}
+              onError={() => setError('Google sign-in failed')}
+              width="360"
+              text="signup_with"
+              shape="rectangular"
+              size="large"
+            />
+          </div>
 
           {/* Footer links */}
           <div className="auth-page__footer">

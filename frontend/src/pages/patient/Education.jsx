@@ -27,6 +27,10 @@ import {
   TRIMESTER_LABEL_KEY,
 } from '../../data/education'
 
+function loc(obj, field, locale) {
+  return locale === 'bn' && obj[field + '_bn'] ? obj[field + '_bn'] : obj[field]
+}
+
 // ─── Sub-components ───
 
 function PregnancyBanner({ patient, trimester, locale }) {
@@ -114,7 +118,7 @@ function FaqItem({ item, isOpen, onToggle, trimester, recKey, locale }) {
       </button>
       {isOpen && (
         <div className="edu-accordion-content" role="region">
-          <p>{item.a}</p>
+          <p>{loc(item, 'a', locale)}</p>
         </div>
       )}
     </div>
@@ -185,23 +189,23 @@ function LibraryArticle({ article, locale, recKey }) {
   const [open, setOpen] = useState(false)
   
   const fields = []
-  if (article.definition) fields.push({ label: $('EDU_LIB_ARTICLE_DEF', locale), value: article.definition })
-  if (article.symptoms) fields.push({ label: $('EDU_LIB_ARTICLE_SYMPTOMS', locale), value: article.symptoms })
-  if (article.risk_factors) fields.push({ label: $('EDU_LIB_ARTICLE_RISK_FACTORS', locale), value: article.risk_factors })
-  if (article.prevention) fields.push({ label: $('EDU_LIB_ARTICLE_PREVENTION', locale), value: article.prevention })
-  if (article.seek_help) fields.push({ label: $('EDU_LIB_ARTICLE_SEEK_HELP', locale), value: article.seek_help })
-  if (article.benefits) fields.push({ label: $('EDU_LIB_ARTICLE_BENEFITS', locale), value: article.benefits })
-  if (article.precautions) fields.push({ label: $('EDU_LIB_ARTICLE_PRECAUTIONS', locale), value: article.precautions })
-  if (article.contraindications) fields.push({ label: $('EDU_LIB_ARTICLE_CONTRAINDICATIONS', locale), value: article.contraindications })
-  if (article.meaning) fields.push({ label: $('EDU_LIB_ARTICLE_MEANING', locale), value: article.meaning })
-  if (article.why_it_matters) fields.push({ label: $('EDU_LIB_ARTICLE_WHY', locale), value: article.why_it_matters })
-  if (article.normal_range) fields.push({ label: $('EDU_LIB_ARTICLE_NORMAL_RANGE', locale), value: article.normal_range })
-  
+  if (article.definition) fields.push({ label: $('EDU_LIB_ARTICLE_DEF', locale), value: loc(article, 'definition', locale) })
+  if (article.symptoms) fields.push({ label: $('EDU_LIB_ARTICLE_SYMPTOMS', locale), value: loc(article, 'symptoms', locale) })
+  if (article.risk_factors) fields.push({ label: $('EDU_LIB_ARTICLE_RISK_FACTORS', locale), value: loc(article, 'risk_factors', locale) })
+  if (article.prevention) fields.push({ label: $('EDU_LIB_ARTICLE_PREVENTION', locale), value: loc(article, 'prevention', locale) })
+  if (article.seek_help) fields.push({ label: $('EDU_LIB_ARTICLE_SEEK_HELP', locale), value: loc(article, 'seek_help', locale) })
+  if (article.benefits) fields.push({ label: $('EDU_LIB_ARTICLE_BENEFITS', locale), value: loc(article, 'benefits', locale) })
+  if (article.precautions) fields.push({ label: $('EDU_LIB_ARTICLE_PRECAUTIONS', locale), value: loc(article, 'precautions', locale) })
+  if (article.contraindications) fields.push({ label: $('EDU_LIB_ARTICLE_CONTRAINDICATIONS', locale), value: loc(article, 'contraindications', locale) })
+  if (article.meaning) fields.push({ label: $('EDU_LIB_ARTICLE_MEANING', locale), value: loc(article, 'meaning', locale) })
+  if (article.why_it_matters) fields.push({ label: $('EDU_LIB_ARTICLE_WHY', locale), value: loc(article, 'why_it_matters', locale) })
+  if (article.normal_range) fields.push({ label: $('EDU_LIB_ARTICLE_NORMAL_RANGE', locale), value: loc(article, 'normal_range', locale) })
+
   if (fields.length === 0 && article.body) {
-    fields.push({ label: null, value: article.body })
+    fields.push({ label: null, value: loc(article, 'body', locale) })
   }
 
-  const title = article.title || article.term
+  const title = loc(article, article.title !== undefined ? 'title' : 'term', locale)
   return (
     <div className={`edu-accordion-item ${open ? 'open' : ''}`}>
       <button
@@ -293,7 +297,7 @@ function LibrarySection({ trimester, locale }) {
   )
 }
 
-function ChecklistGroup({ title, items, icon: Icon, packed, onToggle }) {
+function ChecklistGroup({ title, items, icon: Icon, packed, onToggle, locale }) {
   const groupTotal = items.length
   const groupPacked = items.filter((it) => packed[it.id]).length
   return (
@@ -322,7 +326,7 @@ function ChecklistGroup({ title, items, icon: Icon, packed, onToggle }) {
               <span className="edu-checklist-checkbox">
                 {isPacked && <Check size={12} strokeWidth={3} />}
               </span>
-              <span className="edu-checklist-item-text">{it.label}</span>
+              <span className="edu-checklist-item-text">{loc(it, 'label', locale)}</span>
             </button>
           )
         })}
@@ -413,6 +417,7 @@ function ChecklistSection({ locale }) {
           icon={HeartPulse}
           packed={packed}
           onToggle={toggle}
+          locale={locale}
         />
         <ChecklistGroup
           title={$('EDU_LIB_GROUP_BABY', locale)}
@@ -420,6 +425,7 @@ function ChecklistSection({ locale }) {
           icon={Baby}
           packed={packed}
           onToggle={toggle}
+          locale={locale}
         />
         <ChecklistGroup
           title={$('EDU_LIB_GROUP_DOCS', locale)}
@@ -427,6 +433,7 @@ function ChecklistSection({ locale }) {
           icon={FileText}
           packed={packed}
           onToggle={toggle}
+          locale={locale}
         />
       </div>
     </div>

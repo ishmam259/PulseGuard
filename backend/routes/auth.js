@@ -2,10 +2,13 @@ const express = require('express')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
+const { OAuth2Client } = require('google-auth-library')
 const pool = require('../db/pool')
 const { registerSchema, loginSchema, profileUpdateSchema } = require('../schemas/auth.schema')
 const { authenticate } = require('../middleware/auth')
 const { uploadBase64Image } = require('../services/cloudinary')
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const router = express.Router()
 
@@ -211,6 +214,59 @@ router.post('/upload-image', authenticate, async (req, res) => {
   }
 })
 
+
+// POST /api/auth/google
+router.post('/google', async (req, res) => {
+  try {
+    const { credential, role } = req.body
+    if (!credential) return res.status(400).json({ error: 'Missing credential' })
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    })
+    const { sub: googleId, email, name, picture } = ticket.getPayload()
+
+    let result = await pool.query(
+      'SELECT * FROM users WHERE google_id = $1 OR (email = $2 AND email IS NOT NULL) LIMIT 1',
+      [googleId, email]
+    )
+    let user = result.rows[0]
+
+    if (user) {
+      if (!user.google_id) {
+        await pool.query('UPDATE users SET google_id = $1 WHERE id = $2', [googleId, user.id])
+        user.google_id = googleId
+      }
+    } else {
+      if (!role || !['patient', 'worker', 'admin'].includes(role)) {
+        return res.status(400).json({ error: 'Valid role required for new accounts' })
+      }
+      const { rows: created } = await pool.query(
+        `INSERT INTO users (name, email, google_id, role, profile_picture_url)
+         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [name, email || null, googleId, role, picture || null]
+      )
+      user = created[0]
+    }
+
+    const token = generateAccessToken(user)
+    const refreshToken = await createRefreshToken(user.id)
+
+    res.json({
+      user: {
+        id: user.id, name: user.name, email: user.email, phone: user.phone,
+        role: user.role, address: user.address, blood_type: user.blood_type,
+        height: user.height, profile_picture_url: user.profile_picture_url,
+      },
+      token,
+      refreshToken,
+    })
+  } catch (err) {
+    console.error('Google auth error:', err)
+    res.status(500).json({ error: 'Google authentication failed' })
+  }
+})
 
 function generateAccessToken(user) {
   return jwt.sign(

@@ -102,6 +102,16 @@ export async function login(data) {
   return { ok: res.ok, ...result }
 }
 
+export async function googleSignIn(credential, role) {
+  const res = await apiFetch('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential, role }),
+  })
+  const result = await res.json()
+  if (res.ok) setTokens(result.token, result.refreshToken)
+  return { ok: res.ok, ...result }
+}
+
 export async function getMe() {
   const res = await apiFetch('/auth/me')
   return res.ok ? (await res.json()).user : null

@@ -35,7 +35,7 @@ export default function AIChat() {
   const [isTyping, setIsTyping] = useState(false)
   const [isListening, setIsListening] = useState(false)
   
-  const bottomRef = useRef(null)
+  const chatContainerRef = useRef(null)
   const recognitionRef = useRef(null)
   const chatCardRef = useRef(null)
   const sendingFirstMessageRef = useRef(false)
@@ -70,7 +70,7 @@ export default function AIChat() {
     loadChatMessages()
   }, [activeChatId])
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom on new messages (scoped scroll - prevents parent page layout shift)
   useEffect(() => {
     if (chatCardRef.current) {
       chatCardRef.current.scrollTo({
@@ -486,7 +486,6 @@ export default function AIChat() {
               </div>
             </div>
           )}
-          <div ref={bottomRef} />
         </div>
 
         {/* Input row sitting outside card */}
