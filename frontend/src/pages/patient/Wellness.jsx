@@ -342,8 +342,8 @@ export default function Wellness() {
                         marginTop: '0.5rem',
                         fontWeight: '800',
                         color: vomit.count >= 5 ? 'oklch(0.6 0.22 27)' : vomit.count >= 3 ? 'oklch(0.72 0.16 50)' : 'var(--color-text)',
-                        background: vomit.count >= 3 ? 'none' : undefined,
-                        webkitTextFillColor: vomit.count >= 3 ? 'var(--color-text)' : undefined
+                        background: 'none',
+                        webkitTextFillColor: 'initial'
                       }}
                     >
                       {fmtN(vomit.count)}
