@@ -95,7 +95,7 @@ function FaqItem({ item, isOpen, onToggle, trimester, recKey, locale }) {
         onClick={onToggle}
         aria-expanded={isOpen}
       >
-        <span className="edu-accordion-title" style={{ flex: 1, minWidth: 0, lineHeight: 1.4 }}>{item.q}</span>
+        <span className="edu-accordion-title" style={{ flex: 1, minWidth: 0, lineHeight: 1.4 }}>{loc(item, 'q', locale)}</span>
         <span className="edu-accordion-meta" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
           {recKey && (
             <span className="edu-tag-rec" title={locale === 'bn' ? 'প্রস্তাবিত' : 'Recommended'}>
