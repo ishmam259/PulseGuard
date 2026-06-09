@@ -373,13 +373,17 @@
 .pc-baby-size-card {
   margin-top: 1.25rem;
   border-radius: var(--radius-3xl); /* Rounded-3xl corners matching mockup */
-  background: var(--color-bg-accent); /* theme-aware responsive soft pink/purple background */
+  background: oklch(0.96 0.03 350); /* warm solid soft pink background matching mockup color exactly */
   padding: 2.25rem 1.25rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.dark .pc-baby-size-card {
+  background: oklch(0.22 0.04 350); /* dark wine/plum background for dark mode */
 }
 
 .pc-baby-size-label {
