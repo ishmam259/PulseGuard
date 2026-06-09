@@ -290,6 +290,45 @@ export function connectWebSocket(onMessage) {
   return ws
 }
 
+export function connectCommunityChat(room, handlers = {}) {
+  // Use a separate URL for the pulseguard-chat service (Quarkus)
+  // Defaulting to port 8081 as per docker-compose mapping
+  const baseUrl = import.meta.env.VITE_WS_CHAT_URL || `ws://${window.location.hostname}:8081/chat`
+  const wsUrl = baseUrl.endsWith('/') ? `${baseUrl}${room}` : `${baseUrl}/${room}`
+  const ws = new WebSocket(wsUrl)
+
+  ws.onopen = (e) => handlers.onOpen?.(e)
+  ws.onclose = (e) => handlers.onClose?.(e)
+  ws.onerror = (e) => handlers.onError?.(e)
+
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data)
+      handlers.onMessage?.(data)
+    } catch (err) {
+      // Invalid message
+    }
+  }
+
+  return ws
+}
+
+export async function getCommunityChatHistory(room) {
+  const wsBaseUrl = import.meta.env.VITE_WS_CHAT_URL || `ws://${window.location.hostname}:8081/chat`
+  const httpBaseUrl = wsBaseUrl.replace(/^ws/, 'http').replace(/\/chat$/, '/api/chat')
+  const url = httpBaseUrl.endsWith('/') ? `${httpBaseUrl}${room}` : `${httpBaseUrl}/${room}`
+
+  try {
+    const res = await fetch(url)
+    if (!res.ok) return []
+    return await res.json()
+  } catch (err) {
+    console.error('Failed to fetch chat history', err)
+    return []
+  }
+}
+
+
 // ── Wellness API ──
 
 export async function logWater(amount_ml) {

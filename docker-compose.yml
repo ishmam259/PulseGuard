@@ -15,6 +15,22 @@ services:
       timeout: 5s
       retries: 5
 
+  chatdb:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: pulseguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wirelight
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pulseguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   api:
     build: ./backend
     ports:
@@ -61,22 +77,22 @@ services:
     depends_on:
       - api
 
-  matrix-chat:
-    image: matrixconduit/matrix-conduit:v0.10.0
-    container_name: matrix_conduit
+  pulseguard-chat:
+    build:
+      context: ./pulseguard
+      dockerfile: src/main/docker/Dockerfile.native
     ports:
-      - "8008:6167" # Maps port 8008 on your machine to Conduit's internal port
+      - "8081:8080"
     environment:
-      # Required by Conduit v0.10+. Points at the toml we mount below.
-      CONDUIT_CONFIG: /etc/conduit/conduit.toml
-      # JWT secret used by PulseGuard's /api/chat/get-chat-token endpoint.
-      CONDUIT_JWT_SECRET: "${CHAT_SECRET}"
-    volumes:
-      # Conduit config (read-only).
-      - ./matrix/conduit.toml:/etc/conduit/conduit.toml:ro
-      # Persistent data (RocksDB lives here).
-      - ./matrix_data:/srv/conduit/data
-    restart: unless-stopped
+      QUARKUS_HTTP_PORT: 8080
+      QUARKUS_WEBSOCKETS_NEXT_ORIGINS: "*"
+      QUARKUS_DATASOURCE_DB_KIND: postgresql
+      QUARKUS_DATASOURCE_USERNAME: postgres
+      QUARKUS_DATASOURCE_PASSWORD: wirelight
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://chatdb:5432/pulseguard
+      QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
+      QUARKUS_HTTP_CORS_ENABLED: "true"
+      QUARKUS_HTTP_CORS_ORIGINS: "*"
 
 volumes:
   pg_data:
