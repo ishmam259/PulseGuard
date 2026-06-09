@@ -47,7 +47,7 @@
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%; /* circular icon container */
-  background: #ffeef1; /* warm soft pink circle */
+  background: var(--color-primary-dim); /* theme-aware soft pink background */
   color: var(--color-primary);
   flex-shrink: 0;
 }
@@ -333,7 +333,7 @@
   height: 0.25rem;
   width: 100%;
   border-radius: var(--radius-pill);
-  background: #e4e4e7;
+  background: var(--color-border); /* theme-aware progress bar track */
   overflow: hidden;
   z-index: 1;
   margin-top: 1.5rem;
@@ -373,7 +373,7 @@
 .pc-baby-size-card {
   margin-top: 1.25rem;
   border-radius: var(--radius-3xl); /* Rounded-3xl corners matching mockup */
-  background: oklch(0.96 0.03 350); /* warm solid soft pink background matching mockup color exactly */
+  background: var(--color-bg-accent); /* theme-aware responsive soft pink/purple background */
   padding: 2.25rem 1.25rem;
   text-align: center;
   display: flex;
