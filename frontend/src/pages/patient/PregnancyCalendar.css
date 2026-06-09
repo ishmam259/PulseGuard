@@ -78,7 +78,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-muted);
+  color: var(--color-text-secondary);
 }
 
 .pc-date-value {
@@ -143,7 +143,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-muted);
+  color: var(--color-text-secondary);
 }
 
 .pc-date-input {
@@ -163,6 +163,37 @@
 .pc-date-input:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px var(--color-primary-glow);
+}
+
+.pc-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  transition: filter var(--duration-fast);
+}
+
+:root.dark .pc-date-input::-webkit-calendar-picker-indicator,
+.dark .pc-date-input::-webkit-calendar-picker-indicator,
+html.dark .pc-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .pc-date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1) !important;
+  }
+}
+
+/* Dark mode specific overrides for input visibility */
+:root.dark .pc-date-input,
+html.dark .pc-date-input {
+  border-color: var(--color-border-light);
+  background: var(--color-surface-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .pc-date-input {
+    border-color: var(--color-border-light);
+    background: var(--color-surface-hover);
+  }
 }
 
 .pc-form-error {
@@ -219,6 +250,17 @@
 
 .pc-btn-cancel:hover {
   background: var(--color-surface-hover);
+}
+
+:root.dark .pc-btn-cancel,
+html.dark .pc-btn-cancel {
+  border-color: var(--color-border-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .pc-btn-cancel {
+    border-color: var(--color-border-light);
+  }
 }
 
 .pc-btn-cancel:disabled {
