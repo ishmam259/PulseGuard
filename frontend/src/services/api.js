@@ -451,6 +451,24 @@ export async function getNutritionSummary(patientId) {
   return res.ok ? await res.json() : null
 }
 
+export async function searchNutritionFoods(q, category) {
+  const params = new URLSearchParams()
+  if (q) params.set('q', q)
+  if (category) params.set('category', category)
+  const res = await apiFetch(`/nutrition/foods/search?${params}`)
+  return res.ok ? (await res.json()).foods : []
+}
+
+export async function getNutritionWeekly() {
+  const res = await apiFetch('/nutrition/weekly')
+  return res.ok ? await res.json() : null
+}
+
+export async function updateNutritionEntry(id, data) {
+  const res = await apiFetch(`/nutrition/log/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
 // ── AI Config API ──
 
 export async function getAIConfig() {
