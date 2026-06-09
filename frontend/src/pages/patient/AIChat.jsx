@@ -35,8 +35,9 @@ export default function AIChat() {
   const [isTyping, setIsTyping] = useState(false)
   const [isListening, setIsListening] = useState(false)
   
-  const bottomRef = useRef(null)
+  const chatContainerRef = useRef(null)
   const recognitionRef = useRef(null)
+  const justCreatedChatRef = useRef(false)
 
   // 1. Load chat sessions list on mount & query changes
   useEffect(() => {
@@ -48,6 +49,10 @@ export default function AIChat() {
     async function loadChatMessages() {
       if (!activeChatId) {
         setMessages([])
+        return
+      }
+      if (justCreatedChatRef.current) {
+        justCreatedChatRef.current = false
         return
       }
       try {
@@ -62,9 +67,16 @@ export default function AIChat() {
     loadChatMessages()
   }, [activeChatId])
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom on new messages (scoped scroll - prevents parent page layout shift)
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const scrollToBottom = () => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+      }
+    }
+    scrollToBottom()
+    const timer = setTimeout(scrollToBottom, 50)
+    return () => clearTimeout(timer)
   }, [messages, isTyping])
 
   const loadChatsList = async () => {
@@ -121,6 +133,7 @@ export default function AIChat() {
         const res = await api.createAIChat(sessionTitle)
         if (!res || !res.chat) throw new Error('Could not create new session')
         currentId = res.chat.id
+        justCreatedChatRef.current = true
         setActiveChatId(currentId)
       }
 
@@ -362,7 +375,7 @@ export default function AIChat() {
         </div>
 
         {/* NATIVE chat-card: Identical to original code sizing */}
-        <div className="card chat-card">
+        <div className="card chat-card" ref={chatContainerRef}>
           {messages.length === 0 ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>
               <h3 className="text-gradient" style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>PulseGuard AI</h3>
@@ -414,7 +427,6 @@ export default function AIChat() {
               </div>
             </div>
           )}
-          <div ref={bottomRef} />
         </div>
 
         {/* Input row sitting outside card */}
