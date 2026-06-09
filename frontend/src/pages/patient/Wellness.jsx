@@ -186,7 +186,7 @@ export default function Wellness() {
                       <p style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-muted)' }}>
                         {$('WELLNESS_WATER_TOTAL', locale)}
                       </p>
-                      <p className="kpi" style={{ fontSize: '3rem', marginTop: '0.25rem', fontFamily: 'var(--font-display)' }}>
+                      <p className="kpi" style={{ fontSize: '3rem', marginTop: '0.25rem', fontFamily: 'var(--font-display)', background: 'none', webkitTextFillColor: 'initial', color: 'var(--color-primary)' }}>
                         {fmtN(water.total_ml)}
                         <span className="muted" style={{ fontSize: '1rem', marginLeft: '4px', fontFamily: 'var(--font-display)' }}>{$('WELLNESS_WATER_ML_SUFFIX', locale)}</span>
                       </p>
@@ -207,7 +207,7 @@ export default function Wellness() {
                       className="progress-bar"
                       style={{
                         width: `${water.hydration_pct}%`,
-                        background: 'var(--gradient-primary)'
+                        background: 'var(--color-primary)'
                       }}
                     />
                   </div>

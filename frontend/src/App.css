@@ -59,7 +59,7 @@
 .btn:active { transform: scale(0.96); }
 
 .btn--primary {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: #FFFFFF;
   border-color: rgba(255, 255, 255, 0.15);
   box-shadow: var(--shadow-glow-primary);
@@ -2478,7 +2478,7 @@ select.input option {
 }
 
 .tab-capsule-btn.active {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: #ffffff !important;
   box-shadow: var(--shadow-glow-primary);
 }
@@ -2519,7 +2519,7 @@ select.input option {
 }
 
 .trend-bar.today {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
 }
 
 .trend-bar:not(.today) {
