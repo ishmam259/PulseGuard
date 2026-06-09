@@ -115,6 +115,14 @@ export async function updateProfile(data) {
   return { ok: res.ok, ...(await res.json()) }
 }
 
+export async function uploadProfileImage(base64DataUri) {
+  const res = await apiFetch('/auth/upload-image', {
+    method: 'POST',
+    body: JSON.stringify({ image: base64DataUri }),
+  })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
 
 // ── Patients API ──
 
@@ -188,12 +196,58 @@ export async function resolveConflict(id, resolution) {
 
 // ── AI API ──
 
+export async function medicineSearch(q) {
+  const res = await apiFetch(`/medicine/search?q=${encodeURIComponent(q)}`)
+  return res.ok ? res.json() : { results: [], error: 'unreachable' }
+}
+
+export async function medicineCheck(payload) {
+  const res = await apiFetch('/medicine/check', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+  return res.ok ? res.json() : { error: 'offline', offline: true }
+}
+
 export async function aiChat(message, language = 'en') {
   const res = await apiFetch('/ai/chat', {
     method: 'POST',
     body: JSON.stringify({ message, language }),
   })
   return res.ok ? await res.json() : { response: 'AI service unavailable', offline: true }
+}
+
+export async function getAIChats(q = '') {
+  const res = await apiFetch(`/ai/chats?q=${encodeURIComponent(q)}`)
+  return res.ok ? (await res.json()).chats : []
+}
+
+export async function createAIChat(title) {
+  const res = await apiFetch('/ai/chats', {
+    method: 'POST',
+    body: JSON.stringify({ title }),
+  })
+  return res.ok ? await res.json() : null
+}
+
+export async function getAIChat(id) {
+  const res = await apiFetch(`/ai/chats/${id}`)
+  return res.ok ? await res.json() : null
+}
+
+export async function sendAIChatMessage(id, message, language = 'en') {
+  const res = await apiFetch(`/ai/chats/${id}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ message, language }),
+  })
+  return res.ok ? await res.json() : { response: 'AI service unavailable', offline: true }
+}
+
+export async function deleteAIChat(id) {
+  const res = await apiFetch(`/ai/chats/${id}`, {
+    method: 'DELETE',
+  })
+  return res.ok
 }
 
 export async function aiPredict(vitals) {
@@ -354,6 +408,28 @@ export async function getWaterWeekTrend() {
 
 export async function getWellnessSummary(patientId) {
   const res = await apiFetch(`/wellness/summary/${patientId}`)
+  return res.ok ? await res.json() : null
+}
+
+// ── Nutrition API ──
+
+export async function logNutrition(data) {
+  const res = await apiFetch('/nutrition/log', { method: 'POST', body: JSON.stringify(data) })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function deleteNutritionEntry(id) {
+  const res = await apiFetch(`/nutrition/log/${id}`, { method: 'DELETE' })
+  return { ok: res.ok, ...(await res.json()) }
+}
+
+export async function getNutritionDaily() {
+  const res = await apiFetch('/nutrition/daily')
+  return res.ok ? await res.json() : null
+}
+
+export async function getNutritionSummary(patientId) {
+  const res = await apiFetch(`/nutrition/summary/${patientId}`)
   return res.ok ? await res.json() : null
 }
 

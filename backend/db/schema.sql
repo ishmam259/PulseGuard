@@ -15,6 +15,10 @@ CREATE TABLE IF NOT EXISTS users (
   phone TEXT UNIQUE,
   password_hash TEXT NOT NULL,
   role TEXT CHECK (role IN ('patient', 'worker', 'admin')) NOT NULL,
+  address TEXT,
+  blood_type TEXT,
+  height NUMERIC(5,2),
+  profile_picture_url TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -38,6 +42,9 @@ CREATE TABLE IF NOT EXISTS patients (
   village TEXT,
   gestational_week INT,
   lmp_date DATE,
+  height NUMERIC(5,2),
+  blood_type TEXT,
+  profile_picture_url TEXT,
   risk_level TEXT DEFAULT 'low',
   risk_score NUMERIC(4,3) DEFAULT 0,
   last_updated TIMESTAMPTZ DEFAULT now(),
@@ -49,6 +56,16 @@ CREATE TABLE IF NOT EXISTS patients (
 ALTER TABLE patients ADD COLUMN IF NOT EXISTS lmp_date DATE;
 UPDATE patients SET lmp_date = CURRENT_DATE - (gestational_week * 7)
   WHERE lmp_date IS NULL AND gestational_week IS NOT NULL;
+
+-- Idempotent migration: profile enhancement fields
+ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS blood_type TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS height NUMERIC(5,2);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture_url TEXT;
+
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS height NUMERIC(5,2);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS blood_type TEXT;
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS profile_picture_url TEXT;
 
 -- Vitals entries
 CREATE TABLE IF NOT EXISTS vitals (
@@ -157,6 +174,22 @@ CREATE INDEX IF NOT EXISTS idx_water_logs_patient
 CREATE INDEX IF NOT EXISTS idx_vomit_logs_patient
   ON vomit_logs (patient_id, logged_at DESC);
 
+-- Daily nutrition log (5-nutrient pregnancy tracker)
+CREATE TABLE IF NOT EXISTS nutrition_logs (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id      UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  food_name       TEXT NOT NULL,
+  meal_type       TEXT NOT NULL CHECK (meal_type IN ('breakfast','lunch','dinner','snack')),
+  calories_kcal   NUMERIC(6,1) DEFAULT 0,
+  protein_g       NUMERIC(5,2) DEFAULT 0,
+  iron_mg         NUMERIC(5,2) DEFAULT 0,
+  folic_acid_mcg  NUMERIC(6,1) DEFAULT 0,
+  calcium_mg      NUMERIC(6,1) DEFAULT 0,
+  logged_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_nutrition_logs_patient
+  ON nutrition_logs (patient_id, logged_at DESC);
+
 -- ═══════════════════════════════════════════════════════════
 -- Conduit (matrix) credentials for community chat
 -- ═══════════════════════════════════════════════════════════
@@ -171,3 +204,17 @@ CREATE TABLE IF NOT EXISTS conduit_credentials (
   password_ciphertext TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- AI Chat history
+CREATE TABLE IF NOT EXISTS ai_chats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  messages JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_chats_user ON ai_chats(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_chats_updated ON ai_chats(updated_at DESC);
+

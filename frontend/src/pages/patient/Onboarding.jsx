@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
@@ -6,20 +6,44 @@ import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
 
+const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+
 export default function Onboarding() {
   const { currentUser, locale, connectivity } = useApp()
   const navigate = useNavigate()
+  const fileInputRef = useRef(null)
 
   const [form, setForm] = useState({
     gestational_week: '',
     village: '',
     age: '',
+    height: '',
+    blood_type: '',
   })
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [previewUrl, setPreviewUrl] = useState(null)
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }))
+  }
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be smaller than 5 MB.')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (ev) => setPreviewUrl(ev.target.result)
+    reader.readAsDataURL(file)
+    setError('')
   }
 
   const handleSubmit = async (e) => {
@@ -39,18 +63,45 @@ export default function Onboarding() {
 
     setSaving(true)
     try {
+      // 1. Upload profile picture if selected
+      let profilePictureUrl = null
+      if (previewUrl) {
+        setUploading(true)
+        try {
+          const uploadRes = await api.uploadProfileImage(previewUrl)
+          if (uploadRes.ok) profilePictureUrl = uploadRes.url
+        } catch {
+          // Non-fatal: proceed without picture
+        } finally {
+          setUploading(false)
+        }
+      }
+
+      // 2. Create patient profile with all the new fields
       const res = await api.createPatient({
         name: currentUser.name,
         gestational_week: week,
         village: form.village.trim() || undefined,
         age: form.age ? parseInt(form.age) : undefined,
+        height: form.height ? parseFloat(form.height) : undefined,
+        blood_type: form.blood_type || undefined,
+        profile_picture_url: profilePictureUrl || undefined,
       })
 
       if (!res.ok) {
         throw new Error(res.error || 'Failed to create patient profile.')
       }
 
-      // Profile created — go to dashboard
+      // 3. Update user-level profile picture URL as well
+      if (profilePictureUrl) {
+        await api.updateProfile({
+          name: currentUser.name,
+          email: currentUser.email,
+          phone: currentUser.phone,
+          profile_picture_url: profilePictureUrl,
+        })
+      }
+
       navigate('/patient/dashboard')
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
@@ -96,20 +147,33 @@ export default function Onboarding() {
           </p>
 
           {error && (
-            <div
-              style={{
-                background: 'rgba(239,68,68,0.1)',
-                border: '1px solid rgba(239,68,68,0.3)',
-                borderRadius: '8px',
-                padding: '0.75rem 1rem',
-                marginBottom: '1.25rem',
-              }}
-            >
+            <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1.25rem' }}>
               <strong style={{ color: '#ef4444' }}>{error}</strong>
             </div>
           )}
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+            {/* Profile Picture */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', padding: '1rem', border: '2px dashed var(--color-border)', borderRadius: '12px', cursor: 'pointer' }}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--color-primary)' }} />
+              ) : (
+                <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px dashed var(--color-border)' }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-muted)' }}>
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
+                </div>
+              )}
+              <span className="muted" style={{ fontSize: '13px', fontWeight: 500 }}>
+                {previewUrl ? $('PROFILE_UPLOAD_CHANGE', locale) : $('PROFILE_UPLOAD_PICTURE', locale)} (optional)
+              </span>
+              <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileSelect} />
+            </div>
+
             {/* Gestational Week */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
               {$('ONBOARD_LABEL_WEEK', locale)}
@@ -148,6 +212,43 @@ export default function Onboarding() {
               </div>
             </label>
 
+            {/* Height */}
+            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
+              {$('PROFILE_EDIT_LABEL_HEIGHT', locale)}
+              <div className="input-wrapper">
+                <input
+                  id="height"
+                  type="number"
+                  className="input"
+                  value={form.height}
+                  onChange={handleChange('height')}
+                  placeholder={$('PROFILE_EDIT_PH_HEIGHT', locale)}
+                  min="50"
+                  max="300"
+                  step="0.1"
+                />
+              </div>
+            </label>
+
+            {/* Blood Type */}
+            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
+              {$('PROFILE_EDIT_LABEL_BLOOD_TYPE', locale)}
+              <div className="input-wrapper">
+                <select
+                  id="blood_type"
+                  className="input"
+                  value={form.blood_type}
+                  onChange={handleChange('blood_type')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <option value="">— Select blood type —</option>
+                  {BLOOD_TYPES.map(bt => (
+                    <option key={bt} value={bt}>{bt}</option>
+                  ))}
+                </select>
+              </div>
+            </label>
+
             {/* Village */}
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>
               {$('ONBOARD_LABEL_VILLAGE', locale)}
@@ -167,10 +268,10 @@ export default function Onboarding() {
               id="complete-onboarding-btn"
               type="submit"
               className="btn btn--primary btn--large"
-              disabled={saving}
+              disabled={saving || uploading}
               style={{ marginTop: '0.5rem' }}
             >
-              {saving ? $('ONBOARD_BTN_LOADING', locale) : $('ONBOARD_BTN_SUBMIT', locale)}
+              {saving || uploading ? $('ONBOARD_BTN_LOADING', locale) : $('ONBOARD_BTN_SUBMIT', locale)}
             </button>
           </form>
         </div>

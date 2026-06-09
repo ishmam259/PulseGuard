@@ -38,6 +38,9 @@ services:
       CHAT_SECRET: ${CHAT_SECRET}
       MATRIX_BASE_URL: http://matrix-chat:6167
       GLOBAL_CHAT_ROOM_ID: !pulseguard-global:localhost
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
 
   ai-worker:
     build: ./ai
@@ -49,6 +52,10 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:wirelight@db:5432/pulseguard
       GROQ_API_KEY: ${GROQ_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_API_KEY2: ${GEMINI_API_KEY2}
+      GEMINI_API_KEY3: ${GEMINI_API_KEY3}
+      GEMINI_API_KEY4: ${GEMINI_API_KEY4}
 
   frontend:
     build: 
