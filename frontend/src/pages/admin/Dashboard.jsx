@@ -70,7 +70,7 @@ export default function Dashboard() {
       id: 1,
       type: 'info',
       title: 'System Initialized',
-      message: 'PulseGuard maternal health server is fully functional and ready.',
+      message: 'Maternal health server is fully functional and ready.',
       time: 'Just now',
       read: false
     }

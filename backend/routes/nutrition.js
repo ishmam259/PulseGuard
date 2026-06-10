@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../db/pool');
 const { authenticate, requireRole } = require('../middleware/auth');
 const { enrichPatient } = require('../services/gestation');
+const { storeKnowledge } = require('../services/ragService');
 const {
   getPersonalizedRDA,
   calcNutrientsFromFood,
@@ -246,6 +247,12 @@ router.post('/log', requireRole('patient'), async (req, res) => {
     }
 
     const logRes = await pool.query(insertQuery, insertParams);
+    const entry = logRes.rows[0];
+
+    // Store in RAG system
+    const nutritionContent = `Nutrition Update: Logged ${entry.meal_type} - ${entry.food_name}. Calories: ${entry.calories_kcal} kcal.`;
+    await storeKnowledge(req.user.name, nutritionContent);
+
     res.status(201).json({ entry: logRes.rows[0] });
   } catch (err) {
     console.error('Log nutrition entry error:', err);

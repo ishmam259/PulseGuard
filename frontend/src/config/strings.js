@@ -24,6 +24,7 @@ const strings = {
     NAV_P_ALERTS: 'Alerts',
     NAV_P_WELLNESS: 'Wellness',
     NAV_P_PROFILE: 'Profile',
+    NAV_P_CONNECT_AI: 'Connect AI',
 
     // ─── Nav Items (Worker) ───
     NAV_W_HOME: 'Home',
@@ -525,7 +526,7 @@ const strings = {
     ADMIN_TITLE_SETTINGS: 'System Settings',
     ADMIN_TITLE_AICONFIG: 'AI Engine Configuration',
     ADMIN_DASH_HELLO: 'Hello,',
-    ADMIN_DASH_LOADING: 'Loading the PulseGuard system overview...',
+    ADMIN_DASH_LOADING: 'Loading the system overview...',
     ADMIN_DASH_SUMMARY: 'System overview dashboard',
     ADMIN_DASH_KPI_PATIENTS: 'Total Patients',
     ADMIN_DASH_KPI_HIGH: 'High Risk Cases',
@@ -629,7 +630,7 @@ const strings = {
     ADMIN_AI_CARD3_TITLE: 'Live Threshold Preview',
     ADMIN_AI_CARD3_DESC: 'Enter a sample BP reading below to see how the active configuration would classify it.',
     ADMIN_AI_CARD4_TITLE: 'Threshold Decision Guide',
-    ADMIN_AI_CARD4_DESC: 'How PulseGuard AI uses these configuration thresholds to safeguard patients:',
+    ADMIN_AI_CARD4_DESC: 'How the AI engine uses these configuration thresholds to safeguard patients:',
     ADMIN_AI_CARD5_TITLE: 'Configuration Controls',
     ADMIN_AI_BTN_SAVE: 'Save',
     ADMIN_AI_BTN_SAVING: 'Saving...',
@@ -824,6 +825,7 @@ const strings = {
     NAV_P_MEDICINE: 'ওষুধ',
     NAV_P_EDUCATION: 'শিক্ষা',
     NAV_P_PROFILE: 'প্রোফাইল',
+    NAV_P_CONNECT_AI: 'এআই সংযোগ',
 
     // ─── Nav Items (Worker) ───
     NAV_W_HOME: 'হোম',
@@ -1430,7 +1432,7 @@ const strings = {
     ADMIN_AI_CARD3_TITLE: 'লাইভ থ্রেশহোল্ড প্রিভিউ',
     ADMIN_AI_CARD3_DESC: 'সক্রিয় কনফিগারেশন কীভাবে রিডিং মূল্যায়ন করবে তা দেখতে নিচে রক্তচাপ লিখুন।',
     ADMIN_AI_CARD4_TITLE: 'থ্রেশহোল্ড সিদ্ধান্ত গাইড',
-    ADMIN_AI_CARD4_DESC: 'কীভাবে পালসগার্ড এআই এই থ্রেশহোল্ড ব্যবহার করে:',
+    ADMIN_AI_CARD4_DESC: 'কীভাবে এআই ইঞ্জিন এই থ্রেশহোল্ড ব্যবহার করে:',
     ADMIN_AI_CARD5_TITLE: 'কনফিগারেশন কন্ট্রোল',
     ADMIN_AI_BTN_SAVE: 'সংরক্ষণ করুন',
     ADMIN_AI_BTN_SAVING: 'সংরক্ষণ হচ্ছে...',

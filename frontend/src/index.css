@@ -72,7 +72,7 @@
   --scrollbar-thumb-hover: oklch(0.18 0.03 320 / 0.25);
 
   /* ── Typography ── */
-  --font-display: "Georgia", "Noto Sans Bengali", serif;
+  --font-display: "Georgia", "Playfair Display", "Noto Sans Bengali", serif;
   --font-sans: "Inter", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
@@ -102,9 +102,9 @@
   --duration-slow: 400ms;
 
   /* ── Backdrop ── */
-  --blur-glass: blur(24px) saturate(190%);
-  --blur-heavy: blur(30px);
-  --blur-nav: blur(28px) saturate(200%);
+  --blur-glass: blur(12px) saturate(130%);
+  --blur-heavy: blur(20px);
+  --blur-nav: blur(12px) saturate(140%);
 
   font-family: var(--font-sans);
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
@@ -184,8 +184,8 @@
   --scrollbar-thumb-hover: oklch(1 0 0 / 0.2);
 
   /* ── Backdrop ── */
-  --blur-glass: blur(24px) saturate(190%);
-  --blur-nav: blur(28px) saturate(200%);
+  --blur-glass: blur(12px) saturate(130%);
+  --blur-nav: blur(12px) saturate(140%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -257,8 +257,8 @@
     --scrollbar-thumb-hover: oklch(1 0 0 / 0.2);
 
     /* ── Backdrop ── */
-    --blur-glass: blur(24px) saturate(190%);
-    --blur-nav: blur(28px) saturate(200%);
+    --blur-glass: blur(12px) saturate(130%);
+    --blur-nav: blur(12px) saturate(140%);
   }
 }
 
@@ -314,9 +314,16 @@ ul, ol {
 }
 
 /* ── Typography ── */
-h1, h2, h3, h4, h5, h6, .font-display {
+h1, h2, h3, .font-display {
   color: var(--color-text);
   font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h4, h5, h6 {
+  color: var(--color-text);
+  font-family: var(--font-sans);
   font-weight: 700;
   line-height: 1.3;
 }

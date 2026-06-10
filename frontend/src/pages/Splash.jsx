@@ -17,9 +17,11 @@ export default function Splash() {
   return (
     <main className="landing-wrapper">
       {/* Background ambient accents */}
-      <div className="pointer-events-none absolute inset-0 mesh-gradient" style={{ opacity: 0.8, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }} />
-      <div className="pointer-events-none absolute" style={{ position: 'absolute', top: '25%', left: '50%', transform: 'translate(-50%, -50%)', width: '600px', height: '600px', borderRadius: '50%', backgroundColor: 'color-mix(in oklab, var(--color-primary) 10%, transparent)', filter: 'blur(100px)', zIndex: 0 }} />
-      <div className="pointer-events-none absolute" style={{ position: 'absolute', top: '33%', right: 0, width: '400px', height: '400px', borderRadius: '50%', backgroundColor: 'color-mix(in oklab, var(--color-accent, var(--color-primary-dim)) 20%, transparent)', filter: 'blur(80px)', zIndex: 0 }} />
+      <div className="landing-background-glows">
+        <div className="mesh-gradient" />
+        <div className="glow-circle glow-circle-1" />
+        <div className="glow-circle glow-circle-2" />
+      </div>
 
       {/* Sticky Top Header Bar */}
       <div className="landing-header-sticky-wrapper">
@@ -41,30 +43,19 @@ export default function Splash() {
           </nav>
 
           <div className="landing-header-actions">
-            <div className="landing-header-lang-switch">
-              <button 
-                type="button" 
-                className={`landing-header-lang-btn ${locale === 'en' ? 'active' : ''}`}
-                onClick={() => setLocale('en')}
-              >
-                English
-              </button>
-              <span>/</span>
-              <button 
-                type="button" 
-                className={`landing-header-lang-btn ${locale === 'bn' ? 'active' : ''}`}
-                onClick={() => setLocale('bn')}
-              >
-                বাংলা
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
+              className="landing-header-lang-toggle"
+            >
+              {locale === 'en' ? 'বাংলা' : 'English'}
+            </button>
 
             <button
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="icon-btn"
-              style={{ width: '36px', height: '36px', borderRadius: '50%', border: 'none', background: 'transparent', display: 'grid', placeItems: 'center', cursor: 'pointer', color: 'var(--color-text)' }}
+              className="landing-header-theme-btn"
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
@@ -78,7 +69,7 @@ export default function Splash() {
 
       {/* Hero Section */}
       <section className="landing-hero-centered" style={{ marginTop: '72px' }}>
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid var(--color-border)', backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)', padding: '6px 16px', borderRadius: '9999px', fontSize: '12px', color: 'var(--color-text-secondary)', backdropFilter: 'blur(8px)' }}>
+        <div className="landing-hero-badge">
           <Sparkles className="h-3.5 w-3.5" style={{ color: 'var(--color-primary)' }} />
           <span>{t('Built for last-mile maternal care', 'প্রান্তিক মাতৃসেবার জন্য তৈরি')}</span>
         </div>
@@ -110,13 +101,12 @@ export default function Splash() {
         <div className="landing-cta-row" style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '40px' }}>
           <Link 
             to="/role" 
-            className="btn btn--primary"
-            style={{ padding: '16px 36px', fontSize: '16px', borderRadius: '16px', display: 'inline-flex', width: 'auto', textDecoration: 'none', fontWeight: '600' }}
+            className="btn btn--primary btn--landing-primary"
           >
             <span>{$('SPLASH_CTA', locale).replace(' →', '')}</span>
             <ArrowRight className="h-4 w-4" style={{ marginLeft: '6px' }} />
           </Link>
-          <button className="btn" style={{ padding: '16px 36px', fontSize: '16px', borderRadius: '16px', display: 'inline-flex', width: 'auto', border: '1px solid var(--color-border)', backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)', cursor: 'pointer', fontWeight: '500', color: 'var(--color-text)', backdropFilter: 'blur(8px)' }}>
+          <button type="button" className="btn btn--demo">
             {t("Watch demo", "ডেমো দেখুন")}
           </button>
         </div>
@@ -148,7 +138,7 @@ export default function Splash() {
           <div className="landing-feature-card-large">
             <div className="highlight-bar" />
             <div className="landing-feature-card-large-content">
-              <div className="landing-feature-card-small-icon-wrapper" style={{ flexShrink: 0, height: '48px', width: '48px', borderRadius: '16px', display: 'grid', placeItems: 'center' }}>
+              <div className="landing-feature-card-large-icon">
                 <WifiOff className="h-6 w-6" />
               </div>
               <div>
@@ -204,14 +194,14 @@ export default function Splash() {
           <p className="landing-trust-text">
             {t("HIPAA-aware · End-to-end encrypted · Open-source core", "এইচআইপিএএ-সচেতন · এন্ড-টু-এন্ড এনক্রিপ্টেড · ওপেন-সোর্স কোর")}
           </p>
-          <p className="landing-trust-text">
+          <p className="landing-trust-text" suppressHydrationWarning>
             &copy; {new Date().getFullYear()} PulseGuard AI. {t("All rights reserved.", "সর্বস্বত্ব সংরক্ষিত।")}
           </p>
         </div>
       </section>
 
       {/* Footer */}
-      <section style={{ borderTop: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface-elevated, var(--color-surface))' }}>
+      <section style={{ position: 'relative', zIndex: 10, borderTop: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface-elevated, var(--color-surface))' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
           <footer className="landing-footer-premium">
             <div className="landing-footer-logo">

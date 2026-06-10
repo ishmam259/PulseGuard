@@ -15,18 +15,27 @@ const server = http.createServer(app)
 
 const CORS_ORIGINS = ['http://localhost:5173', 'http://localhost:3000'];
 
-if(process.env.CORS_ALLOWED_ORIGIN) {
-  let CORS_ALLOWED_ORIGIN = process.env.CORS_ALLOWED_ORIGIN;
-  CORS_ORIGINS.push(`http://${CORS_ALLOWED_ORIGIN}:5173`);
-  CORS_ORIGINS.push(`http://${CORS_ALLOWED_ORIGIN}:3000`);
+if (process.env.CORS_ALLOWED_ORIGIN) {
+  const allowed = process.env.CORS_ALLOWED_ORIGIN.split(',').map(o => o.trim());
+  allowed.forEach(origin => {
+    CORS_ORIGINS.push(origin);
+    // If it's just an IP or hostname, add common ports
+    if (!origin.startsWith('http')) {
+      CORS_ORIGINS.push(`http://${origin}:5173`);
+      CORS_ORIGINS.push(`http://${origin}:3000`);
+      CORS_ORIGINS.push(`https://${origin}:5173`);
+      CORS_ORIGINS.push(`https://${origin}:3000`);
+    }
+  });
 }
 
-console.log('Allowed CORS origins: ', CORS_ORIGINS);
+console.log('Allowed CORS origins:', CORS_ORIGINS);
 
 // ── Middleware ──
 app.use(cors({
   origin: CORS_ORIGINS,
   credentials: true,
+  optionsSuccessStatus: 200, // Some legacy browsers choke on 204
 }))
 app.use(express.json({ limit: '10mb' }))
 
@@ -50,7 +59,6 @@ app.locals.sendToUser = sendToUser
 // ── Routes ──
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/patients', require('./routes/patients'))
-app.use('/api/sync', require('./routes/sync'))
 app.use('/api/ai', require('./routes/ai'))
 app.use('/api/alerts', require('./routes/alerts'))
 app.use('/api/users', require('./routes/users'))
@@ -60,6 +68,7 @@ app.use('/api/wellness', require('./routes/wellness'))
 app.use('/api/nutrition', require('./routes/nutrition'))
 app.use('/api/medicine', require('./routes/medicine'))
 app.use('/api/emergency-contacts', require('./routes/emergencyContacts'))
+app.use('/api/mcp', require('./routes/mcp'))
 
 
 // ── Health check ──
