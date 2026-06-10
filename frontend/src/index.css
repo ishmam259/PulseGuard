@@ -102,9 +102,9 @@
   --duration-slow: 400ms;
 
   /* ── Backdrop ── */
-  --blur-glass: blur(24px) saturate(190%);
-  --blur-heavy: blur(30px);
-  --blur-nav: blur(28px) saturate(200%);
+  --blur-glass: blur(12px) saturate(130%);
+  --blur-heavy: blur(20px);
+  --blur-nav: blur(12px) saturate(140%);
 
   font-family: var(--font-sans);
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
@@ -184,8 +184,8 @@
   --scrollbar-thumb-hover: oklch(1 0 0 / 0.2);
 
   /* ── Backdrop ── */
-  --blur-glass: blur(24px) saturate(190%);
-  --blur-nav: blur(28px) saturate(200%);
+  --blur-glass: blur(12px) saturate(130%);
+  --blur-nav: blur(12px) saturate(140%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -257,8 +257,8 @@
     --scrollbar-thumb-hover: oklch(1 0 0 / 0.2);
 
     /* ── Backdrop ── */
-    --blur-glass: blur(24px) saturate(190%);
-    --blur-nav: blur(28px) saturate(200%);
+    --blur-glass: blur(12px) saturate(130%);
+    --blur-nav: blur(12px) saturate(140%);
   }
 }
 
