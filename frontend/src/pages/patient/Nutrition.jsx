@@ -130,6 +130,7 @@ export default function Nutrition() {
   // Today tab
   const [nutrition, setNutrition]         = useState(null)
   const [loadingDaily, setLoadingDaily]   = useState(false)
+  const [patientId, setPatientId]         = useState(null)
 
   // Weekly tab
   const [weekly, setWeekly]               = useState(null)
@@ -160,8 +161,12 @@ export default function Nutrition() {
 
   const loadDaily = useCallback(async () => {
     setLoadingDaily(true)
-    const data = await api.getNutritionDaily()
+    const [data, profile] = await Promise.all([
+      api.getNutritionDaily(),
+      api.getMyPatientProfile()
+    ])
     setNutrition(data)
+    if (profile && profile.patient) setPatientId(profile.patient.id)
     setLoadingDaily(false)
   }, [])
 
@@ -237,19 +242,11 @@ export default function Nutrition() {
         meal_type: selectedMeal,
       }
     }
+setAdding(true)
 
-    setAdding(true)
+const result = await api.logNutrition(payload)
+setAdding(false)
 
-    if (!connectivity) {
-      const queue = JSON.parse(localStorage.getItem('pg_offline_queue:v1') || '[]')
-      queue.push({ type: 'nutrition_log', payload, timestamp: new Date().toISOString() })
-      localStorage.setItem('pg_offline_queue:v1', JSON.stringify(queue))
-      resetAddForm()
-      setAdding(false)
-      return
-    }
-
-    const result = await api.logNutrition(payload)
     if (result.ok || result.entry) {
       await loadDaily()
       resetAddForm()

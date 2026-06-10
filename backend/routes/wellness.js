@@ -2,6 +2,7 @@ const express = require('express')
 const pool = require('../db/pool')
 const { authenticate, requireRole } = require('../middleware/auth')
 const { enrichPatient } = require('../services/gestation')
+const { storeKnowledge } = require('../services/ragService')
 
 const router = express.Router()
 router.use(authenticate)
@@ -44,6 +45,10 @@ router.post('/water', requireRole('patient'), async (req, res) => {
       'INSERT INTO water_logs (patient_id, amount_ml) VALUES ($1, $2) RETURNING *',
       [patientId, amount_ml]
     )
+
+    // Store in RAG system
+    await storeKnowledge(req.user.name, `Wellness Update: Logged ${amount_ml}ml of water intake.`)
+
     res.status(201).json({ entry: result.rows[0] })
   } catch (err) {
     console.error('Log water error:', err)
@@ -86,6 +91,12 @@ router.post('/vomit', requireRole('patient'), async (req, res) => {
       'INSERT INTO vomit_logs (patient_id, severity, kept_food, notes) VALUES ($1, $2, $3, $4) RETURNING *',
       [patientId, severity, kept_food, notes]
     )
+
+    // Store in RAG system
+    const severityMap = { 1: 'Mild', 2: 'Moderate', 3: 'Severe' }
+    const vomitContent = `Wellness Update (Vomiting): Severity: ${severityMap[severity]}. Kept food: ${kept_food ? 'Yes' : 'No'}. Notes: ${notes || 'None'}.`
+    await storeKnowledge(req.user.name, vomitContent)
+
     res.status(201).json({ entry: result.rows[0] })
   } catch (err) {
     console.error('Log vomit error:', err)

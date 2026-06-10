@@ -3,6 +3,7 @@ const pool = require('../db/pool')
 const { authenticate, requireRole } = require('../middleware/auth')
 const { patientSchema, vitalsSchema } = require('../schemas/patient.schema')
 const { lmpDateFromWeek, enrichPatient } = require('../services/gestation')
+const { storeKnowledge } = require('../services/ragService')
 
 function formatDate(dateInput) {
   if (!dateInput) return ''
@@ -70,6 +71,45 @@ router.get('/my-profile', async (req, res) => {
   }
 })
 
+// GET /api/patients/checklist — Fetch hospital bag checklist for current patient
+router.get('/checklist', async (req, res) => {
+  try {
+    const patientId = (await pool.query('SELECT id FROM patients WHERE user_id = $1', [req.user.id])).rows[0]?.id
+    if (!patientId) return res.status(404).json({ error: 'Patient profile not found' })
+
+    const result = await pool.query('SELECT item_id, is_packed FROM checklist_items WHERE patient_id = $1', [patientId])
+    res.json({ checklist: result.rows })
+  } catch (err) {
+    console.error('Get checklist error:', err)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+// POST /api/patients/checklist/toggle — Toggle a checklist item
+router.post('/checklist/toggle', async (req, res) => {
+  try {
+    const { item_id, is_packed } = req.body
+    if (!item_id) return res.status(400).json({ error: 'item_id is required' })
+
+    const patientId = (await pool.query('SELECT id FROM patients WHERE user_id = $1', [req.user.id])).rows[0]?.id
+    if (!patientId) return res.status(404).json({ error: 'Patient profile not found' })
+
+    const result = await pool.query(
+      `INSERT INTO checklist_items (patient_id, item_id, is_packed)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (patient_id, item_id) 
+       DO UPDATE SET is_packed = $3, updated_at = now()
+       RETURNING *`,
+      [patientId, item_id, is_packed]
+    )
+
+    res.json({ item: result.rows[0] })
+  } catch (err) {
+    console.error('Toggle checklist error:', err)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 // POST /api/patients — Create patient
 // Workers/admins create profiles for others; patients can create their own
 router.post('/', async (req, res) => {
@@ -111,7 +151,13 @@ router.post('/', async (req, res) => {
        RETURNING *`,
       [data.name, data.age, data.village, data.gestational_week, lmp_date, assigned_worker, user_id, data.height || null, data.blood_type || null, data.profile_picture_url || null]
     )
-    res.status(201).json({ patient: enrichPatient(result.rows[0]) })
+    const patient = enrichPatient(result.rows[0])
+
+    // Store in RAG system
+    const profileContent = `Patient Profile Created: Name: ${patient.name}, Age: ${patient.age}, Village: ${patient.village}, Gestational Week: ${patient.gestational_week}, Blood Type: ${patient.blood_type || 'Unknown'}, Height: ${patient.height || 'Unknown'} cm.`
+    await storeKnowledge(patient.name, profileContent)
+
+    res.status(201).json({ patient })
   } catch (err) {
     if (err.name === 'ZodError') {
       return res.status(400).json({ error: 'Validation failed', details: err.errors })
@@ -210,7 +256,14 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Patient not found' })
     }
 
-    res.json({ patient: enrichPatient(result.rows[0]) })
+    const updatedPatient = enrichPatient(result.rows[0])
+    
+    // Store in RAG system
+    const updateKeys = Object.keys(data).join(', ')
+    const updateContent = `Patient Profile Updated: Fields modified: ${updateKeys}. Current status: Week ${updatedPatient.gestational_week}, Risk Level: ${updatedPatient.risk_level}.`
+    await storeKnowledge(updatedPatient.name, updateContent)
+
+    res.json({ patient: updatedPatient })
   } catch (err) {
     if (err.name === 'ZodError') {
       return res.status(400).json({ error: 'Validation failed', details: err.errors })
@@ -235,7 +288,11 @@ router.post('/:id/vitals', async (req, res) => {
     const data = vitalsSchema.parse(req.body)
 
     // Fetch patient's anchor and compute the live gestational week for AI prediction
-    const patientData = await pool.query('SELECT gestational_week, lmp_date FROM patients WHERE id = $1', [req.params.id])
+    const patientData = await pool.query('SELECT name, gestational_week, lmp_date FROM patients WHERE id = $1', [req.params.id])
+    if (patientData.rows.length === 0) {
+      return res.status(404).json({ error: 'Patient not found' })
+    }
+    const patientName = patientData.rows[0].name
     const gestationalWeek = enrichPatient(patientData.rows[0]).gestational_week || 24
 
     // Load dynamic AI config thresholds from DB
@@ -288,6 +345,10 @@ router.post('/:id/vitals', async (req, res) => {
        RETURNING *`,
       [req.params.id, req.user.id, data.bp_systolic, data.bp_diastolic, data.weight_kg, data.temperature_c, data.pulse, data.symptoms, riskScore, riskLevel, data.notes]
     )
+
+    // Store in RAG system for future chat context
+    const vitalsContent = `Health Update (Vitals): Blood Pressure ${data.bp_systolic}/${data.bp_diastolic} mmHg, Weight ${data.weight_kg} kg, Temperature ${data.temperature_c} °C, Pulse ${data.pulse} bpm. Symptoms: ${(data.symptoms || []).join(', ') || 'None'}. Risk Level: ${riskLevel}.`
+    await storeKnowledge(patientName, vitalsContent)
 
     // Update patient risk level
     await pool.query(

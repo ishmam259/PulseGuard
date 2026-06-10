@@ -336,34 +336,60 @@ function ChecklistGroup({ title, items, icon: Icon, packed, onToggle, locale }) 
 }
 
 function ChecklistSection({ locale }) {
-  const [packed, setPacked] = useState(() => {
-    try {
-      const raw = localStorage.getItem(HOSPITAL_BAG_STORAGE_KEY)
-      return raw ? JSON.parse(raw) : {}
-    } catch {
-      return {}
-    }
-  })
+  const [packed, setPacked] = useState({})
+  const [loading, setLoading] = useState(true)
 
-  // Persist on every change
   useEffect(() => {
-    try {
-      localStorage.setItem(HOSPITAL_BAG_STORAGE_KEY, JSON.stringify(packed))
-    } catch {
-      /* localStorage might be disabled; non-fatal */
+    async function loadChecklist() {
+      try {
+        const data = await api.getChecklist()
+        const packedMap = {}
+        data.forEach(item => {
+          packedMap[item.item_id] = item.is_packed
+        })
+        setPacked(packedMap)
+      } catch (err) {
+        console.error('Failed to load checklist:', err)
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [packed])
+    loadChecklist()
+  }, [])
 
   const totalPacked = Object.values(packed).filter(Boolean).length
   const pct = HOSPITAL_BAG_TOTAL === 0 ? 0 : Math.round((totalPacked / HOSPITAL_BAG_TOTAL) * 100)
 
-  function toggle(id) {
-    setPacked((prev) => ({ ...prev, [id]: !prev[id] }))
+  async function toggle(id) {
+    const newVal = !packed[id]
+    // Optimistic update
+    setPacked((prev) => ({ ...prev, [id]: newVal }))
+    
+    try {
+      await api.toggleChecklistItem(id, newVal)
+    } catch (err) {
+      console.error('Failed to toggle checklist item:', err)
+      // Rollback on error
+      setPacked((prev) => ({ ...prev, [id]: !newVal }))
+    }
   }
+
   function reset() {
     if (typeof window !== 'undefined' && window.confirm($('EDU_CHECK_RESET_CONFIRM', locale))) {
-      setPacked({})
+      // Resetting on the server would require a bulk update or delete endpoint. 
+      // For now, we can toggle them individually or leave as is. 
+      // Let's implement a simple loop for reset.
+      Object.keys(packed).forEach(async (id) => {
+        if (packed[id]) {
+          setPacked(prev => ({ ...prev, [id]: false }))
+          await api.toggleChecklistItem(id, false)
+        }
+      })
     }
+  }
+
+  if (loading) {
+    return <p className="muted text-sm text-center">{$('EDU_LOADING', locale)}</p>
   }
 
   const progressText = $('EDU_CHECK_PROGRESS', locale)
