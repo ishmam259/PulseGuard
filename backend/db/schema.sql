@@ -307,3 +307,33 @@ ALTER TABLE medicine_logs ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE medicine_logs ADD COLUMN IF NOT EXISTS week_note TEXT;
 ALTER TABLE medicine_logs ADD COLUMN IF NOT EXISTS alternatives TEXT;
 
+-- Medicine reminder schedules: one row per prescribed course
+CREATE TABLE IF NOT EXISTS medicine_schedules (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID REFERENCES patients(id) ON DELETE CASCADE,
+  medicine_name TEXT NOT NULL,
+  dosage TEXT,
+  notes TEXT,
+  description TEXT,
+  times_per_day INT NOT NULL DEFAULT 1,
+  dose_times JSONB NOT NULL DEFAULT '[]',
+  start_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  end_date DATE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_med_schedules_patient ON medicine_schedules(patient_id);
+
+-- Tracks each individual dose taken against a schedule
+CREATE TABLE IF NOT EXISTS medicine_dose_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  schedule_id UUID REFERENCES medicine_schedules(id) ON DELETE CASCADE,
+  patient_id UUID REFERENCES patients(id) ON DELETE CASCADE,
+  scheduled_time TEXT NOT NULL,
+  dose_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  taken_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_dose_unique
+  ON medicine_dose_logs (schedule_id, patient_id, scheduled_time, dose_date);
+

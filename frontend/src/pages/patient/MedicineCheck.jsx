@@ -5,6 +5,8 @@ import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
 import { useApp } from '../../context/AppContext'
 
+const DEFAULT_TIMES = ['08:00', '13:00', '18:00', '22:00']
+
 export default function MedicineCheck() {
   const { locale, connectivity } = useApp()
   const [week, setWeek] = useState(null)
@@ -18,11 +20,17 @@ export default function MedicineCheck() {
   const [safety, setSafety] = useState(null)
   const [safetyLoading, setSafetyLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [savedNames, setSavedNames] = useState(new Set())
-  const [logs, setLogs] = useState(null)
-  const [logsLoading, setLogsLoading] = useState(false)
-  const fileInputRef = useRef(null)
 
+  // My Medicines state
+  const [schedules, setSchedules] = useState(null)
+  const [todayDoses, setTodayDoses] = useState({})
+  const [schedLoading, setSchedLoading] = useState(false)
+  const [pendingSchedule, setPendingSchedule] = useState(null)
+  const [dueAlert, setDueAlert] = useState(null)
+  const [schedForm, setSchedForm] = useState({ notes: '', timesPerDay: 1, doseTimes: ['08:00'], durationDays: 7 })
+  const [schedSubmitting, setSchedSubmitting] = useState(false)
+
+  const fileInputRef = useRef(null)
   const isOffline = connectivity === 'offline'
 
   useEffect(() => {
@@ -37,6 +45,50 @@ export default function MedicineCheck() {
     loadWeek()
   }, [])
 
+  // Check for due doses every 60 seconds while on My Medicines tab
+  useEffect(() => {
+    if (activeTab !== 'mymeds' || !schedules) return
+    const toMin = (hhmm) => {
+      const [h, m] = hhmm.split(':').map(Number)
+      return h * 60 + m
+    }
+    const check = () => {
+      const now = new Date()
+      const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      const nowMin = toMin(hhmm)
+      for (const sched of schedules) {
+        for (const t of (sched.dose_times || [])) {
+          const diff = Math.abs(toMin(t) - nowMin)
+          if (diff <= 10 && !(todayDoses[sched.id] || []).includes(t)) {
+            setDueAlert({ name: sched.medicine_name, time: t })
+            return
+          }
+        }
+      }
+    }
+    check()
+    const id = setInterval(check, 60_000)
+    return () => clearInterval(id)
+  }, [activeTab, schedules, todayDoses])
+
+  const loadMyMeds = () => {
+    setSchedLoading(true)
+    Promise.all([api.getSchedules(), api.getTodayDoses()])
+      .then(([s, d]) => {
+        setSchedules(s.schedules || [])
+        setTodayDoses(d.doses || {})
+      })
+      .catch(() => setSchedules([]))
+      .finally(() => setSchedLoading(false))
+  }
+
+  const handleTabSwitch = (tab) => {
+    setActiveTab(tab)
+    setResults(null); setError(null); setIdentified(null); setSafety(null)
+    setSafetyLoading(false)
+    if (tab === 'mymeds' && !schedules) loadMyMeds()
+  }
+
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -46,35 +98,19 @@ export default function MedicineCheck() {
     reader.readAsDataURL(file)
   }
 
-  const handleSave = async (result) => {
-    if (!safety?.SAFETY || !result?.name) return
-    if (savedNames.has(result.name)) return
-    try {
-      await api.logMedicine({
-        medicine_name: result.name,
-        safety_status: safety.SAFETY,
-        safety_reason: safety.REASON || null,
-        week_note: safety.WEEK_NOTE || null,
-        alternatives: safety.ALTERNATIVES || null,
-        description: result.description || null,
-        gestational_week: week,
-        source: activeTab,
-      })
-      setSavedNames(prev => new Set(prev).add(result.name))
-    } catch (err) {
-      console.error('Failed to save medicine log', err)
-    }
+  const handleAddToMyMeds = (result) => {
+    setResults(null); setError(null); setIdentified(null); setSafety(null); setSafetyLoading(false)
+    setPendingSchedule({ name: result.name, description: result.description || null })
+    setSchedForm({ notes: '', timesPerDay: 1, doseTimes: ['08:00'], durationDays: 7 })
+    setActiveTab('mymeds')
+    if (!schedules) loadMyMeds()
   }
 
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!query.trim()) return
-    setError(null)
-    setResults(null)
-    setIdentified(null)
-    setSafety(null)
+    setError(null); setResults(null); setIdentified(null); setSafety(null)
     setSafetyLoading(false)
-    setSavedNames(new Set())
     setLoading(true)
     try {
       const data = await api.medicineSearch(query.trim())
@@ -102,12 +138,8 @@ export default function MedicineCheck() {
   const handlePhotoCheck = async (e) => {
     e.preventDefault()
     if (!imageFile) return
-    setError(null)
-    setResults(null)
-    setIdentified(null)
-    setSafety(null)
+    setError(null); setResults(null); setIdentified(null); setSafety(null)
     setSafetyLoading(false)
-    setSavedNames(new Set())
     setLoading(true)
     try {
       const base64 = imagePreview.split(',')[1]
@@ -128,6 +160,60 @@ export default function MedicineCheck() {
       setLoading(false)
     }
   }
+
+  const handleAddSchedule = async (e) => {
+    e.preventDefault()
+    if (!pendingSchedule) return
+    setSchedSubmitting(true)
+    try {
+      const durationDays = Math.max(1, parseInt(schedForm.durationDays) || 7)
+      const timesPerDay = Math.min(4, Math.max(1, parseInt(schedForm.timesPerDay) || 1))
+      const endDate = new Date()
+      endDate.setDate(endDate.getDate() + durationDays)
+      const result = await api.addSchedule({
+        medicine_name: pendingSchedule.name,
+        description: pendingSchedule.description || null,
+        notes: schedForm.notes || null,
+        times_per_day: timesPerDay,
+        dose_times: schedForm.doseTimes.slice(0, timesPerDay),
+        end_date: endDate.toISOString().split('T')[0],
+      })
+      if (result.ok) {
+        setPendingSchedule(null)
+        setSchedForm({ notes: '', timesPerDay: 1, doseTimes: ['08:00'], durationDays: 7 })
+        const [s, d] = await Promise.all([api.getSchedules(), api.getTodayDoses()])
+        setSchedules(s.schedules || [])
+        setTodayDoses(d.doses || {})
+      }
+    } catch (err) {
+      console.error('Failed to add schedule', err)
+    }
+    setSchedSubmitting(false)
+  }
+
+  const handleDoseTaken = async (scheduleId, scheduledTime) => {
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      await api.logDose({ schedule_id: scheduleId, scheduled_time: scheduledTime, dose_date: today })
+      setTodayDoses(prev => ({
+        ...prev,
+        [scheduleId]: [...(prev[scheduleId] || []), scheduledTime],
+      }))
+    } catch (err) {
+      console.error('Failed to log dose', err)
+    }
+  }
+
+  const handleDeleteSchedule = async (scheduleId) => {
+    try {
+      await api.deleteSchedule(scheduleId)
+      setSchedules(prev => prev.filter(s => s.id !== scheduleId))
+    } catch (err) {
+      console.error('Failed to delete schedule', err)
+    }
+  }
+
+  const t = (en, bn) => (locale === 'en' ? en : bn)
 
   return (
     <MobileLayout
@@ -156,91 +242,25 @@ export default function MedicineCheck() {
           <>
             {/* Tabs */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              {['search', 'photo', 'history'].map((tab) => (
+              {['search', 'photo', 'mymeds'].map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   className={`btn ${activeTab === tab ? 'btn--primary' : 'btn--secondary'}`}
                   style={{ flex: 1, fontSize: '0.85rem' }}
-                  onClick={() => {
-                    setActiveTab(tab)
-                    setResults(null); setError(null); setIdentified(null); setSafety(null); setSafetyLoading(false); setSavedNames(new Set())
-                    if (tab === 'history' && !logs) {
-                      setLogsLoading(true)
-                      api.getMedicineLogs().then(d => setLogs(d.logs || [])).catch(() => setLogs([])).finally(() => setLogsLoading(false))
-                    }
-                  }}
+                  onClick={() => handleTabSwitch(tab)}
                 >
-                  {tab === 'search' ? $('MEDICINE_TAB_SEARCH', locale) : tab === 'photo' ? $('MEDICINE_TAB_PHOTO', locale) : $('MEDICINE_TAB_HISTORY', locale)}
+                  {tab === 'search'
+                    ? $('MEDICINE_TAB_SEARCH', locale)
+                    : tab === 'photo'
+                    ? $('MEDICINE_TAB_PHOTO', locale)
+                    : t('My Medicines', 'আমার ওষুধ')}
                 </button>
               ))}
             </div>
 
-            {activeTab === 'history' ? (
-              <div>
-                {logsLoading ? (
-                  <p className="muted text-center" style={{ padding: '1.5rem 0' }}>{$('MEDICINE_LOADING', locale)}</p>
-                ) : !logs || logs.length === 0 ? (
-                  <p className="muted text-center" style={{ padding: '1.5rem 0' }}>{$('MEDICINE_LOG_EMPTY', locale)}</p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                    {logs.map((log) => {
-                      const statusMeta = log.safety_status === 'SAFE'
-                        ? { color: '#16a34a', bg: 'rgba(22,163,74,0.08)', label: log.safety_status }
-                        : log.safety_status === 'AVOID'
-                        ? { color: '#dc2626', bg: 'rgba(220,38,38,0.08)', label: log.safety_status }
-                        : { color: '#d97706', bg: 'rgba(217,119,6,0.08)', label: log.safety_status || '—' }
-                      const handleDelete = async () => {
-                        await api.deleteMedicineLog(log.id)
-                        setLogs(prev => prev.filter(l => l.id !== log.id))
-                      }
-                      return (
-                        <div key={log.id} className="card" style={{
-                          padding: '0',
-                          overflow: 'hidden',
-                          borderTop: `3px solid ${statusMeta.color}`,
-                        }}>
-                          <div style={{ padding: '0.75rem 1rem', background: statusMeta.bg }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                              <span style={{
-                                fontWeight: 700,
-                                fontSize: '0.7rem',
-                                color: statusMeta.color,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.06em',
-                                background: `${statusMeta.color}22`,
-                                border: `1px solid ${statusMeta.color}55`,
-                                borderRadius: '4px',
-                                padding: '1px 6px',
-                                whiteSpace: 'nowrap',
-                              }}>
-                                {statusMeta.label}
-                              </span>
-                              <span style={{ flex: 1, fontWeight: 700, fontSize: '0.92rem' }}>{log.medicine_name}</span>
-                              <span className="muted" style={{ fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
-                                {new Date(log.logged_at).toLocaleDateString()}
-                              </span>
-                              <button
-                                onClick={handleDelete}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', color: 'var(--color-muted)', fontSize: '1.1rem', lineHeight: 1, marginLeft: '2px' }}
-                                title="Remove"
-                              >
-                                ×
-                              </button>
-                            </div>
-                            {log.description && (
-                              <p className="muted" style={{ fontSize: '0.78rem', margin: '0.4rem 0 0 0', lineHeight: 1.5 }}>
-                                {log.description.length > 120 ? log.description.slice(0, 120) + '…' : log.description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            ) : activeTab === 'search' ? (
+            {/* Search tab */}
+            {activeTab === 'search' && (
               <form onSubmit={handleSearch}>
                 <div className="input-row">
                   <input
@@ -255,7 +275,10 @@ export default function MedicineCheck() {
                   </button>
                 </div>
               </form>
-            ) : (
+            )}
+
+            {/* Photo tab */}
+            {activeTab === 'photo' && (
               <form onSubmit={handlePhotoCheck}>
                 <div className="card" style={{ textAlign: 'center' }}>
                   {imagePreview && (
@@ -289,6 +312,175 @@ export default function MedicineCheck() {
                 </div>
               </form>
             )}
+
+            {/* My Medicines tab */}
+            {activeTab === 'mymeds' && (
+              <div>
+                {/* Due-now alert */}
+                {dueAlert && (
+                  <div className="card animate-fade-in" style={{
+                    background: '#eff6ff',
+                    borderLeft: '4px solid #3b82f6',
+                    marginBottom: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.75rem 1rem',
+                  }}>
+                    <p style={{ margin: 0, fontSize: '0.875rem', color: '#1d4ed8' }}>
+                      ⏰ {t('Time to take', 'ওষুধ খাওয়ার সময়')}{' '}
+                      <strong>{dueAlert.name}</strong> ({dueAlert.time})
+                    </p>
+                    <button
+                      onClick={() => setDueAlert(null)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1d4ed8', fontSize: '1.2rem', lineHeight: 1, padding: '0 2px', flexShrink: 0 }}
+                    >×</button>
+                  </div>
+                )}
+
+                {/* Scheduling form (triggered from result cards) */}
+                {pendingSchedule && (
+                  <div className="card animate-fade-in" style={{ marginBottom: '1rem', borderTop: '3px solid var(--color-primary)', padding: '1rem 1.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <strong style={{ fontSize: '0.95rem' }}>{t('Schedule', 'সময়সূচি')}: {pendingSchedule.name}</strong>
+                      <button
+                        type="button"
+                        onClick={() => setPendingSchedule(null)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-muted)', fontSize: '1.2rem', lineHeight: 1 }}
+                      >×</button>
+                    </div>
+                    {pendingSchedule.description && (
+                      <p style={{ fontSize: '0.78rem', color: 'var(--color-muted)', margin: '0 0 0.75rem', lineHeight: 1.4 }}>
+                        {pendingSchedule.description.length > 160
+                          ? pendingSchedule.description.slice(0, 160) + '…'
+                          : pendingSchedule.description}
+                      </p>
+                    )}
+                    <form onSubmit={handleAddSchedule}>
+                      <div style={{ marginBottom: '0.6rem' }}>
+                        <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--color-muted)', display: 'block', marginBottom: '0.25rem' }}>
+                          {t('Notes', 'নোট')}
+                        </label>
+                        <input
+                          className="input"
+                          type="text"
+                          value={schedForm.notes}
+                          onChange={e => setSchedForm(p => ({ ...p, notes: e.target.value }))}
+                          placeholder={t('e.g. after meal', 'যেমন খাবার পরে')}
+                          style={{ fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.75rem' }}>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--color-muted)', display: 'block', marginBottom: '0.25rem' }}>
+                            {t('Times/day', 'দিনে কতবার')}
+                          </label>
+                          <input
+                            className="input"
+                            type="number"
+                            min={1}
+                            max={4}
+                            value={schedForm.timesPerDay}
+                            onChange={e => {
+                              const raw = e.target.value
+                              const parsed = parseInt(raw)
+                              if (!raw || isNaN(parsed)) {
+                                setSchedForm(p => ({ ...p, timesPerDay: raw }))
+                                return
+                              }
+                              const n = Math.min(4, Math.max(1, parsed))
+                              const times = Array.from({ length: n }, (_, i) => schedForm.doseTimes[i] || DEFAULT_TIMES[i])
+                              setSchedForm(p => ({ ...p, timesPerDay: n, doseTimes: times }))
+                            }}
+                            style={{ fontSize: '0.85rem' }}
+                          />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--color-muted)', display: 'block', marginBottom: '0.25rem' }}>
+                            {t('Duration (days)', 'কতদিন')}
+                          </label>
+                          <input
+                            className="input"
+                            type="number"
+                            min={1}
+                            max={365}
+                            value={schedForm.durationDays}
+                            onChange={e => setSchedForm(p => ({ ...p, durationDays: e.target.value }))}
+                            style={{ fontSize: '0.85rem' }}
+                          />
+                        </div>
+                      </div>
+                      <div style={{ marginBottom: '0.75rem' }}>
+                        <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--color-muted)', display: 'block', marginBottom: '0.35rem' }}>
+                          {t('Dose times', 'ডোজের সময়')}
+                        </label>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          {schedForm.doseTimes.map((t_val, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                              <span style={{ fontSize: '0.72rem', color: 'var(--color-muted)' }}>{i + 1}:</span>
+                              <input
+                                type="time"
+                                value={t_val}
+                                onChange={e => {
+                                  const times = [...schedForm.doseTimes]
+                                  times[i] = e.target.value
+                                  setSchedForm(p => ({ ...p, doseTimes: times }))
+                                }}
+                                style={{
+                                  padding: '0.25rem 0.4rem',
+                                  borderRadius: '6px',
+                                  border: '1px solid var(--color-border)',
+                                  background: 'var(--color-input, var(--color-surface))',
+                                  color: 'var(--color-text)',
+                                  fontSize: '0.85rem',
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <button
+                        type="submit"
+                        className="btn btn--primary"
+                        style={{ width: '100%' }}
+                        disabled={schedSubmitting}
+                      >
+                        {schedSubmitting
+                          ? t('Adding…', 'যোগ করা হচ্ছে…')
+                          : t('Add to My Medicines', 'আমার ওষুধে যোগ করুন')}
+                      </button>
+                    </form>
+                  </div>
+                )}
+
+                {/* Schedule list */}
+                {schedLoading ? (
+                  <p className="muted text-center" style={{ padding: '1.5rem 0' }}>{$('MEDICINE_LOADING', locale)}</p>
+                ) : !schedules || (schedules.length === 0 && !pendingSchedule) ? (
+                  <div className="card" style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+                    <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--color-muted)' }}>
+                      {t(
+                        'Search for a medicine above, then tap + My Medicines to schedule it here.',
+                        'উপরে ওষুধ খুঁজুন, তারপর "+ আমার ওষুধ" ট্যাপ করুন।'
+                      )}
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {schedules.map(sched => (
+                      <ScheduleCard
+                        key={sched.id}
+                        sched={sched}
+                        todayDoses={todayDoses}
+                        onDoseTaken={handleDoseTaken}
+                        onDelete={() => handleDeleteSchedule(sched.id)}
+                        locale={locale}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
 
@@ -318,11 +510,7 @@ export default function MedicineCheck() {
               <MedexResultCard
                 key={i}
                 result={r}
-                onSave={() => handleSave(r)}
-                isSaved={savedNames.has(r.name)}
-                canSave={!!safety?.SAFETY}
-                saveLabel={$('MEDICINE_BTN_SAVE', locale)}
-                savedLabel={$('MEDICINE_LOG_SAVED', locale)}
+                onAddToMyMeds={() => handleAddToMyMeds(r)}
               />
             ))}
           </div>
@@ -369,50 +557,24 @@ function SafetyCard({ safety, loading, locale }) {
       flexDirection: 'column',
       gap: '0.6rem',
     }}>
-      {/* Badge row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
         <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '2rem',
-          height: '2rem',
-          borderRadius: '50%',
-          background: s.iconBg,
-          fontSize: '1rem',
-          flexShrink: 0,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: '2rem', height: '2rem', borderRadius: '50%',
+          background: s.iconBg, fontSize: '1rem', flexShrink: 0,
         }}>{s.icon}</span>
-        <span style={{
-          fontWeight: 700,
-          fontSize: '0.95rem',
-          color: s.color,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
-        }}>{s.label}</span>
+        <span style={{ fontWeight: 700, fontSize: '0.95rem', color: s.color, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          {s.label}
+        </span>
       </div>
-
-      {/* Reason */}
       {safety.REASON && (
-        <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6, color: 'var(--color-text)' }}>
-          {safety.REASON}
-        </p>
+        <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6, color: 'var(--color-text)' }}>{safety.REASON}</p>
       )}
-
-      {/* Week-specific note */}
       {safety.WEEK_NOTE && safety.WEEK_NOTE !== 'N/A' && (
-        <p style={{
-          margin: 0,
-          fontSize: '0.8rem',
-          lineHeight: 1.5,
-          color: 'var(--color-muted)',
-          paddingLeft: '0.75rem',
-          borderLeft: '2px solid var(--color-border)',
-        }}>
+        <p style={{ margin: 0, fontSize: '0.8rem', lineHeight: 1.5, color: 'var(--color-muted)', paddingLeft: '0.75rem', borderLeft: '2px solid var(--color-border)' }}>
           {safety.WEEK_NOTE}
         </p>
       )}
-
-      {/* Alternatives (only for AVOID) */}
       {safety.ALTERNATIVES && safety.ALTERNATIVES !== 'None needed' && (
         <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-muted)' }}>
           <strong style={{ color: 'var(--color-text)' }}>
@@ -425,7 +587,7 @@ function SafetyCard({ safety, loading, locale }) {
   )
 }
 
-function MedexResultCard({ result, onSave, isSaved, canSave, saveLabel, savedLabel }) {
+function MedexResultCard({ result, onAddToMyMeds }) {
   return (
     <div className="card" style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
       {result.imageUrl && (
@@ -443,21 +605,13 @@ function MedexResultCard({ result, onSave, isSaved, canSave, saveLabel, savedLab
           </p>
         )}
         <div style={{ display: 'flex', gap: '0.5rem', alignSelf: 'flex-end', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          {canSave && (
-            isSaved ? (
-              <span style={{ fontSize: '0.78rem', color: '#16a34a', fontWeight: 600, alignSelf: 'center' }}>
-                {savedLabel}
-              </span>
-            ) : (
-              <button
-                className="btn btn--ghost"
-                style={{ fontSize: '0.78rem', padding: '0.3rem 0.75rem' }}
-                onClick={onSave}
-              >
-                {saveLabel}
-              </button>
-            )
-          )}
+          <button
+            className="btn btn--secondary"
+            style={{ fontSize: '0.78rem', padding: '0.3rem 0.75rem' }}
+            onClick={onAddToMyMeds}
+          >
+            + My Medicines
+          </button>
           <a
             href={result.url}
             target="_blank"
@@ -467,6 +621,82 @@ function MedexResultCard({ result, onSave, isSaved, canSave, saveLabel, savedLab
           >
             View on Medex →
           </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ScheduleCard({ sched, todayDoses, onDoseTaken, onDelete, locale }) {
+  const takenToday = todayDoses[sched.id] || []
+  const totalToday = (sched.dose_times || []).length
+  const endDate = new Date(sched.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+
+  return (
+    <div className="card" style={{ borderTop: '3px solid var(--color-primary)', padding: 0, overflow: 'hidden' }}>
+      <div style={{ padding: '0.75rem 1rem' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+          <span style={{ flex: 1, fontWeight: 700, fontSize: '0.95rem' }}>{sched.medicine_name}</span>
+          {sched.dosage && (
+            <span style={{
+              fontSize: '0.7rem',
+              background: 'rgba(var(--color-primary-rgb, 219,39,119), 0.1)',
+              color: 'var(--color-primary)',
+              padding: '1px 7px',
+              borderRadius: '4px',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}>{sched.dosage}</span>
+          )}
+          <span style={{ fontSize: '0.7rem', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>
+            {locale === 'bn' ? 'পর্যন্ত ' : 'until '}{endDate}
+          </span>
+          <button
+            onClick={onDelete}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-muted)', fontSize: '1.1rem', lineHeight: 1, padding: '0 2px', flexShrink: 0 }}
+            title="Remove"
+          >×</button>
+        </div>
+
+        {/* Description */}
+        {sched.description && (
+          <p style={{ fontSize: '0.78rem', color: 'var(--color-muted)', margin: '0 0 0.4rem', lineHeight: 1.4 }}>
+            {sched.description.length > 120 ? sched.description.slice(0, 120) + '…' : sched.description}
+          </p>
+        )}
+
+        {/* Notes */}
+        {sched.notes && (
+          <p style={{ fontSize: '0.78rem', color: 'var(--color-muted)', margin: '0 0 0.5rem', fontStyle: 'italic' }}>
+            {sched.notes}
+          </p>
+        )}
+
+        {/* Dose slots */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', alignItems: 'center' }}>
+          {(sched.dose_times || []).map((t, i) => {
+            const taken = takenToday.includes(t)
+            return taken ? (
+              <span key={i} style={{
+                fontSize: '0.78rem', padding: '3px 10px', borderRadius: '20px',
+                background: '#dcfce7', color: '#15803d', border: '1px solid #86efac', fontWeight: 600,
+              }}>✓ {t}</span>
+            ) : (
+              <button
+                key={i}
+                onClick={() => onDoseTaken(sched.id, t)}
+                style={{
+                  fontSize: '0.78rem', padding: '3px 10px', borderRadius: '20px',
+                  background: 'var(--color-surface)', color: 'var(--color-text)',
+                  border: '1px solid var(--color-border)', cursor: 'pointer', fontWeight: 500,
+                }}
+              >{t}</button>
+            )
+          })}
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-muted)', marginLeft: 'auto' }}>
+            {takenToday.length}/{totalToday} {locale === 'bn' ? 'আজ' : 'today'}
+          </span>
         </div>
       </div>
     </div>

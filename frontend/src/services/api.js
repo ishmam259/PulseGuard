@@ -242,6 +242,31 @@ export async function deleteMedicineLog(id) {
   return res.ok ? res.json() : { ok: false }
 }
 
+export async function getSchedules() {
+  const res = await apiFetch('/medicine/schedule')
+  return res.ok ? res.json() : { schedules: [] }
+}
+
+export async function addSchedule(data) {
+  const res = await apiFetch('/medicine/schedule', { method: 'POST', body: JSON.stringify(data) })
+  return res.ok ? res.json() : { ok: false }
+}
+
+export async function deleteSchedule(id) {
+  const res = await apiFetch(`/medicine/schedule/${id}`, { method: 'DELETE' })
+  return res.ok ? res.json() : { ok: false }
+}
+
+export async function logDose(data) {
+  const res = await apiFetch('/medicine/dose', { method: 'POST', body: JSON.stringify(data) })
+  return res.ok ? res.json() : { ok: false }
+}
+
+export async function getTodayDoses() {
+  const res = await apiFetch('/medicine/dose/today')
+  return res.ok ? res.json() : { doses: {} }
+}
+
 export async function aiChat(message, language = 'en') {
   const res = await apiFetch('/ai/chat', {
     method: 'POST',
