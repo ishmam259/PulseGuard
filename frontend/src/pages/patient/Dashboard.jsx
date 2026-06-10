@@ -23,6 +23,8 @@ import {
   HeartPulse
 } from 'lucide-react'
 
+import ConnectAI from '../../components/ConnectAI'
+
 export default function Dashboard() {
   const { currentUser, connectivity, locale } = useApp()
   const navigate = useNavigate()
@@ -233,6 +235,11 @@ export default function Dashboard() {
                 </div>
               </div>
             </section>
+
+            {/* Connect AI Section (MCP) */}
+            <div style={{ marginBottom: '2rem' }}>
+               <ConnectAI locale={locale} />
+            </div>
 
             {/* Daily Tips */}
             <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
