@@ -12,6 +12,7 @@ export default function Wellness() {
   const { connectivity, locale } = useApp()
   const [activeTab, setActiveTab] = useState('Water')
   const [loading, setLoading] = useState(true)
+  const [patientId, setPatientId] = useState(null)
   const [water, setWater] = useState({ total_ml: 0, goal_ml: 2000, entries: [], dehydration_risk: false, hydration_pct: 0 })
   const [vomit, setVomit] = useState({ count: 0, entries: [], excessive_vomiting: false })
   const [trend, setTrend] = useState([])
@@ -26,15 +27,17 @@ export default function Wellness() {
 
   const loadData = useCallback(async () => {
     try {
-      const [daily, weekTrend] = await Promise.all([
+      const [daily, weekTrend, profile] = await Promise.all([
         api.getWellnessDaily(),
         api.getWaterWeekTrend(),
+        api.getMyPatientProfile(),
       ])
       if (daily) {
         setWater(daily.water)
         setVomit(daily.vomit)
       }
       if (weekTrend) setTrend(weekTrend)
+      if (profile && profile.patient) setPatientId(profile.patient.id)
     } catch (err) {
       console.error('Wellness load error:', err)
     } finally {
@@ -43,36 +46,13 @@ export default function Wellness() {
   }, [])
 
   useEffect(() => {
-    let active = true
-    api.getWellnessDaily().then((daily) => {
-      if (!active) return
-      if (daily) {
-        setWater(daily.water)
-        setVomit(daily.vomit)
-      }
-      return api.getWaterWeekTrend()
-    }).then((weekTrend) => {
-      if (!active) return
-      if (weekTrend) setTrend(weekTrend)
-      setLoading(false)
-    }).catch((err) => {
-      console.error('Wellness load error:', err)
-      if (active) setLoading(false)
-    })
-    return () => { active = false }
-  }, [])
+    loadData()
+  }, [loadData])
 
   // Hydration reminder: after 14:00, if < 30% of goal
   const showReminder = !loading && new Date().getHours() >= 14 && water.hydration_pct < 30
 
   async function handleAddWater(ml) {
-    if (connectivity === 'offline') {
-      const queue = JSON.parse(localStorage.getItem('pg_offline_queue:v1') || '[]')
-      queue.push({ type: 'water', patient_id: null, data: { amount_ml: ml }, local_timestamp: new Date().toISOString() })
-      localStorage.setItem('pg_offline_queue:v1', JSON.stringify(queue))
-      setWater(prev => ({ ...prev, total_ml: prev.total_ml + ml, hydration_pct: Math.min(100, Math.round(((prev.total_ml + ml) / prev.goal_ml) * 100)) }))
-      return
-    }
     const res = await api.logWater(ml)
     if (res.ok) loadData()
   }
@@ -84,16 +64,6 @@ export default function Wellness() {
 
   async function handleSaveVomit() {
     setSaving(true)
-    if (connectivity === 'offline') {
-      const queue = JSON.parse(localStorage.getItem('pg_offline_queue:v1') || '[]')
-      queue.push({ type: 'vomit', patient_id: null, data: { severity: vSeverity, kept_food: vKeptFood, notes: vNotes || null }, local_timestamp: new Date().toISOString() })
-      localStorage.setItem('pg_offline_queue:v1', JSON.stringify(queue))
-      setVomit(prev => ({ ...prev, count: prev.count + 1 }))
-      setShowVomitForm(false)
-      resetVomitForm()
-      setSaving(false)
-      return
-    }
     const res = await api.logVomit({ severity: vSeverity, kept_food: vKeptFood, notes: vNotes || null })
     setSaving(false)
     if (res.ok) {

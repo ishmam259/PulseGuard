@@ -67,6 +67,26 @@ ALTER TABLE patients ADD COLUMN IF NOT EXISTS height NUMERIC(5,2);
 ALTER TABLE patients ADD COLUMN IF NOT EXISTS blood_type TEXT;
 ALTER TABLE patients ADD COLUMN IF NOT EXISTS profile_picture_url TEXT;
 
+-- Medicine check history
+CREATE TABLE IF NOT EXISTS medicine_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  safety TEXT NOT NULL,
+  details JSONB,
+  checked_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Hospital bag checklist
+CREATE TABLE IF NOT EXISTS checklist_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  item_id TEXT NOT NULL,
+  is_packed BOOLEAN DEFAULT false,
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(patient_id, item_id)
+);
+
 -- Vitals entries
 CREATE TABLE IF NOT EXISTS vitals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

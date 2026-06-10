@@ -37,6 +37,7 @@ export function getToken() {
 
 async function apiFetch(path, options = {}) {
   const url = `${API_BASE}${path}`
+  console.log(`[API Request] ${options.method || 'GET'} ${url}`, options.body ? JSON.parse(options.body) : '')
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers,
@@ -181,25 +182,15 @@ export async function getHistory(patientId) {
   return res.ok ? (await res.json()).history : []
 }
 
-// ── Sync API ──
-
-export async function syncBatch(items) {
-  const res = await apiFetch('/sync', {
-    method: 'POST',
-    body: JSON.stringify({ items }),
-  })
-  return { ok: res.ok, ...(await res.json()) }
+export async function getChecklist() {
+  const res = await apiFetch('/patients/checklist')
+  return res.ok ? (await res.json()).checklist : []
 }
 
-export async function getConflicts() {
-  const res = await apiFetch('/sync/conflicts')
-  return res.ok ? (await res.json()).conflicts : []
-}
-
-export async function resolveConflict(id, resolution) {
-  const res = await apiFetch(`/sync/conflicts/${id}/resolve`, {
+export async function toggleChecklistItem(item_id, is_packed) {
+  const res = await apiFetch('/patients/checklist/toggle', {
     method: 'POST',
-    body: JSON.stringify({ resolution }),
+    body: JSON.stringify({ item_id, is_packed }),
   })
   return { ok: res.ok, ...(await res.json()) }
 }
@@ -225,6 +216,19 @@ export async function medicineSafety(name, pregnancyWeek, language) {
     body: JSON.stringify({ name, pregnancyWeek, language }),
   })
   return res.ok ? res.json() : { error: 'AI unavailable' }
+}
+
+export async function getMedicineHistory() {
+  const res = await apiFetch('/medicine/history')
+  return res.ok ? (await res.json()).history : []
+}
+
+export async function addMedicineHistory(name, safety, details) {
+  const res = await apiFetch('/medicine/history', {
+    method: 'POST',
+    body: JSON.stringify({ name, safety, details }),
+  })
+  return { ok: res.ok, ...(await res.json()) }
 }
 
 export async function aiChat(message, language = 'en') {
@@ -524,19 +528,9 @@ export async function updateAIConfig(data) {
 }
 
 export async function checkHealth() {
-  // Check REAL internet connectivity by pinging an external endpoint.
-  // localhost services are always reachable even when the device has no internet.
-  if (!navigator.onLine) return false
   try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
-    await fetch('https://www.gstatic.com/generate_204', {
-      mode: 'no-cors',
-      cache: 'no-store',
-      signal: controller.signal,
-    })
-    clearTimeout(timeoutId)
-    return true
+    const res = await fetch(`${API_BASE}/health`)
+    return res.ok
   } catch {
     return false
   }

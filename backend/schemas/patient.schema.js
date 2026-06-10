@@ -26,15 +26,4 @@ const vitalsSchema = z.object({
   notes: z.string().max(1000).optional(),
 })
 
-const syncPayloadSchema = z.object({
-  type: z.enum(['vitals', 'profile']),
-  patient_id: z.string().uuid(),
-  data: z.record(z.unknown()),
-  local_timestamp: z.string().datetime().optional(),
-})
-
-const syncBatchSchema = z.object({
-  items: z.array(syncPayloadSchema).min(1).max(100),
-})
-
-module.exports = { patientSchema, vitalsSchema, syncPayloadSchema, syncBatchSchema }
+module.exports = { patientSchema, vitalsSchema }

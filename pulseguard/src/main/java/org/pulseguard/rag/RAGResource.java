@@ -13,6 +13,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @Path("/api/rag")
 public class RAGResource {
@@ -39,11 +40,13 @@ public class RAGResource {
         }
     }
 
+    @RegisterForReflection
     public static class StoreRequest {
         public String topic;
         public String content;
     }
 
+    @RegisterForReflection
     public static class StoreResponse {
         public String message;
         public boolean success;
@@ -54,6 +57,7 @@ public class RAGResource {
         }
     }
 
+    @RegisterForReflection
     public static class AskResponse {
         public String answer;
         public List<String> context;

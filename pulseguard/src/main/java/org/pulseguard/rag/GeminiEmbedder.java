@@ -5,6 +5,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,11 +14,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class GeminiEmbedder implements IEmbedder {
+    @ConfigProperty(name = "gemini.api.key")
+    String geminiApiKey;
+
     @Override
     public float[] embed(String text) throws Exception {
         System.out.println("REQUEST HIT");
         System.out.println("TEXT = " + text);
-        String apiKey = System.getenv("GEMINI_API_KEY");
+        String apiKey = geminiApiKey;
 
         String body = """
         {

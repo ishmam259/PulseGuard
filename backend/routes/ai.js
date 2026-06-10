@@ -7,6 +7,7 @@ const express = require('express');
 const { authenticate } = require('../middleware/auth');
 const { scrubPII } = require('../services/piiScrubber');
 const pool = require('../db/pool');
+const { retrieveContext } = require('../services/ragService');
 
 const router = express.Router();
 
@@ -112,7 +113,16 @@ router.post('/chats/:id/messages', async (req, res) => {
     const chat = chatResult.rows[0];
     const messages = chat.messages || [];
 
-    // 2. Prepare context prompt (last 4 messages for conversational continuity)
+    // 2. Retrieve relevant health history from RAG system
+    const ragContext = await retrieveContext(req.user.name, message);
+    let healthContext = '';
+    if (ragContext && ragContext.length > 0) {
+      healthContext = '[Relevant Health History Context:\n' + 
+        ragContext.join('\n') + 
+        ']\n\n';
+    }
+
+    // 3. Prepare conversation context prompt (last 4 messages)
     let contextPrompt = '';
     if (messages.length > 0) {
       const recent = messages.slice(-4);
@@ -121,9 +131,9 @@ router.post('/chats/:id/messages', async (req, res) => {
         ']\n\n';
     }
 
-    const fullPrompt = contextPrompt + `Current query: ${message}`;
+    const fullPrompt = healthContext + contextPrompt + `Current query: ${message}`;
 
-    // 3. Call AI worker
+    // 4. Call AI worker
     let responseText = 'AI service unavailable. Please try again when connected.';
     let responseSource = 'offline';
     let isOffline = true;

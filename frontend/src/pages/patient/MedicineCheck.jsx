@@ -37,52 +37,66 @@ export default function MedicineCheck() {
   }, [])
 
   useEffect(() => {
-    const stored = localStorage.getItem('pulseguard_recent_med_checks')
-    if (stored) {
+    async function loadHistory() {
       try {
-        setRecentChecks(JSON.parse(stored))
-      } catch (e) {
-        console.error(e)
-      }
-    } else {
-      const defaults = [
-        {
-          name: 'Napa',
-          timestamp: Date.now() - 2 * 60 * 60 * 1000,
-          safety: 'SAFE',
-          details: {
-            SAFETY: 'SAFE',
-            REASON: locale === 'bn' ? 'গর্ভাবস্থায় প্যারাসিটামল জ্বর ও ব্যথার জন্য প্রথম লাইনের ওষুধ হিসেবে নিরাপদ।' : 'Paracetamol is safe as a first-line treatment for fever and pain in pregnancy.'
-          }
-        },
-        {
-          name: 'Flagyl',
-          timestamp: Date.now() - 24 * 60 * 60 * 1000,
-          safety: 'CAUTION',
-          details: {
-            SAFETY: 'CAUTION',
-            REASON: locale === 'bn' ? 'মেট্রোনিডাজল সাধারণত গর্ভাবস্থায় বিশেষ প্রয়োজন ছাড়া ব্যবহার করা উচিত নয়।' : 'Metronidazole should generally be used with caution, only when clearly needed.'
-          }
+        const data = await api.getMedicineHistory()
+        if (data && data.length > 0) {
+          setRecentChecks(data.map(h => ({
+            name: h.name,
+            timestamp: new Date(h.checked_at).getTime(),
+            safety: h.safety,
+            details: h.details
+          })))
+        } else {
+          // Defaults if no history
+          const defaults = [
+            {
+              name: 'Napa',
+              timestamp: Date.now() - 2 * 60 * 60 * 1000,
+              safety: 'SAFE',
+              details: {
+                SAFETY: 'SAFE',
+                REASON: locale === 'bn' ? 'গর্ভাবস্থায় প্যারাসিটামল জ্বর ও ব্যথার জন্য প্রথম লাইনের ওষুধ হিসেবে নিরাপদ।' : 'Paracetamol is safe as a first-line treatment for fever and pain in pregnancy.'
+              }
+            },
+            {
+              name: 'Flagyl',
+              timestamp: Date.now() - 24 * 60 * 60 * 1000,
+              safety: 'CAUTION',
+              details: {
+                SAFETY: 'CAUTION',
+                REASON: locale === 'bn' ? 'মেট্রোনিডাজল সাধারণত গর্ভাবস্থায় বিশেষ প্রয়োজন ছাড়া ব্যবহার করা উচিত নয়।' : 'Metronidazole should generally be used with caution, only when clearly needed.'
+              }
+            }
+          ]
+          setRecentChecks(defaults)
         }
-      ]
-      localStorage.setItem('pulseguard_recent_med_checks', JSON.stringify(defaults))
-      setRecentChecks(defaults)
+      } catch (err) {
+        console.error('Failed to load medicine history:', err)
+      }
     }
+    loadHistory()
   }, [locale])
 
-  const saveCheckToHistory = (name, safetyData) => {
+  const saveCheckToHistory = async (name, safetyData) => {
     const newCheck = {
       name,
       timestamp: Date.now(),
       safety: safetyData?.SAFETY || 'CAUTION',
       details: safetyData
     }
+    
+    // Update local state for immediate feedback
     setRecentChecks(prev => {
       const filtered = prev.filter(c => c.name.toLowerCase() !== name.toLowerCase())
-      const updated = [newCheck, ...filtered].slice(0, 10)
-      localStorage.setItem('pulseguard_recent_med_checks', JSON.stringify(updated))
-      return updated
+      return [newCheck, ...filtered].slice(0, 10)
     })
+
+    try {
+      await api.addMedicineHistory(name, newCheck.safety, safetyData)
+    } catch (err) {
+      console.error('Failed to save medicine check to backend:', err)
+    }
   }
 
   const handlePhotoChange = (e) => {

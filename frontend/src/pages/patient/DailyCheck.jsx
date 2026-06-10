@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext'
 import * as api from '../../services/api'
 import { patientNavItems } from '../../data/navItems'
 import $ from '../../config/strings'
-import { Save, WifiOff } from 'lucide-react'
+import { Save } from 'lucide-react'
 
 export default function DailyCheck() {
   const { connectivity, locale } = useApp()
@@ -43,7 +43,7 @@ export default function DailyCheck() {
     setForm((prev) => ({ ...prev, [field]: e.target.value }))
   }
 
-  const handleSave = async (isOfflineExplicit = false) => {
+  const handleSave = async () => {
     setError('')
     setSuccess('')
 
@@ -86,24 +86,6 @@ export default function DailyCheck() {
       temperature_c: form.temperature_c ? parseFloat(form.temperature_c) : undefined,
       pulse: form.pulse ? parseInt(form.pulse) : undefined,
       symptoms: form.symptoms ? form.symptoms.split(',').flatMap((s) => { const trimmed = s.trim(); return trimmed ? [trimmed] : []; }) : [],
-    }
-
-    if (connectivity === 'offline' || isOfflineExplicit) {
-      try {
-        const queue = JSON.parse(localStorage.getItem('pg_offline_queue:v1') || '[]')
-        queue.push({
-          patient_id: patientData.patient.id,
-          type: 'vitals',
-          data: payload,
-          local_timestamp: new Date().toISOString(),
-        })
-        localStorage.setItem('pg_offline_queue:v1', JSON.stringify(queue))
-        setSuccess($('DAILY_SUCCESS_OFFLINE', locale))
-        setForm({ bp: '', weight_kg: '', temperature_c: '', symptoms: '', pulse: '' })
-      } catch {
-        setError($('DAILY_ERR_SAVE_LOCAL', locale))
-      }
-      return
     }
 
     setSaving(true)
@@ -280,7 +262,7 @@ export default function DailyCheck() {
               <button
                 type="button"
                 className="btn btn--primary"
-                onClick={() => handleSave(false)}
+                onClick={() => handleSave()}
                 disabled={saving}
                 style={{
                   borderRadius: '9999px',
@@ -295,27 +277,6 @@ export default function DailyCheck() {
               >
                 <Save className="h-4 w-4" />
                 <span>{saving ? $('DAILY_BTN_SAVING', locale) : $('DAILY_BTN_SAVE', locale)}</span>
-              </button>
-              
-              <button
-                type="button"
-                className="btn btn--secondary"
-                onClick={() => handleSave(true)}
-                style={{
-                  borderRadius: '9999px',
-                  padding: '12px 28px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  border: '1px solid var(--color-border)',
-                  backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                  color: 'var(--color-text)'
-                }}
-              >
-                <WifiOff className="h-4 w-4" />
-                <span>{$('DAILY_BTN_SAVE_OFFLINE', locale)}</span>
               </button>
             </div>
           </div>
