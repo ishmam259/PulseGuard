@@ -3,15 +3,15 @@ services:
     image: pgvector/pgvector:pg16
     entrypoint: ["sh", "-c", "rm -f /var/lib/postgresql/data/postmaster.pid && exec docker-entrypoint.sh postgres"]
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: pulseguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wirelight
     volumes:
       - pg_data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pulseguard"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -20,15 +20,15 @@ services:
     image: pgvector/pgvector:pg16
     entrypoint: ["sh", "-c", "rm -f /var/lib/postgresql/data/postmaster.pid && exec docker-entrypoint.sh postgres"]
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: pulseguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wirelight
     volumes:
-      - chatpg_data:/var/lib/postgresql/data
+      - pg_chat_data:/var/lib/postgresql/data
     ports:
       - "5435:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pulseguard"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -78,6 +78,7 @@ services:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
 
   ai-worker:
     build: ./ai
@@ -112,6 +113,11 @@ services:
       dockerfile: src/main/docker/Dockerfile.native
     ports:
       - "8081:8080"
+    depends_on:
+      chatdb:
+        condition: service_healthy
+      ragdb:
+        condition: service_healthy
     environment:
       QUARKUS_HTTP_PORT: ${QUARKUS_HTTP_PORT}
       QUARKUS_WEBSOCKETS_NEXT_ORIGINS: "*"
