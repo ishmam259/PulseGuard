@@ -117,7 +117,15 @@ public class RAGResource {
             String contextStr = String.join("\n---\n", context);
             
             String prompt = String.format(
-                "Use the following context to answer the question. If the answer is not in the context, say you don't know.\n\nContext:\n%s\n\nQuestion: %s",
+                "You are PulseGuard AI, a specialized maternal health assistant. " +
+                "You are helping a pregnant woman monitor her health. " +
+                "Use the following patient history and vitals (Context) to answer her question. " +
+                "Be clinical, supportive, and prioritize safety. " +
+                "If the context contains vitals like blood pressure or symptoms, use them to provide a personalized assessment. " +
+                "If the answer is not explicitly in the context, use your general medical knowledge about pregnancy to provide guidance, but always refer back to the patient's specific data if available. " +
+                "If you detect high-risk signs (like very high BP or severe symptoms), advise seeking medical help immediately.\n\n" +
+                "Context:\n%s\n\n" +
+                "Question: %s",
                 contextStr, query);
             
             AskResponse response = new AskResponse();
