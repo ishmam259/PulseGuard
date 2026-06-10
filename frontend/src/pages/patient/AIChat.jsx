@@ -18,6 +18,7 @@ const CHIP_KEYS = [
 const SOURCE_BADGE = {
   offline: { label: 'Offline Answer', style: { background: 'oklch(0.72 0.16 50)', color: '#fff' } },
   gemini:  { label: 'Gemini AI',         style: { background: 'oklch(0.6 0.18 250)', color: '#fff' } },
+  'rag-pro': { label: 'RAG Pro ✨',      style: { background: 'oklch(0.65 0.24 160)', color: '#fff' } },
 }
 
 const generateMsgId = (prefix) => `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000000)}`
@@ -28,6 +29,7 @@ export default function AIChat() {
   const [activeChatId, setActiveChatId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+  const [useRag, setUseRag] = useState(false)
 
 
   const [messages, setMessages] = useState([])
@@ -139,7 +141,7 @@ export default function AIChat() {
       }
 
       // 2. Post message to persistent chat session
-      const response = await api.sendAIChatMessage(currentId, text.trim(), locale)
+      const response = await api.sendAIChatMessage(currentId, text.trim(), locale, useRag)
 
       // 3. Set the full state array from database response
       if (response && response.chat) {
@@ -405,6 +407,44 @@ export default function AIChat() {
           0%, 100% { box-shadow: 0 0 0 0 var(--color-primary-glow); }
           50%       { box-shadow: 0 0 0 6px transparent; }
         }
+        /* ── Toggle Switch ── */
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 44px;
+          height: 24px;
+        }
+        .toggle-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          inset: 0;
+          background-color: var(--color-border);
+          transition: .4s;
+          border-radius: 24px;
+        }
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 18px;
+          width: 18px;
+          left: 3px;
+          bottom: 3px;
+          background-color: white;
+          transition: .4s;
+          border-radius: 50%;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input:checked + .slider {
+          background-color: var(--color-primary);
+        }
+        input:checked + .slider:before {
+          transform: translateX(20px);
+        }
       `}</style>
 
       <div className="animate-fade-in ai-chat-wrapper">
@@ -431,6 +471,43 @@ export default function AIChat() {
           >
             <Pencil size={20} />
           </button>
+        </div>
+
+        {/* RAG Toggle */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          padding: '0.75rem 1rem', 
+          background: 'rgba(var(--color-primary-rgb, 99, 102, 241), 0.05)', 
+          borderRadius: '12px', 
+          marginBottom: '1rem',
+          border: '1px solid rgba(var(--color-primary-rgb, 99, 102, 241), 0.1)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ 
+              background: 'var(--color-primary)', 
+              color: 'white', 
+              fontSize: '0.65rem', 
+              fontWeight: 800, 
+              padding: '2px 6px', 
+              borderRadius: '4px',
+              letterSpacing: '0.05em'
+            }}>
+              {$('AI_CHAT_RAG_PRO_BADGE', locale)}
+            </span>
+            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text)' }}>
+              {$('AI_CHAT_RAG_TOGGLE', locale)}
+            </span>
+          </div>
+          <label className="toggle-switch">
+            <input 
+              type="checkbox" 
+              checked={useRag} 
+              onChange={(e) => setUseRag(e.target.checked)} 
+            />
+            <span className="slider"></span>
+          </label>
         </div>
 
         {/* NATIVE chat-card: Identical to original code sizing */}

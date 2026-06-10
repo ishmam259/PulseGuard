@@ -257,10 +257,10 @@ export async function getAIChat(id) {
   return res.ok ? await res.json() : null
 }
 
-export async function sendAIChatMessage(id, message, language = 'en') {
+export async function sendAIChatMessage(id, message, language = 'en', useRag = false) {
   const res = await apiFetch(`/ai/chats/${id}/messages`, {
     method: 'POST',
-    body: JSON.stringify({ message, language }),
+    body: JSON.stringify({ message, language, useRag }),
   })
   return res.ok ? await res.json() : { response: 'AI service unavailable', offline: true }
 }

@@ -7,7 +7,7 @@ const express = require('express');
 const { authenticate } = require('../middleware/auth');
 const { scrubPII } = require('../services/piiScrubber');
 const pool = require('../db/pool');
-const { retrieveContext } = require('../services/ragService');
+const { retrieveContext, askQuestion } = require('../services/ragService');
 
 const router = express.Router();
 
@@ -96,7 +96,7 @@ router.post('/chats/:id/messages', async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
-    const { message, language } = req.body;
+    const { message, language, useRag } = req.body;
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
     }
@@ -113,16 +113,7 @@ router.post('/chats/:id/messages', async (req, res) => {
     const chat = chatResult.rows[0];
     const messages = chat.messages || [];
 
-    // 2. Retrieve relevant health history from RAG system
-    const ragContext = await retrieveContext(req.user.name, message);
-    let healthContext = '';
-    if (ragContext && ragContext.length > 0) {
-      healthContext = '[Relevant Health History Context:\n' + 
-        ragContext.join('\n') + 
-        ']\n\n';
-    }
-
-    // 3. Prepare conversation context prompt (last 4 messages)
+    // 2. Prepare conversation context prompt (last 4 messages)
     let contextPrompt = '';
     if (messages.length > 0) {
       const recent = messages.slice(-4);
@@ -131,31 +122,52 @@ router.post('/chats/:id/messages', async (req, res) => {
         ']\n\n';
     }
 
-    const fullPrompt = healthContext + contextPrompt + `Current query: ${message}`;
-
-    // 4. Call AI worker
+    // 3. Call AI service
     let responseText = 'AI service unavailable. Please try again when connected.';
     let responseSource = 'offline';
     let isOffline = true;
 
-    try {
-      const aiUrl = process.env.AI_WORKER_URL || 'http://localhost:8000';
-      const aiResponse = await fetch(`${aiUrl}/ai/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: scrubPII(fullPrompt),
-          language: language || 'en',
-        }),
-      });
-      if (aiResponse.ok) {
-        const result = await aiResponse.json();
-        responseText = result.response || result.reply;
-        responseSource = result.source || 'gemini';
+    if (useRag) {
+      // PRO Mode: Use direct RAG "ask" endpoint for strict context-based answering
+      try {
+        const ragRes = await askQuestion(req.user.name, message);
+        responseText = ragRes.answer;
+        responseSource = 'rag-pro';
         isOffline = false;
+      } catch (err) {
+        console.error('❌ RAG Pro failed:', err.message);
       }
-    } catch (err) {
-      console.error('❌ AI worker connection failed:', err.message);
+    } else {
+      // STANDARD Mode: Augment prompt with RAG context but use general AI worker
+      const ragContext = await retrieveContext(req.user.name, message);
+      let healthContext = '';
+      if (ragContext && ragContext.length > 0) {
+        healthContext = '[Relevant Health History Context:\n' + 
+          ragContext.join('\n') + 
+          ']\n\n';
+      }
+
+      const fullPrompt = healthContext + contextPrompt + `Current query: ${message}`;
+
+      try {
+        const aiUrl = process.env.AI_WORKER_URL || 'http://localhost:8000';
+        const aiResponse = await fetch(`${aiUrl}/ai/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: scrubPII(fullPrompt),
+            language: language || 'en',
+          }),
+        });
+        if (aiResponse.ok) {
+          const result = await aiResponse.json();
+          responseText = result.response || result.reply;
+          responseSource = result.source || 'gemini';
+          isOffline = false;
+        }
+      } catch (err) {
+        console.error('❌ AI worker connection failed:', err.message);
+      }
     }
 
     // 4. Generate title from first query if still default/empty
