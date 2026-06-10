@@ -235,11 +235,6 @@ export default function Dashboard() {
               </div>
             </section>
 
-            {/* Connect AI Section (MCP) */}
-            <div style={{ marginBottom: '2rem' }}>
-               <ConnectAI locale={locale} />
-            </div>
-
             {/* Daily Tips */}
             <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
