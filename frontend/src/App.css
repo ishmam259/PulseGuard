@@ -3995,3 +3995,226 @@ select.input option {
   }
 }
 
+/* ── Premium Patient Dashboard ── */
+.premium-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.premium-dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  padding: 32px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+:root.dark .premium-dashboard-hero {
+  background: oklch(0.13 0.02 320);
+  border-color: transparent;
+  box-shadow: var(--shadow-glow-primary);
+}
+
+.premium-dashboard-hero::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  right: -100px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 350px;
+  width: 350px;
+  border-radius: 50%;
+  background-image: var(--gradient-primary);
+  opacity: 0.15;
+  filter: blur(80px);
+  z-index: 0;
+}
+
+:root.dark .premium-dashboard-hero::after {
+  opacity: 0.4;
+  filter: blur(90px);
+}
+
+.premium-dashboard-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .premium-dashboard-hero-grid {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
+
+.premium-dashboard-hero-play-btn {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 9999px;
+  background-color: var(--color-surface-hover);
+  padding: 8px 20px 8px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.premium-dashboard-hero-play-btn:hover {
+  background-color: var(--color-surface-active);
+}
+
+:root.dark .premium-dashboard-hero-play-btn {
+  background-color: oklch(0.22 0.03 320);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+:root.dark .premium-dashboard-hero-play-btn:hover {
+  background-color: oklch(0.28 0.04 320);
+}
+
+.premium-dashboard-hero-play-icon {
+  display: grid;
+  height: 36px;
+  width: 36px;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background-image: var(--gradient-primary);
+}
+
+.premium-dashboard-hero-pill {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 9999px;
+  background-color: var(--color-surface-hover);
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+}
+
+:root.dark .premium-dashboard-hero-pill {
+  background-color: oklch(0.22 0.03 320);
+  border-color: transparent;
+}
+
+/* Grids */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 1024px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-tips {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .grid-tips {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-vitals {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .grid-vitals {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Tip cards styling */
+.tip-icon-badge {
+  display: grid;
+  height: 48px;
+  width: 48px;
+  place-items: center;
+  border-radius: 16px;
+  background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+  margin-bottom: 16px;
+}
+
+/* AI card */
+.ai-card {
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in oklab, var(--color-primary) 6%, var(--color-surface));
+  border: 1px solid color-mix(in oklab, var(--color-primary) 20%, transparent);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+/* Floating SOS Button */
+.sos-floating-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  display: grid;
+  height: 64px;
+  width: 64px;
+  place-items: center;
+  border-radius: 50%;
+  background-color: #e11d48;
+  color: #ffffff;
+  box-shadow: 0 0 30px -5px rgba(225, 29, 72, 0.6);
+  transition: transform 0.2s;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+
+.sos-floating-btn:hover {
+  transform: scale(1.05);
+}
+
+.sos-floating-btn-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: rgba(225, 29, 72, 0.4);
+  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+.sos-floating-btn-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(225, 29, 72, 0.3);
+  pointer-events: none;
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+
