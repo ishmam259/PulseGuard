@@ -1,0 +1,136 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pulseguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wirelight
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pulseguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  chatdb:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pulseguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wirelight
+    volumes:
+      - pg_chat_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pulseguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ragdb:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pulseguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wirelight
+    volumes:
+      - rag_data:/var/lib/postgresql/data
+      - ./pulseguard/src/main/resources/init-rag.sql:/docker-entrypoint-initdb.d/init-rag.sql
+    ports:
+      - "5436:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pulseguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ashraful42/pulseguard-backend:latest
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./Data:/app/Data:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:wirelight@db:5432/pulseguard
+      JWT_SECRET: pulseguard_jwt_secret_2026
+      JWT_REFRESH_SECRET: pulseguard_refresh_secret_2026
+      AI_WORKER_URL: http://ai-worker:8000
+      PORT: 5000
+      NODE_ENV: production
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      CHAT_SECRET: ${CHAT_SECRET}
+      MATRIX_BASE_URL: http://matrix-chat:6167
+      GLOBAL_CHAT_ROOM_ID: !pulseguard-global:localhost
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+
+  ai-worker:
+    image: ashraful42/pulseguard-ai:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:wirelight@db:5432/pulseguard
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_API_KEY2: ${GEMINI_API_KEY2}
+      GEMINI_API_KEY3: ${GEMINI_API_KEY3}
+      GEMINI_API_KEY4: ${GEMINI_API_KEY4}
+
+  frontend:
+    image: ashraful42/pulseguard-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  pulseguard-chat:
+    image: ashraful42/pulseguard-chat:latest
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      QUARKUS_HTTP_PORT: 8080
+      QUARKUS_WEBSOCKETS_NEXT_ORIGINS: "*"
+      QUARKUS_DATASOURCE_DB_KIND: postgresql
+      QUARKUS_DATASOURCE_USERNAME: postgres
+      QUARKUS_DATASOURCE_PASSWORD: wirelight
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://chatdb:5432/pulseguard
+      QUARKUS_HIBERNATE_ORM_PACKAGES: org.pulseguard.chat
+      QUARKUS_DATASOURCE_RAG_DB_KIND: postgresql
+      QUARKUS_DATASOURCE_RAG_USERNAME: postgres
+      QUARKUS_DATASOURCE_RAG_PASSWORD: wirelight
+      QUARKUS_DATASOURCE_RAG_JDBC_URL: jdbc:postgresql://ragdb:5432/pulseguard
+      QUARKUS_HIBERNATE_ORM_RAG_DATASOURCE: rag
+      QUARKUS_HIBERNATE_ORM_RAG_PACKAGES: org.pulseguard.rag
+      QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
+      QUARKUS_HIBERNATE_ORM_RAG_DATABASE_GENERATION: update
+      QUARKUS_HTTP_CORS_ENABLED: "true"
+      QUARKUS_HTTP_CORS_ORIGINS: "*"
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+
+volumes:
+  pg_data:
+  rag_data:
+  pg_chat_data:
