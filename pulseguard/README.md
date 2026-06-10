@@ -1,67 +1,88 @@
-# pulseguard
+# PulseGuard - RAG & Chat Service
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+PulseGuard is a high-performance backend service built with **Quarkus**, providing real-time chat capabilities and a **Retrieval-Augmented Generation (RAG)** system powered by **pgvector** and **Google Gemini**.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Features
+- **Real-time Chat**: WebSocket-based chat with persistence.
+- **RAG System**: Store, retrieve, and query information using vector embeddings.
+- **Topic Isolation**: Keep information partitioned by topics (e.g., `medical`, `nutrition`, `safety`).
+- **Gemini Integration**: Uses `gemini-2.5-flash` for high-quality embeddings and chat completions.
 
-## Running the application in dev mode
+## Prerequisites
+- **Docker & Docker Compose**: For running the PostgreSQL databases (`chatdb` and `ragdb`).
+- **Java 21**: For local development.
+- **Gemini API Key**: Must be set in your environment as `GEMINI_API_KEY`.
 
-You can run your application in dev mode that enables live coding using:
+---
 
-```shell script
+## RAG API Endpoints
+
+The RAG API allows you to store knowledge and ask questions based on that knowledge. All endpoints are under `/api/rag`.
+
+### 1. Store Knowledge
+Embeds a piece of text and stores it in the vector database.
+
+- **URL**: `POST /api/rag/store`
+- **Payload**:
+  ```json
+  {
+    "topic": "nutrition",
+    "content": "Vitamin C is essential for immune function and skin health."
+  }
+  ```
+- **Example (httpie)**:
+  ```bash
+  http POST :8080/api/rag/store topic=nutrition content="Vitamin C is essential for immune function."
+  ```
+
+### 2. Retrieve Context
+Finds the top 3 most relevant documents for a query within a specific topic.
+
+- **URL**: `GET /api/rag/retrieve`
+- **Query Params**:
+  - `topic`: The category to search in.
+  - `q`: your search query.
+- **Example (httpie)**:
+  ```bash
+  http GET :8080/api/rag/retrieve topic==nutrition q=="What is good for immunity?"
+  ```
+
+### 3. Ask a Question (RAG)
+Retrieves context from the database and uses Gemini to generate a factual answer based **only** on that context.
+
+- **URL**: `GET /api/rag/ask`
+- **Query Params**:
+  - `topic`: The category to use as context.
+  - `q`: Your question.
+- **Example (httpie)**:
+  ```bash
+  http GET :8080/api/rag/ask topic==nutrition q=="Why should I take Vitamin C?"
+  ```
+
+### 4. Raw Embedding
+Get the 3072-dimensional vector embedding for any text.
+
+- **URL**: `POST /api/rag/embedding`
+- **Payload**: Raw String
+- **Example (httpie)**:
+  ```bash
+  echo "Search query" | http POST :8080/api/rag/embedding
+  ```
+
+---
+
+## Development & Deployment
+
+### Run in Dev Mode
+Ensure your Docker containers are running (`docker compose up -d ragdb chatdb`), then start Quarkus:
+```bash
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
-
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
+### Build & Package
+```bash
 ./mvnw package
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/pulseguard-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- WebSockets Next ([guide](https://quarkus.io/guides/websockets-next-reference)): Implementation of the WebSocket API with enhanced efficiency and usability
-- REST ([guide](https://quarkus.io/guides/rest)): Build RESTful web services and APIs using Jakarta REST (formerly JAX-RS)
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+### Docker Deployment
+The project includes a `docker-compose.yml` in the root directory that orchestrates the entire PulseGuard stack, including this service.
