@@ -18,6 +18,9 @@ export default function MedicineCheck() {
   const [safety, setSafety] = useState(null)
   const [safetyLoading, setSafetyLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [savedNames, setSavedNames] = useState(new Set())
+  const [logs, setLogs] = useState(null)
+  const [logsLoading, setLogsLoading] = useState(false)
   const fileInputRef = useRef(null)
 
   const isOffline = connectivity === 'offline'
@@ -43,6 +46,26 @@ export default function MedicineCheck() {
     reader.readAsDataURL(file)
   }
 
+  const handleSave = async (result) => {
+    if (!safety?.SAFETY || !result?.name) return
+    if (savedNames.has(result.name)) return
+    try {
+      await api.logMedicine({
+        medicine_name: result.name,
+        safety_status: safety.SAFETY,
+        safety_reason: safety.REASON || null,
+        week_note: safety.WEEK_NOTE || null,
+        alternatives: safety.ALTERNATIVES || null,
+        description: result.description || null,
+        gestational_week: week,
+        source: activeTab,
+      })
+      setSavedNames(prev => new Set(prev).add(result.name))
+    } catch (err) {
+      console.error('Failed to save medicine log', err)
+    }
+  }
+
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!query.trim()) return
@@ -51,6 +74,7 @@ export default function MedicineCheck() {
     setIdentified(null)
     setSafety(null)
     setSafetyLoading(false)
+    setSavedNames(new Set())
     setLoading(true)
     try {
       const data = await api.medicineSearch(query.trim())
@@ -83,6 +107,7 @@ export default function MedicineCheck() {
     setIdentified(null)
     setSafety(null)
     setSafetyLoading(false)
+    setSavedNames(new Set())
     setLoading(true)
     try {
       const base64 = imagePreview.split(',')[1]
@@ -131,20 +156,91 @@ export default function MedicineCheck() {
           <>
             {/* Tabs */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              {['search', 'photo'].map((tab) => (
+              {['search', 'photo', 'history'].map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   className={`btn ${activeTab === tab ? 'btn--primary' : 'btn--secondary'}`}
                   style={{ flex: 1, fontSize: '0.85rem' }}
-                  onClick={() => { setActiveTab(tab); setResults(null); setError(null); setIdentified(null); setSafety(null); setSafetyLoading(false) }}
+                  onClick={() => {
+                    setActiveTab(tab)
+                    setResults(null); setError(null); setIdentified(null); setSafety(null); setSafetyLoading(false); setSavedNames(new Set())
+                    if (tab === 'history' && !logs) {
+                      setLogsLoading(true)
+                      api.getMedicineLogs().then(d => setLogs(d.logs || [])).catch(() => setLogs([])).finally(() => setLogsLoading(false))
+                    }
+                  }}
                 >
-                  {tab === 'search' ? $('MEDICINE_TAB_SEARCH', locale) : $('MEDICINE_TAB_PHOTO', locale)}
+                  {tab === 'search' ? $('MEDICINE_TAB_SEARCH', locale) : tab === 'photo' ? $('MEDICINE_TAB_PHOTO', locale) : $('MEDICINE_TAB_HISTORY', locale)}
                 </button>
               ))}
             </div>
 
-            {activeTab === 'search' ? (
+            {activeTab === 'history' ? (
+              <div>
+                {logsLoading ? (
+                  <p className="muted text-center" style={{ padding: '1.5rem 0' }}>{$('MEDICINE_LOADING', locale)}</p>
+                ) : !logs || logs.length === 0 ? (
+                  <p className="muted text-center" style={{ padding: '1.5rem 0' }}>{$('MEDICINE_LOG_EMPTY', locale)}</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    {logs.map((log) => {
+                      const statusMeta = log.safety_status === 'SAFE'
+                        ? { color: '#16a34a', bg: 'rgba(22,163,74,0.08)', label: log.safety_status }
+                        : log.safety_status === 'AVOID'
+                        ? { color: '#dc2626', bg: 'rgba(220,38,38,0.08)', label: log.safety_status }
+                        : { color: '#d97706', bg: 'rgba(217,119,6,0.08)', label: log.safety_status || '—' }
+                      const handleDelete = async () => {
+                        await api.deleteMedicineLog(log.id)
+                        setLogs(prev => prev.filter(l => l.id !== log.id))
+                      }
+                      return (
+                        <div key={log.id} className="card" style={{
+                          padding: '0',
+                          overflow: 'hidden',
+                          borderTop: `3px solid ${statusMeta.color}`,
+                        }}>
+                          <div style={{ padding: '0.75rem 1rem', background: statusMeta.bg }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                              <span style={{
+                                fontWeight: 700,
+                                fontSize: '0.7rem',
+                                color: statusMeta.color,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.06em',
+                                background: `${statusMeta.color}22`,
+                                border: `1px solid ${statusMeta.color}55`,
+                                borderRadius: '4px',
+                                padding: '1px 6px',
+                                whiteSpace: 'nowrap',
+                              }}>
+                                {statusMeta.label}
+                              </span>
+                              <span style={{ flex: 1, fontWeight: 700, fontSize: '0.92rem' }}>{log.medicine_name}</span>
+                              <span className="muted" style={{ fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
+                                {new Date(log.logged_at).toLocaleDateString()}
+                              </span>
+                              <button
+                                onClick={handleDelete}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', color: 'var(--color-muted)', fontSize: '1.1rem', lineHeight: 1, marginLeft: '2px' }}
+                                title="Remove"
+                              >
+                                ×
+                              </button>
+                            </div>
+                            {log.description && (
+                              <p className="muted" style={{ fontSize: '0.78rem', margin: '0.4rem 0 0 0', lineHeight: 1.5 }}>
+                                {log.description.length > 120 ? log.description.slice(0, 120) + '…' : log.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            ) : activeTab === 'search' ? (
               <form onSubmit={handleSearch}>
                 <div className="input-row">
                   <input
@@ -219,7 +315,15 @@ export default function MedicineCheck() {
         {results && results.length > 0 && (
           <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {results.map((r, i) => (
-              <MedexResultCard key={i} result={r} />
+              <MedexResultCard
+                key={i}
+                result={r}
+                onSave={() => handleSave(r)}
+                isSaved={savedNames.has(r.name)}
+                canSave={!!safety?.SAFETY}
+                saveLabel={$('MEDICINE_BTN_SAVE', locale)}
+                savedLabel={$('MEDICINE_LOG_SAVED', locale)}
+              />
             ))}
           </div>
         )}
@@ -321,7 +425,7 @@ function SafetyCard({ safety, loading, locale }) {
   )
 }
 
-function MedexResultCard({ result }) {
+function MedexResultCard({ result, onSave, isSaved, canSave, saveLabel, savedLabel }) {
   return (
     <div className="card" style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
       {result.imageUrl && (
@@ -338,15 +442,32 @@ function MedexResultCard({ result }) {
             {result.description.length > 120 ? result.description.slice(0, 120) + '…' : result.description}
           </p>
         )}
-        <a
-          href={result.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn--primary"
-          style={{ alignSelf: 'flex-end', fontSize: '0.8rem', padding: '0.3rem 0.75rem' }}
-        >
-          View on Medex →
-        </a>
+        <div style={{ display: 'flex', gap: '0.5rem', alignSelf: 'flex-end', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          {canSave && (
+            isSaved ? (
+              <span style={{ fontSize: '0.78rem', color: '#16a34a', fontWeight: 600, alignSelf: 'center' }}>
+                {savedLabel}
+              </span>
+            ) : (
+              <button
+                className="btn btn--ghost"
+                style={{ fontSize: '0.78rem', padding: '0.3rem 0.75rem' }}
+                onClick={onSave}
+              >
+                {saveLabel}
+              </button>
+            )
+          )}
+          <a
+            href={result.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn--primary"
+            style={{ fontSize: '0.8rem', padding: '0.3rem 0.75rem' }}
+          >
+            View on Medex →
+          </a>
+        </div>
       </div>
     </div>
   )

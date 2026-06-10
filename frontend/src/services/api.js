@@ -102,10 +102,10 @@ export async function login(data) {
   return { ok: res.ok, ...result }
 }
 
-export async function googleSignIn(credential, role) {
+export async function googleSignIn(accessToken, role) {
   const res = await apiFetch('/auth/google', {
     method: 'POST',
-    body: JSON.stringify({ credential, role }),
+    body: JSON.stringify({ access_token: accessToken, role }),
   })
   const result = await res.json()
   if (res.ok) setTokens(result.token, result.refreshToken)
@@ -225,6 +225,21 @@ export async function medicineSafety(name, pregnancyWeek, language) {
     body: JSON.stringify({ name, pregnancyWeek, language }),
   })
   return res.ok ? res.json() : { error: 'AI unavailable' }
+}
+
+export async function logMedicine(data) {
+  const res = await apiFetch('/medicine/log', { method: 'POST', body: JSON.stringify(data) })
+  return res.ok ? res.json() : { ok: false }
+}
+
+export async function getMedicineLogs() {
+  const res = await apiFetch('/medicine/log')
+  return res.ok ? res.json() : { logs: [] }
+}
+
+export async function deleteMedicineLog(id) {
+  const res = await apiFetch(`/medicine/log/${id}`, { method: 'DELETE' })
+  return res.ok ? res.json() : { ok: false }
 }
 
 export async function aiChat(message, language = 'en') {

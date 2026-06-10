@@ -288,3 +288,22 @@ CREATE INDEX IF NOT EXISTS idx_ai_chats_updated ON ai_chats(updated_at DESC);
 ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT UNIQUE;
 
+-- Medicine log: persists every medicine the patient saves after a safety check
+CREATE TABLE IF NOT EXISTS medicine_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID REFERENCES patients(id) ON DELETE CASCADE,
+  medicine_name TEXT NOT NULL,
+  safety_status TEXT CHECK (safety_status IN ('SAFE', 'CAUTION', 'AVOID')),
+  safety_reason TEXT,
+  gestational_week INT,
+  source TEXT DEFAULT 'search',
+  logged_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_medicine_logs_patient ON medicine_logs(patient_id);
+CREATE INDEX IF NOT EXISTS idx_medicine_logs_logged ON medicine_logs(logged_at DESC);
+
+ALTER TABLE medicine_logs ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE medicine_logs ADD COLUMN IF NOT EXISTS week_note TEXT;
+ALTER TABLE medicine_logs ADD COLUMN IF NOT EXISTS alternatives TEXT;
+

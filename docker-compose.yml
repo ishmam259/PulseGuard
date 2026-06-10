@@ -1,6 +1,7 @@
 services:
   db:
     image: pgvector/pgvector:pg16
+    entrypoint: ["sh", "-c", "rm -f /var/lib/postgresql/data/postmaster.pid && exec docker-entrypoint.sh postgres"]
     environment:
       POSTGRES_DB: pulseguard
       POSTGRES_USER: postgres
@@ -17,12 +18,13 @@ services:
 
   chatdb:
     image: pgvector/pgvector:pg16
+    entrypoint: ["sh", "-c", "rm -f /var/lib/postgresql/data/postmaster.pid && exec docker-entrypoint.sh postgres"]
     environment:
       POSTGRES_DB: pulseguard
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: wirelight
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - chatpg_data:/var/lib/postgresql/data
     ports:
       - "5435:5432"
     healthcheck:
@@ -105,3 +107,4 @@ services:
 
 volumes:
   pg_data:
+  chatpg_data:

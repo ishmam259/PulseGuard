@@ -218,14 +218,26 @@ router.post('/upload-image', authenticate, async (req, res) => {
 // POST /api/auth/google
 router.post('/google', async (req, res) => {
   try {
-    const { credential, role } = req.body
-    if (!credential) return res.status(400).json({ error: 'Missing credential' })
+    const { credential, access_token, role } = req.body
+    if (!credential && !access_token) return res.status(400).json({ error: 'Missing credential' })
 
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    })
-    const { sub: googleId, email, name, picture } = ticket.getPayload()
+    let googleId, email, name, picture
+
+    if (credential) {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      })
+      const p = ticket.getPayload()
+      googleId = p.sub; email = p.email; name = p.name; picture = p.picture
+    } else {
+      const uRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      if (!uRes.ok) return res.status(401).json({ error: 'Invalid Google access token' })
+      const info = await uRes.json()
+      googleId = info.sub; email = info.email; name = info.name; picture = info.picture
+    }
 
     let result = await pool.query(
       'SELECT * FROM users WHERE google_id = $1 OR (email = $2 AND email IS NOT NULL) LIMIT 1',
