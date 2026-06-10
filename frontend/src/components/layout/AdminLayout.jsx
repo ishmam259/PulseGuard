@@ -140,7 +140,7 @@ export default function AdminLayout({ title, children }) {
           </div>
         </header>
 
-        <div className="animate-fade-in">{children}</div>
+        <div className="admin-children-wrapper animate-fade-in">{children}</div>
       </div>
     </div>
   )

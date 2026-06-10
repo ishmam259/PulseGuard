@@ -1618,19 +1618,34 @@ select.input option {
 }
 
 .admin-content {
-  padding: var(--spacing-6) var(--spacing-6);
+  padding: 0;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   min-width: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-5);
+  padding: var(--spacing-5) var(--spacing-6);
+  background: color-mix(in oklab, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 0;
+}
+
+.admin-children-wrapper {
+  padding: var(--spacing-6);
+  flex: 1;
 }
 
 .page-title {
@@ -1799,6 +1814,14 @@ select.input option {
   }
 
   .admin-content {
+    padding: 0;
+  }
+
+  .admin-header {
+    padding: var(--spacing-4);
+  }
+
+  .admin-children-wrapper {
     padding: var(--spacing-4);
   }
 }
@@ -1821,8 +1844,6 @@ select.input option {
 .app-layout-shell {
   min-height: 100vh;
   background: var(--gradient-shell);
-  backdrop-filter: var(--blur-glass);
-  -webkit-backdrop-filter: var(--blur-glass);
   color: var(--color-text);
   display: block; /* Mobile default */
 }
@@ -1836,12 +1857,18 @@ select.input option {
 }
 
 .mobile-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: color-mix(in oklab, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--spacing-4);
+  margin-bottom: 0;
 }
 
 .mobile-bottom-nav {
@@ -1895,10 +1922,10 @@ select.input option {
   max-width: 430px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: var(--spacing-4) var(--spacing-4) 100px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: 0;
   position: relative;
 }
 
@@ -1906,6 +1933,11 @@ select.input option {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-4) 100px;
+}
+
+.layout-status-banner {
+  margin: 0 var(--spacing-4) 1.5rem var(--spacing-4);
 }
 
 /* ── Desktop Viewports (768px and up) ── */
@@ -1971,7 +2003,7 @@ select.input option {
   .main-container {
     max-width: 100%;
     margin: 0;
-    padding: var(--spacing-6) var(--spacing-6);
+    padding: 0;
     width: 100%;
     overflow-y: auto;
   }
@@ -1981,10 +2013,26 @@ select.input option {
   }
 
   .desktop-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-5);
+    padding: var(--spacing-5) var(--spacing-6);
+    background: color-mix(in oklab, var(--color-surface) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0;
+  }
+
+  .content-area {
+    padding: var(--spacing-6);
+  }
+
+  .layout-status-banner {
+    margin: 0 var(--spacing-6) 1.5rem var(--spacing-6);
   }
 
   .mobile-bottom-nav {
@@ -4059,31 +4107,32 @@ select.input option {
   margin-top: 24px;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   border-radius: 9999px;
-  background-color: var(--color-surface-hover);
-  padding: 8px 20px 8px 8px;
+  background-color: var(--color-primary);
+  padding: 10px 24px;
   font-size: 14px;
   font-weight: 600;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   cursor: pointer;
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
+  border: none;
+  color: #ffffff;
   text-decoration: none;
+  box-shadow: var(--shadow-glow-primary);
 }
 
 .premium-dashboard-hero-play-btn:hover {
-  background-color: var(--color-surface-active);
+  background-color: var(--color-primary-light);
+  transform: translateY(-1px);
 }
 
 :root.dark .premium-dashboard-hero-play-btn {
-  background-color: oklch(0.22 0.03 320);
-  border-color: transparent;
+  background-color: var(--color-primary);
   color: #ffffff;
 }
 
 :root.dark .premium-dashboard-hero-play-btn:hover {
-  background-color: oklch(0.28 0.04 320);
+  background-color: var(--color-primary-light);
 }
 
 .premium-dashboard-hero-play-icon {
@@ -4159,6 +4208,27 @@ select.input option {
   margin-bottom: 16px;
 }
 
+.premium-icon-badge-solid {
+  display: grid;
+  height: 48px;
+  width: 48px;
+  place-items: center;
+  border-radius: 16px;
+  background-image: var(--gradient-primary);
+  color: #ffffff;
+  box-shadow: var(--shadow-glow-primary);
+}
+
+.premium-icon-badge-accent {
+  display: grid;
+  height: 48px;
+  width: 48px;
+  place-items: center;
+  border-radius: 16px;
+  background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+}
+
 /* AI card */
 .ai-card {
   position: relative;
@@ -4172,17 +4242,17 @@ select.input option {
 /* Floating SOS Button */
 .sos-floating-btn {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 32px;
+  right: 32px;
   z-index: 50;
   display: grid;
   height: 64px;
   width: 64px;
   place-items: center;
   border-radius: 50%;
-  background-color: #e11d48;
+  background-color: #dc2626;
   color: #ffffff;
-  box-shadow: 0 0 30px -5px rgba(225, 29, 72, 0.6);
+  box-shadow: 0 0 40px -5px rgba(220, 38, 38, 0.8);
   transition: transform 0.2s;
   cursor: pointer;
   border: none;
@@ -4197,7 +4267,7 @@ select.input option {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background-color: rgba(225, 29, 72, 0.4);
+  background-color: rgba(220, 38, 38, 0.6);
   animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
   pointer-events: none;
 }
@@ -4206,8 +4276,79 @@ select.input option {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid rgba(225, 29, 72, 0.3);
+  border: 2px solid rgba(239, 68, 68, 0.5);
   pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .sos-floating-btn {
+    bottom: 96px;
+    right: max(24px, calc(50% - 191px));
+  }
+}
+
+/* Wellness Hydration Premium Styles */
+.hydration-progress-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.hydration-progress-text {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 480px) {
+  .hydration-progress-grid {
+    grid-template-columns: auto 1fr;
+    text-align: left;
+  }
+  .hydration-progress-text {
+    align-items: flex-start;
+  }
+}
+
+.quick-add-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 480px) {
+  .quick-add-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.quick-add-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-add-btn:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--color-primary) 40%, transparent);
+  box-shadow: var(--shadow-sm);
+}
+
+.quick-add-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.quick-add-btn:hover svg {
+  transform: scale(1.1);
 }
 
 @keyframes ping {

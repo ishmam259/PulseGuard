@@ -18,6 +18,7 @@ import {
   Calendar as CalendarIcon,
   ChevronRight,
   Bot,
+  MessageCircle,
   Flower2,
   PhoneCall,
   HeartPulse
@@ -208,10 +209,8 @@ export default function Dashboard() {
                     to="/patient/calendar"
                     className="premium-dashboard-hero-play-btn"
                   >
-                    <span className="premium-dashboard-hero-play-icon">
-                      <Play className="h-4 w-4 fill-white" />
-                    </span>
                     <span>{locale === 'bn' ? 'কী পরিবর্তন হচ্ছে?' : "What's changing?"}</span>
+                    <ChevronRight className="h-4 w-4" style={{ marginLeft: '4px' }} />
                   </Link>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -240,7 +239,7 @@ export default function Dashboard() {
                 <p style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--color-muted)', margin: '0' }}>
                   {locale === 'bn' ? 'দৈনিক টিপস — ওয়েলনেস হাব' : 'Daily Tips — Wellness Hub'}
                 </p>
-                <Link to="/patient/wellness" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)' }}>
+                <Link to="/patient/education" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)' }}>
                   <span>{locale === 'bn' ? 'সব দেখুন' : 'See all topics'}</span>
                   <ChevronRight className="h-4 w-4" />
                 </Link>
@@ -254,11 +253,7 @@ export default function Dashboard() {
                         <Icon className="h-6 w-6" />
                       </span>
                       <h4 className="font-display" style={{ fontSize: '1.25rem', fontWeight: '700', margin: '12px 0 8px 0', color: 'var(--color-text)' }}>{tip.title}</h4>
-                      <p className="muted" style={{ fontSize: '13.5px', lineHeight: '1.6', color: 'var(--color-text-secondary)', marginBottom: '16px' }}>{tip.body}</p>
-                      <Link to={tip.to} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)' }}>
-                        <span>{tip.cta}</span>
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
+                      <p className="muted" style={{ fontSize: '13.5px', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>{tip.body}</p>
                     </div>
                   )
                 })}
@@ -270,11 +265,11 @@ export default function Dashboard() {
               {/* PulseGuard AI */}
               <div className="ai-card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span className="premium-dashboard-hero-play-icon" style={{ height: '48px', width: '48px', borderRadius: '16px' }}>
-                    <Bot className="h-6 w-6" />
+                  <span className="premium-icon-badge-accent">
+                    <MessageCircle className="h-6 w-6" />
                   </span>
                   <div>
-                    <p className="font-display" style={{ fontSize: '1.2rem', fontWeight: '700', margin: '0', color: 'var(--color-text)' }}>PulseGuard AI</p>
+                    <p className="font-display" style={{ fontSize: '1.2rem', fontWeight: '700', margin: '0', color: 'var(--color-text)' }}>{locale === 'bn' ? 'এআই চ্যাট' : 'AI Chat'}</p>
                     <p className="muted" style={{ margin: '2px 0 0 0' }}>{locale === 'bn' ? 'আপনার মাতৃস্বাস্থ্য সঙ্গী' : 'Your maternal health companion'}</p>
                   </div>
                 </div>
@@ -477,20 +472,6 @@ export default function Dashboard() {
                 </Link>
               </div>
             </div>
-
-            {/* Floating SOS button */}
-            <Link
-              to="/patient/emergency"
-              aria-label="Emergency SOS"
-              className="sos-floating-btn"
-            >
-              <span className="sos-floating-btn-ping" />
-              <span className="sos-floating-btn-ring" />
-              <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1' }}>
-                <PhoneCall className="h-5 w-5" />
-                <span style={{ marginTop: '2px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.18em' }}>SOS</span>
-              </span>
-            </Link>
           </>
         )}
       </div>

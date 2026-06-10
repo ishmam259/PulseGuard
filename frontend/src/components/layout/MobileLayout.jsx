@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
-import { Sun, Moon, Bell, HeartPulse, LogOut } from 'lucide-react'
+import { Sun, Moon, Bell, HeartPulse, LogOut, PhoneCall } from 'lucide-react'
 
 export default function MobileLayout({ title, status, banner, children, navItems }) {
   const { connectivity, currentUser, logout, notifications, locale, setLocale, theme, toggleTheme } = useApp()
@@ -160,7 +160,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
         </header>
 
         {/* ── Desktop Header ── */}
-        <header className="desktop-header" style={{ borderBottom: 'none', paddingBottom: '0px', marginBottom: '24px' }}>
+        <header className="desktop-header">
           <div style={{ minWidth: 0 }}>
             <h1 className="font-display" style={{ fontSize: '1.875rem', letterSpacing: '-0.02em', fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.2 }}>{title}</h1>
             <p style={{ marginTop: '4px', fontSize: '17px', color: 'var(--color-muted)' }}>PulseGuard AI · {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
@@ -282,7 +282,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
 
         {/* ── Optional Status Banner ── */}
         {banner && (
-          <section className={`status-banner status-banner--${banner.tone}`} style={{ marginBottom: '1.5rem' }}>
+          <section className={`status-banner status-banner--${banner.tone} layout-status-banner`}>
             <div>
               <strong>{banner.title || 'Status'}</strong>
               <span className="muted"> &ndash; {banner.message}</span>
@@ -313,6 +313,20 @@ export default function MobileLayout({ title, status, banner, children, navItems
               </NavLink>
             ))}
           </nav>
+        )}
+        {currentUser?.role === 'patient' && (
+          <Link
+            to="/patient/emergency"
+            aria-label="Emergency SOS"
+            className="sos-floating-btn"
+          >
+            <span className="sos-floating-btn-ping" />
+            <span className="sos-floating-btn-ring" />
+            <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: '1' }}>
+              <PhoneCall className="h-5 w-5" />
+              <span style={{ marginTop: '2px', fontSize: '10px', fontWeight: '700', letterSpacing: '0.18em' }}>SOS</span>
+            </span>
+          </Link>
         )}
       </div>
     </div>

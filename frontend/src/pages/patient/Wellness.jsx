@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext'
 import { patientNavItems } from '../../data/navItems'
 import * as api from '../../services/api'
 import $ from '../../config/strings'
-import { Droplets, Plus, ShieldAlert, Check } from 'lucide-react'
+import { Droplets, Plus, ShieldAlert, Check, Trash2 } from 'lucide-react'
 
 const QUICK_AMOUNTS = [250, 350, 500, 1000]
 
@@ -179,53 +179,41 @@ export default function Wellness() {
               {/* ── Water Tab ── */}
               {activeTab === 'Water' && (
                 <div className="animate-fade-in">
-                  
-                  {/* KPI Row */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '1.5rem' }}>
-                    <div>
-                      <p style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-muted)' }}>
-                        {$('WELLNESS_WATER_TOTAL', locale)}
+                              {/* Progress Ring & Stats */}
+                  <div className="hydration-progress-grid">
+                    <ProgressRing pct={water.hydration_pct} />
+                    <div className="hydration-progress-text">
+                      <p style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-muted)', margin: '0' }}>
+                        {$('PAGE_TITLE_WELLNESS', locale)}
                       </p>
-                      <p className="kpi" style={{ fontSize: '3rem', marginTop: '0.25rem', fontFamily: 'var(--font-display)', background: 'none', webkitTextFillColor: 'initial', color: 'var(--color-primary)' }}>
+                      <p className="kpi" style={{ fontSize: '2.5rem', marginTop: '0.25rem', fontWeight: '800', fontFamily: 'var(--font-display)', background: 'none', webkitTextFillColor: 'initial', color: 'var(--color-primary)', margin: '4px 0' }}>
                         {fmtN(water.total_ml)}
-                        <span className="muted" style={{ fontSize: '1rem', marginLeft: '4px', fontFamily: 'var(--font-display)' }}>{$('WELLNESS_WATER_ML_SUFFIX', locale)}</span>
+                        <span className="muted" style={{ fontSize: '1rem', marginLeft: '4px', fontWeight: '500', color: 'var(--color-muted)' }}>/ {fmtN(water.goal_ml)} ml</span>
                       </p>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-muted)' }}>
-                        {$('WELLNESS_WATER_GOAL', locale)}
-                      </p>
-                      <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text)', marginTop: '0.25rem', fontFamily: 'var(--font-display)' }}>
-                        {fmtN(water.goal_ml)} {$('WELLNESS_WATER_ML_SUFFIX', locale)}
+                      <p style={{ fontSize: '14px', color: 'var(--color-muted)', margin: '0' }}>
+                        {water.total_ml < water.goal_ml
+                          ? (locale === 'bn' ? `আজকের লক্ষ্যে পৌঁছাতে আরও ${(water.goal_ml - water.total_ml).toLocaleString('bn-BD')} ml পান করুন` : `Drink ${water.goal_ml - water.total_ml} ml more to reach today's goal`)
+                          : (locale === 'bn' ? 'লক্ষ্য পূরণ হয়েছে। দারুণ!' : 'Goal reached. Great job!')}
                       </p>
                     </div>
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="progress" style={{ marginTop: '1rem' }}>
-                    <div
-                      className="progress-bar"
-                      style={{
-                        width: `${water.hydration_pct}%`,
-                        background: 'var(--color-primary)'
-                      }}
-                    />
-                  </div>
-                  <p className="muted" style={{ textAlign: 'right', marginTop: '4px', fontSize: '11px', fontWeight: '600' }}>
-                    {fmtN(water.hydration_pct)}%
+                  {/* Quick Add */}
+                  <p style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--color-muted)', margin: '2rem 0 0.5rem 0' }}>
+                    {locale === 'bn' ? 'দ্রুত যোগ করুন' : 'Quick Add'}
                   </p>
-
-                  {/* Quick add grid */}
-                  <div className="grid four" style={{ marginTop: '1.5rem' }}>
+                  <div className="quick-add-grid">
                     {QUICK_AMOUNTS.map((ml) => (
                       <button
                         key={ml}
                         type="button"
                         onClick={() => handleAddWater(ml)}
-                        className="btn btn--secondary"
-                        style={{ padding: '12px 6px', fontSize: '0.85rem' }}
+                        className="quick-add-btn"
                       >
-                        +{ml >= 1000 ? '1L' : `${fmtN(ml)}ml`}
+                        <Droplets className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
+                        <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text)', marginTop: '4px' }}>
+                          +{ml >= 1000 ? '1L' : `${fmtN(ml)}ml`}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -271,20 +259,33 @@ export default function Wellness() {
                       <p style={{ fontSize: '14px', fontWeight: '700', marginBottom: '1rem' }}>{t("Today's Entries", "আজকের ভুক্তিসমূহ")}</p>
                       <div className="list stagger">
                         {[...water.entries].reverse().map((e, i) => (
-                          <div key={e.id || i} className="list-item">
-                            <div>
-                              <strong>{fmtN(e.amount_ml)} {$('WELLNESS_WATER_ML_SUFFIX', locale)}</strong>
-                              <p className="muted" style={{ fontSize: '10px', marginTop: '2px' }}>
-                                {new Date(e.logged_at).toLocaleTimeString(locale === 'bn' ? 'bn-BD' : 'en-GB', { hour: '2-digit', minute: '2-digit' })}
-                              </p>
+                          <div key={e.id || i} className="list-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', padding: '12px 16px', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <div style={{ display: 'grid', height: '36px', width: '36px', placeItems: 'center', borderRadius: '12px', backgroundColor: 'var(--color-primary-dim)', color: 'var(--color-primary)' }}>
+                                <Droplets className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <p style={{ fontWeight: '600', color: 'var(--color-text)', fontSize: '14px', margin: '0' }}>{fmtN(e.amount_ml)} {$('WELLNESS_WATER_ML_SUFFIX', locale)}</p>
+                                <p className="muted" style={{ fontSize: '12px', marginTop: '2px', color: 'var(--color-text-secondary)', margin: '0' }}>
+                                  {new Date(e.logged_at).toLocaleTimeString(locale === 'bn' ? 'bn-BD' : 'en-GB', { hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                              </div>
                             </div>
                             <button 
                               type="button" 
                               onClick={() => handleUndoWater(e.id)}
-                              className="btn btn--ghost"
-                              style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                              aria-label="Delete entry"
+                              style={{ background: 'transparent', border: 'none', padding: '8px', color: 'var(--color-muted)', cursor: 'pointer', display: 'grid', placeItems: 'center', borderRadius: '8px', transition: 'all 0.2s' }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'
+                                e.currentTarget.style.color = '#ef4444'
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent'
+                                e.currentTarget.style.color = 'var(--color-muted)'
+                              }}
                             >
-                              {$('WELLNESS_WATER_UNDO', locale)}
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
                         ))}
@@ -455,20 +456,20 @@ export default function Wellness() {
                     ) : (
                       <div className="list stagger">
                         {[...vomit.entries].reverse().map((e, i) => (
-                          <div key={e.id || i} className="list-item" style={{ alignItems: 'flex-start' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                              <strong style={{ color: severityColor(e.severity) }}>
+                          <div key={e.id || i} className="list-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '16px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', padding: '12px 16px', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <strong style={{ color: severityColor(e.severity), fontSize: '14px' }}>
                                 {severityLabel(e.severity)}
                               </strong>
-                              <p className="muted" style={{ fontSize: '11px' }}>
+                              <p className="muted" style={{ fontSize: '12px', margin: '0' }}>
                                 {new Date(e.logged_at).toLocaleTimeString(locale === 'bn' ? 'bn-BD' : 'en-GB', { hour: '2-digit', minute: '2-digit' })}
                                 {' · '}
-                                <span style={{ color: e.kept_food ? 'var(--color-success)' : 'var(--color-danger-light)' }}>
+                                <span style={{ color: e.kept_food ? 'var(--color-success)' : 'var(--color-danger-light)', fontWeight: '500' }}>
                                   {e.kept_food ? t('kept food', 'খাবার ধরে রেখেছে') : t('did not keep food', 'খাবার ধরে রাখতে পারেনি')}
                                 </span>
                               </p>
                               {e.notes && (
-                                <p className="muted" style={{ fontSize: '11px', fontStyle: 'italic', marginTop: '2px' }}>
+                                <p className="muted" style={{ fontSize: '12px', fontStyle: 'italic', marginTop: '2px', margin: '0', color: 'var(--color-text-secondary)' }}>
                                   {e.notes}
                                 </p>
                               )}
@@ -476,10 +477,18 @@ export default function Wellness() {
                             <button
                               type="button"
                               onClick={() => handleUndoVomit(e.id)}
-                              className="btn btn--ghost"
-                              style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                              aria-label="Delete entry"
+                              style={{ background: 'transparent', border: 'none', padding: '8px', color: 'var(--color-muted)', cursor: 'pointer', display: 'grid', placeItems: 'center', borderRadius: '8px', transition: 'all 0.2s' }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'
+                                e.currentTarget.style.color = '#ef4444'
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent'
+                                e.currentTarget.style.color = 'var(--color-muted)'
+                              }}
                             >
-                              {$('WELLNESS_VOMIT_UNDO', locale)}
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
                         ))}
@@ -495,5 +504,53 @@ export default function Wellness() {
         )}
       </div>
     </MobileLayout>
+  )
+}
+
+function ProgressRing({ pct }) {
+  const size = 140
+  const stroke = 12
+  const r = (size - stroke) / 2
+  const c = 2 * Math.PI * r
+  const offset = c - (pct / 100) * c
+  return (
+    <div style={{ position: 'relative', display: 'grid', placeItems: 'center', width: `${size}px`, height: `${size}px`, margin: '0 auto' }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke="var(--color-primary-dim)"
+          strokeWidth={stroke}
+          fill="none"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke="url(#wellnessGrad)"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+          fill="none"
+          style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+        />
+        <defs>
+          <linearGradient id="wellnessGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="oklch(0.68 0.24 5)" />
+            <stop offset="100%" stopColor="oklch(0.6 0.24 350)" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <p className="font-display text-gradient-primary" style={{ fontSize: '1.875rem', fontWeight: '800', margin: '0' }}>{pct}%</p>
+          <p style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-muted)', margin: '0' }}>
+            {pct >= 100 ? "Done" : "Goal"}
+          </p>
+        </div>
+      </div>
+    </div>
   )
 }
