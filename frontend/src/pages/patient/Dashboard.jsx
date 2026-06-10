@@ -140,7 +140,51 @@ export default function Dashboard() {
   ]
 
   // Filter only due medications (Due Now or Later)
-  const dueMedications = allMedications.filter(med => med.status !== 'done')
+  const dueMedications = allMedications.filter((med) => med.status !== "done");
+
+  // Calculate nutrition target values and percentages for circular charts
+  const proteinVal = nutrition?.totals?.protein_g ?? 42;
+  const proteinTarget = nutrition?.rda?.protein_g || 71;
+  const proteinPct = Math.round((proteinVal / proteinTarget) * 100);
+
+  const ironVal = nutrition?.totals?.iron_mg ?? 0;
+  const ironTarget = nutrition?.rda?.iron_mg || 27;
+  const ironPct = Math.round((ironVal / ironTarget) * 100);
+
+  const folateVal = nutrition?.totals?.folic_acid_mcg ?? 0;
+  const folateTarget = nutrition?.rda?.folic_acid_mcg || 600;
+  const folatePct = Math.round((folateVal / folateTarget) * 100);
+
+  const fatVal = nutrition?.totals?.fat_g ?? 18;
+  const fatTarget = nutrition?.rda?.fat_g || 65;
+  const fatPct = Math.round((fatVal / fatTarget) * 100);
+
+  const nutrientsData = [
+    {
+      label: locale === 'bn' ? 'প্রোটিন' : 'Protein',
+      value: `${proteinVal}g`,
+      pct: proteinPct,
+      isLow: proteinPct < 70,
+    },
+    {
+      label: locale === 'bn' ? 'আয়রন' : 'Iron',
+      value: ironPct < 70 ? (locale === 'bn' ? 'কম' : 'Low') : `${ironVal}mg`,
+      pct: ironPct,
+      isLow: ironPct < 70,
+    },
+    {
+      label: locale === 'bn' ? 'ফোলেট' : 'Folate',
+      value: folatePct < 70 ? (locale === 'bn' ? 'কম' : 'Low') : `${folateVal}mcg`,
+      pct: folatePct,
+      isLow: folatePct < 70,
+    },
+    {
+      label: locale === 'bn' ? 'ফ্যাট' : 'Fat',
+      value: `${fatVal}g`,
+      pct: fatPct,
+      isLow: fatPct < 70,
+    }
+  ];
 
   return (
     <MobileLayout
@@ -191,8 +235,7 @@ export default function Dashboard() {
                       {rest} <span className="italic" style={{ color: 'var(--color-primary)', fontWeight: '700' }}>{lastWord}</span>
                     </>
                   )
-                })()}!
-                <BookHeart className="h-8 w-8" style={{ color: 'var(--color-primary)' }} />
+                })()}
               </h2>
               <p className="muted" style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
                 {locale === 'bn' ? 'আজকের গর্ভাবস্থা ও স্বাস্থ্য সারাংশ দেখুন।' : "Check out today's pregnancy & health overview."}
@@ -322,44 +365,128 @@ export default function Dashboard() {
                     <span className="muted" style={{ fontSize: '11px' }}>{locale === 'bn' ? 'দৈনিক লক্ষ্য' : 'Daily target'}</span>
                   </p>
                 </div>
-                <p className="font-display" style={{ fontSize: '3rem', fontWeight: '800', margin: '24px 0 0 0', color: 'var(--color-text)' }}>
-                  {locale === 'bn' ? (nutrition?.totals?.calories_kcal || 1430).toLocaleString('bn-BD') : (nutrition?.totals?.calories_kcal || 1430)}{' '}
-                  <span style={{ fontSize: '1.5rem', color: 'var(--color-muted)', fontWeight: '400' }}>/Kcal</span>
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-muted)', marginTop: '12px' }}>
-                  <span>০</span>
-                  <span>{locale === 'bn' ? (2200).toLocaleString('bn-BD') : '2,200'}</span>
-                </div>
-                <div style={{ height: '8px', overflow: 'hidden', borderRadius: '9999px', backgroundColor: 'var(--color-primary-dim)', marginTop: '6px' }}>
-                  <div style={{ height: '100%', borderRadius: '9999px', backgroundImage: 'var(--gradient-primary)', width: `${Math.min(100, Math.round(((nutrition?.totals?.calories_kcal || 1430) / 2200) * 100))}%` }} />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginTop: '24px', textAlign: 'center' }}>
-                  <div>
-                    <p className="font-display" style={{ fontSize: '1.5rem', fontWeight: '700', margin: '0', color: 'var(--color-text)' }}>
-                      {locale === 'bn' ? (nutrition?.totals?.protein_g || 42).toLocaleString('bn-BD') : (nutrition?.totals?.protein_g || 42)}
-                      <sup style={{ fontSize: '10px', color: 'var(--color-muted)' }}>g</sup>
-                    </p>
-                    <p className="muted" style={{ fontSize: '11px', marginTop: '4px' }}>Protein</p>
-                  </div>
-                  <div>
-                    <p className="font-display" style={{ fontSize: '1.1rem', fontWeight: '700', margin: '0', color: 'var(--color-warning)', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
-                      <AlertTriangle className="h-4 w-4" />{locale === 'bn' ? 'কম' : 'Low'}
-                    </p>
-                    <p className="muted" style={{ fontSize: '11px', marginTop: '4px' }}>Iron</p>
-                  </div>
-                  <div>
-                    <p className="font-display" style={{ fontSize: '1.1rem', fontWeight: '700', margin: '0', color: 'var(--color-warning)', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
-                      <AlertTriangle className="h-4 w-4" />{locale === 'bn' ? 'কম' : 'Low'}
-                    </p>
-                    <p className="muted" style={{ fontSize: '11px', marginTop: '4px' }}>Folate</p>
-                  </div>
-                  <div>
-                    <p className="font-display" style={{ fontSize: '1.5rem', fontWeight: '700', margin: '0', color: 'var(--color-text)' }}>
-                      {locale === 'bn' ? (nutrition?.totals?.fat_g || 18).toLocaleString('bn-BD') : (nutrition?.totals?.fat_g || 18)}
-                      <sup style={{ fontSize: '10px', color: 'var(--color-muted)' }}>g</sup>
-                    </p>
-                    <p className="muted" style={{ fontSize: '11px', marginTop: '4px' }}>Fat</p>
-                  </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: "16px",
+                    marginTop: "28px",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  {nutrientsData.map((nut) => {
+                    const radius = 24;
+                    const strokeWidth = 5;
+                    const circumference = 2 * Math.PI * radius;
+                    const cleanPct = Math.min(100, Math.max(0, nut.pct || 0));
+                    const strokeDashoffset = circumference - (cleanPct / 100) * circumference;
+
+                    return (
+                      <div
+                        key={nut.label}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          textAlign: "center",
+                        }}
+                      >
+                        {/* Circular progress SVG */}
+                        <div style={{ position: "relative", width: "56px", height: "56px" }}>
+                          <svg
+                            width="56"
+                            height="56"
+                            viewBox="0 0 56 56"
+                            style={{ transform: "rotate(-90deg)" }}
+                          >
+                            {/* Track circle */}
+                            <circle
+                              cx="28"
+                              cy="28"
+                              r={radius}
+                              fill="transparent"
+                              stroke={nut.isLow ? "var(--color-warning-dim)" : "var(--color-primary-dim)"}
+                              strokeWidth={strokeWidth}
+                            />
+                            {/* Progress fill circle */}
+                            <circle
+                              cx="28"
+                              cy="28"
+                              r={radius}
+                              fill="transparent"
+                              stroke={nut.isLow ? "var(--color-warning)" : "var(--color-primary)"}
+                              strokeWidth={strokeWidth}
+                              strokeDasharray={circumference}
+                              strokeDashoffset={strokeDashoffset}
+                              strokeLinecap="round"
+                              style={{
+                                transition: "stroke-dashoffset 0.5s ease-in-out",
+                              }}
+                            />
+                          </svg>
+                          {/* Inner element: AlertTriangle icon if low, percentage if normal */}
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {nut.isLow ? (
+                              <AlertTriangle
+                                className="h-4 w-4"
+                                style={{ color: "var(--color-warning)" }}
+                              />
+                            ) : (
+                              <span
+                                style={{
+                                  fontSize: "11px",
+                                  fontWeight: "700",
+                                  color: "var(--color-text)",
+                                }}
+                              >
+                                {cleanPct}%
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Value label */}
+                        <p
+                          className="font-display"
+                          style={{
+                            fontSize: "1.25rem",
+                            fontWeight: "700",
+                            margin: "12px 0 2px 0",
+                            color: nut.isLow ? "var(--color-warning)" : "var(--color-text)",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "2px",
+                          }}
+                        >
+                          {nut.value}
+                        </p>
+
+                        {/* Label name */}
+                        <p
+                          className="muted"
+                          style={{
+                            fontSize: "11px",
+                            margin: "0",
+                            fontWeight: "600",
+                            color: "var(--color-text-secondary)",
+                          }}
+                        >
+                          {nut.label}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
                 <Link to="/patient/nutrition" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginTop: '24px' }}>
                   <span>{locale === 'bn' ? 'সম্পূর্ণ পুষ্টি পরিকল্পনা' : 'Full nutrition plan'}</span>
@@ -443,35 +570,175 @@ export default function Dashboard() {
               </div>
 
               {/* Hydration */}
-              <div className="card" style={{ padding: '24px' }}>
-                <p style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--color-muted)', margin: '0' }}>
-                  Hydration
-                </p>
-                <h4 className="font-display" style={{ fontSize: '1.5rem', fontWeight: '700', margin: '4px 0 0 0', color: 'var(--color-text)' }}>
-                  {locale === 'bn' ? 'জল পান' : 'Water Intake'}
-                </h4>
-                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: '20px' }}>
-                  <p className="font-display" style={{ fontSize: '3rem', fontWeight: '800', margin: '0', color: 'var(--color-text)' }}>
-                    {locale === 'bn' ? (wellness?.water?.total_ml ? Math.round(wellness.water.total_ml / 250).toLocaleString('bn-BD') : '৪') : (wellness?.water?.total_ml ? Math.round(wellness.water.total_ml / 250) : '4')}{' '}
-                    <span style={{ fontSize: '14px', color: 'var(--color-muted)', fontWeight: '400', fontFamily: 'var(--font-sans)' }}>
-                      {locale === 'bn' ? 'গ্লাস' : 'glasses'}
-                    </span>
-                  </p>
-                  <p className="muted" style={{ fontSize: '14px', margin: '0' }}>
-                    {locale === 'bn' ? 'লক্ষ্য: ১০ / প্রতিদিন' : 'Goal: 10 / day'}
-                  </p>
+              <div className="card" style={{ padding: "24px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <div>
+                    <p
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: "700",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.18em",
+                        color: "var(--color-muted)",
+                        margin: "0",
+                      }}
+                    >
+                      {locale === "bn" ? "হাইড্রেশন" : "Hydration"}
+                    </p>
+                    <h4
+                      className="font-display"
+                      style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        margin: "4px 0 0 0",
+                        color: "var(--color-text)",
+                      }}
+                    >
+                      {locale === "bn" ? "জল পান" : "Water Intake"}
+                    </h4>
+                  </div>
+                  <div
+                    style={{
+                      borderRadius: "9999px",
+                      backgroundColor: "var(--color-primary-dim)",
+                      padding: "6px 14px",
+                      fontSize: "13px",
+                      color: "var(--color-text-secondary)",
+                    }}
+                  >
+                    {locale === "bn" ? (
+                      <>
+                        লক্ষ্য:{" "}
+                        <span
+                          style={{
+                            fontWeight: "700",
+                            color: "var(--color-text)",
+                          }}
+                        >
+                          ১০
+                        </span>{" "}
+                        / প্রতিদিন
+                      </>
+                    ) : (
+                      <>
+                        Goal:{" "}
+                        <span
+                          style={{
+                            fontWeight: "700",
+                            color: "var(--color-text)",
+                          }}
+                        >
+                          10
+                        </span>{" "}
+                        / day
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div style={{ height: '8px', overflow: 'hidden', borderRadius: '9999px', backgroundColor: 'var(--color-primary-dim)', marginTop: '16px' }}>
-                  <div style={{ height: '100%', borderRadius: '9999px', backgroundColor: '#38bdf8', width: `${wellness?.water?.hydration_pct || 40}%` }} />
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: "8px",
+                    marginTop: "24px",
+                  }}
+                >
+                  <span
+                    className="font-display"
+                    style={{
+                      fontSize: "3.5rem",
+                      fontWeight: "800",
+                      lineHeight: "1",
+                      color: "var(--color-text)",
+                    }}
+                  >
+                    {locale === "bn"
+                      ? wellness?.water?.total_ml
+                        ? Math.round(
+                            wellness.water.total_ml / 250,
+                          ).toLocaleString("bn-BD")
+                        : "৪"
+                      : wellness?.water?.total_ml
+                        ? Math.round(wellness.water.total_ml / 250)
+                        : "4"}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: "var(--color-text-secondary)",
+                      fontWeight: "400",
+                      fontFamily: "var(--font-sans)",
+                    }}
+                  >
+                    {locale === "bn" ? "গ্লাস" : "glasses"}
+                  </span>
                 </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', borderRadius: '9999px', backgroundColor: 'rgba(245, 158, 11, 0.1)', padding: '6px 12px', fontSize: '12px', fontWeight: '600', color: 'var(--color-warning)', marginTop: '16px' }}>
+
+                <div
+                  style={{
+                    height: "8px",
+                    overflow: "hidden",
+                    borderRadius: "9999px",
+                    backgroundColor: "var(--color-primary-dim)",
+                    marginTop: "20px",
+                  }}
+                >
+                  <div
+                    style={{
+                      height: "100%",
+                      borderRadius: "9999px",
+                      backgroundColor: "var(--color-primary)",
+                      width: `${wellness?.water?.hydration_pct || 40}%`,
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    borderRadius: "9999px",
+                    backgroundColor: "rgba(249, 115, 22, 0.08)",
+                    padding: "6px 12px",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    color: "#ea580c",
+                    marginTop: "16px",
+                  }}
+                >
                   <AlertTriangle className="h-4 w-4" />
-                  <span>{locale === 'bn' ? 'কম — আরও পান করুন' : 'Low — drink more'}</span>
+                  <span>
+                    {locale === "bn" ? "কম — আরও পান করুন" : "Low — drink more"}
+                  </span>
                 </div>
-                <Link to="/patient/wellness" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginTop: '20px' }}>
-                  <span>{locale === 'bn' ? 'জল ট্র্যাকার' : 'Hydration tracker'}</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
+
+                <div>
+                  <Link
+                    to="/patient/wellness"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      color: "var(--color-primary)",
+                      marginTop: "20px",
+                    }}
+                  >
+                    <span>
+                      {locale === "bn" ? "জল ট্র্যাকার" : "Hydration tracker"}
+                    </span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             </div>
           </>
