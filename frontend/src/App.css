@@ -1566,12 +1566,14 @@ select.input option {
   flex-direction: column;
   gap: var(--spacing-6);
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .sidebar-nav {
   display: grid;
   gap: var(--spacing-2);
+  flex: 1;
+  overflow-y: auto;
 }
 
 .sidebar-nav a {
@@ -1782,6 +1784,8 @@ select.input option {
     display: flex;
     flex-wrap: nowrap;
     gap: var(--spacing-1);
+    flex: none;
+    overflow: visible;
   }
 
   .sidebar-nav a {

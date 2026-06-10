@@ -32,7 +32,6 @@ export default function Profile() {
     email: '',
     phone: '',
     village: '',
-    gestational_week: '',
     height: '',
     blood_type: '',
     address: '',
@@ -71,7 +70,6 @@ export default function Profile() {
       email: currentUser?.email || '',
       phone: currentUser?.phone || '',
       village: patient?.village || '',
-      gestational_week: patient?.gestational_week || '',
       height: isPatient ? (patient?.height || '') : (currentUser?.height || ''),
       blood_type: isPatient ? (patient?.blood_type || '') : (currentUser?.blood_type || ''),
       address: currentUser?.address || '',
@@ -174,9 +172,6 @@ export default function Profile() {
           village: editForm.village,
           height: editForm.height ? parseFloat(editForm.height) : null,
           blood_type: editForm.blood_type || null,
-        }
-        if (!patient.lmp_date && editForm.gestational_week) {
-          patientUpdate.gestational_week = parseInt(editForm.gestational_week)
         }
         const patientRes = await api.updatePatient(patient.id, patientUpdate)
         if (!patientRes.ok) {
@@ -390,14 +385,6 @@ export default function Profile() {
                     </div>
                   </label>
 
-                  {!patient.lmp_date && (
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-muted)' }}>
-                      {$('PROFILE_EDIT_LABEL_WEEK', locale)}
-                      <div className="input-wrapper">
-                        <input type="number" className="input" value={editForm.gestational_week} onChange={handleChange('gestational_week')} placeholder={$('PROFILE_EDIT_PH_WEEK', locale)} min="1" max="45" />
-                      </div>
-                    </label>
-                  )}
                 </>
               )}
 

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import MobileLayout from '../../components/layout/MobileLayout'
 import { useApp } from '../../context/AppContext'
 import { patientNavItems } from '../../data/navItems'
@@ -66,7 +65,6 @@ function computeAge(lmpIso, nowMs) {
 
 export default function PregnancyCalendar() {
   const { connectivity, locale } = useApp()
-  const navigate = useNavigate()
 
   const [patient, setPatient] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -74,6 +72,8 @@ export default function PregnancyCalendar() {
 
   const [editOpen, setEditOpen] = useState(false)
   const [draft, setDraft] = useState('')
+  const [draftMode, setDraftMode] = useState('lmp')   // 'lmp' | 'week'
+  const [draftWeek, setDraftWeek] = useState('')
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState(null)
 
@@ -87,6 +87,7 @@ export default function PregnancyCalendar() {
         if (data && data.patient) {
           setPatient(data.patient)
           setDraft(data.patient.lmp_date ? isoDate(toDate(data.patient.lmp_date)) : '')
+          if (!data.patient.lmp_date) setEditOpen(true)
         }
       } catch {
         if (active) setError('Failed to load')
@@ -161,32 +162,49 @@ export default function PregnancyCalendar() {
     return locale === 'bn' && contentBn?.[bnKey] ? contentBn[bnKey] : enValue
   }
 
-  // Save handler for LMP
+  // Save handler for LMP date or direct week number
   async function handleSave() {
     setFormError(null)
-    if (!draft) {
-      setFormError($('CAL_ERR_DATE', locale))
-      return
-    }
-    const parsed = toDate(draft)
-    if (!parsed) {
-      setFormError($('CAL_ERR_DATE', locale))
-      return
-    }
     if (!patient?.id) {
       setFormError($('CAL_ERR_SAVE', locale))
       return
     }
+
+    let lmpIso
+    if (draftMode === 'week') {
+      const weeks = parseInt(draftWeek)
+      if (!draftWeek || isNaN(weeks) || weeks < 1 || weeks > 42) {
+        setFormError(locale === 'bn' ? 'সপ্তাহ ১–৪২ এর মধ্যে হতে হবে' : 'Week must be between 1 and 42')
+        return
+      }
+      const lmpMs = Date.now() - weeks * 7 * 24 * 60 * 60 * 1000
+      lmpIso = new Date(lmpMs).toISOString().slice(0, 10)
+    } else {
+      if (!draft) {
+        setFormError($('CAL_ERR_DATE', locale))
+        return
+      }
+      const parsed = toDate(draft)
+      if (!parsed) {
+        setFormError($('CAL_ERR_DATE', locale))
+        return
+      }
+      lmpIso = isoDate(parsed)
+    }
+
     setSaving(true)
     try {
-      const res = await api.updatePatient(patient.id, { lmp_date: isoDate(parsed) })
+      const res = await api.updatePatient(patient.id, { lmp_date: lmpIso })
       if (res && res.ok !== false && res.patient) {
         setPatient(res.patient)
+        setDraft(lmpIso)
         setEditOpen(false)
       } else {
-        // Fall back to a re-fetch
         const fresh = await api.getMyPatientProfile()
-        if (fresh?.patient) setPatient(fresh.patient)
+        if (fresh?.patient) {
+          setPatient(fresh.patient)
+          setDraft(fresh.patient.lmp_date ? isoDate(toDate(fresh.patient.lmp_date)) : '')
+        }
         setEditOpen(false)
       }
     } catch {
@@ -202,24 +220,6 @@ export default function PregnancyCalendar() {
     return (
       <div className="pc-card text-center" style={{ padding: '1.5rem' }}>
         <p className="muted animate-pulse">{$('CAL_LOADING', locale)}</p>
-      </div>
-    )
-  }
-
-  function renderEmpty() {
-    return (
-      <div className="pc-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
-        <h3 className="pc-title" style={{ marginBottom: '0.5rem' }}>{$('CAL_NO_RECORD_TITLE', locale)}</h3>
-        <p className="muted" style={{ marginBottom: '1.25rem' }}>
-          {$('CAL_NO_RECORD_BODY', locale)}
-        </p>
-        <button
-          type="button"
-          className="btn btn--primary"
-          onClick={() => navigate('/patient/onboarding')}
-        >
-          {$('CAL_NO_RECORD_CTA', locale)}
-        </button>
       </div>
     )
   }
@@ -263,19 +263,68 @@ export default function PregnancyCalendar() {
 
         {editOpen && (
           <div className="pc-edit-form">
+            {/* Mode toggle */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => { setDraftMode('lmp'); setDraftWeek('') }}
+                style={{
+                  flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid',
+                  borderColor: draftMode === 'lmp' ? 'var(--color-primary)' : 'var(--color-border)',
+                  background: draftMode === 'lmp' ? 'color-mix(in oklab, var(--color-primary) 10%, transparent)' : 'transparent',
+                  color: draftMode === 'lmp' ? 'var(--color-primary)' : 'var(--color-muted)',
+                  fontWeight: draftMode === 'lmp' ? 600 : 400, fontSize: '13px', cursor: 'pointer'
+                }}
+              >
+                {locale === 'bn' ? 'শেষ মাসিক তারিখ' : 'LMP Date'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setDraftMode('week'); setDraft('') }}
+                style={{
+                  flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid',
+                  borderColor: draftMode === 'week' ? 'var(--color-primary)' : 'var(--color-border)',
+                  background: draftMode === 'week' ? 'color-mix(in oklab, var(--color-primary) 10%, transparent)' : 'transparent',
+                  color: draftMode === 'week' ? 'var(--color-primary)' : 'var(--color-muted)',
+                  fontWeight: draftMode === 'week' ? 600 : 400, fontSize: '13px', cursor: 'pointer'
+                }}
+              >
+                {locale === 'bn' ? 'সপ্তাহ নম্বর' : 'Week Number'}
+              </button>
+            </div>
+
             <div className="pc-form-grid">
-              <div className="pc-form-field">
-                <label htmlFor="lmp-input" className="pc-input-label">{$('CAL_LMP', locale)}</label>
-                <input
-                  id="lmp-input"
-                  type="date"
-                  className="pc-date-input"
-                  value={draft}
-                  max={todayIso}
-                  onChange={(e) => setDraft(e.target.value)}
-                  aria-label={$('CAL_LMP', locale)}
-                />
-              </div>
+              {draftMode === 'lmp' ? (
+                <div className="pc-form-field">
+                  <label htmlFor="lmp-input" className="pc-input-label">{$('CAL_LMP', locale)}</label>
+                  <input
+                    id="lmp-input"
+                    type="date"
+                    className="pc-date-input"
+                    value={draft}
+                    max={todayIso}
+                    onChange={(e) => setDraft(e.target.value)}
+                    aria-label={$('CAL_LMP', locale)}
+                  />
+                </div>
+              ) : (
+                <div className="pc-form-field">
+                  <label htmlFor="week-input" className="pc-input-label">
+                    {locale === 'bn' ? 'বর্তমান গর্ভাবস্থার সপ্তাহ (১–৪২)' : 'Current Pregnancy Week (1–42)'}
+                  </label>
+                  <input
+                    id="week-input"
+                    type="number"
+                    className="pc-date-input"
+                    value={draftWeek}
+                    min="1"
+                    max="42"
+                    onChange={(e) => setDraftWeek(e.target.value)}
+                    placeholder={locale === 'bn' ? 'যেমন: ২৫' : 'e.g. 25'}
+                    aria-label={locale === 'bn' ? 'সপ্তাহ নম্বর' : 'Week number'}
+                  />
+                </div>
+              )}
             </div>
             {formError && (
               <div role="alert" className="pc-form-error">
@@ -291,18 +340,22 @@ export default function PregnancyCalendar() {
               >
                 {saving ? $('CAL_SAVING', locale) : $('CAL_SAVE', locale)}
               </button>
-              <button
-                type="button"
-                className="pc-btn-cancel"
-                onClick={() => {
-                  setEditOpen(false)
-                  setFormError(null)
-                  setDraft(patient?.lmp_date ? isoDate(toDate(patient.lmp_date)) : '')
-                }}
-                disabled={saving}
-              >
-                {$('CAL_CANCEL', locale)}
-              </button>
+              {patient?.lmp_date && (
+                <button
+                  type="button"
+                  className="pc-btn-cancel"
+                  onClick={() => {
+                    setEditOpen(false)
+                    setFormError(null)
+                    setDraftMode('lmp')
+                    setDraftWeek('')
+                    setDraft(patient?.lmp_date ? isoDate(toDate(patient.lmp_date)) : '')
+                  }}
+                  disabled={saving}
+                >
+                  {$('CAL_CANCEL', locale)}
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -512,17 +565,23 @@ export default function PregnancyCalendar() {
           <div className="pc-card" style={{ padding: '1rem', color: 'var(--color-danger)' }}>
             {error}
           </div>
-        ) : !patient?.lmp_date ? (
-          renderEmpty()
         ) : (
           <>
             {renderDatesCard()}
-            {renderSummary()}
-            {isPostTerm && renderPostTerm()}
-            {renderBaby()}
-            {renderBody()}
-            {renderSymptoms()}
-            {renderTips()}
+            {!patient?.lmp_date ? (
+              <div className="pc-card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+                <p className="muted">{$('CAL_NO_RECORD_BODY', locale)}</p>
+              </div>
+            ) : (
+              <>
+                {renderSummary()}
+                {isPostTerm && renderPostTerm()}
+                {renderBaby()}
+                {renderBody()}
+                {renderSymptoms()}
+                {renderTips()}
+              </>
+            )}
           </>
         )}
       </div>
