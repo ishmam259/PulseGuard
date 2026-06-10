@@ -22,6 +22,7 @@ import PatientOnboarding from './pages/patient/Onboarding'
 import PatientWellness from './pages/patient/Wellness'
 import PatientEducation from './pages/patient/Education'
 import PregnancyCalendar from './pages/patient/PregnancyCalendar'
+import ConnectAIPage from './pages/patient/ConnectAIPage'
 
 // Worker pages
 import WorkerDashboard from './pages/worker/Dashboard'
@@ -71,6 +72,7 @@ function App() {
         <Route path="/patient/education" element={<ProtectedRoute allowedRoles={['patient']}><PatientEducation /></ProtectedRoute>} />
         <Route path="/patient/profile" element={<ProtectedRoute allowedRoles={['patient']}><PatientProfile /></ProtectedRoute>} />
         <Route path="/patient/medicine-check" element={<ProtectedRoute allowedRoles={['patient']}><MedicineCheck /></ProtectedRoute>} />
+        <Route path="/patient/connect-ai" element={<ProtectedRoute allowedRoles={['patient']}><ConnectAIPage /></ProtectedRoute>} />
 
         {/* Worker — protected */}
         <Route path="/worker/dashboard" element={<ProtectedRoute allowedRoles={['worker']}><WorkerDashboard /></ProtectedRoute>} />

@@ -24,6 +24,7 @@ const strings = {
     NAV_P_ALERTS: 'Alerts',
     NAV_P_WELLNESS: 'Wellness',
     NAV_P_PROFILE: 'Profile',
+    NAV_P_CONNECT_AI: 'Connect AI',
 
     // ─── Nav Items (Worker) ───
     NAV_W_HOME: 'Home',
@@ -820,6 +821,7 @@ const strings = {
     NAV_P_MEDICINE: 'ওষুধ',
     NAV_P_EDUCATION: 'শিক্ষা',
     NAV_P_PROFILE: 'প্রোফাইল',
+    NAV_P_CONNECT_AI: 'এআই সংযোগ',
 
     // ─── Nav Items (Worker) ───
     NAV_W_HOME: 'হোম',

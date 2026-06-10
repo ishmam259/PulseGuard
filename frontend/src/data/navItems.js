@@ -13,6 +13,7 @@ export const patientNavItems = (locale) => [
   { label: $('NAV_P_MEDICINE', locale),  to: '/patient/medicine-check', icon: '', Icon: Pill },
   { label: $('NAV_P_EDUCATION', locale), to: '/patient/education',      icon: '', Icon: GraduationCap },
   { label: $('NAV_P_PROFILE', locale),   to: '/patient/profile',        icon: '', Icon: User },
+  { label: $('NAV_P_CONNECT_AI', locale),to: '/patient/connect-ai',     icon: '', Icon: Sparkles },
 ]
 
 export const workerNavItems = (locale) => [

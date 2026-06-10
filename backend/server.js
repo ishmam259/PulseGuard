@@ -60,6 +60,7 @@ app.use('/api/wellness', require('./routes/wellness'))
 app.use('/api/nutrition', require('./routes/nutrition'))
 app.use('/api/medicine', require('./routes/medicine'))
 app.use('/api/emergency-contacts', require('./routes/emergencyContacts'))
+app.use('/api/mcp', require('./routes/mcp'))
 
 
 // ── Health check ──
