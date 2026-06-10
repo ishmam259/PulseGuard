@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
 import { Sun, Moon, Bell, HeartPulse, LogOut, PhoneCall } from 'lucide-react'
 
-export default function MobileLayout({ title, status, banner, children, navItems }) {
+export default function MobileLayout({ title, status, banner, children, navItems, hideSubtitle }) {
   const { connectivity, currentUser, logout, notifications, locale, setLocale, theme, toggleTheme } = useApp()
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
@@ -163,7 +163,9 @@ export default function MobileLayout({ title, status, banner, children, navItems
         <header className="desktop-header">
           <div style={{ minWidth: 0 }}>
             <h1 className="font-display" style={{ fontSize: '1.875rem', letterSpacing: '-0.02em', fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.2 }}>{title}</h1>
-            <p style={{ marginTop: '4px', fontSize: '17px', color: 'var(--color-muted)' }}>PulseGuard AI · {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
+            {!hideSubtitle && (
+              <p style={{ marginTop: '4px', fontSize: '17px', color: 'var(--color-muted)' }}>PulseGuard AI · {currentUser?.role === 'worker' ? $('LAYOUT_PORTAL_WORKER', locale) : $('LAYOUT_PORTAL_PATIENT', locale)}</p>
+            )}
           </div>
           <div className="top-actions" style={{ gap: '12px' }}>
             <button 
