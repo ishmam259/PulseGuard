@@ -12,8 +12,8 @@ import showcaseDesktop from '../assets/showcase-desktop2.png'
 import { Pricing } from '../components/ui/pricing'
 import showcaseMobile from '../assets/showcase-mobile.png'
 import {
-  ArrowRight, ShieldAlert, HeartPulse, Moon, Sun, Sparkles, WifiOff,
-  Activity, Stethoscope, RefreshCw, BrainCircuit,
+  ArrowRight, ShieldAlert, HeartPulse, Moon, Sun, Sparkles,
+  Activity, Stethoscope, RefreshCw, BrainCircuit, Mic,
   MessageCircle, Siren, LineChart, Salad,
   Gauge, Droplet, Syringe, Clock, Zap, Baby, Brain,
   ShieldCheck, Quote,
@@ -69,7 +69,7 @@ export default function Splash() {
 
   const stats = [
     { value: '97%', label: t('Risk accuracy', 'ঝুঁকি নির্ভুলতা') },
-    { value: '0', label: t('Internet required', 'ইন্টারনেট প্রয়োজন') },
+    { value: '2', label: t('AI modes', 'এআই মোড') },
     { value: '12k+', label: t('Mothers served', 'সেবা প্রাপ্ত মা') },
   ]
 
@@ -86,8 +86,8 @@ export default function Splash() {
       icon: <BrainCircuit strokeWidth={2} />,
       title: t('On-device AI triage', 'ডিভাইসেই এআই ত্রিভাজ'),
       body: t(
-        'The model scores pregnancy risk instantly and locally — no servers, no signal, no data leaving the phone.',
-        'মডেলটি তাৎক্ষণিকভাবে ও স্থানীয়ভাবে ঝুঁকি নির্ণয় করে — কোনো সার্ভার, সংকেত বা ডেটা শেয়ার ছাড়াই।'
+        'The model scores pregnancy risk using RAG-augmented patient history and live vital signs — surfacing the highest-risk cases first.',
+        'মডেলটি RAG-সমৃদ্ধ রোগীর ইতিহাস ও তাৎক্ষণিক ভাইটাল ব্যবহার করে ঝুঁকি নির্ণয় করে — সর্বোচ্চ ঝুঁকির রোগীকে সামনে আনে।'
       ),
     },
     {
@@ -100,54 +100,54 @@ export default function Splash() {
     },
   ]
 
-  // Full capability set — every item maps to a real feature in the app.
+  // Full capability set — every item maps to a real AI feature in the app.
   const capabilities = [
     {
-      icon: <WifiOff strokeWidth={2} />,
-      title: t('Works fully offline', 'সম্পূর্ণ অফলাইনে কাজ করে'),
+      icon: <BrainCircuit strokeWidth={2} />,
+      title: t('RAG-powered health chat', 'RAG-চালিত স্বাস্থ্য চ্যাট'),
       body: t(
-        'Capture vitals and run checks with zero connectivity. Records sit in local storage and sync the moment a signal returns.',
-        'কোনো সংযোগ ছাড়াই তথ্য সংগ্রহ ও পরীক্ষা করুন। রেকর্ড লোকালি জমা থাকে এবং সংকেত ফিরলেই সিঙ্ক হয়।'
+        'Ask anything about your pregnancy and get answers grounded in your own medical history. PulseGuard\'s RAG engine retrieves relevant health records before every response.',
+        'গর্ভাবস্থা সম্পর্কে যেকোনো প্রশ্ন করুন — উত্তর আসবে আপনার নিজের স্বাস্থ্য ইতিহাস থেকে। প্রতিটি উত্তরের আগে RAG ইঞ্জিন প্রাসঙ্গিক রেকর্ড খুঁজে নেয়।'
+      ),
+    },
+    {
+      icon: <Sparkles strokeWidth={2} />,
+      title: t('Dual AI modes', 'দ্বৈত এআই মোড'),
+      body: t(
+        'Switch between Gemini AI for general guidance and RAG Pro mode for clinically grounded answers drawn strictly from verified patient context.',
+        'সাধারণ পরামর্শের জন্য Gemini AI এবং ক্লিনিক্যালি নির্ভরযোগ্য উত্তরের জন্য RAG Pro মোডে স্যুইচ করুন।'
+      ),
+    },
+    {
+      icon: <Zap strokeWidth={2} />,
+      title: t('Smart Device Integration', 'স্মার্ট ডিভাইস ইন্টিগ্রেশন'),
+      body: t(
+        'Connect PulseGuard to smartwatches, wearables, and health sensors via MCP. Reads live vitals directly from the device — heart rate, SpO₂, and movement — without manual entry.',
+        'স্মার্টওয়াচ ও হেলথ সেন্সর থেকে MCP দিয়ে সরাসরি ভাইটাল পড়ে — হৃদস্পন্দন, SpO₂ ও নড়াচড়া — কোনো ম্যানুয়াল এন্ট্রি ছাড়াই।'
       ),
     },
     {
       icon: <Activity strokeWidth={2} />,
-      title: t('On-device risk triage', 'ডিভাইসেই ঝুঁকি ত্রিভাজ'),
+      title: t('Real-time risk scoring', 'তাৎক্ষণিক ঝুঁকি স্কোরিং'),
       body: t(
-        'An on-device model scores pregnancy risk in seconds — flagging the mothers who need attention first.',
-        'ডিভাইসেই একটি মডেল কয়েক সেকেন্ডে গর্ভকালীন ঝুঁকি নির্ণয় করে — কাদের আগে নজর দরকার তা চিহ্নিত করে।'
+        'AI scores pregnancy risk in seconds from vitals and symptoms — flagging preeclampsia, anemia, and six other complications before they escalate.',
+        'ভাইটাল ও উপসর্গ থেকে সেকেন্ডে গর্ভকালীন ঝুঁকি স্কোর করে — প্রি-একলাম্পসিয়া, রক্তস্বল্পতাসহ ছয়টি জটিলতা আগেভাগে চিহ্নিত করে।'
       ),
     },
     {
-      icon: <MessageCircle strokeWidth={2} />,
-      title: t('AI symptom checker', 'এআই উপসর্গ যাচাই'),
+      icon: <Mic strokeWidth={2} />,
+      title: t('Dual Voice Input for AI', 'এআইয়ের জন্য দ্বৈত ভয়েস ইনপুট'),
       body: t(
-        'A bilingual chat assistant answers symptom and pregnancy questions in plain Bengali or English.',
-        'একটি দ্বিভাষিক চ্যাট সহকারী সহজ বাংলা বা ইংরেজিতে উপসর্গ ও গর্ভকালীন প্রশ্নের উত্তর দেয়।'
-      ),
-    },
-    {
-      icon: <Siren strokeWidth={2} />,
-      title: t('Emergency SOS', 'জরুরি এসওএস'),
-      body: t(
-        'One tap alerts nearby health workers and shares GPS location — even when the network is down.',
-        'এক চাপে কাছের স্বাস্থ্যকর্মীদের সতর্ক করে ও জিপিএস অবস্থান পাঠায় — নেটওয়ার্ক না থাকলেও।'
+        'Speak symptoms in English or Bengali and the AI understands. No typing required — designed for mothers with limited literacy or mobility.',
+        'বাংলা বা ইংরেজিতে উপসর্গ বলুন, এআই বুঝে নেবে। টাইপিং লাগবে না — সীমিত সাক্ষরতার মায়েদের জন্য তৈরি।'
       ),
     },
     {
       icon: <LineChart strokeWidth={2} />,
-      title: t('Vitals & trends', 'ভাইটাল ও প্রবণতা'),
+      title: t('Longitudinal Analysis via XGBoost', 'XGBoost-এ দীর্ঘমেয়াদী বিশ্লেষণ'),
       body: t(
-        'Track blood pressure, weight, pulse and temperature across every visit, charted over the full pregnancy.',
-        'প্রতিটি ভিজিটে রক্তচাপ, ওজন, পালস ও তাপমাত্রা সম্পূর্ণ গর্ভকাল জুড়ে চার্টে দেখুন।'
-      ),
-    },
-    {
-      icon: <Salad strokeWidth={2} />,
-      title: t('Nutrition guidance', 'পুষ্টি নির্দেশনা'),
-      body: t(
-        'Trimester-aware food guidance with iron, folic acid and calcium tracking from affordable local foods.',
-        'ট্রাইমেস্টার-ভিত্তিক খাদ্য পরামর্শ, সাশ্রয়ী স্থানীয় খাবার থেকে আয়রন, ফলিক অ্যাসিড ও ক্যালসিয়াম ট্র্যাকিং।'
+        'An XGBoost model watches BP, weight, and vitals across the full pregnancy — detecting rising-risk patterns and generating clinical recommendations over time.',
+        'XGBoost মডেল পুরো গর্ভকাল জুড়ে রক্তচাপ, ওজন ও ভাইটাল বিশ্লেষণ করে — ঊর্ধ্বমুখী ঝুঁকি ধরে ক্লিনিক্যাল পরামর্শ তৈরি করে।'
       ),
     },
   ]
@@ -259,6 +259,8 @@ export default function Splash() {
             <a href="#how">{t('How it works', 'যেভাবে কাজ করে')}</a>
             <a href="#pricing">{t('Pricing', 'মূল্য')}</a>
             <a href="#trust">{t('Trust', 'বিশ্বাস')}</a>
+            <Link to="/about">{t('About', 'আমাদের সম্পর্কে')}</Link>
+            <Link to="/guidelines">{t('Guidelines', 'নির্দেশিকা')}</Link>
           </nav>
 
           <div className="landing-header-actions">
@@ -299,7 +301,7 @@ export default function Splash() {
               transition={{ duration: 0.6 }}
             >
               <Sparkles className="h-3.5 w-3.5" style={{ color: 'var(--color-primary)' }} />
-              <span>{t('Built for last-mile maternal care', 'প্রান্তিক মাতৃসেবার জন্য তৈরি')}</span>
+              <span>{t("Bangladesh's First AI Native Maternity Healthcare App", 'বাংলাদেশের প্রথম এআই-নেটিভ মাতৃস্বাস্থ্য অ্যাপ')}</span>
             </motion.div>
 
             <motion.h1
@@ -314,7 +316,7 @@ export default function Splash() {
                   <br />
                   <span className="italic text-gradient-primary">every mother</span>,
                   <br />
-                  even offline.
+                  everywhere.
                 </>
               ) : (
                 <>
@@ -322,7 +324,7 @@ export default function Splash() {
                   <br />
                   <span className="italic text-gradient-primary">এআই-নেটিভ সেবা</span>,
                   <br />
-                  অফলাইনেও।
+                  সর্বত্র।
                 </>
               )}
             </motion.h1>
@@ -351,19 +353,6 @@ export default function Splash() {
               </button>
             </motion.div>
 
-            <motion.div
-              className="landing-hero-trust"
-              initial={reduce ? false : { opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.5 }}
-            >
-              <div className="landing-hero-avatars">
-                {['#e8709a', '#c8472a', '#b8933e', '#2c8a6a'].map((c) => (
-                  <span key={c} style={{ background: c }} />
-                ))}
-              </div>
-              <p>{t('Trusted by frontline health workers across rural clinics', 'গ্রামীণ ক্লিনিকের প্রান্তিক স্বাস্থ্যকর্মীদের আস্থাভাজন')}</p>
-            </motion.div>
           </div>
 
           {/* Right — vitals monitor */}
@@ -438,7 +427,7 @@ export default function Splash() {
               <>প্রতিটি স্ক্রিনে <span className="italic text-gradient-primary">নিখুঁত</span></>
             )}
           </h2>
-          <p className="landing-sec-sub">{t('The same PulseGuard — tuned for a health worker’s phone in the field and the clinic desktop. Online or offline, it just works.', 'একই PulseGuard — মাঠের স্বাস্থ্যকর্মীর ফোন আর ক্লিনিকের ডেস্কটপের জন্য সাজানো। অনলাইন হোক বা অফলাইন, নিখুঁতভাবে চলে।')}</p>
+          <p className="landing-sec-sub">{t("The same PulseGuard — tuned for a health worker’s phone in the field and the clinic desktop. Consistent AI, every screen.", 'একই PulseGuard — মাঠের স্বাস্থ্যকর্মীর ফোন আর ক্লিনিকের ডেস্কটপের জন্য। প্রতিটি স্ক্রিনে সমান এআই।')}</p>
         </Reveal>
 
         <Reveal className="landing-showcase-stage" delay={0.1}>
@@ -563,7 +552,7 @@ export default function Splash() {
             )}
           </h2>
           <p className="landing-final-sub">
-            {t('Start protecting more mothers today — no infrastructure, no internet required.', 'আজই আরও বেশি মায়ের সুরক্ষা শুরু করুন — কোনো অবকাঠামো বা ইন্টারনেট ছাড়াই।')}
+            {t('Start protecting more mothers today — with AI that knows their full health history.', 'আজই আরও বেশি মায়ের সুরক্ষা শুরু করুন — এআই যা তাদের পূর্ণ স্বাস্থ্য ইতিহাস জানে।')}
           </p>
           <Link to="/role" className="btn btn--primary btn--landing-primary">
             <span>{$('SPLASH_CTA', locale).replace(' →', '')}</span>
