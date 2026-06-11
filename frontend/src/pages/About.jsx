@@ -69,6 +69,7 @@ export default function About() {
         <nav className="about-footer-links">
           <Link to="/">Home</Link>
           <a href="#mission">Mission</a>
+          <Link to="/guidelines">Guidelines</Link>
           <Link to="/role">Get started</Link>
         </nav>
       </footer>

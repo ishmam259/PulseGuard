@@ -260,6 +260,7 @@ export default function Splash() {
             <a href="#pricing">{t('Pricing', 'মূল্য')}</a>
             <a href="#trust">{t('Trust', 'বিশ্বাস')}</a>
             <Link to="/about">{t('About', 'আমাদের সম্পর্কে')}</Link>
+            <Link to="/guidelines">{t('Guidelines', 'নির্দেশিকা')}</Link>
           </nav>
 
           <div className="landing-header-actions">
