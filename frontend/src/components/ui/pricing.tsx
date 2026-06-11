@@ -141,13 +141,12 @@ export function Pricing({
                       value={
                         isMonthly ? Number(plan.price) : Number(plan.yearlyPrice)
                       }
+                      prefix="৳"
                       format={{
-                        style: "currency",
-                        currency: "USD",
+                        style: "decimal",
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       }}
-                      formatter={(value) => `$${value}`}
                       transformTiming={{
                         duration: 500,
                         easing: "ease-out",
