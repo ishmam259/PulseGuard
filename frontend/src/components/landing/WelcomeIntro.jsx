@@ -99,7 +99,7 @@ export default function WelcomeIntro({ locale = 'en' }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.9 }}
             >
-              {t('AI-native maternal care, even offline', 'অফলাইনেও এআই-নেটিভ মাতৃসেবা')}
+              {t('AI-native maternal care for every mother', 'প্রতিটি মায়ের জন্য এআই-নেটিভ মাতৃসেবা')}
             </motion.p>
           </div>
         </motion.div>

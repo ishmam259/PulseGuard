@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { Activity, Heart, Droplet, ShieldCheck, WifiOff, Sparkles } from 'lucide-react'
+import { Activity, Heart, Droplet, ShieldCheck, Zap, Sparkles } from 'lucide-react'
 
 /**
  * Hero-right signature visual: a floating "device" showing live-feeling
@@ -133,10 +133,10 @@ export default function VitalsMonitor({ locale = 'en' }) {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
       >
-        <span className="vitals__chip-ic vitals__chip-ic--off"><WifiOff strokeWidth={2.25} /></span>
+        <span className="vitals__chip-ic vitals__chip-ic--ok"><Zap strokeWidth={2.25} /></span>
         <span>
-          <strong>{t('Offline-ready', 'অফলাইন-প্রস্তুত')}</strong>
-          <em>{t('Syncs when online', 'অনলাইনে সিঙ্ক হয়')}</em>
+          <strong>{t('Real-time alerts', 'তাৎক্ষণিক সতর্কতা')}</strong>
+          <em>{t('Live monitoring', 'লাইভ পর্যবেক্ষণ')}</em>
         </span>
       </motion.div>
 

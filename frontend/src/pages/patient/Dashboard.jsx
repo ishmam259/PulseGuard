@@ -37,7 +37,6 @@ export default function Dashboard() {
   const [nutrition, setNutrition] = useState(null)
   const [wellness, setWellness] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [previewDashboard, setPreviewDashboard] = useState(false)
 
   useEffect(() => {
     async function loadPatientData() {
@@ -66,10 +65,14 @@ export default function Dashboard() {
     loadPatientData()
   }, [])
 
-  const currentWeek = patient?.gestational_week || 24
-  const lmpDate = patient?.lmp_date ? new Date(patient.lmp_date) : new Date(Date.now() - currentWeek * 7 * 24 * 60 * 60 * 1000)
+  const currentWeek = patient?.gestational_week ?? null
+  const weekForCalc = currentWeek ?? 0
+  const lmpDate = patient?.lmp_date ? new Date(patient.lmp_date) : new Date(Date.now() - weekForCalc * 7 * 24 * 60 * 60 * 1000)
   const eddDate = new Date(lmpDate.getTime() + 280 * 24 * 60 * 60 * 1000)
   const daysUntilDue = Math.max(0, Math.ceil((eddDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000)))
+  const currentWeekDisplay = currentWeek != null
+    ? (locale === 'bn' ? currentWeek.toLocaleString('bn-BD') : String(currentWeek))
+    : '—'
   const formattedEDD = eddDate.toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US', {
     year: 'numeric',
     month: 'short',
@@ -190,7 +193,7 @@ export default function Dashboard() {
     }
   ];
 
-  const showOnboardingWelcome = !patient && !previewDashboard;
+  const showOnboardingWelcome = !patient;
 
   return (
     <MobileLayout
@@ -268,7 +271,7 @@ export default function Dashboard() {
                         gap: '8px',
                         transition: 'all 0.2s'
                       }}
-                      onClick={() => setPreviewDashboard(true)}
+                      onClick={() => navigate('/patient/ai-chat')}
                     >
                       <span>{locale === 'bn' ? 'আপাতত বাদ দিন' : 'Skip for now'}</span>
                       <span>→</span>
@@ -316,10 +319,12 @@ export default function Dashboard() {
                   <span className="step-number">1</span>
                   <p className="step-title">{locale === 'bn' ? 'প্রাথমিক তথ্য' : 'Basic details'}</p>
                 </div>
+                <div className="step-arrow" aria-hidden="true"><ChevronRight size={14} /></div>
                 <div className="step-card">
                   <span className="step-number">2</span>
                   <p className="step-title">{locale === 'bn' ? 'গর্ভাবস্থার সপ্তাহ' : 'Pregnancy week'}</p>
                 </div>
+                <div className="step-arrow" aria-hidden="true"><ChevronRight size={14} /></div>
                 <div className="step-card">
                   <span className="step-number">3</span>
                   <p className="step-title">{locale === 'bn' ? 'স্বাস্থ্যের ইতিহাস' : 'Health history'}</p>
@@ -371,7 +376,7 @@ export default function Dashboard() {
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'flex-end' }}>
                     <span className="font-display" style={{ fontSize: 'clamp(3rem, 12vw, 6rem)', fontWeight: '800', lineHeight: '1', color: 'var(--color-text)' }}>
-                      {locale === 'bn' ? currentWeek.toLocaleString('bn-BD') : currentWeek}
+                      {currentWeekDisplay}
                     </span>
                   </div>
                   <p style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--color-muted)', margin: '8px 0 0 0' }}>
@@ -379,10 +384,18 @@ export default function Dashboard() {
                   </p>
                   <div className="premium-dashboard-hero-pill">
                     <CalendarIcon className="h-4 w-4" style={{ color: 'var(--color-primary)' }} />
-                    <span className="muted">{locale === 'bn' ? 'নির্ধারিত:' : 'Due:'}</span>
-                    <span style={{ fontWeight: '600', color: 'var(--color-primary)' }}>{formattedEDD}</span>
-                    <span className="muted">·</span>
-                    <span className="muted">{locale === 'bn' ? `${daysUntilDue.toLocaleString('bn-BD')} দিন` : `${daysUntilDue} days`}</span>
+                    {patient?.lmp_date || currentWeek != null ? (
+                      <>
+                        <span className="muted">{locale === 'bn' ? 'নির্ধারিত:' : 'Due:'}</span>
+                        <span style={{ fontWeight: '600', color: 'var(--color-primary)' }}>{formattedEDD}</span>
+                        <span className="muted">·</span>
+                        <span className="muted">{locale === 'bn' ? `${daysUntilDue.toLocaleString('bn-BD')} দিন` : `${daysUntilDue} days`}</span>
+                      </>
+                    ) : (
+                      <Link to="/patient/calendar" style={{ fontWeight: '600', color: 'var(--color-primary)', fontSize: '13px' }}>
+                        {locale === 'bn' ? 'এলএমপি তারিখ যোগ করুন →' : 'Set LMP date →'}
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>
@@ -429,7 +442,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <p className="muted" style={{ margin: '20px 0', fontSize: '14px', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
-                  {locale === 'bn' ? `আপনার গর্ভাবস্থা, পুষ্টি, উপসর্গ বা ওষুধ সম্পর্কে যেকোনো কিছু জিজ্ঞাসা করুন — আমি সপ্তাহ ${currentWeek.toLocaleString('bn-BD')}-এর জন্য বিজ্ঞান-ভিত্তিক উত্তর দিই।` : `Ask me anything about your pregnancy, nutrition, symptoms, or medication — I give science-based answers tailored for Week ${currentWeek}.`}
+                  {locale === 'bn' ? `আপনার গর্ভাবস্থা, পুষ্টি, উপসর্গ বা ওষুধ সম্পর্কে যেকোনো কিছু জিজ্ঞাসা করুন — আমি সপ্তাহ ${currentWeekDisplay}-এর জন্য বিজ্ঞান-ভিত্তিক উত্তর দিই।` : `Ask me anything about your pregnancy, nutrition, symptoms, or medication — I give science-based answers tailored for Week ${currentWeekDisplay}.`}
                 </p>
                 <form 
                   onSubmit={(e) => { 

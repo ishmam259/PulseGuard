@@ -555,36 +555,6 @@ export default function Splash() {
         </div>
       </section>
 
-      {/* Stat strip */}
-      <section className="landing-stats-strip">
-        <div className="landing-stats-container">
-          <Reveal className="landing-stats-head">
-            <span className="landing-eyebrow">
-              {t('Field-proven', 'মাঠে প্রমাণিত')}
-            </span>
-            <p>
-              {t(
-                'Numbers from real deployments in low-connectivity clinics.',
-                'কম-সংযোগ ক্লিনিকে বাস্তব ব্যবহারের পরিসংখ্যান।',
-              )}
-            </p>
-          </Reveal>
-          <div className="landing-stats-grid">
-            {stats.map((s, i) => (
-              <Reveal
-                key={s.label}
-                className="landing-stat-item"
-                delay={i * 0.08}
-              >
-                <span className="landing-stat-num">
-                  <CountUp value={s.value} />
-                </span>
-                <span className="landing-stat-txt">{s.label}</span>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Capabilities — 6-card grid */}
       <section className="landing-features-section" id="features">
