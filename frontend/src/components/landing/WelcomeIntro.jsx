@@ -2,23 +2,18 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { HeartPulse } from 'lucide-react'
 
-/**
- * Full-screen welcome animation shown once per browser session.
- * Logo mark scales/rotates in inside dual rotating rings, the wordmark and
- * tagline fade up, then the whole panel slides up and unmounts.
- */
+// Module-level flag: resets on every full page load, but not on in-app navigation.
+let _introShownThisLoad = false
+
 export default function WelcomeIntro({ locale = 'en' }) {
   const reduce = useReducedMotion()
   const t = (en, bn) => (locale === 'en' ? en : bn)
 
-  const [show, setShow] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return sessionStorage.getItem('pg_intro_seen') !== '1'
-  })
+  const [show, setShow] = useState(() => !_introShownThisLoad)
 
   useEffect(() => {
     if (!show) return
-    sessionStorage.setItem('pg_intro_seen', '1')
+    _introShownThisLoad = true
     // Reduced motion gets a much shorter, motionless hold.
     const hold = reduce ? 900 : 2400
     const timer = setTimeout(() => setShow(false), hold)
