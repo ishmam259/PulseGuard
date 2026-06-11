@@ -117,7 +117,7 @@ export default function AdminLayout({ title, children }) {
             <Menu className="h-5 w-5" />
           </button>
 
-          <div>
+          <div className="admin-header-title">
             <h1 className="page-title">{title || $('ADMIN_TITLE_DASHBOARD', locale)}</h1>
             <p className="muted">{$('LAYOUT_ADMIN_CONSOLE', locale)}</p>
           </div>

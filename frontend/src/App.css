@@ -543,10 +543,12 @@ select.input option {
 }
 
 .top-actions {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: var(--spacing-2);
   z-index: 5;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
 .icon-btn {
@@ -763,8 +765,14 @@ select.input option {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--spacing-3);
   margin-top: var(--spacing-3);
+}
+
+.card-row .input {
+  min-width: 0;
+  flex: 1 1 180px;
 }
 
 /* ── Greeting Card ── */
@@ -1782,7 +1790,7 @@ select.input option {
     grid-template-columns: 1fr;
     height: auto;
     min-height: 100vh;
-    overflow: visible;
+    overflow-x: clip;
   }
 
   /* desktop sidebar hidden on mobile — navigation via drawer instead */
@@ -1794,23 +1802,33 @@ select.input option {
 
   .admin-content {
     padding: 0;
+    max-width: 100%;
+    overflow-x: clip;
   }
 
   .admin-header {
     padding: var(--spacing-3) var(--spacing-4);
+    padding-right: calc(var(--spacing-4) + 6px);
     gap: 10px;
     flex-wrap: nowrap;
+    overflow: visible;
   }
 
   /* title block sits between hamburger and actions, shrinks if needed */
-  .admin-header > div:first-child {
+  .admin-header-title {
     min-width: 0;
     flex: 1 1 auto;
     overflow: hidden;
   }
 
-  .admin-header .page-title {
+  .admin-header-title .page-title {
     font-size: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin-header-title .muted {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1818,6 +1836,14 @@ select.input option {
 
   .admin-children-wrapper {
     padding: var(--spacing-4);
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* every direct child of the wrapper must stay inside the viewport */
+  .admin-children-wrapper > * {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -6767,16 +6793,16 @@ select.input option {
   }
 }
 
-/* Admin header — compact actions on small screens */
-@media (max-width: 600px) {
+/* Admin header — compact icon-only actions on mobile */
+@media (max-width: 768px) {
   .admin-header .top-actions {
     gap: 4px;
   }
-  /* hide text labels inside top-action buttons, keep icons */
+  /* hide text labels, keep icons */
   .admin-header .top-actions button span {
     display: none;
   }
-  /* shrink pill buttons to icon-only size */
+  /* shrink pill buttons to icon-only squares */
   .admin-header .top-actions button {
     padding: 8px !important;
     min-width: 34px;
