@@ -63,7 +63,33 @@ async function retrieveContext(topic, query) {
   }
 }
 
+/**
+ * Asks a question to the RAG system.
+ * @param {string} topic - The topic to search in
+ * @param {string} query - The question to ask
+ * @returns {Promise<{answer: string, context: string[]}>}
+ */
+async function askQuestion(topic, query) {
+  try {
+    const url = new URL(`${RAG_SERVICE_URL}/api/rag/ask`);
+    url.searchParams.append('topic', topic);
+    url.searchParams.append('q', query);
+
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      console.error(`RAG Service Error (ask ${response.status})`);
+      return { answer: 'RAG service error', context: [] };
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error('Failed to connect to RAG Service (ask):', err.message);
+    return { answer: 'RAG service unreachable', context: [] };
+  }
+}
+
 module.exports = {
   storeKnowledge,
   retrieveContext,
+  askQuestion,
 };

@@ -23,8 +23,8 @@ export default function AboutMission() {
               <div className="about-accent-rule" />
               <p className="about-mission-body">
                 {t(
-                  'In rural Bangladesh, a pregnant woman faces a 1-in-31 chance of life-threatening complications — with no specialist in reach. PulseGuard was built to change that, putting AI-powered triage directly in the hands of the health workers already in the field.',
-                  'গ্রামীণ বাংলাদেশে, একজন গর্ভবতী নারী জীবন-বিপদজনক জটিলতার ১ ইন ৩১ ঝুঁকিতে থাকেন — কাছে কোনো বিশেষজ্ঞ নেই। PulseGuard তৈরি হয়েছিল এটি পরিবর্তন করতে — ইতিমধ্যে মাঠে থাকা স্বাস্থ্যকর্মীদের হাতে AI-চালিত ত্রিভাজ পৌঁছে দিয়ে।'
+                  'Across Bangladesh, too many pregnancies still go without timely clinical oversight — in urban hospitals stretched thin, in district clinics hours from a specialist, or for families living abroad with no local support. PulseGuard was built to close that gap, putting AI-powered triage and monitoring in every mother\'s hands.',
+                  'বাংলাদেশ জুড়ে, অনেক গর্ভাবস্থাই সময়মতো চিকিৎসা তত্ত্বাবধান ছাড়া চলে — শহরের হাসপাতালে সীমিত সংস্থান, জেলা ক্লিনিকে বিশেষজ্ঞের অভাব, বা বিদেশে থাকা পরিবারের ক্ষেত্রে স্থানীয় সহায়তা নেই। PulseGuard তৈরি হয়েছে এই ব্যবধান ঘুচিয়ে দিতে।'
                 )}
               </p>
             </div>
@@ -49,8 +49,8 @@ export default function AboutMission() {
               <span className="about-stat-num">72%</span>
               <p className="about-stat-label">
                 {t(
-                  'of maternal deaths occur in rural, low-resource settings — exactly where PulseGuard was designed to work',
-                  'মাতৃমৃত্যু গ্রামীণ, সম্পদ-সীমিত পরিবেশে ঘটে — ঠিক যেখানে PulseGuard কাজ করতে ডিজাইন করা হয়েছে'
+                  'of maternal deaths are preventable with timely monitoring and clinical guidance — precisely what PulseGuard delivers',
+                  'মাতৃমৃত্যু সময়মতো পর্যবেক্ষণ ও চিকিৎসা নির্দেশনায় প্রতিরোধযোগ্য — ঠিক এটাই PulseGuard সরবরাহ করে'
                 )}
               </p>
             </div>

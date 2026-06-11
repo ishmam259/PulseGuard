@@ -127,6 +127,8 @@ const strings = {
     AI_CHAT_RECENT: 'Recent',
     AI_CHAT_NO_CHATS: 'No chats found',
     AI_CHAT_DELETE_CONFIRM: 'Are you sure you want to delete this chat?',
+    AI_CHAT_RAG_TOGGLE: 'Personalized RAG Mode',
+    AI_CHAT_RAG_PRO_BADGE: 'PRO',
 
     // ─── Daily Health Check ───
     PAGE_TITLE_DAILY_CHECK: 'Daily Health Check',
@@ -929,6 +931,8 @@ const strings = {
     AI_CHAT_RECENT: 'সাম্প্রতিক',
     AI_CHAT_NO_CHATS: 'কোনো চ্যাট পাওয়া যায়নি',
     AI_CHAT_DELETE_CONFIRM: 'আপনি কি এই চ্যাটটি মুছে ফেলতে চান?',
+    AI_CHAT_RAG_TOGGLE: 'ব্যক্তিগতকৃত RAG মোড',
+    AI_CHAT_RAG_PRO_BADGE: 'প্রো',
 
     // ─── Daily Health Check ───
     PAGE_TITLE_DAILY_CHECK: 'দৈনিক স্বাস্থ্য পরীক্ষা',
