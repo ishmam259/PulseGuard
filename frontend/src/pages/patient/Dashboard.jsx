@@ -21,7 +21,10 @@ import {
   MessageCircle,
   Flower2,
   PhoneCall,
-  HeartPulse
+  HeartPulse,
+  CheckCircle2,
+  Sparkles,
+  Shield
 } from 'lucide-react'
 
 import ConnectAI from '../../components/ConnectAI'
@@ -34,6 +37,7 @@ export default function Dashboard() {
   const [nutrition, setNutrition] = useState(null)
   const [wellness, setWellness] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [previewDashboard, setPreviewDashboard] = useState(false)
 
   useEffect(() => {
     async function loadPatientData() {
@@ -186,37 +190,143 @@ export default function Dashboard() {
     }
   ];
 
+  const showOnboardingWelcome = !patient && !previewDashboard;
+
   return (
     <MobileLayout
-      title={$('PAGE_TITLE_DASHBOARD', locale)}
+      title={
+        showOnboardingWelcome ? (
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {locale === 'bn' ? 'স্বাগতম' : 'Welcome'}
+            <span style={{ fontSize: '14px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-primary)', letterSpacing: '0.08em', marginTop: '4px' }}>
+              {locale === 'bn' ? ' · শুরু করুন' : ' · GET STARTED'}
+            </span>
+          </span>
+        ) : $('PAGE_TITLE_DASHBOARD', locale)
+      }
       status={connectivity}
       navItems={patientNavItems(locale)}
+      hideSubtitle={showOnboardingWelcome}
     >
       <div className="animate-fade-in premium-dashboard">
         {loading ? (
           <div className="card text-center" style={{ padding: '3rem 2rem' }}>
             <p className="muted animate-pulse">{$('DASH_LOADING', locale)}</p>
           </div>
-        ) : !patient ? (
+        ) : showOnboardingWelcome ? (
           /* Profile incomplete welcome state */
-          <div className="card text-center" style={{ padding: '2.5rem 1.5rem' }}>
-            <div className="mx-auto" style={{ display: 'grid', height: '64px', width: '64px', placeItems: 'center', borderRadius: '16px', background: 'var(--color-primary-dim)', color: 'var(--color-primary)', margin: '0 auto 1.5rem' }}>
-              <HeartPulse style={{ height: '32px', width: '32px' }} />
+          <>
+            <div className="premium-dashboard-hero animate-fade-in" style={{ padding: '40px', position: 'relative' }}>
+              <div className="welcome-grid-layout">
+                {/* Left Column: text and actions */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 1 }}>
+                  <div className="welcome-badge-sparkle">
+                    <Sparkles />
+                    <span>{locale === 'bn' ? 'এখানে নতুন' : 'NEW HERE'}</span>
+                  </div>
+                  <h2 className="font-display" style={{ fontSize: '3rem', fontWeight: '800', lineHeight: '1.1', margin: '0 0 16px 0', color: 'var(--color-text)' }}>
+                    {locale === 'bn' ? 'স্বাগতম, ' : 'Welcome, '}
+                    <span className="italic" style={{ color: 'var(--color-primary)', fontWeight: '800' }}>
+                      {currentUser?.name?.split(' ')[0] || (locale === 'bn' ? 'মা' : 'Mother')}
+                    </span>
+                  </h2>
+                  <p className="muted" style={{ fontSize: '16px', lineHeight: '1.6', color: 'var(--color-text-secondary)', margin: '0 0 16px 0', maxWidth: '540px' }}>
+                    {locale === 'bn' 
+                      ? 'আপনার অ্যাকাউন্ট প্রস্তুত! ভাইটাল ট্র্যাকিং, এআই স্বাস্থ্য পরীক্ষা এবং আপনার সপ্তাহের জন্য তৈরি ব্যক্তিগতকৃত পরিকল্পনা আনলক করতে আপনার গর্ভাবস্থার প্রোফাইল সম্পন্ন করুন।'
+                      : 'Your account is ready. Complete your pregnancy profile to unlock vitals tracking, AI health checks, and a personalised plan made for your week.'}
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', margin: '8px 0 24px 0' }}>
+                    <button
+                      type="button"
+                      className="btn btn--primary"
+                      style={{
+                        borderRadius: '9999px',
+                        padding: '12px 28px',
+                        fontWeight: '700',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        boxShadow: 'var(--shadow-glow-primary)'
+                      }}
+                      onClick={() => navigate('/patient/onboarding')}
+                    >
+                      <CheckCircle2 className="h-4 w-4" style={{ color: '#fff' }} />
+                      <span>{locale === 'bn' ? 'আমার প্রোফাইল সম্পন্ন করুন' : 'Complete my profile'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="btn"
+                      style={{
+                        borderRadius: '9999px',
+                        border: '1px solid var(--color-border)',
+                        backgroundColor: 'var(--color-surface)',
+                        color: 'var(--color-text-secondary)',
+                        padding: '12px 28px',
+                        fontWeight: '600',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.2s'
+                      }}
+                      onClick={() => setPreviewDashboard(true)}
+                    >
+                      <span>{locale === 'bn' ? 'আপাতত বাদ দিন' : 'Skip for now'}</span>
+                      <span>→</span>
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--color-muted)' }}>
+                    <Shield className="h-4 w-4" style={{ color: 'var(--color-success)' }} />
+                    <span>
+                      {locale === 'bn'
+                        ? 'আপনার ডেটা এনক্রিপ্ট করা এবং কখনও শেয়ার করা হবে না।'
+                        : 'Your data is encrypted and never shared.'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Right Column: floating icon container */}
+                <div className="welcome-glow-container">
+                  {/* Glowing Blob */}
+                  <div style={{ position: 'absolute', height: '180px', width: '180px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(244, 63, 94, 0.4) 0%, transparent 70%)', filter: 'blur(30px)', zIndex: 0 }} />
+                  
+                  {/* Floating Box */}
+                  <div className="welcome-float-card">
+                    <div style={{
+                      height: '80px',
+                      width: '80px',
+                      borderRadius: '20px',
+                      backgroundImage: 'var(--gradient-primary)',
+                      boxShadow: 'var(--shadow-glow-primary)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      color: '#fff'
+                    }}>
+                      <HeartPulse className="h-10 w-10" strokeWidth={2.2} style={{ color: '#fff' }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-              {$('DASH_WELCOME_HEADING_PREFIX', locale)} {currentUser?.name?.split(' ')[0] || 'Mother'}!
-            </h2>
-            <p className="muted" style={{ marginBottom: '1.5rem', lineHeight: 1.6, maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
-              {$('DASH_WELCOME_BODY', locale)}
-            </p>
-            <button
-              type="button"
-              className="btn btn--primary"
-              onClick={() => navigate('/patient/onboarding')}
-            >
-              {$('DASH_COMPLETE_PROFILE_BTN', locale)}
-            </button>
-          </div>
+
+            {/* Bottom 3 Quick Steps Section */}
+            <div className="steps-container animate-fade-in">
+              <h3 className="steps-heading">{locale === 'bn' ? '৩টি সহজ ধাপ' : '3 QUICK STEPS'}</h3>
+              <div className="steps-grid">
+                <div className="step-card">
+                  <span className="step-number">1</span>
+                  <p className="step-title">{locale === 'bn' ? 'প্রাথমিক তথ্য' : 'Basic details'}</p>
+                </div>
+                <div className="step-card">
+                  <span className="step-number">2</span>
+                  <p className="step-title">{locale === 'bn' ? 'গর্ভাবস্থার সপ্তাহ' : 'Pregnancy week'}</p>
+                </div>
+                <div className="step-card">
+                  <span className="step-number">3</span>
+                  <p className="step-title">{locale === 'bn' ? 'স্বাস্থ্যের ইতিহাস' : 'Health history'}</p>
+                </div>
+              </div>
+            </div>
+          </>
         ) : (
           /* Main welcome greeting & premium layout */
           <>
