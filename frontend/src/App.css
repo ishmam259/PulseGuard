@@ -3755,11 +3755,9 @@ select.input option {
 
 /* Scroll-aware sticky header (overrides base background) */
 .landing-header-sticky-wrapper {
-  background: color-mix(in oklab, var(--color-surface) 82%, transparent);
-  backdrop-filter: var(--blur-nav);
-  -webkit-backdrop-filter: var(--blur-nav);
-  border-bottom: 1px solid transparent;
-  transition: background var(--duration-normal) var(--ease-out), border-color var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  transition: box-shadow var(--duration-normal) var(--ease-out);
 }
 .landing-header-sticky-wrapper.is-scrolled {
   border-bottom-color: var(--color-border);

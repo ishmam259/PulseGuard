@@ -3,6 +3,10 @@ import MobileLayout from '../components/layout/MobileLayout'
 import AdminLayout from '../components/layout/AdminLayout'
 import { useApp } from '../context/AppContext'
 import { patientNavItems, workerNavItems } from '../data/navItems'
+import {
+  HeartPulse, Shirt, Baby, Leaf, Pill, Star, ArrowRight,
+  ShoppingBag, Heart, Sparkles, ChevronRight,
+} from 'lucide-react'
 import './Store.css'
 
 /* ── Banner data ── */
@@ -11,51 +15,65 @@ const BANNERS = [
     id: 1,
     tag: 'Flash Sale',
     title: 'Prenatal Essentials',
-    sub: 'Stock up on vitamins & supplements',
-    discount: '30%',
-    emoji: '💊',
-    gradient: 'linear-gradient(135deg, oklch(0.55 0.22 350) 0%, oklch(0.45 0.18 320) 100%)',
+    sub: 'Vitamins, supplements & more',
+    discount: '30',
+    Icon: HeartPulse,
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=600&auto=format&fit=crop',
+    overlay: 'linear-gradient(135deg, rgba(233,30,140,0.82) 0%, rgba(194,24,91,0.88) 100%)',
   },
   {
     id: 2,
     tag: 'New Arrivals',
     title: 'Maternity Clothing',
-    sub: 'Comfortable styles for every trimester',
-    discount: '20%',
-    emoji: '👗',
-    gradient: 'linear-gradient(135deg, oklch(0.52 0.18 280) 0%, oklch(0.45 0.14 310) 100%)',
+    sub: 'Comfortable styles every trimester',
+    discount: '20',
+    Icon: Shirt,
+    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop',
+    overlay: 'linear-gradient(135deg, rgba(216,27,96,0.82) 0%, rgba(173,20,87,0.9) 100%)',
   },
   {
     id: 3,
     tag: 'Bundle Deal',
     title: 'Baby Starter Kit',
     sub: 'Everything your newborn needs',
-    discount: '25%',
-    emoji: '🍼',
-    gradient: 'linear-gradient(135deg, oklch(0.50 0.16 200) 0%, oklch(0.44 0.14 240) 100%)',
+    discount: '25',
+    Icon: Baby,
+    image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?q=80&w=600&auto=format&fit=crop',
+    overlay: 'linear-gradient(135deg, rgba(240,98,146,0.80) 0%, rgba(233,30,140,0.88) 100%)',
   },
   {
     id: 4,
     tag: 'Weekly Offer',
     title: 'Mother Care Foods',
-    sub: 'Nutrition that keeps you & baby strong',
-    discount: '15%',
-    emoji: '🥗',
-    gradient: 'linear-gradient(135deg, oklch(0.52 0.16 140) 0%, oklch(0.44 0.14 170) 100%)',
+    sub: 'Nutrition for you & your baby',
+    discount: '15',
+    Icon: Leaf,
+    image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=600&auto=format&fit=crop',
+    overlay: 'linear-gradient(135deg, rgba(233,30,140,0.82) 0%, rgba(136,14,79,0.90) 100%)',
   },
 ]
 
 /* ── Category data ── */
 const CATEGORIES = [
-  { id: 'clothes',     label: 'Clothes',          icon: '👗' },
-  { id: 'baby',        label: 'Baby Products',    icon: '🍼' },
-  { id: 'medicines',   label: 'Medicines',        icon: '💊' },
-  { id: 'motherfoods', label: 'Mother Care Foods', icon: '🥗' },
+  { id: 'clothes',     label: 'Clothes',           Icon: Shirt },
+  { id: 'baby',        label: 'Baby Products',     Icon: Baby },
+  { id: 'medicines',   label: 'Medicines',         Icon: Pill },
+  { id: 'motherfoods', label: 'Mother Care Foods', Icon: Leaf },
+]
+
+/* ── Featured stores ── */
+const STORES = [
+  { id: 's1', name: 'NurtureCare',  tagline: 'Prenatal supplements', rating: 4.8, Icon: Heart,       bg: '#fce4ec' },
+  { id: 's2', name: 'BabyBliss',    tagline: 'Baby essentials',       rating: 4.9, Icon: Baby,        bg: '#f3e5f5' },
+  { id: 's3', name: 'MomStyle Co.', tagline: 'Maternity fashion',     rating: 4.7, Icon: Shirt,       bg: '#e3f2fd' },
+  { id: 's4', name: 'GreenNourish', tagline: 'Foods & nutrition',     rating: 4.6, Icon: Leaf,        bg: '#e8f5e9' },
+  { id: 's5', name: 'MedPlus Mama', tagline: 'Vitamins & medicines',  rating: 4.8, Icon: Pill,        bg: '#fff3e0' },
+  { id: 's6', name: 'PulseShop',    tagline: 'Curated by PulseGuard', rating: 5.0, Icon: Sparkles,    bg: '#fce4ec' },
 ]
 
 const PRODUCTS = {
   clothes: [
-    { id: 'c1', name: 'Flowy Maternity Dress', desc: 'Breathable cotton, empire waist',     price: '$42.00', oldPrice: '$58.00', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4b4e05?q=80&w=300&auto=format&fit=crop' },
+    { id: 'c1', name: 'Flowy Maternity Dress', desc: 'Breathable cotton, empire waist',     price: '$42.00', oldPrice: '$58.00', image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=300&auto=format&fit=crop' },
     { id: 'c2', name: 'Nursing Tank Top',      desc: 'Clip-down design for easy feeding',  price: '$24.00', oldPrice: null,     image: 'https://images.unsplash.com/photo-1564859228273-274232fdb516?q=80&w=300&auto=format&fit=crop' },
     { id: 'c3', name: 'Bump-Band Jeans',       desc: 'Adjustable panel grows with you',    price: '$55.00', oldPrice: '$70.00', image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=300&auto=format&fit=crop' },
     { id: 'c4', name: 'Cozy Lounge Set',       desc: 'Soft modal fabric, relaxed fit',     price: '$38.00', oldPrice: null,     image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop' },
@@ -106,24 +124,37 @@ function Carousel() {
         className="store-carousel__track"
         style={{ transform: `translateX(-${active * 100}%)` }}
       >
-        {BANNERS.map(b => (
-          <div
-            key={b.id}
-            className="store-carousel__slide"
-            style={{ background: b.gradient }}
-          >
-            <div className="store-carousel__badge">{b.emoji}</div>
-            <div className="store-carousel__text">
-              <span className="store-carousel__tag">{b.tag}</span>
-              <h3 className="store-carousel__title">{b.title}</h3>
-              <p className="store-carousel__sub">{b.sub}</p>
+        {BANNERS.map(b => {
+          const BIcon = b.Icon
+          return (
+            <div
+              key={b.id}
+              className="store-carousel__slide"
+              style={{ backgroundImage: `${b.overlay}, url(${b.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            >
+              {/* Icon badge */}
+              <div className="store-carousel__icon-badge">
+                <BIcon style={{ width: '28px', height: '28px', color: '#fff' }} strokeWidth={1.8} />
+              </div>
+
+              {/* Text content */}
+              <div className="store-carousel__text">
+                <span className="store-carousel__tag">{b.tag}</span>
+                <h3 className="store-carousel__title">{b.title}</h3>
+                <p className="store-carousel__sub">{b.sub}</p>
+                <span className="store-carousel__cta">
+                  Shop Now <ArrowRight style={{ width: '11px', height: '11px' }} />
+                </span>
+              </div>
+
+              {/* Discount badge */}
+              <div className="store-carousel__discount-badge">
+                <span className="store-carousel__pct">{b.discount}%</span>
+                <span className="store-carousel__off">OFF</span>
+              </div>
             </div>
-            <div className="store-carousel__discount">
-              <span className="store-carousel__pct">{b.discount}</span>
-              <span className="store-carousel__off">OFF</span>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <button className="store-carousel__arrow store-carousel__arrow--prev" onClick={prev} aria-label="Previous">‹</button>
@@ -138,6 +169,22 @@ function Carousel() {
             aria-label={`Go to slide ${i + 1}`}
           />
         ))}
+      </div>
+    </div>
+  )
+}
+
+function StoreCard({ name, tagline, rating, Icon: SIcon, bg }) {
+  return (
+    <div className="store-shop-card">
+      <div className="store-shop-card__icon" style={{ background: bg }}>
+        <SIcon style={{ width: '20px', height: '20px', color: '#e91e8c' }} strokeWidth={1.8} />
+      </div>
+      <p className="store-shop-card__name">{name}</p>
+      <p className="store-shop-card__tag">{tagline}</p>
+      <div className="store-shop-card__rating">
+        <Star style={{ width: '10px', height: '10px', color: '#f59e0b', fill: '#f59e0b' }} />
+        <span>{rating.toFixed(1)}</span>
       </div>
     </div>
   )
@@ -184,6 +231,25 @@ export default function Store() {
 
       <Carousel />
 
+      {/* Featured stores */}
+      <div className="store-section-header">
+        <span className="store-section-title">
+          {locale === 'bn' ? 'বিশেষ দোকান' : 'Featured Stores'}
+        </span>
+        <button className="store-section-more">
+          {locale === 'bn' ? 'সব দেখুন' : 'See all'} <ChevronRight style={{ width: '13px', height: '13px' }} />
+        </button>
+      </div>
+      <div className="store-shops-scroll">
+        {STORES.map(s => <StoreCard key={s.id} {...s} />)}
+      </div>
+
+      {/* Category tabs */}
+      <div className="store-section-header" style={{ marginTop: '8px' }}>
+        <span className="store-section-title">
+          {locale === 'bn' ? 'পণ্য বিভাগ' : 'Browse Products'}
+        </span>
+      </div>
       <div className="store-categories">
         {CATEGORIES.map(cat => (
           <button
@@ -191,7 +257,7 @@ export default function Store() {
             className={`store-cat-btn${activeCategory === cat.id ? ' store-cat-btn--active' : ''}`}
             onClick={() => setActiveCategory(cat.id)}
           >
-            <span className="store-cat-icon">{cat.icon}</span>
+            <cat.Icon style={{ width: '14px', height: '14px', flexShrink: 0 }} strokeWidth={2} />
             {cat.label}
           </button>
         ))}
