@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
-import { Sun, Moon, Bell, HeartPulse, LogOut, PhoneCall } from 'lucide-react'
+import { Sun, Moon, Bell, HeartPulse, LogOut, PhoneCall, Menu, X } from 'lucide-react'
 
 export default function MobileLayout({ title, status, banner, children, navItems, hideSubtitle }) {
   const { connectivity, currentUser, logout, notifications, locale, setLocale, theme, toggleTheme } = useApp()
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     // Show active SOS alert toast only for workers and admins
@@ -86,51 +87,35 @@ export default function MobileLayout({ title, status, banner, children, navItems
       <div className="main-container">
         {/* ── Mobile Header ── */}
         <header className="mobile-header">
-          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ display: 'grid', placeItems: 'center', width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'var(--color-primary)' }}>
-              <HeartPulse className="h-4 w-4" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {navItems && navItems.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(true)}
+                aria-label="Open menu"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--color-text)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: '2px'
+                }}
+              >
+                <Menu className="h-5 w-5" style={{ width: '20px', height: '20px' }} />
+              </button>
+            )}
+            <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ display: 'grid', placeItems: 'center', width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'var(--color-primary)' }}>
+                <HeartPulse className="h-4 w-4" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
+              </span>
+            </div>
           </div>
           <div className="top-center">{title}</div>
           <div className="top-actions">
-            <button
-              type="button"
-              onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
-              style={{
-                borderRadius: '9999px',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                padding: '6px 12px',
-                fontSize: '12px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                color: 'var(--color-text-secondary)',
-                backdropFilter: 'blur(8px)',
-                lineHeight: '1'
-              }}
-            >
-              {locale === 'en' ? 'বাংলা' : 'English'}
-            </button>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              style={{
-                display: 'grid',
-                placeItems: 'center',
-                height: '28px',
-                width: '28px',
-                borderRadius: '50%',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'color-mix(in oklab, var(--color-surface) 60%, transparent)',
-                cursor: 'pointer',
-                color: 'var(--color-text)',
-                backdropFilter: 'blur(8px)',
-                padding: '0'
-              }}
-              title="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
             <button 
               type="button" 
               onClick={handleAlertsClick} 
@@ -301,20 +286,177 @@ export default function MobileLayout({ title, status, banner, children, navItems
         {/* ── Main Content Area ── */}
         <main className="content-area animate-fade-in">{children}</main>
 
-        {/* ── Mobile Bottom Navigation ── */}
+        {/* ── Mobile Sidebar Drawer ── */}
         {navItems && navItems.length > 0 && (
-          <nav className="mobile-bottom-nav">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => (isActive ? 'active' : '')}
+          <>
+            {/* Backdrop overlay */}
+            <div
+              onClick={() => setIsMobileMenuOpen(false)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                backdropFilter: 'blur(4px)',
+                zIndex: 9998,
+                opacity: isMobileMenuOpen ? 1 : 0,
+                pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
+                transition: 'opacity 0.25s ease'
+              }}
+            />
+            
+            {/* Drawer panel */}
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                width: '280px',
+                backgroundColor: 'var(--color-surface)',
+                borderRight: '1px solid var(--color-border)',
+                boxShadow: '24px 0 48px rgba(0, 0, 0, 0.15)',
+                zIndex: 9999,
+                transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
+                transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '24px 20px',
+                boxSizing: 'border-box'
+              }}
+            >
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ display: 'grid', placeItems: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--color-primary)' }}>
+                    <HeartPulse className="h-5 w-5" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
+                  </span>
+                  <span style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)', letterSpacing: '-0.02em', fontFamily: 'var(--font-sans)' }}>PulseGuard</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--color-text-secondary)',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              {/* User Profiling info block */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', backgroundColor: 'var(--color-surface-hover)', marginBottom: '1.5rem' }}>
+                <div style={{ height: '40px', width: '40px', borderRadius: '50%', backgroundColor: 'var(--color-primary-dim)', color: 'var(--color-primary)', display: 'grid', placeItems: 'center', fontWeight: '700', fontSize: '15px' }}>
+                  {initials}
+                </div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <p style={{ margin: 0, fontWeight: '700', fontSize: '14px', color: 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {currentUser?.name}
+                  </p>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '10px', color: 'var(--color-muted)', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '0.05em' }}>
+                    {currentUser?.role === 'patient' ? $('LAYOUT_PORTAL_PATIENT', locale) : $('LAYOUT_PORTAL_WORKER', locale)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Theme & Language toggles inside drawer */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '1.25rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setLocale(prev => prev === 'en' ? 'bn' : 'en')}
+                  style={{
+                    flex: 1,
+                    borderRadius: '12px',
+                    border: '1px solid var(--color-border)',
+                    backgroundColor: 'var(--color-surface-hover)',
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    color: 'var(--color-text-secondary)',
+                    textAlign: 'center',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  {locale === 'en' ? 'বাংলা' : 'English'}
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  style={{
+                    flex: 1,
+                    borderRadius: '12px',
+                    border: '1px solid var(--color-border)',
+                    backgroundColor: 'var(--color-surface-hover)',
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    color: 'var(--color-text-secondary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  <span>{theme === 'dark' ? (locale === 'bn' ? 'লাইট মোড' : 'Light') : (locale === 'bn' ? 'ডার্ক মোড' : 'Dark')}</span>
+                </button>
+              </div>
+
+              {/* Sidebar Links */}
+              <nav className="mobile-drawer-nav" style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, overflowY: 'auto', margin: '0 -8px', padding: '0 8px' }}>
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={({ isActive }) => `desktop-sidebar-nav-link-mobile ${isActive ? 'active' : ''}`}
+                  >
+                    {item.Icon && <item.Icon style={{ height: '18px', width: '18px', flexShrink: 0 }} />}
+                    <span>{item.label}</span>
+                  </NavLink>
+                ))}
+              </nav>
+
+              {/* Logout button at the bottom */}
+              <button
+                type="button"
+                onClick={handleLogout}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                  color: 'var(--color-danger)',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  marginTop: '1.5rem',
+                  width: '100%',
+                  textAlign: 'left',
+                  boxSizing: 'border-box'
+                }}
               >
-                <span>{item.icon}</span>
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
-          </nav>
+                <LogOut style={{ width: '18px', height: '18px', flexShrink: 0 }} />
+                <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>
+              </button>
+            </div>
+          </>
         )}
         {currentUser?.role === 'patient' && (
           <Link

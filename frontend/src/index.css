@@ -273,7 +273,7 @@ body {
   min-height: 100vh;
   background: var(--gradient-bg);
   background-attachment: fixed;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
 }
 
