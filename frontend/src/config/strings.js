@@ -704,6 +704,10 @@ const strings = {
     MEDICINE_OFFLINE_BROWSE: 'Browse by Category (Offline)',
     MEDICINE_ERR_OFFLINE: 'Requires internet. Showing offline reference below.',
     MEDICINE_ERR_FAILED: 'Could not analyze. Please try again.',
+    MEDICINE_BTN_SAVE: 'Save to log',
+    MEDICINE_TAB_HISTORY: 'History',
+    MEDICINE_LOG_EMPTY: 'No medicines saved yet.',
+    MEDICINE_LOG_SAVED: '✓ Saved to your medicine log',
 
     // ─── Education ───
     NAV_P_EDUCATION: 'Education',
@@ -1503,6 +1507,10 @@ const strings = {
     MEDICINE_OFFLINE_BROWSE: 'বিভাগ অনুযায়ী দেখুন (অফলাইন)',
     MEDICINE_ERR_OFFLINE: 'ইন্টারনেট প্রয়োজন। নিচে অফলাইন রেফারেন্স দেখানো হচ্ছে।',
     MEDICINE_ERR_FAILED: 'বিশ্লেষণ করা সম্ভব হয়নি। আবার চেষ্টা করুন।',
+    MEDICINE_BTN_SAVE: 'লগে সেভ করুন',
+    MEDICINE_TAB_HISTORY: 'ইতিহাস',
+    MEDICINE_LOG_EMPTY: 'এখনো কোনো ওষুধ সেভ হয়নি।',
+    MEDICINE_LOG_SAVED: '✓ আপনার ওষুধ লগে সেভ হয়েছে',
 
     // ─── Education ───
     NAV_P_EDUCATION: 'শিক্ষা',

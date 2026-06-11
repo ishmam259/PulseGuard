@@ -1,6 +1,7 @@
 services:
   db:
     image: pgvector/pgvector:pg16
+    entrypoint: ["sh", "-c", "rm -f /var/lib/postgresql/data/postmaster.pid && exec docker-entrypoint.sh postgres"]
     environment:
       POSTGRES_DB: pulseguard
       POSTGRES_USER: postgres
@@ -17,6 +18,7 @@ services:
 
   chatdb:
     image: pgvector/pgvector:pg16
+    entrypoint: ["sh", "-c", "rm -f /var/lib/postgresql/data/postmaster.pid && exec docker-entrypoint.sh postgres"]
     environment:
       POSTGRES_DB: pulseguard
       POSTGRES_USER: postgres
@@ -58,12 +60,12 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgres://postgres:wirelight@db:5432/pulseguard
-      JWT_SECRET: pulseguard_jwt_secret_2026
-      JWT_REFRESH_SECRET: pulseguard_refresh_secret_2026
-      AI_WORKER_URL: http://ai-worker:8000
-      PORT: 5000
-      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      AI_WORKER_URL: ${AI_WORKER_URL}
+      PORT: ${PORT}
+      NODE_ENV: ${NODE_ENV}
       CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
@@ -71,11 +73,12 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
       CHAT_SECRET: ${CHAT_SECRET}
-      MATRIX_BASE_URL: http://matrix-chat:6167
-      GLOBAL_CHAT_ROOM_ID: !pulseguard-global:localhost
+      MATRIX_BASE_URL: ${MATRIX_BASE_URL}
+      GLOBAL_CHAT_ROOM_ID: ${GLOBAL_CHAT_ROOM_ID}
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
 
   ai-worker:
     build: ./ai
@@ -85,7 +88,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgres://postgres:wirelight@db:5432/pulseguard
+      DATABASE_URL: ${DATABASE_URL}
       GROQ_API_KEY: ${GROQ_API_KEY}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       GEMINI_API_KEY2: ${GEMINI_API_KEY2}
@@ -93,11 +96,12 @@ services:
       GEMINI_API_KEY4: ${GEMINI_API_KEY4}
 
   frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
         - VITE_API_URL=${VITE_API_URL}
+        - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
     ports:
       - "3000:3000"
     depends_on:
@@ -109,8 +113,13 @@ services:
       dockerfile: src/main/docker/Dockerfile.native
     ports:
       - "8081:8080"
+    depends_on:
+      chatdb:
+        condition: service_healthy
+      ragdb:
+        condition: service_healthy
     environment:
-      QUARKUS_HTTP_PORT: 8080
+      QUARKUS_HTTP_PORT: ${QUARKUS_HTTP_PORT}
       QUARKUS_WEBSOCKETS_NEXT_ORIGINS: "*"
       QUARKUS_DATASOURCE_DB_KIND: postgresql
       QUARKUS_DATASOURCE_USERNAME: postgres

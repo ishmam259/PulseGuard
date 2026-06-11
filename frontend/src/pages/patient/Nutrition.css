@@ -1,0 +1,1260 @@
+/* ═══════════════════════════════════════════════════════════
+   PulseGuard AI — Patient Nutrition Page Redesign stylesheet
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --radius-3xl: 24px;
+}
+
+.nut-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+/* ── Hero Banner ── */
+.nut-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-3xl);
+  background: linear-gradient(135deg, 
+    color-mix(in oklab, var(--color-primary) 8%, transparent) 0%, 
+    color-mix(in oklab, var(--color-bg-accent) 15%, transparent) 100%
+  );
+  border: 1px solid var(--color-border);
+  padding: 2.25rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  transition: transform var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.nut-hero:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.nut-hero-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.nut-hero-tag {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.nut-hero-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+  color: var(--color-text);
+}
+
+.nut-hero-title em {
+  font-style: italic;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nut-hero-desc {
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.nut-hero-icon-wrapper {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-inset);
+  animation: nut-float 4s ease-in-out infinite;
+}
+
+.nut-hero-icon-wrapper svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.nut-hero:hover .nut-hero-icon-wrapper svg {
+  transform: scale(1.15) rotate(10deg);
+}
+
+@keyframes nut-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ── Segments / Tabs ── */
+.nut-tab-bar {
+  display: flex;
+  background: color-mix(in oklab, var(--color-surface) 60%, transparent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 0.25rem;
+  gap: 0.25rem;
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 0.5rem;
+}
+
+.nut-tab-button {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.nut-tab-button:hover {
+  color: var(--color-text);
+  background: color-mix(in oklab, var(--color-surface-hover) 80%, transparent);
+}
+
+.nut-tab-button.active {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-glow-primary);
+}
+
+/* ── Page Grid Layout ── */
+.nut-today-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .nut-today-grid {
+    grid-template-columns: 1.25fr 0.9fr;
+    align-items: start;
+  }
+}
+
+/* ── Nutrient Grid & Cards ── */
+.nut-nutrients-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.nut-section-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-3xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out), border-color var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: visible;
+}
+
+.nut-section-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+  border-color: var(--color-border-light);
+}
+
+.nut-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.nut-section-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nut-section-title-wrapper svg {
+  color: var(--color-primary);
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.nut-section-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.nut-section-subtitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin: 0.5rem 0 1rem;
+}
+
+/* Primary Calorie Card */
+.nut-cal-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, 
+    color-mix(in oklab, var(--color-surface) 90%, transparent) 0%, 
+    color-mix(in oklab, var(--color-primary-dim) 40%, transparent) 100%
+  );
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.nut-cal-details {
+  flex: 1;
+  min-width: 150px;
+}
+
+.nut-cal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.nut-cal-title-group svg {
+  color: var(--color-primary);
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.nut-cal-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.nut-cal-number {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.1;
+  margin: 0.25rem 0;
+}
+
+.nut-cal-target {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.nut-cal-target strong {
+  color: var(--color-text);
+}
+
+.nut-circle-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nut-circle-percent {
+  position: absolute;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+/* Nutrient Dashboard Grids */
+.nut-macro-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, 1fr);
+  margin-bottom: 2rem;
+}
+
+.nut-micro-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+@media (min-width: 640px) {
+  .nut-macro-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .nut-micro-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Progress card */
+.nut-stat-card {
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+  gap: 0.75rem;
+  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.nut-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  background: var(--color-surface-hover);
+}
+
+.nut-stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.nut-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.nut-stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.nut-stat-val {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-top: 0.15rem;
+}
+
+.nut-stat-goal {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.nut-stat-icon-box {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.nut-stat-icon-box.calories  { background: rgba(239, 68, 68, 0.1); color: rgb(239, 68, 68); }
+.nut-stat-icon-box.protein   { background: rgba(59, 130, 246, 0.1); color: rgb(59, 130, 246); }
+.nut-stat-icon-box.carb      { background: rgba(245, 158, 11, 0.1); color: rgb(245, 158, 11); }
+.nut-stat-icon-box.fat       { background: rgba(16, 185, 129, 0.1); color: rgb(16, 185, 129); }
+.nut-stat-icon-box.iron      { background: rgba(220, 38, 38, 0.1); color: rgb(220, 38, 38); }
+.nut-stat-icon-box.calcium   { background: rgba(124, 58, 237, 0.1); color: rgb(124, 58, 237); }
+.nut-stat-icon-box.folic     { background: rgba(8, 145, 178, 0.1); color: rgb(8, 145, 178); }
+.nut-stat-icon-box.zinc      { background: rgba(101, 163, 13, 0.1); color: rgb(101, 163, 13); }
+.nut-stat-icon-box.vitd      { background: rgba(202, 138, 4, 0.1); color: rgb(202, 138, 4); }
+.nut-stat-icon-box.vitc      { background: rgba(236, 72, 153, 0.1); color: rgb(236, 72, 153); }
+
+.nut-stat-icon-box svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.nut-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nut-bar-track {
+  height: 0.4rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+  overflow: hidden;
+  position: relative;
+}
+
+.nut-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nut-bar-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.nut-bar-footer strong {
+  font-weight: 700;
+}
+
+/* ── Alert Banners ── */
+.nut-alert {
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: start;
+  gap: 1rem;
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn var(--duration-slow) var(--ease-out) both;
+}
+
+.nut-alert-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.nut-alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.nut-alert-message {
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.nut-alert-rec-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+}
+
+.nut-alert-pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dark .nut-alert-pill {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-secondary);
+}
+
+/* ── Add Food Section ── */
+.nut-segmented-wrapper {
+  display: flex;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 0.2rem;
+  gap: 0.15rem;
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nut-segmented-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.nut-segmented-item {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.825rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  white-space: nowrap;
+}
+
+.nut-segmented-item.active {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-glow-primary);
+}
+
+.nut-segmented-item:not(.active):hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+/* Database Mode search */
+.nut-search-container {
+  position: relative;
+  width: 100%;
+}
+
+.nut-search-input-wrapper {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-xl);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  padding: 0.25rem 1rem;
+  height: 3.25rem;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.nut-search-input-wrapper:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+  background: var(--color-surface);
+}
+
+.nut-search-input-wrapper svg {
+  color: var(--color-muted);
+  margin-right: 0.75rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.nut-search-input {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  height: 100% !important;
+  box-shadow: none !important;
+  width: 100%;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.nut-search-input:focus {
+  outline: none;
+}
+
+/* Floating glass dropdown */
+.nut-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: color-mix(in oklab, var(--color-surface) 95%, transparent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 100;
+  backdrop-filter: var(--blur-heavy);
+  -webkit-backdrop-filter: var(--blur-heavy);
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  animation: fadeIn var(--duration-fast) var(--ease-out) both;
+}
+
+.nut-dropdown-item {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border: none;
+  background: transparent;
+}
+
+.nut-dropdown-item:hover {
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+}
+
+.nut-dropdown-item-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.nut-dropdown-item:hover .nut-dropdown-item-title {
+  color: var(--color-primary);
+}
+
+.nut-dropdown-item-sub {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.nut-dropdown-item:hover .nut-dropdown-item-sub {
+  color: color-mix(in oklab, var(--color-primary) 70%, transparent);
+}
+
+/* Selected item display */
+.nut-selection-card {
+  margin-top: 1rem;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  padding: 1.25rem;
+  animation: fadeIn var(--duration-normal) var(--ease-out) both;
+}
+
+.nut-selection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.nut-selection-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+
+.nut-selection-subtitle {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.nut-btn-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-muted);
+  font-size: 1.15rem;
+  padding: 0.25rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all var(--duration-fast);
+}
+
+.nut-btn-close:hover {
+  background: color-mix(in oklab, var(--color-muted) 15%, transparent);
+  color: var(--color-text);
+}
+
+.nut-qty-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.nut-qty-input {
+  width: 80px;
+  height: 2.75rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+
+.nut-qty-input:focus {
+  border-color: var(--color-primary);
+}
+
+.nut-select-input {
+  flex: 1;
+  min-width: 120px;
+  height: 2.75rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--duration-fast);
+}
+
+.nut-select-input:focus {
+  border-color: var(--color-primary);
+}
+
+/* Impact nutrient grid */
+.nut-impact-grid {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .nut-impact-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.nut-impact-item {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.nut-impact-item strong {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Manual Mode Form */
+.nut-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.nut-field-label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.nut-text-input {
+  height: 2.75rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  padding: 0 1rem;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  width: 100%;
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+
+.nut-text-input:focus {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.nut-manual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .nut-manual-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Action Button */
+.nut-btn-submit {
+  width: 100%;
+  height: 3rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-glow-primary);
+  transition: all var(--duration-fast) var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+}
+
+.nut-btn-submit:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  filter: brightness(1.05);
+}
+
+.nut-btn-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.nut-btn-submit:disabled {
+  background: var(--color-primary);
+  color: #fff;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* ── Timeline Log ── */
+.nut-log-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.nut-log-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 0.85rem 1.25rem;
+  gap: 1rem;
+  transition: transform var(--duration-fast), border-color var(--duration-fast), background var(--duration-fast);
+}
+
+.nut-log-row:hover {
+  transform: translateX(2px);
+  border-color: var(--color-primary-dim);
+  background: var(--color-surface-hover);
+}
+
+.nut-log-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.nut-log-meal-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--color-primary) 8%, transparent);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.nut-log-meal-icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.nut-log-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.nut-log-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nut-log-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+}
+
+.nut-log-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--color-surface-active);
+  color: var(--color-text-secondary);
+}
+
+.nut-log-badge.meal {
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.nut-log-time {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+.nut-btn-delete {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-pill);
+  transition: all var(--duration-fast);
+  flex-shrink: 0;
+}
+
+.nut-btn-delete:hover {
+  background: var(--color-danger-dim);
+  color: var(--color-danger-light);
+}
+
+/* ── Weekly Report Tab ── */
+.nut-weekly-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.nut-period-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-glow);
+}
+
+.nut-table-card {
+  overflow-x: auto;
+  margin-top: 0.5rem;
+}
+
+.nut-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+}
+
+.nut-table th {
+  text-align: left;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid var(--color-border);
+  background: var(--color-surface-elevated);
+}
+
+.nut-table td {
+  padding: 0.95rem 1rem;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 500;
+}
+
+.nut-table tr:last-child td {
+  border-bottom: none;
+}
+
+.nut-table tr:hover td {
+  background: var(--color-surface-hover);
+}
+
+.nut-table th:first-child, .nut-table td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.nut-table th:last-child, .nut-table td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.nut-table-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* Strengths and deficiencies split grid */
+.nut-status-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .nut-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.nut-pill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.nut-pill-item {
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.nut-pill-item.good {
+  border-color: var(--color-success-dim);
+  background: color-mix(in oklab, var(--color-success) 5%, transparent);
+}
+
+.nut-pill-item.good svg {
+  color: var(--color-success);
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.nut-def-item {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nut-def-header {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nut-def-header svg {
+  color: var(--color-danger);
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.nut-carousel {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.1rem;
+  scrollbar-width: none;
+}
+
+.nut-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.nut-carousel-card {
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 0.95rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+/* ── Food Guide Tab ── */
+.nut-header-circle {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nut-header-circle.success {
+  background: color-mix(in oklab, var(--color-success) 10%, transparent);
+  color: var(--color-success);
+}
+
+.nut-header-circle.danger {
+  background: color-mix(in oklab, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+}
+
+.nut-header-circle.primary {
+  background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+}
+
+.nut-header-circle svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.nut-guide-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+  margin-top: 1rem;
+}
+
+@media (min-width: 640px) {
+  .nut-guide-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .nut-guide-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.nut-guide-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: all var(--duration-fast);
+}
+
+.nut-guide-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  background: var(--color-surface-hover);
+}
+
+.nut-guide-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nut-guide-icon-box {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nut-guide-card.good .nut-guide-icon-box {
+  background: color-mix(in oklab, var(--color-success) 8%, transparent);
+  color: var(--color-success);
+}
+
+.nut-guide-card.avoid .nut-guide-icon-box {
+  background: color-mix(in oklab, var(--color-danger) 8%, transparent);
+  color: var(--color-danger);
+}
+
+.nut-guide-card.local .nut-guide-icon-box {
+  background: color-mix(in oklab, var(--color-primary) 8%, transparent);
+  color: var(--color-primary);
+}
+
+.nut-guide-icon-box svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.nut-guide-card-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.nut-guide-name {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nut-guide-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  align-self: start;
+}
+
+.nut-guide-badge.success {
+  background: color-mix(in oklab, var(--color-success) 12%, transparent);
+  color: var(--color-success);
+}
+
+.nut-guide-badge.danger {
+  background: color-mix(in oklab, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+}
+
+.nut-guide-badge.primary {
+  background: color-mix(in oklab, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+}
+
+.nut-guide-card-detail {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+

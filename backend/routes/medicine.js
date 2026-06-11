@@ -153,4 +153,191 @@ router.post('/safety', async (req, res) => {
   }
 })
 
+// POST /api/medicine/log — save a medicine the patient checked
+router.post('/log', async (req, res) => {
+  if (req.user.role !== 'patient') return res.status(403).json({ error: 'Patients only' })
+  const { medicine_name, safety_status, safety_reason, gestational_week, source,
+          description, week_note, alternatives } = req.body
+  if (!medicine_name) return res.status(400).json({ error: 'medicine_name is required' })
+
+  try {
+    const patResult = await pool.query(
+      `SELECT id FROM patients WHERE user_id = $1 LIMIT 1`,
+      [req.user.id]
+    )
+    if (patResult.rows.length === 0) return res.status(404).json({ error: 'Patient profile not found' })
+    const patient_id = patResult.rows[0].id
+
+    const result = await pool.query(
+      `INSERT INTO medicine_logs
+         (patient_id, medicine_name, safety_status, safety_reason, gestational_week, source, description, week_note, alternatives)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      [patient_id, medicine_name, safety_status || null, safety_reason || null,
+       gestational_week || null, source || 'search',
+       description || null, week_note || null, alternatives || null]
+    )
+    res.status(201).json({ ok: true, log: result.rows[0] })
+  } catch (err) {
+    console.error('Medicine log error:', err.message)
+    res.status(500).json({ error: 'Failed to save medicine log' })
+  }
+})
+
+// GET /api/medicine/log — fetch patient's recent medicine history
+router.get('/log', async (req, res) => {
+  if (req.user.role !== 'patient') return res.status(403).json({ error: 'Patients only' })
+
+  try {
+    const patResult = await pool.query(
+      `SELECT id FROM patients WHERE user_id = $1 LIMIT 1`,
+      [req.user.id]
+    )
+    if (patResult.rows.length === 0) return res.status(404).json({ error: 'Patient profile not found' })
+    const patient_id = patResult.rows[0].id
+
+    const result = await pool.query(
+      `SELECT id, medicine_name, safety_status, safety_reason, gestational_week, source,
+              description, week_note, alternatives, logged_at
+       FROM medicine_logs WHERE patient_id = $1 ORDER BY logged_at DESC LIMIT 50`,
+      [patient_id]
+    )
+    res.json({ logs: result.rows })
+  } catch (err) {
+    console.error('Medicine log fetch error:', err.message)
+    res.status(500).json({ error: 'Failed to fetch medicine log' })
+  }
+})
+
+// DELETE /api/medicine/log/:id — remove a medicine log entry (patient's own only)
+router.delete('/log/:id', async (req, res) => {
+  if (req.user.role !== 'patient') return res.status(403).json({ error: 'Patients only' })
+
+  try {
+    const patResult = await pool.query(
+      `SELECT id FROM patients WHERE user_id = $1 LIMIT 1`,
+      [req.user.id]
+    )
+    if (patResult.rows.length === 0) return res.status(404).json({ error: 'Patient profile not found' })
+    const patient_id = patResult.rows[0].id
+
+    const result = await pool.query(
+      `DELETE FROM medicine_logs WHERE id = $1 AND patient_id = $2 RETURNING id`,
+      [req.params.id, patient_id]
+    )
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Log entry not found' })
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Medicine log delete error:', err.message)
+    res.status(500).json({ error: 'Failed to delete medicine log' })
+  }
+})
+
+// ── Medicine schedule routes ──────────────────────────────────────────────────
+
+async function getPatientId(userId) {
+  const r = await pool.query(`SELECT id FROM patients WHERE user_id = $1 LIMIT 1`, [userId])
+  return r.rows[0]?.id || null
+}
+
+// GET /api/medicine/schedule — active schedules for the patient
+router.get('/schedule', async (req, res) => {
+  if (req.user.role !== 'patient') return res.status(403).json({ error: 'Patients only' })
+  try {
+    const patient_id = await getPatientId(req.user.id)
+    if (!patient_id) return res.status(404).json({ error: 'Patient profile not found' })
+    const result = await pool.query(
+      `SELECT id, medicine_name, dosage, notes, description, times_per_day, dose_times, start_date, end_date, created_at
+       FROM medicine_schedules WHERE patient_id = $1 AND end_date >= CURRENT_DATE ORDER BY created_at DESC`,
+      [patient_id]
+    )
+    res.json({ schedules: result.rows })
+  } catch (err) {
+    console.error('Schedule fetch error:', err.message)
+    res.status(500).json({ error: 'Failed to fetch schedules' })
+  }
+})
+
+// POST /api/medicine/schedule — create a new prescription schedule
+router.post('/schedule', async (req, res) => {
+  if (req.user.role !== 'patient') return res.status(403).json({ error: 'Patients only' })
+  const { medicine_name, dosage, notes, description, times_per_day, dose_times, end_date } = req.body
+  if (!medicine_name || !end_date) return res.status(400).json({ error: 'medicine_name and end_date are required' })
+  try {
+    const patient_id = await getPatientId(req.user.id)
+    if (!patient_id) return res.status(404).json({ error: 'Patient profile not found' })
+    const result = await pool.query(
+      `INSERT INTO medicine_schedules (patient_id, medicine_name, dosage, notes, description, times_per_day, dose_times, end_date)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [patient_id, medicine_name, dosage || null, notes || null, description || null,
+       times_per_day || 1, JSON.stringify(dose_times || []), end_date]
+    )
+    res.status(201).json({ ok: true, schedule: result.rows[0] })
+  } catch (err) {
+    console.error('Schedule create error:', err.message)
+    res.status(500).json({ error: 'Failed to create schedule' })
+  }
+})
+
+// DELETE /api/medicine/schedule/:id — remove a schedule (patient's own only)
+router.delete('/schedule/:id', async (req, res) => {
+  if (req.user.role !== 'patient') return res.status(403).json({ error: 'Patients only' })
+  try {
+    const patient_id = await getPatientId(req.user.id)
+    if (!patient_id) return res.status(404).json({ error: 'Patient profile not found' })
+    const result = await pool.query(
+      `DELETE FROM medicine_schedules WHERE id = $1 AND patient_id = $2 RETURNING id`,
+      [req.params.id, patient_id]
+    )
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Schedule not found' })
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Schedule delete error:', err.message)
+    res.status(500).json({ error: 'Failed to delete schedule' })
+  }
+})
+
+// POST /api/medicine/dose — mark a scheduled dose as taken (idempotent)
+router.post('/dose', async (req, res) => {
+  if (req.user.role !== 'patient') return res.status(403).json({ error: 'Patients only' })
+  const { schedule_id, scheduled_time, dose_date } = req.body
+  if (!schedule_id || !scheduled_time) return res.status(400).json({ error: 'schedule_id and scheduled_time are required' })
+  try {
+    const patient_id = await getPatientId(req.user.id)
+    if (!patient_id) return res.status(404).json({ error: 'Patient profile not found' })
+    const today = dose_date || new Date().toISOString().split('T')[0]
+    await pool.query(
+      `INSERT INTO medicine_dose_logs (schedule_id, patient_id, scheduled_time, dose_date)
+       VALUES ($1, $2, $3, $4) ON CONFLICT (schedule_id, patient_id, scheduled_time, dose_date) DO NOTHING`,
+      [schedule_id, patient_id, scheduled_time, today]
+    )
+    res.status(201).json({ ok: true })
+  } catch (err) {
+    console.error('Dose log error:', err.message)
+    res.status(500).json({ error: 'Failed to log dose' })
+  }
+})
+
+// GET /api/medicine/dose/today — doses taken today, grouped by schedule_id
+router.get('/dose/today', async (req, res) => {
+  if (req.user.role !== 'patient') return res.status(403).json({ error: 'Patients only' })
+  try {
+    const patient_id = await getPatientId(req.user.id)
+    if (!patient_id) return res.status(404).json({ error: 'Patient profile not found' })
+    const result = await pool.query(
+      `SELECT schedule_id, scheduled_time FROM medicine_dose_logs
+       WHERE patient_id = $1 AND dose_date = CURRENT_DATE`,
+      [patient_id]
+    )
+    const doses = {}
+    for (const row of result.rows) {
+      if (!doses[row.schedule_id]) doses[row.schedule_id] = []
+      doses[row.schedule_id].push(row.scheduled_time)
+    }
+    res.json({ doses })
+  } catch (err) {
+    console.error('Today doses error:', err.message)
+    res.status(500).json({ error: 'Failed to fetch today doses' })
+  }
+})
+
 module.exports = router

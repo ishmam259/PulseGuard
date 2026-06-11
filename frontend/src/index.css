@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ═══════════════════════════════════════════════════════════
    PulseGuard AI – Design System Foundation
    Dual-mode glassmorphism with pink/rose accents
@@ -62,6 +66,7 @@
   --shadow-elevated: 0 1px 0 0 oklch(1 0 0 / 0.6) inset, 0 20px 60px -30px oklch(0.18 0.03 320 / 0.25);
   --shadow-glow-primary: 0 30px 80px -20px oklch(0.62 0.22 0 / 0.35);
   --shadow-glow-danger: 0 30px 80px -20px oklch(0.6 0.22 27 / 0.35);
+  --shadow-float: 0 24px 60px -24px oklch(0.18 0.03 320 / 0.28), 0 8px 24px -14px oklch(0.18 0.03 320 / 0.14);
   --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.8);
   --shadow-nav: 0 10px 30px -10px oklch(0.18 0.03 320 / 0.1), inset -1px 0 0 oklch(0.92 0.01 320 / 0.9);
 
@@ -174,6 +179,7 @@
   --shadow-elevated: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 30px 80px -30px oklch(0 0 0 / 0.7);
   --shadow-glow-primary: 0 40px 120px -20px oklch(0.68 0.24 5 / 0.55);
   --shadow-glow-danger: 0 40px 120px -20px oklch(0.68 0.22 22 / 0.55);
+  --shadow-float: 0 34px 90px -28px oklch(0 0 0 / 0.65), 0 10px 30px -16px oklch(0 0 0 / 0.45);
   --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.02);
   --shadow-nav: 0 10px 30px -10px oklch(0 0 0 / 0.3), inset -1px 0 0 oklch(1 0 0 / 0.02);
 

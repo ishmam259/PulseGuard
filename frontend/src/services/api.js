@@ -103,10 +103,10 @@ export async function login(data) {
   return { ok: res.ok, ...result }
 }
 
-export async function googleSignIn(credential, role) {
+export async function googleSignIn(accessToken, role) {
   const res = await apiFetch('/auth/google', {
     method: 'POST',
-    body: JSON.stringify({ credential, role }),
+    body: JSON.stringify({ access_token: accessToken, role }),
   })
   const result = await res.json()
   if (res.ok) setTokens(result.token, result.refreshToken)
@@ -218,17 +218,44 @@ export async function medicineSafety(name, pregnancyWeek, language) {
   return res.ok ? res.json() : { error: 'AI unavailable' }
 }
 
-export async function getMedicineHistory() {
-  const res = await apiFetch('/medicine/history')
-  return res.ok ? (await res.json()).history : []
+export async function logMedicine(data) {
+  const res = await apiFetch('/medicine/log', { method: 'POST', body: JSON.stringify(data) })
+  return res.ok ? res.json() : { ok: false }
 }
 
-export async function addMedicineHistory(name, safety, details) {
-  const res = await apiFetch('/medicine/history', {
-    method: 'POST',
-    body: JSON.stringify({ name, safety, details }),
-  })
-  return { ok: res.ok, ...(await res.json()) }
+export async function getMedicineLogs() {
+  const res = await apiFetch('/medicine/log')
+  return res.ok ? res.json() : { logs: [] }
+}
+
+export async function deleteMedicineLog(id) {
+  const res = await apiFetch(`/medicine/log/${id}`, { method: 'DELETE' })
+  return res.ok ? res.json() : { ok: false }
+}
+
+export async function getSchedules() {
+  const res = await apiFetch('/medicine/schedule')
+  return res.ok ? res.json() : { schedules: [] }
+}
+
+export async function addSchedule(data) {
+  const res = await apiFetch('/medicine/schedule', { method: 'POST', body: JSON.stringify(data) })
+  return res.ok ? res.json() : { ok: false }
+}
+
+export async function deleteSchedule(id) {
+  const res = await apiFetch(`/medicine/schedule/${id}`, { method: 'DELETE' })
+  return res.ok ? res.json() : { ok: false }
+}
+
+export async function logDose(data) {
+  const res = await apiFetch('/medicine/dose', { method: 'POST', body: JSON.stringify(data) })
+  return res.ok ? res.json() : { ok: false }
+}
+
+export async function getTodayDoses() {
+  const res = await apiFetch('/medicine/dose/today')
+  return res.ok ? res.json() : { doses: {} }
 }
 
 export async function aiChat(message, language = 'en') {
