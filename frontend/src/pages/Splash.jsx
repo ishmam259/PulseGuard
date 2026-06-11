@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, useReducedMotion, useInView } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import $ from '../config/strings';
@@ -80,6 +80,7 @@ function CountUp({ value }) {
 
 export default function Splash() {
   const { theme, toggleTheme, locale, setLocale } = useApp();
+  const navigate = useNavigate();
   const reduce = useReducedMotion();
   const t = (en, bn) => (locale === 'en' ? en : bn);
 
@@ -541,7 +542,7 @@ export default function Splash() {
                 <span>{$('SPLASH_CTA', locale).replace(' →', '')}</span>
                 <ArrowRight className="h-4 w-4" style={{ marginLeft: '6px' }} />
               </Link>
-              <button type="button" className="btn btn--demo">
+              <button type="button" className="btn btn--demo" onClick={() => navigate('/watch-demo')}>
                 {t('Watch demo', 'ডেমো দেখুন')}
               </button>
             </motion.div>

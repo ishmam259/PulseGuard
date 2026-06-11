@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-**PulseGuard** is an enterprise-grade, AI-powered maternal health monitoring ecosystem built for Bangladesh and the Bangladeshi diaspora. It delivers clinical-grade pregnancy risk detection, multilingual AI-guided health support, and real-time community worker coordination — all in a single, offline-capable platform.
+**PulseGuard** is an enterprise-grade, AI-powered maternal health monitoring ecosystem built for Bangladesh and the Bangladeshi diaspora. It delivers clinical-grade pregnancy risk detection, multilingual AI-guided health support, and real-time community worker coordination — all in a single platform.
 
 Three roles. One system. Every mother covered.
 
@@ -41,7 +41,6 @@ PulseGuard addresses every layer of this problem with a full-stack AI health pla
 | **AI Risk Scoring** | XGBoost model trained on vitals + symptoms predicts high/moderate/low risk in real time |
 | **3-Tier LLM Cascade** | Groq Llama 3.3 70B → Gemini 2.5 Flash (4-key rotation) → Offline Q&A fallback |
 | **Multilingual Support** | Full English + Bengali (বাংলা) UI with locale-aware AI responses |
-| **Offline-First Architecture** | All core features work without internet; sync_conflicts resolved on reconnect |
 | **RAG-Powered Guidance** | Quarkus Java service with pgvector embeddings for clinically-grounded answers |
 | **Real-Time Alerts** | JWT-authenticated WebSocket broadcasts high-risk events to worker/admin dashboards |
 | **MCP Integration** | 4 registered Model Context Protocol tools (login, food search, RDA, nutrition guidelines) |
@@ -70,7 +69,7 @@ PulseGuard addresses every layer of this problem with a full-stack AI health pla
 
 ### Patient Portal
 
-The patient portal is a mobile-first progressive web app that works fully offline.
+The patient portal is a mobile-first progressive web app.
 
 | | |
 |:---:|:---:|
@@ -84,7 +83,7 @@ The patient portal is a mobile-first progressive web app that works fully offlin
 
 ### Community Health Worker Portal
 
-Built for field workers with limited connectivity. Prioritizes speed and decision support.
+Built for field workers. Prioritizes speed and decision support.
 
 | | |
 |:---:|:---:|
@@ -132,7 +131,7 @@ React 19 SPA (Vite)
     └─── SSE ────────► FastAPI AI Worker (port 8000)
                             ├─── Groq  (Llama 3.3 70B)
                             ├─── Gemini 2.5 Flash (×4 key rotation)
-                            └─── Offline Q&A matcher (no network)
+                            └─── Keyword Q&A matcher (FCDB fallback)
 ```
 
 ### Frontend
@@ -210,9 +209,9 @@ Patient/Worker query
         │                    4 API keys in round-robin rotation
         │                    Automatic key cycling on rate limits
         │
-  [on all failures] ──► [Tier 3] Offline Q&A Matcher
+  [on all failures] ──► [Tier 3] Keyword Q&A Matcher
                             Python keyword matching on FCDB data
-                            Works with zero internet connection
+                            Guaranteed response even under API outages
 ```
 
 ### XGBoost Risk Prediction Model
@@ -256,7 +255,6 @@ Patient/Worker query
 | `medicine_logs` | Safety check history per patient |
 | `medicine_schedules` | Reminder schedules with dose times |
 | `alerts` | SOS emergencies with GPS coordinates |
-| `sync_conflicts` | Offline conflict resolution queue |
 | `water_logs` / `vomit_logs` | Wellness tracking |
 | `food_items` | FCDB Bangladeshi Food Composition Database |
 | `ai_config` | Live-adjustable AI thresholds (no redeploy) |
@@ -267,20 +265,6 @@ Patient/Worker query
 - 9 nutrients tracked per item: energy, protein, carbs, fat, calcium, iron, zinc, vitamin D, folate, vitamin C
 - Full text search via PostgreSQL GIN index on Bengali + English names
 - Serving size mapping table with cultural units (bowl, piece, katori)
-
-### Offline-First Architecture
-
-```
-Browser (IndexedDB / localStorage)
-        │
-        │ [online]  ──► Immediate sync to PostgreSQL via REST
-        │ [offline] ──► Queue in sync_conflicts table
-        ▼
-sync_conflicts: { patient_id, record_type, local_payload, server_payload }
-        │
-        ▼
-Conflict resolution: worker reviews divergent vitals on reconnect
-```
 
 ---
 
@@ -367,7 +351,6 @@ ws://[host]/ws?token=<JWT>
 
 | Metric | Design Decision |
 |--------|----------------|
-| **Offline capability** | Core features function with zero connectivity |
 | **LLM resilience** | 3-tier cascade ensures AI never fails to respond |
 | **Rate limit handling** | Gemini 4-key rotation prevents single-key exhaustion |
 | **DB connection pooling** | PostgreSQL pool via `pg.Pool` in Express layer |
@@ -470,13 +453,12 @@ npm run dev
 - ✅ Full patient portal (9 modules: dashboard, AI chat, daily check, nutrition, emergency, medicine, calendar, records, wellness)
 - ✅ Community health worker portal (dashboard, patient list, vitals entry, AI analysis, alert management)
 - ✅ Admin dashboard (overview, analytics, user management, AI config)
-- ✅ 3-tier LLM cascade (Groq → Gemini 4-key → offline fallback)
+- ✅ 3-tier LLM cascade (Groq → Gemini 4-key → keyword Q&A fallback)
 - ✅ XGBoost maternal risk prediction model
 - ✅ JWT authentication with refresh token rotation + Google OAuth
 - ✅ WebSocket real-time risk alerts
 - ✅ MCP integration (4 registered tools)
 - ✅ Quarkus RAG & community chat service
-- ✅ Offline-first architecture with sync conflict resolution
 - ✅ FCDB Bangladeshi Food Composition Database integration
 - ✅ Bengali + English multilingual UI
 - ✅ Docker Compose full-stack deployment
