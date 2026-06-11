@@ -11,8 +11,15 @@
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
+    "@number-flow/react": "^0.6.0",
+    "@radix-ui/react-label": "^2.1.9",
+    "@radix-ui/react-slot": "^1.2.5",
+    "@radix-ui/react-switch": "^1.3.0",
     "@react-oauth/google": "^0.13.5",
+    "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
     "react": "^19.2.6",
@@ -20,18 +27,22 @@
     "react-dom": "^19.2.6",
     "react-icons": "^5.6.0",
     "react-markdown": "^10.1.0",
-    "react-router-dom": "^7.15.1"
+    "react-router-dom": "^7.15.1",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "postcss": "^8.5.15",
     "react-doctor": "^0.2.10",
+    "tailwindcss": "^3.4.15",
     "vite": "^8.0.12"
   }
 }

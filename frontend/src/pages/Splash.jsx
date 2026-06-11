@@ -8,7 +8,8 @@ import VitalsMonitor from '../components/landing/VitalsMonitor'
 import SafariMock from '../components/landing/SafariMock'
 import IPhoneMock from '../components/landing/IPhoneMock'
 import Reveal from '../components/landing/Reveal'
-import showcaseDesktop from '../assets/showcase-desktop.png'
+import showcaseDesktop from '../assets/showcase-desktop2.png'
+import { Pricing } from '../components/ui/pricing'
 import showcaseMobile from '../assets/showcase-mobile.png'
 import {
   ArrowRight, ShieldAlert, HeartPulse, Moon, Sun, Sparkles, WifiOff,
@@ -172,6 +173,65 @@ export default function Splash() {
     { acr: 'ACOG', name: t('American College of Obstetricians', 'আমেরিকান কলেজ অব অবস্টেট্রিশিয়ানস'), scope: t('Clinical', 'ক্লিনিকাল'), tint: 'blue' },
   ]
 
+  const pricingPlans = [
+    {
+      name: t('COMMUNITY CLINIC', 'কমিউনিটি ক্লিনিক'),
+      price: '0',
+      yearlyPrice: '0',
+      period: t('free forever', 'চিরতরে ফ্রি'),
+      features: [
+        t('On-device AI Triage scoring', 'ডিভাইসেই এআই ঝুঁকি পরিমাপ'),
+        t('Offline data storage & sync', 'অফলাইন ডেটা সংরক্ষণ ও সিঙ্ক'),
+        t('Emergency SOS locator', 'জরুরি এসওএস লোকেটার'),
+        t('Up to 10 active patient profiles', 'সর্বোচ্চ ১০ জন সক্রিয় রোগী'),
+        t('Basic analytics and history tracking', 'সাধারণ পরিসংখ্যান ও ইতিহাস ট্র্যাকিং'),
+        t('Standard community support', 'সাধারণ কমিউনিটি সহায়তা'),
+      ],
+      description: t('Perfect for individual midwives and rural community clinics.', 'ব্যক্তিগত ধাত্রী এবং গ্রামীণ কমিউনিটি ক্লিনিকের জন্য উপযোগী।'),
+      buttonText: t('Start Free Trial', 'ফ্রি ট্রায়াল শুরু করুন'),
+      href: '/role',
+      isPopular: false,
+    },
+    {
+      name: t('DISTRICT HEALTH', 'উপজেলা / জেলা স্বাস্থ্য'),
+      price: '29',
+      yearlyPrice: '23',
+      period: t('per month', 'প্রতি মাস'),
+      features: [
+        t('Everything in Community Clinic', 'কমিউনিটি ক্লিনিকের সব সুবিধা'),
+        t('Unlimited patient profiles', 'অসংখ্য রোগীর প্রোফাইল'),
+        t('Advanced risk anomaly tracking', 'উন্নত অস্বাভাবিকতা ট্র্যাকিং'),
+        t('SMS alerts for high-risk flags', 'উচ্চ ঝুঁকির জন্য এসএমএস অ্যালার্ট'),
+        t('Regional health statistics dashboard', 'আঞ্চলিক স্বাস্থ্য পরিসংখ্যান ড্যাশবোর্ড'),
+        t('24/7 priority support response', '২৪/৭ অগ্রাধিকার সহায়তা'),
+        t('Custom integration with national systems (DGHS)', 'জাতীয় ব্যবস্থার (DGHS) সাথে কাস্টম সিঙ্ক'),
+      ],
+      description: t('Ideal for growing sub-district health offices and local systems.', 'ক্রমবর্ধমান উপজেলা স্বাস্থ্য অফিস এবং স্থানীয় সিস্টেমের জন্য আদর্শ।'),
+      buttonText: t('Get Started', 'শুরু করুন'),
+      href: '/role',
+      isPopular: true,
+    },
+    {
+      name: t('NATIONAL DEPLOYMENT', 'জাতীয় কার্যক্রম'),
+      price: '199',
+      yearlyPrice: '159',
+      period: t('per month', 'প্রতি মাস'),
+      features: [
+        t('Everything in District Health', 'জেলা স্বাস্থ্যের সব সুবিধা'),
+        t('Dedicated regional account managers', 'ডেডিকেটেড আঞ্চলিক অ্যাকাউন্ট ম্যানেজার'),
+        t('Custom local AI model fine-tuning', 'স্থানীয় এআই মডেল ফাইন-টিউনিং'),
+        t('State-level secure data warehousing', 'রাষ্ট্রীয় স্তরের নিরাপদ ডেটা সংরক্ষণ'),
+        t('1-hour SLA support response', '১ ঘণ্টার মধ্যে সেবা সহায়তা'),
+        t('Advanced security with HIPAA awareness', 'উন্নত নিরাপত্তা ও এইচআইপিএএ-সচেতনতা'),
+        t('Custom contract & SLA agreement', 'কাস্টম চুক্তি ও এসএলএ চুক্তি'),
+      ],
+      description: t('For large organizations and national maternal-health programs.', 'বৃহৎ সংস্থা এবং জাতীয় মাতৃস্বাস্থ্য কর্মসূচির জন্য।'),
+      buttonText: t('Contact Sales', 'যোগাযোগ করুন'),
+      href: '/role',
+      isPopular: false,
+    },
+  ]
+
   return (
     <main className="landing-wrapper">
       <WelcomeIntro locale={locale} />
@@ -197,6 +257,7 @@ export default function Splash() {
           <nav className="landing-nav-pill">
             <a href="#features">{t('Features', 'ফিচার')}</a>
             <a href="#how">{t('How it works', 'যেভাবে কাজ করে')}</a>
+            <a href="#pricing">{t('Pricing', 'মূল্য')}</a>
             <a href="#trust">{t('Trust', 'বিশ্বাস')}</a>
           </nav>
 
@@ -416,6 +477,18 @@ export default function Splash() {
             </Reveal>
           ))}
         </div>
+      </section>
+
+      {/* Pricing section */}
+      <section id="pricing" className="landing-pricing-section">
+        <Pricing
+          plans={pricingPlans}
+          title={t('Simple, Transparent Pricing', 'সহজ, স্বচ্ছ মূল্য')}
+          description={t(
+            'Choose the plan that works for you.\nAll plans include access to our platform, logging tools, and dedicated support.',
+            'আপনার প্রয়োজন অনুযায়ী সঠিক প্ল্যানটি বেছে নিন।\nসব প্ল্যানেই আমাদের প্ল্যাটফর্ম, ট্র্যাকিং টুলস এবং ডেডিকেটেড সাপোর্টের সুবিধা রয়েছে।'
+          )}
+        />
       </section>
 
       {/* Trusted guidance */}
