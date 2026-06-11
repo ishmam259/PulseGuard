@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseGuard AI — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   TOKENS
+───────────────────────────────────────── */
+:root {
+  --bg:          #FAF7F8;
+  --surface:     #FFFFFF;
+  --surface2:    #FFF0F5;
+  --border:      #F0E0E8;
+  --rose:        #E8336A;
+  --rose-light:  #FF6B9D;
+  --rose-pale:   #FFD6E7;
+  --crimson:     #C9184A;
+  --deep:        #1C0B12;
+  --text:        #1A1020;
+  --text-2:      #6B5A62;
+  --text-3:      #A08898;
+  --white:       #FFFFFF;
+  --green:       #2D8C4E;
+  --green-pale:  #E6F7ED;
+  --amber:       #C45D00;
+  --amber-pale:  #FFF3E0;
+  --blue:        #1565C0;
+  --blue-pale:   #E3F0FF;
+  --icon-sz:     56px;
+  --sidebar-w:   68px;
+  --topbar-h:    56px;
+  --radius:      18px;
+  --radius-sm:   12px;
+  --shadow:      0 2px 16px rgba(200,24,74,0.07);
+  --shadow-md:   0 6px 28px rgba(200,24,74,0.13);
+  --tr:          all .25s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"] {
+  --bg:         #110710;
+  --surface:    #1E0F18;
+  --surface2:   #2A1220;
+  --border:     #3A1A28;
+  --text:       #F5E8EE;
+  --text-2:     #C49BAA;
+  --text-3:     #7A5565;
+  --deep:       #0A0408;
+  --shadow:     0 2px 16px rgba(0,0,0,0.3);
+  --shadow-md:  0 6px 28px rgba(0,0,0,0.4);
+}
+
+/* ─────────────────────────────────────────
+   RESET
+───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  transition: background .3s, color .3s;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+
+/* ─────────────────────────────────────────
+   ICON SIDEBAR
+───────────────────────────────────────── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0;
+  z-index: 200;
+  transition: var(--tr);
+}
+.s-logo {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--rose-light), var(--crimson));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem; margin-bottom: 28px; flex-shrink: 0;
+  animation: hb 2s ease-in-out infinite;
+  box-shadow: 0 4px 14px rgba(200,24,74,0.3);
+}
+@keyframes hb { 0%,100%{transform:scale(1)} 14%{transform:scale(1.12)} 28%{transform:scale(1)} 42%{transform:scale(1.07)} }
+
+.s-nav { display: flex; flex-direction: column; gap: 4px; align-items: center; flex: 1; width: 100%; padding: 0 10px; }
+.s-item {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; cursor: pointer; transition: var(--tr);
+  position: relative; color: var(--text-3);
+}
+.s-item:hover { background: var(--surface2); color: var(--rose); }
+.s-item.active { background: var(--rose-pale); color: var(--crimson); }
+.s-item.active::before {
+  content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 24px; background: var(--crimson); border-radius: 0 3px 3px 0;
+}
+.s-item .tip {
+  position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
+  background: var(--deep); color: #fff; font-size: 0.72rem; font-weight: 600;
+  padding: 5px 10px; border-radius: 8px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: var(--tr);
+}
+.s-item:hover .tip { opacity: 1; }
+
+.s-divider { width: 28px; height: 1px; background: var(--border); margin: 8px 0; }
+
+.s-bottom { display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 0 10px; }
+.s-sos {
+  width: 44px; height: 44px; border-radius: 14px;
+  background: linear-gradient(135deg, #ff4d6d, #c9184a);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 900; color: white; letter-spacing: 0.06em;
+  cursor: pointer; transition: var(--tr);
+  box-shadow: 0 0 0 0 rgba(201,24,74,.4);
+  animation: sosPulse 2.5s ease-in-out infinite;
+  position: relative;
+}
+.s-sos .tip {
+  position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
+  background: #c9184a; color: #fff; font-size: 0.72rem; font-weight: 700;
+  padding: 5px 10px; border-radius: 8px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: var(--tr);
+}
+.s-sos:hover .tip { opacity: 1; }
+.s-sos:hover { transform: scale(1.1); }
+@keyframes sosPulse { 0%{box-shadow:0 0 0 0 rgba(201,24,74,.5)} 70%{box-shadow:0 0 0 10px rgba(201,24,74,0)} 100%{box-shadow:0 0 0 0 rgba(201,24,74,0)} }
+
+/* ─────────────────────────────────────────
+   TOPBAR
+───────────────────────────────────────── */
+.topbar {
+  position: fixed; top: 0; left: var(--sidebar-w); right: 0;
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 32px; gap: 12px; z-index: 100;
+  transition: var(--tr);
+}
+.topbar-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.topbar-sub {
+  font-size: 0.7rem; font-weight: 600; color: var(--rose);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  display: flex; align-items: center; gap: 4px;
+}
+.topbar-sub::before { content: '·'; font-size: 0.9rem; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.tb-btn {
+  height: 34px; padding: 0 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface2);
+  font-size: 0.76rem; font-weight: 700; color: var(--text-2);
+  cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 6px;
+  font-family: 'Inter', sans-serif;
+}
+.tb-btn:hover { border-color: var(--rose-pale); color: var(--crimson); background: var(--rose-pale); }
+.tb-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose-light), var(--crimson));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; color: white; font-weight: 700;
+  cursor: pointer; transition: var(--tr);
+  box-shadow: 0 2px 10px rgba(200,24,74,0.25);
+}
+.tb-avatar:hover { transform: scale(1.08); }
+
+/* ─────────────────────────────────────────
+   MAIN SCROLL AREA
+───────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  padding-top: var(--topbar-h);
+  min-height: 100vh;
+  flex: 1;
+}
+.page { padding: 32px 36px 60px; max-width: 1080px; }
+
+/* Greeting */
+.greeting { margin-bottom: 28px; }
+.greeting h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+.greeting p { font-size: 0.88rem; color: var(--text-2); font-weight: 500; }
+
+/* ─────────────────────────────────────────
+   HERO BANNER
+───────────────────────────────────────── */
+.hero {
+  background: var(--deep);
+  border-radius: 22px;
+  padding: 32px 36px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; right: -60px; top: -60px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,51,106,0.25), transparent 70%);
+}
+.hero::after {
+  content: ''; position: absolute; left: 30%; bottom: -40px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,107,157,0.12), transparent 70%);
+}
+.hero-left { z-index: 1; }
+.hero-left h2 {
+  font-size: 2rem; font-weight: 800; color: #fff; line-height: 1.2;
+  letter-spacing: -0.03em; margin-bottom: 20px;
+}
+.hero-left h2 span { color: var(--rose-light); }
+.hero-cta-row { display: flex; align-items: center; gap: 14px; }
+.hero-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 50px; padding: 10px 22px;
+  color: white; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  transition: var(--tr); backdrop-filter: blur(4px);
+}
+.hero-btn .play { width: 28px; height: 28px; border-radius: 50%; background: var(--rose-light); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; }
+.hero-btn:hover { background: rgba(255,255,255,0.2); }
+.hero-right { z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+.hero-week {
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+.hero-week-num {
+  font-size: 3.5rem; font-weight: 900; color: white; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.hero-week-lbl { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.12em; text-transform: uppercase; }
+.hero-due {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 30px; padding: 8px 18px;
+  font-size: 0.8rem; color: rgba(255,255,255,0.85); font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+}
+.hero-due strong { color: var(--rose-light); }
+.hero-btn-main {
+  background: var(--rose); border: none; border-radius: 50px;
+  padding: 11px 24px; color: white; font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 8px;
+  font-family: 'Inter', sans-serif; box-shadow: 0 4px 18px rgba(200,24,74,0.35);
+}
+.hero-btn-main:hover { background: var(--crimson); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(200,24,74,0.45); }
+
+/* ─────────────────────────────────────────
+   QUICK LINKS STRIP
+───────────────────────────────────────── */
+.quick-strip {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 20px 28px;
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+.quick-strip::-webkit-scrollbar { display: none; }
+.q-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; transition: var(--tr); padding: 0 18px; min-width: 80px;
+  text-decoration: none;
+  border-right: 1px solid var(--border);
+}
+.q-item:last-child { border-right: none; }
+.q-item:hover .q-icon { background: var(--rose-pale); transform: scale(1.08); }
+.q-item:hover .q-lbl { color: var(--crimson); }
+.q-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--surface2); display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; transition: var(--tr);
+}
+.q-lbl { font-size: 0.72rem; font-weight: 600; color: var(--text-2); white-space: nowrap; }
+
+/* ─────────────────────────────────────────
+   TWO-COLUMN CONTENT
+───────────────────────────────────────── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.full-row { margin-bottom: 20px; }
+
+/* ─────────────────────────────────────────
+   CARD BASE
+───────────────────────────────────────── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  transition: var(--tr); position: relative; overflow: hidden;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.card-label {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-3); margin-bottom: 4px; display: block;
+}
+.card-title { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+.card-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.76rem; font-weight: 700; color: var(--rose);
+  margin-top: 14px; cursor: pointer; transition: var(--tr);
+}
+.card-link:hover { gap: 8px; color: var(--crimson); }
+
+/* ─────────────────────────────────────────
+   PREGNANCY CARD
+───────────────────────────────────────── */
+.preg-body { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+.preg-ring { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+.preg-ring svg { transform: rotate(-90deg); }
+.preg-ring-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.preg-ring-center .big { font-size: 1.5rem; font-weight: 900; color: var(--crimson); line-height: 1; }
+.preg-ring-center .sm { font-size: 0.5rem; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; }
+.preg-meta h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.preg-meta p { font-size: 0.8rem; color: var(--text-2); }
+.due-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 12px; font-size: 0.76rem; font-weight: 600; color: var(--text-2);
+  margin-bottom: 12px;
+}
+.due-pill strong { color: var(--crimson); }
+.encourage {
+  background: var(--surface2); border-radius: var(--radius-sm);
+  padding: 12px 14px; font-size: 0.8rem; color: var(--text-2); line-height: 1.55;
+  border-left: 3px solid var(--rose-light);
+}
+
+/* ─────────────────────────────────────────
+   AI ASSISTANT CARD
+───────────────────────────────────────── */
+.ai-card {
+  background: var(--surface2);
+  border: 1px solid var(--rose-pale);
+}
+.ai-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.ai-avatar {
+  width: 42px; height: 42px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--rose-light), var(--crimson));
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+  flex-shrink: 0; box-shadow: 0 4px 14px rgba(200,24,74,0.25);
+}
+.ai-header-text h3 { font-size: 0.95rem; font-weight: 700; }
+.ai-header-text p { font-size: 0.75rem; color: var(--text-2); }
+.ai-body {
+  font-size: 0.83rem; color: var(--text-2); line-height: 1.6; margin-bottom: 16px;
+  min-height: 48px;
+}
+.ai-input-row {
+  display: flex; gap: 8px; align-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 50px; padding: 8px 8px 8px 16px;
+}
+.ai-input {
+  flex: 1; border: none; background: transparent; outline: none;
+  font-size: 0.83rem; color: var(--text); font-family: 'Inter', sans-serif;
+}
+.ai-input::placeholder { color: var(--text-3); }
+.ai-send {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--rose); border: none; color: white; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
+  transition: var(--tr); flex-shrink: 0;
+}
+.ai-send:hover { background: var(--crimson); transform: scale(1.1); }
+.ai-robot-bg {
+  position: absolute; right: 16px; bottom: 60px; font-size: 3.5rem;
+  opacity: 0.07; pointer-events: none; transform: rotate(-10deg);
+}
+
+/* ─────────────────────────────────────────
+   CALORIE / NUTRITION CARD
+───────────────────────────────────────── */
+.cal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+.cal-header-right { text-align: right; }
+.cal-header-right .big-num { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+.cal-header-right .sub { font-size: 0.7rem; color: var(--text-3); font-weight: 500; }
+.cal-today { font-size: 2.8rem; font-weight: 900; color: var(--text); letter-spacing: -0.04em; line-height: 1; margin-bottom: 4px; }
+.cal-today span { font-size: 1rem; color: var(--text-3); font-weight: 600; }
+.cal-range { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-3); font-weight: 600; margin-bottom: 8px; }
+.bar-stack { display: flex; gap: 3px; margin-bottom: 16px; height: 8px; border-radius: 4px; overflow: hidden; }
+.bar-seg { height: 100%; border-radius: 4px; transition: width 1.2s ease; }
+.nutrient-mini-row {
+  display: flex; justify-content: space-between; padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.nutrient-mini { text-align: center; }
+.nutrient-mini .val { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+.nutrient-mini .val sup { font-size: 0.6rem; color: var(--text-3); font-weight: 600; }
+.nutrient-mini .lbl { font-size: 0.68rem; color: var(--text-3); font-weight: 600; margin-top: 2px; }
+
+/* ─────────────────────────────────────────
+   HEALTH METRICS CARD
+───────────────────────────────────────── */
+.metrics-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-top: 8px; }
+.metric-tile {
+  background: var(--surface2); border-radius: var(--radius-sm); padding: 14px 10px;
+  text-align: center; transition: var(--tr); cursor: pointer;
+  border: 1px solid var(--border);
+}
+.metric-tile:hover { border-color: var(--rose-pale); background: var(--rose-pale); }
+.metric-tile .ico { font-size: 1.2rem; margin-bottom: 6px; }
+.metric-tile .v { font-size: 0.95rem; font-weight: 800; color: var(--crimson); }
+.metric-tile .l { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); margin-top: 2px; }
+.metric-tile.empty { opacity: 0.6; border-style: dashed; }
+.metric-tile.empty .v { font-size: 0.75rem; color: var(--text-3); }
+.notif-bar {
+  display: flex; align-items: center; gap: 10px; margin-top: 12px;
+  background: var(--surface2); border: 1px dashed var(--rose-pale);
+  border-radius: var(--radius-sm); padding: 10px 14px; cursor: pointer; transition: var(--tr);
+  text-decoration: none;
+}
+.notif-bar:hover { border-color: var(--rose-light); background: var(--rose-pale); }
+.notif-bar span { font-size: 0.8rem; color: var(--crimson); font-weight: 600; }
+
+/* ─────────────────────────────────────────
+   MEDICATION CARD
+───────────────────────────────────────── */
+.med-count {
+  font-size: 0.8rem; color: var(--text-2); font-weight: 500; margin-bottom: 14px;
+}
+.med-count strong { color: #E65100; }
+.med-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 6px;
+  border: 1px solid var(--border); transition: var(--tr); cursor: pointer;
+  text-decoration: none;
+}
+.med-row:hover { background: var(--surface2); border-color: var(--rose-pale); }
+.med-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.med-dot.due { background: #E65100; animation: blink 1.4s ease-in-out infinite; }
+.med-dot.done { background: #2D8C4E; }
+.med-dot.later { background: var(--rose-light); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.med-info { flex: 1; }
+.med-info .n { font-size: 0.83rem; font-weight: 700; }
+.med-info .t { font-size: 0.7rem; color: var(--text-3); font-weight: 500; }
+.med-pill {
+  font-size: 0.66rem; font-weight: 800; padding: 3px 9px; border-radius: 8px; white-space: nowrap;
+}
+.med-pill.due { background: #FFF0E0; color: #E65100; }
+.med-pill.done { background: var(--green-pale); color: var(--green); }
+.med-pill.later { background: var(--rose-pale); color: var(--rose); }
+[data-theme="dark"] .med-pill.due { background: #3D1800; }
+[data-theme="dark"] .med-pill.done { background: #0A2B15; color: #6ECE8A; }
+
+/* ─────────────────────────────────────────
+   HYDRATION CARD
+───────────────────────────────────────── */
+.hydro-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.hydro-big { font-size: 2.2rem; font-weight: 900; color: var(--text); letter-spacing: -0.03em; }
+.hydro-big span { font-size: 0.9rem; color: var(--text-3); font-weight: 600; }
+.hydro-sub { font-size: 0.75rem; color: var(--text-2); }
+.level-bar { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+.level-fill { height: 100%; background: linear-gradient(90deg, #64B5F6, #1976D2); border-radius: 4px; transition: width 1.2s ease; }
+.level-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; margin-bottom: 12px;
+}
+.level-chip.low { background: var(--amber-pale); color: var(--amber); }
+.level-chip.good { background: var(--blue-pale); color: var(--blue); }
+[data-theme="dark"] .level-chip.low { background: #3D1A00; color: #FF8F3F; }
+[data-theme="dark"] .level-chip.good { background: #0A1A3D; color: #64B5F6; }
+.cups { display: flex; flex-wrap: wrap; gap: 6px; }
+.cup { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; cursor: pointer; transition: var(--tr); opacity: 0.22; color: #1565C0; }
+.cup.on { opacity: 1; }
+.cup:hover { transform: scale(1.25); opacity: 0.7; }
+
+/* ─────────────────────────────────────────
+   FLOATING SOS BUTTON
+───────────────────────────────────────── */
+.sos-float {
+  position: fixed; bottom: 32px; right: 32px; z-index: 999;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, #FF4D6D, #C9184A);
+  border: none; cursor: pointer; color: white;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  box-shadow: 0 6px 24px rgba(201,24,74,0.5);
+  transition: var(--tr); text-decoration: none;
+  font-family: 'Inter', sans-serif;
+}
+.sos-float::before, .sos-float::after {
+  content: ''; position: absolute; border-radius: 50%;
+  border: 2px solid rgba(201,24,74,0.5);
+  animation: sosRing 2.2s ease-out infinite;
+  pointer-events: none;
+}
+.sos-float::before { width: 84px; height: 84px; animation-delay: 0s; }
+.sos-float::after  { width: 104px; height: 104px; animation-delay: 0.65s; }
+@keyframes sosRing { 0%{transform:scale(.86);opacity:.85} 100%{transform:scale(1.4);opacity:0} }
+.sos-float:hover { transform: scale(1.1); box-shadow: 0 8px 32px rgba(201,24,74,0.7); }
+.sos-float-lbl { font-size: 0.58rem; font-weight: 900; letter-spacing: 0.12em; line-height: 1; }
+
+/* ─────────────────────────────────────────
+   TIPS / WELLNESS STRIP
+───────────────────────────────────────── */
+.tips-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.tip-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px; transition: var(--tr); cursor: pointer; text-decoration: none;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.tip-card:hover { border-color: var(--rose-pale); box-shadow: var(--shadow); transform: translateY(-3px); }
+.tip-ico { color: var(--rose); display: flex; margin-bottom: 2px; }
+.tip-t { font-size: 0.83rem; font-weight: 700; color: var(--text); }
+.tip-d { font-size: 0.73rem; color: var(--text-2); line-height: 1.45; }
+.tip-go { font-size: 0.7rem; font-weight: 700; color: var(--rose); margin-top: auto; display: block; }
+
+/* ─────────────────────────────────────────
+   SECTION EYEBROW
+───────────────────────────────────────── */
+.section-ey {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+}
+.section-ey h2 { font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); }
+.section-ey a { font-size: 0.76rem; font-weight: 700; color: var(--rose); cursor: pointer; }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 900px) {
+  .three-col { grid-template-columns: 1fr 1fr; }
+  .tips-row { grid-template-columns: 1fr 1fr; }
+  .metrics-grid { grid-template-columns: repeat(3,1fr); }
+}
+@media (max-width: 720px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { transform: translateX(-260px); width: 260px; }
+  .sidebar.open { transform: translateX(0); }
+  .topbar { left: 0; padding-left: 54px; }
+  .hamburger { display: flex !important; }
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .hero { flex-direction: column; align-items: flex-start; }
+  .hero-right { align-items: flex-start; }
+  .page { padding: 20px 18px 100px; }
+  .greeting h1 { font-size: 1.35rem; }
+  .hero-left h2 { font-size: 1.5rem; }
+  .tips-row { grid-template-columns: 1fr 1fr; }
+  .metrics-grid { grid-template-columns: repeat(3,1fr); }
+}
+@media (max-width: 480px) {
+  .tips-row { grid-template-columns: 1fr; }
+  .metrics-grid { grid-template-columns: repeat(2,1fr); }
+  .quick-strip { gap: 0; padding: 16px 12px; }
+  .q-item { padding: 0 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: color .2s, background .2s !important; }
+}
+
+/* hamburger */
+.hamburger {
+  display: none; position: fixed; top: 11px; left: 14px; z-index: 300;
+  width: 34px; height: 34px; border-radius: 9px; background: var(--surface);
+  border: 1px solid var(--border); cursor: pointer;
+  flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+}
+.hamburger span { width: 18px; height: 2px; background: var(--text-2); border-radius: 2px; }
+.overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 199;
+}
+.overlay.on { display: block; }
+
+/* stagger */
+.fade-up { opacity: 0; animation: fu .4s ease forwards; }
+.fade-up:nth-child(1) { animation-delay: .05s; }
+.fade-up:nth-child(2) { animation-delay: .1s; }
+.fade-up:nth-child(3) { animation-delay: .15s; }
+.fade-up:nth-child(4) { animation-delay: .2s; }
+.fade-up:nth-child(5) { animation-delay: .25s; }
+@keyframes fu { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+
+/* ═══════════════════════════════════════════
+   POSTNATAL MODE TOKENS
+═══════════════════════════════════════════ */
+body.postnatal {
+  --rose:        #3A7D5E;
+  --rose-light:  #52B788;
+  --rose-pale:   #D8F3DC;
+  --crimson:     #2D6A4F;
+  --deep:        #081C15;
+  --surface2:    #F0FAF4;
+  --border:      #C8E6C9;
+  --bg:          #F6FBF7;
+  --shadow:      0 2px 16px rgba(45,106,79,0.07);
+  --shadow-md:   0 6px 28px rgba(45,106,79,0.14);
+}
+body.postnatal[data-theme="dark"] {
+  --bg:      #080F0A;
+  --surface: #0F1F14;
+  --surface2:#162B1C;
+  --border:  #1E3D28;
+  --deep:    #040A06;
+}
+/* mode badge in topbar */
+.mode-badge {
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 20px; margin-left: 6px;
+}
+.mode-badge.prenatal { background: var(--rose-pale); color: var(--crimson); }
+.mode-badge.postnatal-badge { background: #D8F3DC; color: #2D6A4F; }
+body.postnatal .mode-badge.postnatal-badge { display: inline-flex; }
+body.postnatal .mode-badge.prenatal { display: none; }
+.mode-badge.postnatal-badge { display: none; }
+
+/* ── CONGRATULATORY OVERLAY ── */
+.congrats-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(8,28,21,0.75); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none;
+  transition: opacity .4s ease;
+}
+.congrats-overlay.show { opacity: 1; pointer-events: all; }
+.congrats-card {
+  background: var(--surface); border-radius: 28px; padding: 40px 36px;
+  max-width: 480px; width: 100%; text-align: center;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  transform: scale(0.88) translateY(20px);
+  transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+  position: relative; overflow: hidden;
+}
+.congrats-overlay.show .congrats-card { transform: scale(1) translateY(0); }
+.confetti-canvas { position: absolute; inset: 0; pointer-events: none; border-radius: 28px; }
+.congrats-baby-icon {
+  width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px;
+  background: linear-gradient(135deg, #D8F3DC, #B7E4C7);
+  display: flex; align-items: center; justify-content: center;
+  animation: babyBounce 2s ease-in-out infinite;
+  position: relative; z-index: 1;
+}
+@keyframes babyBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.congrats-stars { font-size: 1.4rem; margin-bottom: 8px; letter-spacing: 4px; position: relative; z-index: 1; }
+.congrats-card h2 {
+  font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 10px;
+  line-height: 1.25; position: relative; z-index: 1;
+}
+.congrats-card h2 span { color: #2D6A4F; }
+.congrats-card p {
+  font-size: 0.9rem; color: var(--text-2); line-height: 1.6; margin-bottom: 28px;
+  position: relative; z-index: 1;
+}
+.congrats-btns { display: flex; gap: 12px; justify-content: center; position: relative; z-index: 1; }
+.btn-yes {
+  flex: 1; padding: 13px 0; border-radius: 14px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, #52B788, #2D6A4F); color: white;
+  font-size: 0.92rem; font-weight: 800; font-family: 'Inter', sans-serif;
+  transition: all .2s ease; box-shadow: 0 4px 18px rgba(45,106,79,0.35);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-yes:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(45,106,79,0.45); }
+.btn-no {
+  flex: 1; padding: 13px 0; border-radius: 14px; cursor: pointer;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text-2);
+  font-size: 0.92rem; font-weight: 700; font-family: 'Inter', sans-serif;
+  transition: all .2s ease;
+}
+.btn-no:hover { background: var(--border); }
+.congrats-footnote { font-size: 0.72rem; color: var(--text-3); margin-top: 14px; position: relative; z-index: 1; }
+
+/* ── POSTNATAL PREGNANCY CARD TRIGGER ── */
+.preg-card-postnatal-prompt {
+  border: 2px dashed #52B788 !important;
+  background: linear-gradient(135deg, #F0FAF4, #FAFFF7) !important;
+}
+body[data-theme="dark"] .preg-card-postnatal-prompt {
+  background: linear-gradient(135deg, #0F1F14, #162B1C) !important;
+}
+.pn-prompt-banner {
+  background: linear-gradient(135deg, #2D6A4F, #52B788);
+  border-radius: 14px; padding: 18px 20px; text-align: center; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+}
+.pn-prompt-banner::before {
+  content: ''; position: absolute; right: -20px; top: -20px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+.pn-prompt-banner p { font-size: 0.78rem; color: rgba(255,255,255,0.8); margin-bottom: 4px; font-weight: 600; }
+.pn-prompt-banner h3 { font-size: 1.05rem; color: white; font-weight: 800; line-height: 1.3; }
+.pn-prompt-btns { display: flex; gap: 8px; }
+.pn-yes {
+  flex: 1; padding: 10px; border-radius: 10px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, #52B788, #2D6A4F); color: white;
+  font-size: 0.82rem; font-weight: 800; font-family: 'Inter', sans-serif;
+  transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.pn-yes:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(45,106,79,0.3); }
+.pn-no {
+  flex: 1; padding: 10px; border-radius: 10px; cursor: pointer;
+  background: transparent; border: 1px solid #C8E6C9; color: #2D6A4F;
+  font-size: 0.82rem; font-weight: 700; font-family: 'Inter', sans-serif;
+  transition: all .2s;
+}
+.pn-no:hover { background: #D8F3DC; }
+
+/* ── POSTNATAL DASHBOARD ── */
+#postnatal-dashboard { display: none; }
+body.postnatal #prenatal-dashboard { display: none; }
+body.postnatal #postnatal-dashboard { display: block; }
+body.postnatal #prenatal-sidebar { display: none; }
+body.postnatal #postnatal-sidebar { display: flex; }
+#postnatal-sidebar { display: none; }
+
+/* postnatal hero */
+.pn-hero {
+  background: var(--deep); border-radius: 22px; padding: 32px 36px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.pn-hero::before {
+  content: ''; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(82,183,136,0.25), transparent 70%);
+}
+.pn-hero::after {
+  content: ''; position: absolute; left: 30%; bottom: -50px; width: 200px; height: 200px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(82,183,136,0.1), transparent 70%);
+}
+.pn-hero-left { z-index: 1; }
+.pn-hero-left h2 { font-size: 1.9rem; font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 8px; }
+.pn-hero-left h2 span { color: #95D5B2; }
+.pn-hero-left p { font-size: 0.88rem; color: rgba(255,255,255,0.65); margin-bottom: 20px; font-weight: 500; }
+.pn-hero-right { z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+.pn-day-num { font-size: 3.5rem; font-weight: 900; color: white; line-height: 1; }
+.pn-day-lbl { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.12em; text-transform: uppercase; }
+.pn-hero-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #52B788, #2D6A4F); border: none; border-radius: 50px;
+  padding: 11px 24px; color: white; font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; transition: var(--tr); font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 18px rgba(45,106,79,0.35);
+}
+.pn-hero-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(45,106,79,0.5); }
+
+/* postnatal tab switcher (mom/baby) */
+.pn-tabs { display: flex; gap: 6px; background: var(--surface2); border-radius: 14px; padding: 5px; margin-bottom: 20px; border: 1px solid var(--border); width: fit-content; }
+.pn-tab {
+  padding: 8px 20px; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; transition: var(--tr); color: var(--text-2); display: flex; align-items: center; gap: 6px;
+  border: none; background: transparent; font-family: 'Inter', sans-serif;
+}
+.pn-tab.active { background: var(--surface); color: var(--crimson); box-shadow: 0 2px 10px var(--shadow); }
+.pn-tab:hover:not(.active) { color: var(--text); }
+
+/* status cards */
+.pn-status-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+.pn-stat {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px 16px; text-align: center; transition: var(--tr); cursor: pointer;
+}
+.pn-stat:hover { border-color: var(--rose-pale); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.pn-stat .ico { display: flex; justify-content: center; color: var(--crimson); margin-bottom: 10px; }
+.pn-stat .val { font-size: 1.3rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; }
+.pn-stat .lbl { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); margin-top: 3px; }
+.pn-stat .sub { font-size: 0.72rem; color: var(--text-2); margin-top: 4px; }
+
+/* postnatal card grid */
+.pn-two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.pn-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.pn-full { margin-bottom: 20px; }
+
+/* vaccine timeline */
+.vaccine-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.vaccine-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: var(--surface2); border-radius: var(--radius-sm); border: 1px solid var(--border);
+  transition: var(--tr); cursor: pointer; text-decoration: none;
+}
+.vaccine-row:hover { border-color: var(--rose-pale); background: var(--rose-pale); }
+.v-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.v-dot.due-now { background: #E65100; animation: blink 1.4s ease-in-out infinite; }
+.v-dot.upcoming { background: var(--rose-light); }
+.v-dot.done { background: #2D8C4E; }
+.v-info { flex: 1; }
+.v-info .n { font-size: 0.83rem; font-weight: 700; color: var(--text); }
+.v-info .t { font-size: 0.7rem; color: var(--text-3); font-weight: 500; margin-top: 1px; }
+.v-tag { font-size: 0.66rem; font-weight: 800; padding: 3px 9px; border-radius: 8px; white-space: nowrap; }
+.v-tag.due { background: #FFF0E0; color: #E65100; }
+.v-tag.soon { background: var(--rose-pale); color: var(--crimson); }
+.v-tag.done { background: var(--green-pale); color: var(--green); }
+[data-theme="dark"] .v-tag.done { background: #0A2B15; color: #6ECE8A; }
+[data-theme="dark"] .v-tag.due { background: #3D1800; }
+
+/* postpartum depression card */
+.ppd-card { background: linear-gradient(135deg, #1C1030, #2D1854); border: none; }
+.ppd-card .card-label { color: rgba(255,255,255,0.5); }
+.ppd-card .card-title { color: white; }
+.ppd-inner { position: relative; z-index: 1; }
+.ppd-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: var(--radius);
+  background: radial-gradient(circle at 30% 50%, rgba(138,43,226,0.2), transparent 60%);
+}
+.ppd-scale { display: flex; gap: 6px; margin: 14px 0; }
+.ppd-dot-btn {
+  flex: 1; height: 8px; border-radius: 4px; border: none; cursor: pointer; transition: var(--tr);
+  background: rgba(255,255,255,0.15);
+}
+.ppd-dot-btn.sel { background: #9B59B6; }
+.ppd-dot-btn:hover { background: rgba(155,89,182,0.6); }
+.ppd-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: rgba(255,255,255,0.4); margin-bottom: 12px; font-weight: 600; }
+.ppd-result { font-size: 0.8rem; color: rgba(255,255,255,0.75); line-height: 1.5; }
+.ppd-cta {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+  background: rgba(155,89,182,0.25); border: 1px solid rgba(155,89,182,0.4);
+  color: #CE93D8; border-radius: 10px; padding: 8px 14px; font-size: 0.76rem; font-weight: 700;
+  cursor: pointer; transition: var(--tr); text-decoration: none;
+}
+.ppd-cta:hover { background: rgba(155,89,182,0.4); }
+
+/* store card */
+.store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.store-item {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 14px 12px; text-align: center; cursor: pointer; transition: var(--tr); text-decoration: none;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.store-item:hover { border-color: var(--rose-pale); transform: translateY(-2px); box-shadow: var(--shadow); }
+.store-ico { color: var(--crimson); }
+.store-name { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+.store-sub { font-size: 0.68rem; color: var(--text-3); }
+.store-badge { font-size: 0.62rem; font-weight: 800; background: var(--rose-pale); color: var(--crimson); padding: 2px 7px; border-radius: 6px; }
+
+/* exercise card */
+.exercise-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.ex-row {
+  display: flex; align-items: center; gap: 12px; padding: 11px 13px;
+  background: var(--surface2); border-radius: var(--radius-sm); border: 1px solid var(--border);
+  transition: var(--tr); cursor: pointer; text-decoration: none;
+}
+.ex-row:hover { border-color: var(--rose-pale); background: var(--rose-pale); }
+.ex-ico { color: var(--crimson); flex-shrink: 0; }
+.ex-info { flex: 1; }
+.ex-info .n { font-size: 0.83rem; font-weight: 700; color: var(--text); }
+.ex-info .t { font-size: 0.7rem; color: var(--text-3); font-weight: 500; }
+.ex-week { font-size: 0.68rem; font-weight: 700; background: var(--rose-pale); color: var(--crimson); padding: 3px 9px; border-radius: 8px; }
+
+/* skin care card */
+.skin-row {
+  display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); margin-bottom: 8px; background: var(--surface2);
+  transition: var(--tr); cursor: pointer; text-decoration: none;
+}
+.skin-row:hover { border-color: var(--rose-pale); background: var(--rose-pale); }
+.skin-dot { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.skin-info .n { font-size: 0.83rem; font-weight: 700; color: var(--text); }
+.skin-info .t { font-size: 0.7rem; color: var(--text-3); }
+
+/* responsive adjustments */
+@media(max-width:900px){ .pn-status-grid{grid-template-columns:1fr 1fr} .pn-three{grid-template-columns:1fr 1fr} }
+@media(max-width:720px){ .pn-two,.pn-three{grid-template-columns:1fr} .pn-hero{flex-direction:column;align-items:flex-start} .pn-hero-right{align-items:flex-start} .pn-status-grid{grid-template-columns:1fr 1fr} }
+@media(max-width:480px){ .pn-status-grid{grid-template-columns:1fr 1fr} .store-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+
+<!-- ═══ FLOATING SOS BUTTON ═══ -->
+<a href="sos.html" class="sos-float" title="Emergency SOS — Tap for immediate help">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1.34h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 9.09a16 16 0 006.82 6.82l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/>
+  </svg>
+  <span class="sos-float-lbl">SOS</span>
+</a>
+
+<!-- ═══ CONGRATULATORY MODAL ═══ -->
+<div class="congrats-overlay" id="congratsOverlay">
+  <div class="congrats-card">
+    <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+    <div class="congrats-baby-icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2D6A4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M8 14c-2.5 1-4 3-4 5h16c0-2-1.5-4-4-5"/><path d="M9 11l-1 3 4 1 4-1-1-3"/></svg>
+    </div>
+    <div class="congrats-stars">✦ ✦ ✦</div>
+    <h2>Welcome to the world,<br><span>little one!</span></h2>
+    <p>Congratulations, Hasan! Your baby has arrived — and a beautiful new chapter begins. Are you ready to step into motherhood with PulseGuard by your side?</p>
+    <div class="congrats-btns">
+      <button class="btn-yes" onclick="activatePostnatal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Yes, I'm ready!
+      </button>
+      <button class="btn-no" onclick="dismissCongrats()">Not yet</button>
+    </div>
+    <div class="congrats-footnote">You can switch modes anytime from the top bar</div>
+  </div>
+</div>
+
+<!-- ═══ POSTNATAL SIDEBAR ═══ -->
+<aside class="sidebar" id="postnatal-sidebar">
+  <div class="s-logo" style="background:linear-gradient(135deg,#52B788,#2D6A4F);">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M8 14c-2.5 1-4 3-4 5h16c0-2-1.5-4-4-5"/></svg>
+  </div>
+  <nav class="s-nav">
+    <!-- Dashboard -->
+    <a href="#" class="s-item active">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span class="tip">Dashboard</span>
+    </a>
+    <!-- Vaccines -->
+    <a href="postnatal-vaccines.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8H8a4 4 0 008 0"/><path d="M12 12v8"/><path d="M9 19h6"/><path d="M7 8l-3 3"/></svg>
+      <span class="tip">Vaccines</span>
+    </a>
+    <!-- Mom Nutrition -->
+    <a href="postnatal-nutrition-mom.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      <span class="tip">Mom's Nutrition</span>
+    </a>
+    <!-- Baby Nutrition -->
+    <a href="postnatal-nutrition-baby.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+      <span class="tip">Baby's Nutrition</span>
+    </a>
+    <div class="s-divider"></div>
+    <!-- Postpartum Depression -->
+    <a href="postnatal-ppd.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <span class="tip">Postpartum Support</span>
+    </a>
+    <!-- Exercise -->
+    <a href="postnatal-exercise.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v8"/><path d="M9 9l-3 3"/><path d="M15 9l3 3"/><path d="M9 20l3-5 3 5"/></svg>
+      <span class="tip">Exercise</span>
+    </a>
+    <!-- Skin Care -->
+    <a href="postnatal-skincare.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8.5 14s1.5 2 3.5 2 3.5-2 3.5-2"/><path d="M9 9h.01M15 9h.01"/></svg>
+      <span class="tip">Skin Care</span>
+    </a>
+    <div class="s-divider"></div>
+    <!-- Education -->
+    <a href="postnatal-education.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      <span class="tip">Education</span>
+    </a>
+    <!-- Store -->
+    <a href="postnatal-store.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="tip">Mom & Kid Store</span>
+    </a>
+    <!-- AI Assistant -->
+    <a href="ai-assistant.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="9" cy="16" r="1" fill="currentColor"/><circle cx="15" cy="16" r="1" fill="currentColor"/></svg>
+      <span class="tip">AI Assistant</span>
+    </a>
+    <!-- Community -->
+    <a href="community.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="tip">Community Chat</span>
+    </a>
+  </nav>
+  <div class="s-bottom">
+    <div class="s-divider"></div>
+    <a href="#" onclick="switchToPrenatal(); return false;" class="s-item" style="color:var(--text-3);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      <span class="tip">Back to Prenatal</span>
+    </a>
+  </div>
+</aside>
+
+<!-- ═══ ICON SIDEBAR (PRENATAL) ═══ -->
+<aside class="sidebar" id="prenatal-sidebar">
+  <div class="s-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+  </div>
+
+  <nav class="s-nav">
+    <a href="#" class="s-item active">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span class="tip">Dashboard</span>
+    </a>
+    <a href="nutrition.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      <span class="tip">Nutrition</span>
+    </a>
+    <a href="medicine.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="17" cy="17" r="5"/><path d="M14.5 17h5"/><path d="M17 14.5v5"/></svg>
+      <span class="tip">Medicine</span>
+    </a>
+    <a href="hydration.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+      <span class="tip">Hydration</span>
+    </a>
+    <a href="pregnancy-calendar.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span class="tip">Pregnancy Calendar</span>
+    </a>
+    <div class="s-divider"></div>
+    <a href="ai-assistant.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="9" cy="16" r="1" fill="currentColor"/><circle cx="15" cy="16" r="1" fill="currentColor"/></svg>
+      <span class="tip">AI Assistant</span>
+    </a>
+    <a href="community.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="tip">Community Chat</span>
+    </a>
+    <div class="s-divider"></div>
+    <a href="wellness-hub.html" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      <span class="tip">Wellness Hub</span>
+    </a>
+    <a href="wellness-hub.html#faq" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="tip">FAQ</span>
+    </a>
+    <a href="wellness-hub.html#risks" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="tip">Risks &amp; Warning Signs</span>
+    </a>
+    <a href="wellness-hub.html#exercise" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v8"/><path d="M9 9l-3 3"/><path d="M15 9l3 3"/><path d="M9 20l3-5 3 5"/></svg>
+      <span class="tip">Exercise</span>
+    </a>
+    <a href="wellness-hub.html#delivery" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="tip">Delivery Prep</span>
+    </a>
+  </nav>
+
+  <div class="s-bottom">
+    <div class="s-divider"></div>
+    <a href="sos.html" class="s-item" style="color:#C9184A;background:linear-gradient(135deg,rgba(255,77,109,0.15),rgba(201,24,74,0.15));animation:hb 2s ease-in-out infinite;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1.34h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 9.09a16 16 0 006.82 6.82l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/></svg>
+      <span class="tip" style="background:#c9184a;">🚨 Emergency SOS</span>
+    </a>
+  </div>
+</aside>
+
+<!-- ═══ TOPBAR ═══ -->
+<header class="topbar">
+  <span class="topbar-title">Dashboard</span>
+  <span class="topbar-sub">OVERVIEW</span>
+  <span class="mode-badge prenatal">Prenatal</span>
+  <span class="mode-badge postnatal-badge">Postnatal</span>
+  <div class="topbar-right">
+    <button class="tb-btn" id="modeToggleBtn" onclick="showCongratsModal()" style="border-color:#C8E6C9;color:#2D6A4F;background:#F0FAF4;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M8 14c-2.5 1-4 3-4 5h16c0-2-1.5-4-4-5"/></svg>
+      <span id="modeToggleLabel">Postnatal</span>
+    </button>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      <span id="langLabel">EN / বাং</span>
+    </button>
+    <button class="tb-btn" onclick="toggleTheme()" id="themeBtn">
+      <svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <span id="themeLabel">Dark</span>
+    </button>
+    <div class="tb-avatar" title="Hasan's profile">H</div>
+  </div>
+</header>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+<div class="page">
+
+<!-- ══════════════════════════════
+     PRENATAL DASHBOARD
+══════════════════════════════ -->
+<div id="prenatal-dashboard">
+
+  <div class="greeting fade-up">
+    <h1>Hello, Hasan!</h1>
+    <p>Check out today's pregnancy &amp; health overview.</p>
+  </div>
+
+  <!-- HERO BANNER -->
+  <div class="hero fade-up">
+    <div class="hero-left">
+      <h2>Your journey,<br><span>week by week.</span></h2>
+      <div class="hero-cta-row">
+        <a href="pregnancy-calendar.html" class="hero-btn">
+          <span class="play">
+            <svg width="9" height="10" viewBox="0 0 10 12" fill="white"><polygon points="0,0 10,6 0,12"/></svg>
+          </span>
+          Pregnancy Calendar
+        </a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-week">
+        <div class="hero-week-num" id="heroWeek">24</div>
+        <div class="hero-week-lbl">Weeks Pregnant</div>
+      </div>
+      <div class="hero-due">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Due: <strong>Oct 15, 2025</strong> &nbsp;· 112 days
+      </div>
+      <button class="hero-btn-main" onclick="window.location.href='pregnancy-calendar.html'">
+        What's changing?
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- QUICK LINKS STRIP -->
+  <div class="quick-strip fade-up">
+    <a href="nutrition.html" class="q-item">
+      <div class="q-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+      <span class="q-lbl">Nutrition</span>
+    </a>
+    <a href="medicine.html" class="q-item">
+      <div class="q-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="17" cy="17" r="5"/><path d="M14.5 17h5"/><path d="M17 14.5v5"/></svg></div>
+      <span class="q-lbl">Medicine</span>
+    </a>
+    <a href="hydration.html" class="q-item">
+      <div class="q-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></div>
+      <span class="q-lbl">Hydration</span>
+    </a>
+    <a href="pregnancy-calendar.html" class="q-item">
+      <div class="q-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <span class="q-lbl">Calendar</span>
+    </a>
+    <a href="ai-assistant.html" class="q-item">
+      <div class="q-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="9" cy="16" r="1" fill="currentColor"/><circle cx="15" cy="16" r="1" fill="currentColor"/></svg></div>
+      <span class="q-lbl">AI Chat</span>
+    </a>
+    <a href="community.html" class="q-item">
+      <div class="q-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <span class="q-lbl">Community</span>
+    </a>
+    <a href="wellness-hub.html" class="q-item">
+      <div class="q-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+      <span class="q-lbl">Wellness Hub</span>
+    </a>
+  </div>
+
+  <!-- ROW: AI Assistant + Calories -->
+  <div class="two-col fade-up">
+
+    <!-- AI ASSISTANT CARD -->
+    <div class="card ai-card">
+      <div class="ai-robot-bg">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="9" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="16" r="1" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <div class="ai-header">
+        <div class="ai-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="9" cy="16" r="1" fill="white" stroke="none"/><circle cx="15" cy="16" r="1" fill="white" stroke="none"/></svg>
+        </div>
+        <div class="ai-header-text">
+          <h3>PulseGuard AI</h3>
+          <p>Your maternal health companion</p>
+        </div>
+      </div>
+      <div class="ai-body">Ask me anything about your pregnancy, nutrition, symptoms, or medication — science-based answers tailored for Week 24.</div>
+      <div class="ai-input-row">
+        <input class="ai-input" type="text" placeholder="How can I help you today?" id="aiInput" />
+        <button class="ai-send" onclick="handleAI()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+      <a href="ai-assistant.html" class="card-link">Open full AI assistant
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- CALORIES / NUTRITION CARD -->
+    <div class="card">
+      <span class="card-label">Nutrition Today</span>
+      <div class="cal-header">
+        <div></div>
+        <div class="cal-header-right">
+          <div class="big-num">2,200 <span style="font-size:0.7rem;color:var(--text-3);">Kcal</span></div>
+          <div class="sub">Daily target</div>
+        </div>
+      </div>
+      <div class="cal-today">1,430 <span>/ Kcal</span></div>
+      <div class="cal-range"><span>0</span><span>2,200</span></div>
+      <div class="bar-stack">
+        <div class="bar-seg" style="width:65%;background:linear-gradient(90deg,var(--rose-light),var(--crimson));"></div>
+        <div class="bar-seg" style="width:35%;background:var(--surface2);"></div>
+      </div>
+      <div class="nutrient-mini-row">
+        <div class="nutrient-mini">
+          <div class="val">42<sup>g</sup></div>
+          <div class="lbl">Protein</div>
+        </div>
+        <div class="nutrient-mini">
+          <div class="val" style="color:#E65100;">⚠ Low</div>
+          <div class="lbl">Iron</div>
+        </div>
+        <div class="nutrient-mini">
+          <div class="val" style="color:#E65100;">⚠ Low</div>
+          <div class="lbl">Folate</div>
+        </div>
+        <div class="nutrient-mini">
+          <div class="val">18<sup>g</sup></div>
+          <div class="lbl">Fat</div>
+        </div>
+      </div>
+      <a href="nutrition.html" class="card-link">Full nutrition plan ›</a>
+    </div>
+
+  </div>
+
+  <!-- ROW: Health Tracker (wide) -->
+  <div class="full-row fade-up">
+    <div class="card">
+      <div class="section-ey">
+        <h2>Health Summary — Today</h2>
+        <a href="health-tracker.html">View tracker ›</a>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-tile">
+          <div class="m-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--crimson)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="v">118/76</div><div class="l">BP mmHg</div>
+        </div>
+        <div class="metric-tile">
+          <div class="m-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--crimson)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg></div>
+          <div class="v">62.5 kg</div><div class="l">Weight</div>
+        </div>
+        <div class="metric-tile">
+          <div class="m-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--crimson)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg></div>
+          <div class="v">36.8°C</div><div class="l">Temp</div>
+        </div>
+        <div class="metric-tile">
+          <div class="m-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--crimson)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+          <div class="v">23.4</div><div class="l">BMI</div>
+        </div>
+        <div class="metric-tile empty">
+          <div class="m-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div class="v">Not set</div><div class="l">Glucose</div>
+        </div>
+      </div>
+      <a href="health-tracker.html" class="notif-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Glucose not logged today — tap to add your reading</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ROW: Medication + Hydration + SOS -->
+  <div class="three-col fade-up">
+
+    <!-- MEDICATION -->
+    <div class="card">
+      <span class="card-label">Medication</span>
+      <div class="card-title">Today's Reminders</div>
+      <div class="med-count">3 medications &nbsp;·&nbsp; <strong>1 due now</strong></div>
+      <a href="medicine.html" class="med-row">
+        <div class="med-dot due"></div>
+        <div class="med-info"><div class="n">Folic Acid 5mg</div><div class="t">Due: 2:00 PM · 1 tablet</div></div>
+        <span class="med-pill due">Due Now</span>
+      </a>
+      <a href="medicine.html" class="med-row">
+        <div class="med-dot done"></div>
+        <div class="med-info"><div class="n">Iron Supplement</div><div class="t">Taken 9:00 AM ✓</div></div>
+        <span class="med-pill done">Done</span>
+      </a>
+      <a href="medicine.html" class="med-row">
+        <div class="med-dot later"></div>
+        <div class="med-info"><div class="n">Vitamin D3</div><div class="t">Next: 8:00 PM</div></div>
+        <span class="med-pill later">Later</span>
+      </a>
+      <a href="medicine.html" class="card-link">All medications ›</a>
+    </div>
+
+    <!-- HYDRATION -->
+    <div class="card">
+      <span class="card-label">Hydration</span>
+      <div class="card-title">Water Intake</div>
+      <div class="hydro-header">
+        <div class="hydro-big" id="waterNum">4 <span>glasses</span></div>
+        <div class="hydro-sub">Goal: 10 / day</div>
+      </div>
+      <div class="level-bar"><div class="level-fill" id="waterFill" style="width:40%"></div></div>
+      <div class="level-chip low" id="levelChip">⚠ Low — drink more</div>
+      <div class="cups" id="cupsRow">
+        <span class="cup on">🥤</span><span class="cup on">🥤</span>
+        <span class="cup on">🥤</span><span class="cup on">🥤</span>
+        <span class="cup" onclick="addCup(this)">🥤</span>
+        <span class="cup" onclick="addCup(this)">🥤</span>
+        <span class="cup" onclick="addCup(this)">🥤</span>
+        <span class="cup" onclick="addCup(this)">🥤</span>
+        <span class="cup" onclick="addCup(this)">🥤</span>
+        <span class="cup" onclick="addCup(this)">🥤</span>
+      </div>
+      <a href="hydration.html" class="card-link">Hydration tracker ›</a>
+    </div>
+
+    <!-- PREGNANCY CARD — with postnatal gateway prompt -->
+    <div class="card" id="pregnancyCard">
+      <span class="card-label">Pregnancy Progress</span>
+
+      <!-- Postnatal Prompt Banner (shown when due date passed) -->
+      <div class="pn-prompt-banner" id="pnPromptBanner" style="display:none;">
+        <p>Your due date has passed</p>
+        <h3>Welcome your little one into the world!</h3>
+      </div>
+
+      <div class="preg-body" id="pregBody">
+        <div class="preg-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--rose-pale)" stroke-width="7"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="url(#pregGrad)" stroke-width="7"
+              stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="50"
+              transform="rotate(-90 40 40)"/>
+            <defs>
+              <linearGradient id="pregGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FF6B9D"/>
+                <stop offset="100%" stop-color="#C9184A"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="preg-ring-center"><span class="big">24</span><span class="sm">Week</span></div>
+        </div>
+        <div class="preg-meta">
+          <h3>2nd Trimester</h3>
+          <p>Baby is ~30cm long</p>
+          <p style="margin-top:4px;font-size:0.75rem;color:var(--text-3)">112 days remaining</p>
+        </div>
+      </div>
+      <div class="due-pill" id="duePill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Due: <strong>Oct 15, 2025</strong> · 112 days
+      </div>
+      <div class="encourage" id="encourageText">You're more than halfway! Baby's face is fully formed and they can hear your voice.</div>
+
+      <!-- Postnatal Yes/No buttons (initially hidden) -->
+      <div class="pn-prompt-btns" id="pnPromptBtns" style="display:none;margin-top:14px;">
+        <button class="pn-yes" onclick="showCongratsModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Yes, baby is here!
+        </button>
+        <button class="pn-no" onclick="dismissPnPrompt()">Not yet</button>
+      </div>
+
+      <a href="pregnancy-calendar.html" class="card-link" id="calLink">See full calendar
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+  </div><!-- /three-col -->
+
+  <!-- ROW: Daily Tips / Wellness Hub -->
+  <div class="full-row fade-up">
+    <div class="section-ey">
+      <h2>Daily Tips — Wellness Hub</h2>
+      <a href="wellness-hub.html">See all topics ›</a>
+    </div>
+    <div class="tips-row">
+      <a href="wellness-hub.html#wellness" class="tip-card">
+        <div class="tip-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+        <div class="tip-t">Sleep Position</div>
+        <div class="tip-d">Left-side sleeping boosts blood flow to your baby and kidneys.</div>
+        <span class="tip-go">Read more ›</span>
+      </a>
+      <a href="wellness-hub.html#exercise" class="tip-card">
+        <div class="tip-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v8"/><path d="M9 9l-3 3"/><path d="M15 9l3 3"/><path d="M9 20l3-5 3 5"/></svg></div>
+        <div class="tip-t">Prenatal Yoga</div>
+        <div class="tip-d">Gentle stretches for Week 24 — eases back pain and improves posture.</div>
+        <span class="tip-go">Try exercises ›</span>
+      </a>
+      <a href="wellness-hub.html#risks" class="tip-card">
+        <div class="tip-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="tip-t">Warning Signs</div>
+        <div class="tip-d">Swelling, headaches, or reduced movement — know when to call your doctor.</div>
+        <span class="tip-go">Learn the signs ›</span>
+      </a>
+      <a href="wellness-hub.html#checklist" class="tip-card">
+        <div class="tip-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+        <div class="tip-t">Hospital Bag</div>
+        <div class="tip-d">Not too early — start packing your essentials at Week 24.</div>
+        <span class="tip-go">See checklist ›</span>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /prenatal-dashboard -->
+
+<!-- ══════════════════════════════
+     POSTNATAL DASHBOARD
+══════════════════════════════ -->
+<div id="postnatal-dashboard">
+
+  <!-- Greeting -->
+  <div class="greeting fade-up">
+    <h1>Welcome back, Hasan!</h1>
+    <p>Your postnatal care journey — for you and your little one.</p>
+  </div>
+
+  <!-- POSTNATAL HERO -->
+  <div class="pn-hero fade-up">
+    <div class="pn-hero-left">
+      <h2>A new chapter<br>begins, <span>Mama.</span></h2>
+      <p>Day 18 postpartum · Baby is thriving · You're doing incredible.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="pn-hero-btn" onclick="location.href='postnatal-education.html'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          Education Hub
+        </button>
+        <button class="pn-hero-btn" onclick="location.href='postnatal-ppd.html'" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);box-shadow:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Mental Wellness
+        </button>
+      </div>
+    </div>
+    <div class="pn-hero-right">
+      <div>
+        <div class="pn-day-num">Day 18</div>
+        <div class="pn-day-lbl">Postpartum</div>
+      </div>
+      <div class="hero-due" style="border-color:rgba(82,183,136,0.3);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#95D5B2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M8 14c-2.5 1-4 3-4 5h16c0-2-1.5-4-4-5"/></svg>
+        Born: <strong style="color:#95D5B2;">&nbsp;Oct 15, 2025</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOM / BABY TABS -->
+  <div class="pn-tabs fade-up" id="pnTabs">
+    <button class="pn-tab active" onclick="switchTab('mom',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      For Mom
+    </button>
+    <button class="pn-tab" onclick="switchTab('baby',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M8 14c-2.5 1-4 3-4 5h16c0-2-1.5-4-4-5"/></svg>
+      For Baby
+    </button>
+  </div>
+
+  <!-- ═══ MOM TAB ═══ -->
+  <div id="tabMom">
+
+    <!-- Status row -->
+    <div class="pn-status-grid fade-up">
+      <div class="pn-stat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+        <div class="val">110/70</div><div class="lbl">BP mmHg</div><div class="sub">Normal</div>
+      </div>
+      <div class="pn-stat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg></div>
+        <div class="val">36.6°C</div><div class="lbl">Temp</div><div class="sub">Normal</div>
+      </div>
+      <div class="pn-stat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M8 14c-2.5 1-4 3-4 5h16c0-2-1.5-4-4-5"/></svg></div>
+        <div class="val">60.2</div><div class="lbl">Weight kg</div><div class="sub">Post-delivery</div>
+      </div>
+      <div class="pn-stat" style="cursor:pointer;" onclick="location.href='postnatal-ppd.html'">
+        <div class="ico" style="color:#9B59B6;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+        <div class="val" style="color:#9B59B6;">Mild</div><div class="lbl">Mood Check</div><div class="sub">Check PPD</div>
+      </div>
+    </div>
+
+    <!-- Mom two-col: Nutrition + Exercise -->
+    <div class="pn-two fade-up">
+      <!-- Mom Nutrition -->
+      <div class="card">
+        <span class="card-label">Mom's Nutrition Today</span>
+        <div class="card-title" style="margin-bottom:8px;">Daily Needs</div>
+        <div style="font-size:2.4rem;font-weight:900;color:var(--text);letter-spacing:-0.03em;line-height:1;margin-bottom:4px;">1,850 <span style="font-size:1rem;color:var(--text-3);font-weight:600;">/ 2,500 kcal</span></div>
+        <div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin:10px 0 14px;">
+          <div style="width:74%;height:100%;background:linear-gradient(90deg,var(--rose-light),var(--crimson));border-radius:4px;transition:width 1.2s ease;"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div style="background:var(--surface2);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border);">
+            <div style="font-size:0.95rem;font-weight:800;color:var(--crimson);">✓ Protein</div>
+            <div style="font-size:0.68rem;color:var(--text-3);font-weight:600;margin-top:2px;">58g / 70g</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border);">
+            <div style="font-size:0.95rem;font-weight:800;color:#E65100;">! Iron</div>
+            <div style="font-size:0.68rem;color:var(--text-3);font-weight:600;margin-top:2px;">8mg / 27mg</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border);">
+            <div style="font-size:0.95rem;font-weight:800;color:var(--crimson);">✓ Calcium</div>
+            <div style="font-size:0.68rem;color:var(--text-3);font-weight:600;margin-top:2px;">900mg / 1000mg</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border);">
+            <div style="font-size:0.95rem;font-weight:800;color:var(--crimson);">↑ DHA</div>
+            <div style="font-size:0.68rem;color:var(--text-3);font-weight:600;margin-top:2px;">For breastfeeding</div>
+          </div>
+        </div>
+        <a href="postnatal-nutrition-mom.html" class="card-link">Full nutrition plan
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <!-- Exercise -->
+      <div class="card">
+        <span class="card-label">Exercise — Week 2–3</span>
+        <div class="card-title">Recovery Movement</div>
+        <div class="exercise-list">
+          <a href="postnatal-exercise.html" class="ex-row">
+            <div class="ex-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="ex-info"><div class="n">Pelvic Floor Exercises</div><div class="t">5–10 min · Daily</div></div>
+            <span class="ex-week">Week 1+</span>
+          </a>
+          <a href="postnatal-exercise.html" class="ex-row">
+            <div class="ex-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+            <div class="ex-info"><div class="n">Gentle Walking</div><div class="t">10–15 min · Today</div></div>
+            <span class="ex-week">Week 2+</span>
+          </a>
+          <a href="postnatal-exercise.html" class="ex-row">
+            <div class="ex-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M8 12s1.5 2 4 2 4-2 4-2"/></svg></div>
+            <div class="ex-info"><div class="n">Deep Breathing</div><div class="t">5 min · Anytime</div></div>
+            <span class="ex-week">Any time</span>
+          </a>
+        </div>
+        <a href="postnatal-exercise.html" class="card-link" style="margin-top:8px;">All exercises
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Three-col: PPD + Skin Care + Store -->
+    <div class="pn-three fade-up">
+
+      <!-- Postpartum Depression -->
+      <div class="card ppd-card">
+        <div class="ppd-inner">
+          <span class="card-label">Mental Wellness</span>
+          <div class="card-title">How are you feeling?</div>
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.6);margin-bottom:14px;line-height:1.5;">Rate your mood today — it helps us support you better.</p>
+          <div class="ppd-scale" id="ppdScale">
+            <button class="ppd-dot-btn" onclick="setPPD(0,this)"></button>
+            <button class="ppd-dot-btn" onclick="setPPD(1,this)"></button>
+            <button class="ppd-dot-btn" onclick="setPPD(2,this)"></button>
+            <button class="ppd-dot-btn sel" onclick="setPPD(3,this)"></button>
+            <button class="ppd-dot-btn" onclick="setPPD(4,this)"></button>
+            <button class="ppd-dot-btn" onclick="setPPD(5,this)"></button>
+            <button class="ppd-dot-btn" onclick="setPPD(6,this)"></button>
+          </div>
+          <div class="ppd-labels"><span>Struggling</span><span>Thriving</span></div>
+          <div class="ppd-result" id="ppdResult">You may be experiencing some postpartum blues. This is very common in the first few weeks.</div>
+          <a href="postnatal-ppd.html" class="ppd-cta">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Talk to AI Support
+          </a>
+        </div>
+      </div>
+
+      <!-- Skin Care -->
+      <div class="card">
+        <span class="card-label">Skin Care</span>
+        <div class="card-title">Postpartum Skin</div>
+        <a href="postnatal-skincare.html" class="skin-row">
+          <div class="skin-dot" style="background:#FFF3E0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+          <div class="skin-info"><div class="n">Stretch Mark Care</div><div class="t">Vitamin E + coconut oil · Daily</div></div>
+        </a>
+        <a href="postnatal-skincare.html" class="skin-row">
+          <div class="skin-dot" style="background:#E3F2FD;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></div>
+          <div class="skin-info"><div class="n">Hydration Routine</div><div class="t">Gentle moisturizer · AM + PM</div></div>
+        </a>
+        <a href="postnatal-skincare.html" class="skin-row">
+          <div class="skin-dot" style="background:var(--rose-pale);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--crimson)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="skin-info"><div class="n">Hair Loss Management</div><div class="t">Very common 3–6 months post</div></div>
+        </a>
+        <a href="postnatal-skincare.html" class="card-link" style="margin-top:8px;">Full skincare guide
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <!-- Mom & Kid Store -->
+      <div class="card">
+        <span class="card-label">Mom &amp; Kid Store</span>
+        <div class="card-title">Shop Essentials</div>
+        <div class="store-grid">
+          <a href="postnatal-store.html#feeding" class="store-item">
+            <div class="store-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+            <div class="store-name">Feeding</div>
+            <span class="store-badge">New</span>
+          </a>
+          <a href="postnatal-store.html#skincare" class="store-item">
+            <div class="store-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+            <div class="store-name">Skin Care</div>
+            <span class="store-badge">Sale</span>
+          </a>
+          <a href="postnatal-store.html#clothing" class="store-item">
+            <div class="store-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg></div>
+            <div class="store-name">Baby Clothes</div>
+            <div class="store-sub">0–6 months</div>
+          </a>
+          <a href="postnatal-store.html#wellness" class="store-item">
+            <div class="store-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="store-name">Wellness</div>
+            <div class="store-sub">Supplements</div>
+          </a>
+        </div>
+        <a href="postnatal-store.html" class="card-link" style="margin-top:10px;">Browse all products
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+    </div><!-- /pn-three -->
+
+  </div><!-- /tabMom -->
+
+  <!-- ═══ BABY TAB ═══ -->
+  <div id="tabBaby" style="display:none;">
+
+    <!-- Baby Status -->
+    <div class="pn-status-grid fade-up">
+      <div class="pn-stat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M8 14c-2.5 1-4 3-4 5h16c0-2-1.5-4-4-5"/></svg></div>
+        <div class="val">3.4 kg</div><div class="lbl">Weight</div><div class="sub">Day 18</div>
+      </div>
+      <div class="pn-stat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8V6a2 2 0 00-2-2H4a2 2 0 00-2 2v7a2 2 0 002 2h8"/><rect x="10" y="14" width="12" height="8" rx="2"/><circle cx="16" cy="18" r="1"/></svg></div>
+        <div class="val">52 cm</div><div class="lbl">Height</div><div class="sub">Normal</div>
+      </div>
+      <div class="pn-stat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg></div>
+        <div class="val">36.9°C</div><div class="lbl">Temp</div><div class="sub">Normal</div>
+      </div>
+      <div class="pn-stat" onclick="location.href='postnatal-vaccines.html'" style="cursor:pointer;">
+        <div class="ico" style="color:#E65100;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="val" style="color:#E65100;">Due</div><div class="lbl">Vaccines</div><div class="sub">Check now</div>
+      </div>
+    </div>
+
+    <!-- Baby two-col: Nutrition + Vaccines -->
+    <div class="pn-two fade-up">
+      <!-- Baby Nutrition -->
+      <div class="card">
+        <span class="card-label">Baby's Nutrition</span>
+        <div class="card-title">Feeding Guide — Day 18</div>
+        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;border:1px solid var(--border);margin-bottom:12px;">
+          <div style="font-size:0.75rem;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Breastfeeding</div>
+          <div style="font-size:0.88rem;color:var(--text);font-weight:600;margin-bottom:4px;">8–12 feeds per day</div>
+          <div style="font-size:0.78rem;color:var(--text-2);">Every 2–3 hours · 10–20 min per side</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;border:1px solid var(--border);margin-bottom:12px;">
+          <div style="font-size:0.75rem;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Formula (if applicable)</div>
+          <div style="font-size:0.88rem;color:var(--text);font-weight:600;margin-bottom:4px;">60–90 ml per feed</div>
+          <div style="font-size:0.78rem;color:var(--text-2);">Every 3 hours · Newborn formula</div>
+        </div>
+        <div style="font-size:0.78rem;color:var(--text-2);background:var(--surface2);border-left:3px solid var(--rose-light);border-radius:var(--radius-sm);padding:10px 12px;">
+          Vitamin D drops (400 IU/day) recommended for breastfed babies.
+        </div>
+        <a href="postnatal-nutrition-baby.html" class="card-link" style="margin-top:12px;">Full feeding guide
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+
+      <!-- Vaccines -->
+      <div class="card">
+        <span class="card-label">Vaccines</span>
+        <div class="card-title">Immunisation Schedule</div>
+        <div class="vaccine-list">
+          <div class="vaccine-row">
+            <div class="v-dot done"></div>
+            <div class="v-info"><div class="n">Hepatitis B (1st dose)</div><div class="t">Given at birth</div></div>
+            <span class="v-tag done">Done</span>
+          </div>
+          <div class="vaccine-row">
+            <div class="v-dot done"></div>
+            <div class="v-info"><div class="n">BCG (Tuberculosis)</div><div class="t">Given at birth</div></div>
+            <span class="v-tag done">Done</span>
+          </div>
+          <div class="vaccine-row">
+            <div class="v-dot due-now"></div>
+            <div class="v-info"><div class="n">Vitamin K Injection</div><div class="t">Due: Check with doctor</div></div>
+            <span class="v-tag due">Verify</span>
+          </div>
+          <div class="vaccine-row">
+            <div class="v-dot upcoming"></div>
+            <div class="v-info"><div class="n">DPT + Hepatitis B (2nd)</div><div class="t">Due: 6 weeks (Nov 26)</div></div>
+            <span class="v-tag soon">Upcoming</span>
+          </div>
+          <div class="vaccine-row">
+            <div class="v-dot upcoming"></div>
+            <div class="v-info"><div class="n">OPV (Oral Polio)</div><div class="t">Due: 6 weeks (Nov 26)</div></div>
+            <span class="v-tag soon">Upcoming</span>
+          </div>
+        </div>
+        <a href="postnatal-vaccines.html" class="card-link" style="margin-top:8px;">Full vaccine schedule
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div><!-- /pn-two baby -->
+
+    <!-- Education card full width -->
+    <div class="pn-full fade-up">
+      <div class="card">
+        <div class="section-ey">
+          <h2>Baby Education Hub</h2>
+          <a href="postnatal-education.html">See all topics ›</a>
+        </div>
+        <div class="tips-row">
+          <a href="postnatal-education.html#sleep" class="tip-card">
+            <div class="tip-ico" style="color:var(--crimson);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div>
+            <div class="tip-t">Safe Sleep</div>
+            <div class="tip-d">Back to sleep, firm surface — SIDS prevention basics for newborns.</div>
+            <span class="tip-go">Read more ›</span>
+          </a>
+          <a href="postnatal-education.html#milestones" class="tip-card">
+            <div class="tip-ico" style="color:var(--crimson);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="tip-t">Milestones Week 2</div>
+            <div class="tip-d">Baby should track faces, respond to sounds, and gain weight steadily.</div>
+            <span class="tip-go">See milestones ›</span>
+          </a>
+          <a href="postnatal-education.html#umbilical" class="tip-card">
+            <div class="tip-ico" style="color:var(--crimson);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="tip-t">Umbilical Cord Care</div>
+            <div class="tip-d">Keep it dry and clean. Falls off in 1–3 weeks naturally.</div>
+            <span class="tip-go">Learn how ›</span>
+          </a>
+          <a href="postnatal-education.html#bonding" class="tip-card">
+            <div class="tip-ico" style="color:var(--crimson);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+            <div class="tip-t">Bonding & Skin Contact</div>
+            <div class="tip-d">Kangaroo care for 1 hour daily regulates baby's temperature and heart rate.</div>
+            <span class="tip-go">Try today ›</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tabBaby -->
+
+</div><!-- /postnatal-dashboard -->
+
+</div><!-- /page -->
+</main>
+
+<script>
+/* ── theme ── */
+let dark = false;
+function toggleTheme() {
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  document.getElementById('themeLabel').textContent = dark ? 'Light' : 'Dark';
+  const ico = document.getElementById('themeIco');
+  ico.innerHTML = dark
+    ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+    : '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+}
+
+/* ── lang ── */
+let lang = 'en';
+function toggleLang() {
+  lang = lang === 'en' ? 'bn' : 'en';
+  document.getElementById('langLabel').textContent = lang === 'en' ? 'EN / বাং' : 'বাং / EN';
+}
+
+/* ── sidebar mobile ── */
+function toggleSidebar() {
+  const preId = document.body.classList.contains('postnatal') ? 'postnatal-sidebar' : 'prenatal-sidebar';
+  document.getElementById(preId).classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('on');
+}
+function closeSidebar() {
+  document.getElementById('prenatal-sidebar').classList.remove('open');
+  document.getElementById('postnatal-sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('on');
+}
+
+/* ── cups ── */
+function addCup(el) {
+  el.classList.add('on'); el.removeAttribute('onclick');
+  const filled = document.querySelectorAll('.cup.on').length;
+  document.getElementById('waterNum').innerHTML = filled + ' <span>glasses</span>';
+  const pct = (filled / 10) * 100;
+  document.getElementById('waterFill').style.width = pct + '%';
+  const chip = document.getElementById('levelChip');
+  const warnSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  const checkSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  if (pct >= 80) { chip.className = 'level-chip good'; chip.innerHTML = checkSvg + ' Great hydration!'; }
+  else if (pct >= 50) { chip.className = 'level-chip good'; chip.innerHTML = checkSvg + ' Good — keep going'; }
+  else { chip.className = 'level-chip low'; chip.innerHTML = warnSvg + ' Low — drink more'; }
+}
+
+/* ── AI input ── */
+function handleAI() {
+  const v = document.getElementById('aiInput').value.trim();
+  if (v) window.location.href = 'ai-assistant.html?q=' + encodeURIComponent(v);
+}
+document.getElementById('aiInput').addEventListener('keydown', e => { if (e.key === 'Enter') handleAI(); });
+
+/* ══════════════════════════════
+   POSTNATAL GATEWAY
+══════════════════════════════ */
+
+/* Show pregnancy card postnatal prompt (simulate due date passed) */
+function showPnPrompt() {
+  const card = document.getElementById('pregnancyCard');
+  card.classList.add('preg-card-postnatal-prompt');
+  document.getElementById('pnPromptBanner').style.display = 'block';
+  document.getElementById('pnPromptBtns').style.display = 'flex';
+}
+function dismissPnPrompt() {
+  document.getElementById('pregnancyCard').classList.remove('preg-card-postnatal-prompt');
+  document.getElementById('pnPromptBanner').style.display = 'none';
+  document.getElementById('pnPromptBtns').style.display = 'none';
+}
+
+/* Show/dismiss big congrats modal */
+function showCongratsModal() {
+  const overlay = document.getElementById('congratsOverlay');
+  overlay.classList.add('show');
+  launchConfetti();
+}
+function dismissCongrats() {
+  document.getElementById('congratsOverlay').classList.remove('show');
+}
+
+/* Activate full postnatal mode */
+function activatePostnatal() {
+  document.getElementById('congratsOverlay').classList.remove('show');
+  document.body.classList.add('postnatal');
+  // update topbar
+  document.getElementById('modeToggleBtn').style.background = 'var(--rose-pale)';
+  document.getElementById('modeToggleBtn').style.color = 'var(--crimson)';
+  document.getElementById('modeToggleBtn').style.borderColor = 'var(--rose-pale)';
+  document.getElementById('modeToggleBtn').onclick = switchToPrenatal;
+  document.getElementById('modeToggleLabel').textContent = 'Back to Prenatal';
+  // animate in
+  document.querySelectorAll('#postnatal-dashboard .fade-up').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.animation = 'none';
+    setTimeout(() => {
+      el.style.animation = `fu .4s ease ${i * 0.07}s forwards`;
+    }, 50);
+  });
+}
+function switchToPrenatal() {
+  document.body.classList.remove('postnatal');
+  document.getElementById('modeToggleBtn').style.background = '#F0FAF4';
+  document.getElementById('modeToggleBtn').style.color = '#2D6A4F';
+  document.getElementById('modeToggleBtn').style.borderColor = '#C8E6C9';
+  document.getElementById('modeToggleBtn').onclick = showCongratsModal;
+  document.getElementById('modeToggleLabel').textContent = 'Postnatal';
+}
+
+/* Tab switcher Mom / Baby */
+function switchTab(tab, btn) {
+  document.querySelectorAll('.pn-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tabMom').style.display = tab === 'mom' ? '' : 'none';
+  document.getElementById('tabBaby').style.display = tab === 'baby' ? '' : 'none';
+}
+
+/* PPD scale */
+const ppdMessages = [
+  "You seem to be struggling significantly. Please reach out to a professional right away.",
+  "You may be experiencing moderate postpartum depression. Talking to someone can help.",
+  "You may be experiencing some postpartum blues. This is very common in the first few weeks.",
+  "You're managing, but some emotional challenges are present. Take it one day at a time.",
+  "You seem to be doing reasonably well. Keep communicating with your support system.",
+  "You're thriving! Keep up the great self-care and reach out if things change.",
+  "You're flourishing. Your positive energy will support both you and your baby!"
+];
+function setPPD(idx, btn) {
+  document.querySelectorAll('.ppd-dot-btn').forEach((b, i) => {
+    b.classList.toggle('sel', i <= idx);
+  });
+  document.getElementById('ppdResult').textContent = ppdMessages[idx];
+}
+
+/* ── CONFETTI ── */
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  const pieces = [];
+  const colors = ['#52B788','#95D5B2','#FFD6A5','#FF6B9D','#C9184A','#FFDDD2','#E9C46A'];
+  for (let i = 0; i < 80; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 8 + 4, h: Math.random() * 5 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 2, vy: Math.random() * 3 + 1,
+      angle: Math.random() * 360, va: (Math.random() - 0.5) * 5,
+      alpha: 1
+    });
+  }
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - frame / 120);
+      ctx.translate(p.x + p.w/2, p.y + p.h/2);
+      ctx.rotate(p.angle * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+      p.x += p.vx; p.y += p.vy; p.angle += p.va;
+    });
+    frame++;
+    if (frame < 150) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  draw();
+}
+
+/* ── DEMO: show pn prompt on page load (for review) ── */
+// Comment this out in production — triggered by real due-date check:
+// showPnPrompt();
+</script>
+</body>
+</html>
