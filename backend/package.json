@@ -10,6 +10,7 @@
     "seed": "node db/migrate.js --seed"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "axios": "^1.17.0",
     "bcryptjs": "^3.0.2",
     "cheerio": "^1.2.0",
@@ -22,7 +23,6 @@
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.10",
     "pg": "^8.16.0",
-    "@modelcontextprotocol/sdk": "^1.0.1",
     "uuid": "^11.1.0",
     "ws": "^8.18.2",
     "xlsx": "^0.18.5",
