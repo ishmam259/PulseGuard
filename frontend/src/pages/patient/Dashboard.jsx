@@ -216,7 +216,7 @@ export default function Dashboard() {
         ) : showOnboardingWelcome ? (
           /* Profile incomplete welcome state */
           <>
-            <div className="premium-dashboard-hero animate-fade-in" style={{ padding: '40px', position: 'relative' }}>
+            <div className="premium-dashboard-hero animate-fade-in" style={{ padding: 'clamp(20px, 5vw, 40px)', position: 'relative' }}>
               <div className="welcome-grid-layout">
                 {/* Left Column: text and actions */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 1 }}>
@@ -224,7 +224,7 @@ export default function Dashboard() {
                     <Sparkles />
                     <span>{locale === 'bn' ? 'এখানে নতুন' : 'NEW HERE'}</span>
                   </div>
-                  <h2 className="font-display" style={{ fontSize: '3rem', fontWeight: '800', lineHeight: '1.1', margin: '0 0 16px 0', color: 'var(--color-text)' }}>
+                  <h2 className="font-display" style={{ fontSize: 'clamp(1.8rem, 6vw, 3rem)', fontWeight: '800', lineHeight: '1.1', margin: '0 0 16px 0', color: 'var(--color-text)' }}>
                     {locale === 'bn' ? 'স্বাগতম, ' : 'Welcome, '}
                     <span className="italic" style={{ color: 'var(--color-primary)', fontWeight: '800' }}>
                       {currentUser?.name?.split(' ')[0] || (locale === 'bn' ? 'মা' : 'Mother')}
@@ -356,7 +356,7 @@ export default function Dashboard() {
             <section className="premium-dashboard-hero">
               <div className="premium-dashboard-hero-grid">
                 <div>
-                  <h3 className="font-display" style={{ fontSize: '2.8rem', lineHeight: '1.1', fontWeight: '800', margin: '0', color: 'var(--color-text)' }}>
+                  <h3 className="font-display" style={{ fontSize: 'clamp(1.6rem, 5vw, 2.8rem)', lineHeight: '1.1', fontWeight: '800', margin: '0', color: 'var(--color-text)' }}>
                     {locale === 'bn' ? 'আপনার যাত্রা,' : 'Your journey,'}<br />
                     <span className="italic text-gradient-primary">{locale === 'bn' ? 'সপ্তাহে সপ্তাহে।' : 'week by week.'}</span>
                   </h3>
@@ -370,7 +370,7 @@ export default function Dashboard() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'flex-end' }}>
-                    <span className="font-display" style={{ fontSize: '6rem', fontWeight: '800', lineHeight: '1', color: 'var(--color-text)' }}>
+                    <span className="font-display" style={{ fontSize: 'clamp(3rem, 12vw, 6rem)', fontWeight: '800', lineHeight: '1', color: 'var(--color-text)' }}>
                       {locale === 'bn' ? currentWeek.toLocaleString('bn-BD') : currentWeek}
                     </span>
                   </div>
@@ -475,15 +475,7 @@ export default function Dashboard() {
                     <span className="muted" style={{ fontSize: '11px' }}>{locale === 'bn' ? 'দৈনিক লক্ষ্য' : 'Daily target'}</span>
                   </p>
                 </div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)",
-                    gap: "16px",
-                    marginTop: "28px",
-                    justifyContent: "space-between",
-                  }}
-                >
+                <div className="grid-macros">
                   {nutrientsData.map((nut) => {
                     const radius = 24;
                     const strokeWidth = 5;
@@ -763,7 +755,7 @@ export default function Dashboard() {
                   <span
                     className="font-display"
                     style={{
-                      fontSize: "3.5rem",
+                      fontSize: "clamp(2rem, 7vw, 3.5rem)",
                       fontWeight: "800",
                       lineHeight: "1",
                       color: "var(--color-text)",

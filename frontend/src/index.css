@@ -275,11 +275,20 @@
   padding: 0;
 }
 
+/*
+  overflow-x: hidden on body blocks touch pan scroll in mobile DevTools emulation
+  (Chrome switches to a touch scroll model where body is the scroll container).
+  Setting it on html instead controls the viewport-level overflow without
+  interfering with touch scrolling.
+*/
+html {
+  overflow-x: hidden;
+}
+
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--gradient-bg);
-  background-attachment: fixed;
-  overflow-x: clip;
   position: relative;
 }
 
@@ -293,6 +302,7 @@ body::after,
 }
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   z-index: 1;
 }

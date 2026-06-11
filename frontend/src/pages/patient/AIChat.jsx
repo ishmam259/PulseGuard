@@ -353,11 +353,13 @@ export default function AIChat() {
           display: flex;
           flex-direction: column;
           height: calc(100vh - 240px);
+          height: calc(100dvh - 240px);
           min-height: 400px;
         }
         @media (min-width: 768px) {
           .ai-chat-wrapper {
             height: calc(100vh - 180px);
+            height: calc(100dvh - 180px);
             min-height: 480px;
           }
         }

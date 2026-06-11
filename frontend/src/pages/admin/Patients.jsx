@@ -118,7 +118,7 @@ export default function Patients() {
           <p className="muted">{$('ADMIN_USERS_LOADING', locale)}</p>
         </div>
       ) : (
-        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+        <div className="animate-fade-in table-responsive" style={{ animationDelay: '100ms' }}>
           <table className="table">
             <thead>
               <tr>

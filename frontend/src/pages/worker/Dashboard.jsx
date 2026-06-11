@@ -43,11 +43,11 @@ export default function WorkerDashboard() {
       <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         {/* Greeting Card */}
-        <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: '32px' }}>
+        <div className="glass" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: 'clamp(16px, 5vw, 32px)' }}>
           <span style={{ fontSize: '14px', color: 'var(--color-muted)', display: 'block', marginBottom: '4px' }}>
             {$('W_DASH_GREETING_PREFIX', locale)}
           </span>
-          <h2 className="font-display" style={{ fontSize: '2.6rem', fontWeight: '700', marginBottom: '8px', letterSpacing: '-0.02em', color: 'var(--color-text)', lineHeight: 1.2 }}>
+          <h2 className="font-display" style={{ fontSize: 'clamp(1.6rem, 5vw, 2.6rem)', fontWeight: '700', marginBottom: '8px', letterSpacing: '-0.02em', color: 'var(--color-text)', lineHeight: 1.2 }}>
             {firstName} {lastName && <span className="italic text-gradient-primary" style={{ fontWeight: '500' }}>{lastName}</span>}
           </h2>
           <p className="muted" style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{summaryText}</p>
