@@ -102,6 +102,7 @@ services:
       args:
         - VITE_API_URL=${VITE_API_URL}
         - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
+        - VITE_WS_CHAT_URL=${VITE_WS_CHAT_URL}
     ports:
       - "3000:3000"
     depends_on:
