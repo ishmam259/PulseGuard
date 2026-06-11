@@ -1785,31 +1785,8 @@ select.input option {
     overflow: visible;
   }
 
-  .sidebar {
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--spacing-2);
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    padding: var(--spacing-3);
-    overflow-x: auto;
-    overflow-y: visible;
-  }
-
-  .sidebar-nav {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: var(--spacing-1);
-    flex: none;
-    overflow: visible;
-  }
-
-  .sidebar-nav a {
-    white-space: nowrap;
-    padding: 8px 12px;
-    font-size: 13px;
-  }
+  /* desktop sidebar hidden on mobile — navigation via drawer instead */
+  .sidebar { display: none; }
 
   .info-card {
     display: none;
@@ -1820,7 +1797,23 @@ select.input option {
   }
 
   .admin-header {
-    padding: var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-4);
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+
+  /* title block sits between hamburger and actions, shrinks if needed */
+  .admin-header > div:first-child {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .admin-header .page-title {
+    font-size: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .admin-children-wrapper {
@@ -6774,19 +6767,20 @@ select.input option {
   }
 }
 
-/* Admin header — wrap actions on small screens */
+/* Admin header — compact actions on small screens */
 @media (max-width: 600px) {
-  .admin-header {
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: var(--spacing-3) var(--spacing-4);
-  }
   .admin-header .top-actions {
-    flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
   }
-  .page-title {
-    font-size: 20px;
+  /* hide text labels inside top-action buttons, keep icons */
+  .admin-header .top-actions button span {
+    display: none;
+  }
+  /* shrink pill buttons to icon-only size */
+  .admin-header .top-actions button {
+    padding: 8px !important;
+    min-width: 34px;
+    justify-content: center;
   }
 }
 
@@ -6815,5 +6809,116 @@ select.input option {
   }
   .premium-dashboard {
     overflow-x: clip;
+  }
+}
+
+/* ── Admin Mobile Drawer ── */
+.admin-hamburger {
+  display: none;
+}
+
+.admin-drawer-backdrop {
+  display: none;
+}
+
+.admin-drawer {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* hamburger button in header */
+  .admin-hamburger {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: color-mix(in oklab, var(--color-surface) 60%, transparent);
+    color: var(--color-text);
+    cursor: pointer;
+    flex-shrink: 0;
+    order: -1;
+  }
+
+  /* dim backdrop */
+  .admin-drawer-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 40;
+    animation: fadeIn 0.2s ease;
+  }
+
+  /* slide-in drawer */
+  .admin-drawer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: 260px;
+    z-index: 50;
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+    box-shadow: var(--shadow-nav);
+    padding: var(--spacing-6) var(--spacing-5);
+    gap: var(--spacing-6);
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+  }
+
+  .admin-drawer--open {
+    transform: translateX(0);
+  }
+
+  /* close × button inside drawer */
+  .admin-drawer-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-hover);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  /* drawer uses same sidebar-nav styles — reset any overrides */
+  .admin-drawer .sidebar-nav {
+    display: grid;
+    gap: var(--spacing-2);
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .admin-drawer .sidebar-nav a {
+    padding: 12px 16px;
+    white-space: normal;
+    width: auto;
+    height: auto;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .admin-drawer .sidebar-nav a span {
+    display: inline;
+  }
+
+  .admin-drawer .sidebar-logout-btn {
+    display: flex !important;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 }
