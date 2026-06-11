@@ -3875,8 +3875,9 @@ select.input option {
   color: #fff;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
 }
-.vitals__patient > span { display: flex; flex-direction: column; }
+.vitals__patient-info { display: flex; flex-direction: column; }
 .vitals__patient strong { font-size: 14px; color: var(--color-text); font-weight: 600; line-height: 1.2; }
 .vitals__patient em { font-style: normal; font-size: 11.5px; color: var(--color-muted); }
 .vitals__live {
@@ -3910,8 +3911,10 @@ select.input option {
 }
 .vitals__gauge-center {
   position: absolute;
-  inset: 0;
-  bottom: 40px;
+  left: 0;
+  right: 0;
+  top: 58px;
+  height: 84px;
   display: flex;
   flex-direction: column;
   align-items: center;

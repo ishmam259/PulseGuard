@@ -35,7 +35,7 @@ export default function VitalsMonitor({ locale = 'en' }) {
         <div className="vitals__head">
           <div className="vitals__patient">
             <span className="vitals__avatar">AK</span>
-            <span>
+            <span className="vitals__patient-info">
               <strong>Ayesha K.</strong>
               <em>{t('32 weeks · Visit #4', '৩২ সপ্তাহ · ভিজিট #৪')}</em>
             </span>
