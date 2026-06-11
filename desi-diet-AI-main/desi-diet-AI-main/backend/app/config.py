@@ -1,0 +1,73 @@
+"""Application configuration via Pydantic Settings."""
+
+from pydantic_settings import BaseSettings
+from pydantic import Field
+from typing import List
+
+
+class Settings(BaseSettings):
+    """All app settings loaded from environment variables."""
+
+    # App
+    app_name: str = Field(default="Pusti AI", alias="APP_NAME")
+    cors_origins: str = Field(default="*", alias="CORS_ORIGINS")
+
+    # Database
+    database_url: str = Field(alias="DATABASE_URL")
+
+    # Neo4j
+    neo4j_uri: str = Field(default="bolt://localhost:7687", alias="NEO4J_URI")
+    neo4j_user: str = Field(default="neo4j", alias="NEO4J_USER")
+    neo4j_password: str = Field(default="khadok2025", alias="NEO4J_PASSWORD")
+
+    # Redis
+    redis_url: str = Field(default="redis://localhost:6379/0", alias="REDIS_URL")
+
+    # Auth
+    jwt_secret: str = Field(alias="JWT_SECRET")
+    jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
+    access_token_expire_minutes: int = Field(default=30, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
+    refresh_token_expire_days: int = Field(default=7, alias="REFRESH_TOKEN_EXPIRE_DAYS")
+
+    # LLM — OpenAI (or any OpenAI-compatible endpoint: Groq, OpenRouter, etc.)
+    llm_api_key: str = Field(alias="LLM_API_KEY")
+    llm_base_url: str = Field(default="https://api.openai.com/v1", alias="LLM_BASE_URL")
+    llm_model: str = Field(default="gpt-4o-mini", alias="LLM_MODEL")
+    llm_max_tokens: int = Field(default=1024, alias="LLM_MAX_TOKENS")
+
+    # Pinecone (Personal Cooker RAG)
+    pinecone_api_key: str = Field(default="", alias="PINECONE_API_KEY")
+    pinecone_index: str = Field(default="bd-cooking-rag", alias="PINECONE_INDEX")
+
+    # WhatsApp / n8n integration
+    service_secret: str = Field(default="", alias="SERVICE_SECRET")
+    n8n_optin_webhook_url: str = Field(default="", alias="N8N_OPTIN_WEBHOOK_URL")
+
+    # WhatsApp Cloud API direct integration
+    whatsapp_token: str = Field(default="", alias="WHATSAPP_TOKEN")
+    phone_number_id: str = Field(default="", alias="PHONE_NUMBER_ID")
+    whatsapp_verify_token: str = Field(default="", alias="WHATSAPP_VERIFY_TOKEN")
+    backend_url: str = Field(default="http://localhost:8000", alias="BACKEND_URL")
+
+    # Standalone WhatsApp service integration
+    whatsapp_service_url: str = Field(default="", alias="WHATSAPP_SERVICE_URL")
+    whatsapp_service_api_key: str = Field(default="", alias="WHATSAPP_SERVICE_API_KEY")
+
+    # Groq (optional — takes priority over OpenAI when set)
+    groq_api_key: str = Field(default="", alias="GROQ_API_KEY")
+
+    # Frontend URL
+    frontend_url: str = Field(default="http://localhost:5173", alias="FRONTEND_URL")
+
+    @property
+    def cors_origin_list(self) -> List[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",")]
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        extra = "ignore"
+        str_strip_whitespace = True
+
+
+settings = Settings()

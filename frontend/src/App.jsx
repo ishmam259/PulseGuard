@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 // Auth pages
 import Splash from './pages/Splash'
+import About from './pages/About'
 import RoleSelection from './pages/RoleSelection'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -53,6 +54,7 @@ function App() {
       <Routes>
         {/* Auth — public */}
         <Route path="/" element={<Splash />} />
+        <Route path="/about" element={<About />} />
         <Route path="/role" element={<RoleSelection />} />
         <Route path="/login/:role" element={<Login />} />
         <Route path="/register/:role" element={<Register />} />
