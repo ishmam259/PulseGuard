@@ -9,6 +9,7 @@ function ElegantShape({
   height = 100,
   rotate = 0,
   gradient = "from-white/[0.08]",
+  lightMode = false,
 }) {
   return (
     <motion.div
@@ -33,10 +34,15 @@ function ElegantShape({
             "absolute inset-0 rounded-full",
             "bg-gradient-to-r to-transparent",
             gradient,
-            "backdrop-blur-[2px] border-2 border-white/[0.15]",
-            "shadow-[0_8px_32px_0_rgba(255,255,255,0.1)]",
+            "backdrop-blur-[2px] border-2",
+            lightMode ? "border-black/[0.07]" : "border-white/[0.15]",
+            lightMode
+              ? "shadow-[0_8px_32px_0_rgba(0,0,0,0.05)]"
+              : "shadow-[0_8px_32px_0_rgba(255,255,255,0.1)]",
             "after:absolute after:inset-0 after:rounded-full",
-            "after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]"
+            lightMode
+              ? "after:bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.03),transparent_70%)]"
+              : "after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]"
           )}
         />
       </motion.div>
@@ -51,7 +57,34 @@ function HeroGeometric({
   description = "",
   ctaText = "",
   ctaHref = "",
+  colorScheme = "dark",
 }) {
+  const light = colorScheme === "light";
+
+  const c = light
+    ? {
+        bg: "bg-[#f8f5f5]",
+        fadeHex: "#f8f5f5",
+        overlay: "from-red-500/[0.04] via-transparent to-rose-400/[0.03]",
+        badgeBg: "bg-black/[0.03] border-black/[0.07]",
+        badgeText: "text-gray-500",
+        title1Grad: "from-gray-900 to-gray-600",
+        title2Grad: "from-rose-600 via-gray-900 to-orange-600",
+        desc: "text-gray-500",
+        cta: "text-gray-400 hover:text-gray-700",
+      }
+    : {
+        bg: "bg-[#0b0808]",
+        fadeHex: "#0b0808",
+        overlay: "from-red-600/[0.06] via-transparent to-rose-500/[0.05]",
+        badgeBg: "bg-white/[0.03] border-white/[0.08]",
+        badgeText: "text-white/60",
+        title1Grad: "from-white to-white/80",
+        title2Grad: "from-rose-300 via-white/90 to-orange-300",
+        desc: "text-white/40",
+        cta: "text-white/50 hover:text-white/80",
+      };
+
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: (i) => ({
@@ -66,48 +99,33 @@ function HeroGeometric({
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#0b0808]">
-      <div className="absolute inset-0 bg-gradient-to-br from-red-600/[0.06] via-transparent to-rose-500/[0.05] blur-3xl" />
+    <div className={cn("relative min-h-screen w-full flex items-center justify-center overflow-hidden", c.bg)}>
+      <div className={cn("absolute inset-0 bg-gradient-to-br blur-3xl", c.overlay)} />
 
       <div className="absolute inset-0 overflow-hidden">
         <ElegantShape
-          delay={0.3}
-          width={600}
-          height={140}
-          rotate={12}
-          gradient="from-red-500/[0.15]"
+          delay={0.3} width={600} height={140} rotate={12}
+          gradient="from-red-500/[0.15]" lightMode={light}
           className="left-[-10%] md:left-[-5%] top-[15%] md:top-[20%]"
         />
         <ElegantShape
-          delay={0.5}
-          width={500}
-          height={120}
-          rotate={-15}
-          gradient="from-rose-400/[0.15]"
+          delay={0.5} width={500} height={120} rotate={-15}
+          gradient="from-rose-400/[0.15]" lightMode={light}
           className="right-[-5%] md:right-[0%] top-[70%] md:top-[75%]"
         />
         <ElegantShape
-          delay={0.4}
-          width={300}
-          height={80}
-          rotate={-8}
-          gradient="from-red-700/[0.12]"
+          delay={0.4} width={300} height={80} rotate={-8}
+          gradient="from-red-700/[0.12]" lightMode={light}
           className="left-[5%] md:left-[10%] bottom-[5%] md:bottom-[10%]"
         />
         <ElegantShape
-          delay={0.6}
-          width={200}
-          height={60}
-          rotate={20}
-          gradient="from-orange-400/[0.12]"
+          delay={0.6} width={200} height={60} rotate={20}
+          gradient="from-orange-400/[0.12]" lightMode={light}
           className="right-[15%] md:right-[20%] top-[10%] md:top-[15%]"
         />
         <ElegantShape
-          delay={0.7}
-          width={150}
-          height={40}
-          rotate={-25}
-          gradient="from-rose-600/[0.10]"
+          delay={0.7} width={150} height={40} rotate={-25}
+          gradient="from-rose-600/[0.10]" lightMode={light}
           className="left-[20%] md:left-[25%] top-[5%] md:top-[10%]"
         />
       </div>
@@ -119,44 +137,37 @@ function HeroGeometric({
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12"
+            className={cn(
+              "inline-flex items-center gap-2 px-3 py-1 rounded-full border mb-8 md:mb-12",
+              c.badgeBg
+            )}
           >
             <Circle className="h-2 w-2 fill-rose-500/80" />
-            <span className="text-sm text-white/60 tracking-wide">{badge}</span>
+            <span className={cn("text-sm tracking-wide", c.badgeText)}>{badge}</span>
           </motion.div>
 
-          <motion.div
-            custom={1}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div custom={1} variants={fadeUpVariants} initial="hidden" animate="visible">
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-6 md:mb-8 tracking-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80">
+              <span className={cn("bg-clip-text text-transparent bg-gradient-to-b", c.title1Grad)}>
                 {title1}
               </span>
               <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-rose-300 via-white/90 to-orange-300">
+              <span className={cn("bg-clip-text text-transparent bg-gradient-to-r", c.title2Grad)}>
                 {title2}
               </span>
             </h1>
           </motion.div>
 
-          <motion.div
-            custom={2}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div custom={2} variants={fadeUpVariants} initial="hidden" animate="visible">
             {description && (
-              <p className="text-base sm:text-lg md:text-xl text-white/40 mb-6 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
+              <p className={cn("text-base sm:text-lg md:text-xl mb-6 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4", c.desc)}>
                 {description}
               </p>
             )}
             {ctaHref && ctaText && (
               <a
                 href={ctaHref}
-                className="inline-flex items-center gap-2 text-white/50 hover:text-white/80 transition-colors text-sm tracking-wide mt-2"
+                className={cn("inline-flex items-center gap-2 transition-colors text-sm tracking-wide mt-2", c.cta)}
               >
                 {ctaText} <span aria-hidden="true">↓</span>
               </a>
@@ -165,7 +176,12 @@ function HeroGeometric({
         </div>
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0b0808] via-transparent to-[#0b0808]/80 pointer-events-none" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `linear-gradient(to top, ${c.fadeHex} 0%, transparent 30%, ${c.fadeHex}cc 100%)`,
+        }}
+      />
     </div>
   );
 }
