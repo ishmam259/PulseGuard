@@ -599,6 +599,7 @@ export default function Splash() {
               <a href="#privacy">{t('Privacy', 'গোপনীয়তা')}</a>
               <a href="#how">{t('Clinical Guidelines', 'ক্লিনিকাল নির্দেশিকা')}</a>
               <a href="#trust">{t('Support', 'সহায়তা')}</a>
+              <a href="/b1.html">{t('What\'s upcoming?', 'পরবর্তীতে কী আসছে?')}</a>
             </div>
 
             <p className="landing-footer-copyright">

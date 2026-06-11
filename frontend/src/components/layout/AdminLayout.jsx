@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
-import { Sun, Moon, Bell, HeartPulse, LogOut, LayoutDashboard, Users, Activity, FileText, Settings } from 'lucide-react'
+import { Sun, Moon, Bell, HeartPulse, LogOut, LayoutDashboard, Users, Activity, FileText, Settings, ShoppingBag } from 'lucide-react'
 
 const sidebarLinks = (locale) => [
   { label: $('ADMIN_NAV_DASHBOARD', locale), to: '/admin', Icon: LayoutDashboard },
@@ -9,6 +9,7 @@ const sidebarLinks = (locale) => [
   { label: $('ADMIN_NAV_PATIENTS', locale), to: '/admin/patients', Icon: HeartPulse },
   { label: $('ADMIN_NAV_ANALYTICS', locale), to: '/admin/analytics', Icon: Activity },
   { label: $('ADMIN_NAV_REPORTS', locale), to: '/admin/reports', Icon: FileText },
+  { label: $('NAV_P_STORE', locale), to: '/store', Icon: ShoppingBag },
   { label: $('ADMIN_NAV_SETTINGS', locale), to: '/admin/settings', Icon: Settings },
 ]
 

@@ -24,6 +24,7 @@ const strings = {
     NAV_P_ALERTS: 'Alerts',
     NAV_P_WELLNESS: 'Wellness',
     NAV_P_PROFILE: 'Profile',
+    NAV_P_STORE: 'Store',
     NAV_P_CONNECT_AI: 'Connect AI',
 
     // ─── Nav Items (Worker) ───
@@ -31,6 +32,7 @@ const strings = {
     NAV_W_PATIENTS: 'Patients',
     NAV_W_AI: 'AI',
     NAV_W_SYNC: 'Sync',
+    NAV_W_STORE: 'Store',
     NAV_W_PROFILE: 'Profile',
 
     // ─── Splash ───
@@ -827,6 +829,7 @@ const strings = {
     NAV_P_MEDICINE: 'ওষুধ',
     NAV_P_EDUCATION: 'শিক্ষা',
     NAV_P_PROFILE: 'প্রোফাইল',
+    NAV_P_STORE: 'স্টোর',
     NAV_P_CONNECT_AI: 'এআই সংযোগ',
 
     // ─── Nav Items (Worker) ───
@@ -834,6 +837,7 @@ const strings = {
     NAV_W_PATIENTS: 'রোগীরা',
     NAV_W_AI: 'এআই',
     NAV_W_SYNC: 'সিঙ্ক',
+    NAV_W_STORE: 'স্টোর',
     NAV_W_MEDICINE: 'ওষুধ যাচাই',
     NAV_W_PROFILE: 'প্রোফাইল',
 
