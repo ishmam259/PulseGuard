@@ -194,8 +194,8 @@ export default function Splash() {
     },
     {
       name: t('DISTRICT HEALTH', 'উপজেলা / জেলা স্বাস্থ্য'),
-      price: '29',
-      yearlyPrice: '23',
+      price: '499',
+      yearlyPrice: '399',
       period: t('per month', 'প্রতি মাস'),
       features: [
         t('Everything in Community Clinic', 'কমিউনিটি ক্লিনিকের সব সুবিধা'),
@@ -213,8 +213,8 @@ export default function Splash() {
     },
     {
       name: t('NATIONAL DEPLOYMENT', 'জাতীয় কার্যক্রম'),
-      price: '199',
-      yearlyPrice: '159',
+      price: '1999',
+      yearlyPrice: '1499',
       period: t('per month', 'প্রতি মাস'),
       features: [
         t('Everything in District Health', 'জেলা স্বাস্থ্যের সব সুবিধা'),
