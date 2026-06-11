@@ -313,7 +313,7 @@ export default function Splash() {
       period: t('free forever', 'চিরতরে ফ্রি'),
       features: [
         t('On-device AI Triage scoring', 'ডিভাইসেই এআই ঝুঁকি পরিমাপ'),
-        t('Offline data storage & sync', 'অফলাইন ডেটা সংরক্ষণ ও সিঙ্ক'),
+        t('Secure cloud data storage & backup', 'নিরাপদ ক্লাউড ডেটা সংরক্ষণ ও ব্যাকআপ'),
         t('Emergency SOS locator', 'জরুরি এসওএস লোকেটার'),
         t('Up to 10 active patient profiles', 'সর্বোচ্চ ১০ জন সক্রিয় রোগী'),
         t(
