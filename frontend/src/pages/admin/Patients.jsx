@@ -51,10 +51,6 @@ export default function Patients() {
     }
 
     const trimmedName = form.name.trim()
-    if (!/^[a-zA-Z\s]+$/.test(trimmedName)) {
-      setError('Name must contain only letters and spaces')
-      return
-    }
 
     setSaving(true)
     try {

@@ -322,7 +322,6 @@ const strings = {
     PROFILE_BTN_EDIT: 'Edit Profile',
     PROFILE_BTN_LOGOUT: 'Logout',
     PROFILE_ERR_NAME_REQUIRED: 'Name is required',
-    PROFILE_ERR_NAME_LETTERS: 'Name must contain only letters and spaces',
     PROFILE_ERR_PHONE_DIGITS: 'Phone number must be exactly 11 digits',
     PROFILE_SUCCESS: 'Profile updated successfully!',
     PROFILE_PATIENT_ID_PREFIX: 'Patient ID: PG-',

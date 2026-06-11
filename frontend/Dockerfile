@@ -1,8 +1,9 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm ci
+
 COPY . .
 
 ARG VITE_API_URL
@@ -16,8 +17,9 @@ ENV VITE_WS_CHAT_URL=$VITE_WS_CHAT_URL
 
 RUN npm run build
 
-RUN npm install -g serve
+FROM nginx:stable-alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-EXPOSE 3000
+EXPOSE 80
 
-CMD ["serve", "dist", "-l", "3000"]
+CMD ["nginx", "-g", "daemon off;"]

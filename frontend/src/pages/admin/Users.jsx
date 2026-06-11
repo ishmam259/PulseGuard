@@ -57,10 +57,6 @@ export default function Users() {
     }
 
     const trimmedName = form.name.trim()
-    if (!/^[a-zA-Z\s]+$/.test(trimmedName)) {
-      setError('Name must contain only letters and spaces')
-      return
-    }
 
     if (form.phone && form.phone.trim() !== '') {
       const phoneDigits = form.phone.trim()

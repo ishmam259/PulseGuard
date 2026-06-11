@@ -128,10 +128,6 @@ export default function Profile() {
       setError($('PROFILE_ERR_NAME_REQUIRED', locale))
       return
     }
-    if (!/^[a-zA-Z\s]+$/.test(trimmedName)) {
-      setError($('PROFILE_ERR_NAME_LETTERS', locale))
-      return
-    }
     if (editForm.phone && editForm.phone.trim() !== '') {
       if (!/^\d{11}$/.test(editForm.phone.trim())) {
         setError($('PROFILE_ERR_PHONE_DIGITS', locale))
