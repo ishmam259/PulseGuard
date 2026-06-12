@@ -118,10 +118,10 @@ export default function Splash() {
     },
     {
       icon: <RefreshCw strokeWidth={2} />,
-      title: t('Sync when online', 'অনলাইনে সিঙ্ক'),
+      title: t('Share with your care team', 'যত্ন দলের সাথে শেয়ার করুন'),
       body: t(
-        'Records sync automatically the moment a signal returns, keeping clinics and families in step.',
-        'সংকেত ফিরলেই রেকর্ড স্বয়ংক্রিয়ভাবে সিঙ্ক হয়, ক্লিনিক ও পরিবারকে একসূত্রে রাখে।',
+        'Records are instantly shared with the clinic and family — keeping every care team informed and in step.',
+        'রেকর্ড সাথে সাথে ক্লিনিক ও পরিবারে শেয়ার হয় — প্রতিটি যত্ন দলকে সবসময় আপডেট রাখে।',
       ),
     },
   ];
@@ -313,7 +313,7 @@ export default function Splash() {
       period: t('free forever', 'চিরতরে ফ্রি'),
       features: [
         t('On-device AI Triage scoring', 'ডিভাইসেই এআই ঝুঁকি পরিমাপ'),
-        t('Offline data storage & sync', 'অফলাইন ডেটা সংরক্ষণ ও সিঙ্ক'),
+        t('Secure cloud data storage & backup', 'নিরাপদ ক্লাউড ডেটা সংরক্ষণ ও ব্যাকআপ'),
         t('Emergency SOS locator', 'জরুরি এসওএস লোকেটার'),
         t('Up to 10 active patient profiles', 'সর্বোচ্চ ১০ জন সক্রিয় রোগী'),
         t(
@@ -332,8 +332,8 @@ export default function Splash() {
     },
     {
       name: t('DISTRICT HEALTH', 'উপজেলা / জেলা স্বাস্থ্য'),
-      price: '29',
-      yearlyPrice: '23',
+      price: '499',
+      yearlyPrice: '399',
       period: t('per month', 'প্রতি মাস'),
       features: [
         t('Everything in Community Clinic', 'কমিউনিটি ক্লিনিকের সব সুবিধা'),
@@ -363,8 +363,8 @@ export default function Splash() {
     },
     {
       name: t('NATIONAL DEPLOYMENT', 'জাতীয় কার্যক্রম'),
-      price: '199',
-      yearlyPrice: '159',
+      price: '1999',
+      yearlyPrice: '1499',
       period: t('per month', 'প্রতি মাস'),
       features: [
         t('Everything in District Health', 'জেলা স্বাস্থ্যের সব সুবিধা'),
