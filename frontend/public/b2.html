@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseGuard AI — Consultation Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   TOKENS  (identical to b1.html)
+───────────────────────────────────────── */
+:root {
+  --bg:          #FAF7F8;
+  --surface:     #FFFFFF;
+  --surface2:    #FFF0F5;
+  --border:      #F0E0E8;
+  --rose:        #E8336A;
+  --rose-light:  #FF6B9D;
+  --rose-pale:   #FFD6E7;
+  --crimson:     #C9184A;
+  --deep:        #1C0B12;
+  --text:        #1A1020;
+  --text-2:      #6B5A62;
+  --text-3:      #A08898;
+  --white:       #FFFFFF;
+  --green:       #2D8C4E;
+  --green-pale:  #E6F7ED;
+  --amber:       #C45D00;
+  --amber-pale:  #FFF3E0;
+  --blue:        #1565C0;
+  --blue-pale:   #E3F0FF;
+  --sidebar-w:   68px;
+  --topbar-h:    56px;
+  --radius:      18px;
+  --radius-sm:   12px;
+  --shadow:      0 2px 16px rgba(200,24,74,0.07);
+  --shadow-md:   0 6px 28px rgba(200,24,74,0.13);
+  --tr:          all .25s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"] {
+  --bg:         #110710;
+  --surface:    #1E0F18;
+  --surface2:   #2A1220;
+  --border:     #3A1A28;
+  --text:       #F5E8EE;
+  --text-2:     #C49BAA;
+  --text-3:     #7A5565;
+  --deep:       #0A0408;
+  --shadow:     0 2px 16px rgba(0,0,0,0.3);
+  --shadow-md:  0 6px 28px rgba(0,0,0,0.4);
+}
+
+/* ─────────────────────────────────────────
+   RESET
+───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  transition: background .3s, color .3s;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+
+/* ─────────────────────────────────────────
+   ICON SIDEBAR
+───────────────────────────────────────── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0;
+  z-index: 200;
+  transition: var(--tr);
+}
+.s-logo {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--rose-light), var(--crimson));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem; margin-bottom: 28px; flex-shrink: 0;
+  animation: hb 2s ease-in-out infinite;
+  box-shadow: 0 4px 14px rgba(200,24,74,0.3);
+}
+@keyframes hb { 0%,100%{transform:scale(1)} 14%{transform:scale(1.12)} 28%{transform:scale(1)} 42%{transform:scale(1.07)} }
+.s-nav { display: flex; flex-direction: column; gap: 4px; align-items: center; flex: 1; width: 100%; padding: 0 10px; }
+.s-item {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; cursor: pointer; transition: var(--tr);
+  position: relative; color: var(--text-3);
+}
+.s-item:hover { background: var(--surface2); color: var(--rose); }
+.s-item.active { background: var(--rose-pale); color: var(--crimson); }
+.s-item.active::before {
+  content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 24px; background: var(--crimson); border-radius: 0 3px 3px 0;
+}
+.s-item .tip {
+  position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
+  background: var(--deep); color: #fff; font-size: 0.72rem; font-weight: 600;
+  padding: 5px 10px; border-radius: 8px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: var(--tr);
+}
+.s-item:hover .tip { opacity: 1; }
+.s-divider { width: 28px; height: 1px; background: var(--border); margin: 8px 0; }
+.s-bottom { display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 0 10px; }
+.s-sos {
+  width: 44px; height: 44px; border-radius: 14px;
+  background: linear-gradient(135deg, #ff4d6d, #c9184a);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 900; color: white; letter-spacing: 0.06em;
+  cursor: pointer; transition: var(--tr);
+  box-shadow: 0 0 0 0 rgba(201,24,74,.4);
+  animation: sosPulse 2.5s ease-in-out infinite; position: relative;
+}
+.s-sos .tip { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); background: #c9184a; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 5px 10px; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: var(--tr); }
+.s-sos:hover .tip { opacity: 1; }
+.s-sos:hover { transform: scale(1.1); }
+@keyframes sosPulse { 0%{box-shadow:0 0 0 0 rgba(201,24,74,.5)} 70%{box-shadow:0 0 0 10px rgba(201,24,74,0)} 100%{box-shadow:0 0 0 0 rgba(201,24,74,0)} }
+
+/* ─────────────────────────────────────────
+   TOPBAR
+───────────────────────────────────────── */
+.topbar {
+  position: fixed; top: 0; left: var(--sidebar-w); right: 0;
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 32px; gap: 12px; z-index: 100;
+  transition: var(--tr);
+}
+.topbar-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.topbar-sub { font-size: 0.7rem; font-weight: 600; color: var(--rose); text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 4px; }
+.topbar-sub::before { content: '·'; font-size: 0.9rem; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.tb-btn {
+  height: 34px; padding: 0 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface2);
+  font-size: 0.76rem; font-weight: 700; color: var(--text-2);
+  cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 6px;
+  font-family: 'Inter', sans-serif;
+}
+.tb-btn:hover { border-color: var(--rose-pale); color: var(--crimson); background: var(--rose-pale); }
+.tb-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose-light), var(--crimson));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; color: white; font-weight: 700;
+  cursor: pointer; transition: var(--tr); box-shadow: 0 2px 10px rgba(200,24,74,0.25);
+}
+.tb-avatar:hover { transform: scale(1.08); }
+
+/* ─────────────────────────────────────────
+   MAIN
+───────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  padding-top: var(--topbar-h);
+  min-height: 100vh;
+  flex: 1;
+}
+.page { padding: 32px 36px 80px; max-width: 1120px; }
+
+/* ─────────────────────────────────────────
+   PAGE HEADER
+───────────────────────────────────────── */
+.page-head { margin-bottom: 28px; }
+.page-head h1 { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 6px; }
+.page-head p { font-size: 0.875rem; color: var(--text-2); font-weight: 500; }
+.page-head .badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--rose-pale); color: var(--crimson);
+  font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;
+}
+
+/* ─────────────────────────────────────────
+   FILTER BAR
+───────────────────────────────────────── */
+.filter-bar {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 20px 24px;
+  display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+.filter-group { display: flex; flex-direction: column; gap: 6px; min-width: 160px; flex: 1; }
+.filter-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); }
+.filter-select {
+  height: 42px; padding: 0 14px; border-radius: 12px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  font-size: 0.84rem; font-weight: 600; color: var(--text);
+  font-family: 'Inter', sans-serif; cursor: pointer; transition: var(--tr);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A08898' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  padding-right: 36px;
+}
+.filter-select:focus { outline: none; border-color: var(--rose-light); }
+.filter-select:hover { border-color: var(--rose-pale); }
+.filter-search {
+  height: 42px; padding: 0 14px 0 38px; border-radius: 12px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  font-size: 0.84rem; font-weight: 500; color: var(--text);
+  font-family: 'Inter', sans-serif; transition: var(--tr); flex: 1.5; min-width: 200px;
+}
+.filter-search:focus { outline: none; border-color: var(--rose-light); }
+.filter-search-wrap { position: relative; flex: 1.5; min-width: 200px; }
+.filter-search-icon {
+  position: absolute; left: 12px; bottom: 13px;
+  color: var(--text-3); pointer-events: none;
+}
+.filter-btn {
+  height: 42px; padding: 0 22px; border-radius: 12px;
+  background: var(--rose); border: none; color: white;
+  font-size: 0.84rem; font-weight: 700; font-family: 'Inter', sans-serif;
+  cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 8px;
+  white-space: nowrap; box-shadow: 0 3px 14px rgba(200,24,74,0.28);
+}
+.filter-btn:hover { background: var(--crimson); transform: translateY(-1px); }
+
+/* specialty pills */
+.spec-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.spec-pill {
+  padding: 6px 16px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--surface); font-size: 0.77rem; font-weight: 600; color: var(--text-2);
+  cursor: pointer; transition: var(--tr);
+}
+.spec-pill:hover { border-color: var(--rose-pale); color: var(--rose); background: var(--rose-pale); }
+.spec-pill.active { background: var(--crimson); border-color: var(--crimson); color: white; }
+
+/* ─────────────────────────────────────────
+   RESULTS META
+───────────────────────────────────────── */
+.results-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+}
+.results-count { font-size: 0.82rem; font-weight: 700; color: var(--text-2); }
+.results-count strong { color: var(--text); }
+.sort-row { display: flex; align-items: center; gap: 8px; }
+.sort-label { font-size: 0.75rem; font-weight: 600; color: var(--text-3); }
+.sort-select {
+  height: 34px; padding: 0 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface);
+  font-size: 0.76rem; font-weight: 600; color: var(--text-2);
+  font-family: 'Inter', sans-serif; cursor: pointer;
+}
+
+/* ─────────────────────────────────────────
+   DOCTOR CARDS
+───────────────────────────────────────── */
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+.doctor-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 0; overflow: hidden;
+  transition: var(--tr); position: relative;
+}
+.doctor-card:hover { box-shadow: var(--shadow-md); border-color: var(--rose-pale); transform: translateY(-2px); }
+
+.doctor-card-top {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 22px 116px 16px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.doctor-avatar {
+  width: 64px; height: 64px; border-radius: 18px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--rose-pale), var(--surface2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 900; color: var(--crimson);
+  border: 2px solid var(--rose-pale);
+  position: relative; overflow: hidden;
+}
+.doctor-avatar img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.doctor-info { flex: 1; min-width: 0; }
+.doctor-name { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+.doctor-specialty {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--crimson); margin-bottom: 6px;
+}
+.doctor-degrees {
+  font-size: 0.75rem; color: var(--text-2); font-weight: 500; line-height: 1.45;
+}
+.available-badge {
+  position: absolute; top: 16px; right: 16px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 4px 10px; border-radius: 10px;
+}
+.available-badge.online { background: var(--green-pale); color: var(--green); }
+.available-badge.busy { background: var(--amber-pale); color: var(--amber); }
+.available-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: avPulse 1.6s ease-in-out infinite; }
+@keyframes avPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.doctor-card-mid { padding: 16px 22px; border-bottom: 1px solid var(--border); }
+.mid-row { display: flex; gap: 14px; align-items: stretch; }
+.mid-block { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.mid-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); }
+.mid-value { font-size: 0.83rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+.mid-divider { width: 1px; background: var(--border); flex-shrink: 0; }
+.fee-value { font-size: 1rem; font-weight: 900; color: var(--crimson); }
+
+.doctor-card-schedule { padding: 14px 22px; border-bottom: 1px solid var(--border); }
+.schedule-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.slot-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.slot {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 6px 10px; cursor: pointer; transition: var(--tr);
+}
+.slot:hover { border-color: var(--rose-light); background: var(--rose-pale); }
+.slot.taken { opacity: 0.45; pointer-events: none; background: var(--border); }
+.slot.selected { background: var(--crimson); border-color: var(--crimson); }
+.slot.selected .slot-day, .slot.selected .slot-time { color: white; }
+.slot-day { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3); }
+.slot.selected .slot-day { color: rgba(255,255,255,0.75); }
+.slot-time { font-size: 0.75rem; font-weight: 700; color: var(--text); }
+
+.doctor-card-footer { padding: 14px 22px; display: flex; align-items: center; gap: 10px; }
+.hospital-tag {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.73rem; font-weight: 600; color: var(--text-2);
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 5px 12px; border-radius: 10px; flex: 1; min-width: 0; overflow: hidden;
+}
+.hospital-tag span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.book-btn {
+  height: 38px; padding: 0 20px; border-radius: 12px;
+  background: var(--rose); border: none; color: white;
+  font-size: 0.8rem; font-weight: 800; font-family: 'Inter', sans-serif;
+  cursor: pointer; transition: var(--tr); display: flex; align-items: center; gap: 7px;
+  box-shadow: 0 3px 12px rgba(200,24,74,0.25); flex-shrink: 0;
+}
+.book-btn:hover { background: var(--crimson); transform: translateY(-1px); box-shadow: 0 5px 18px rgba(200,24,74,0.35); }
+
+/* ─────────────────────────────────────────
+   FLOATING SOS
+───────────────────────────────────────── */
+.sos-float {
+  position: fixed; bottom: 32px; right: 32px; z-index: 999;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, #FF4D6D, #C9184A);
+  border: none; cursor: pointer; color: white;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  box-shadow: 0 6px 24px rgba(201,24,74,0.5);
+  transition: var(--tr); text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.sos-float::before, .sos-float::after {
+  content: ''; position: absolute; border-radius: 50%;
+  border: 2px solid rgba(201,24,74,0.5);
+  animation: sosRing 2.2s ease-out infinite; pointer-events: none;
+}
+.sos-float::before { width: 84px; height: 84px; animation-delay: 0s; }
+.sos-float::after  { width: 104px; height: 104px; animation-delay: 0.65s; }
+@keyframes sosRing { 0%{transform:scale(.86);opacity:.85} 100%{transform:scale(1.4);opacity:0} }
+.sos-float:hover { transform: scale(1.1); }
+.sos-float-lbl { font-size: 0.58rem; font-weight: 900; letter-spacing: 0.12em; }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+.hamburger {
+  display: none; position: fixed; top: 11px; left: 14px; z-index: 300;
+  width: 34px; height: 34px; border-radius: 9px; background: var(--surface);
+  border: 1px solid var(--border); cursor: pointer;
+  flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+}
+.hamburger span { width: 18px; height: 2px; background: var(--text-2); border-radius: 2px; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 199; }
+.overlay.on { display: block; }
+
+@media (max-width: 900px) {
+  .doctor-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { transform: translateX(-260px); width: 260px; }
+  .sidebar.open { transform: translateX(0); }
+  .topbar { left: 0; padding-left: 54px; }
+  .hamburger { display: flex !important; }
+  .page { padding: 20px 18px 100px; }
+  .doctor-grid { grid-template-columns: 1fr; }
+  .filter-bar { gap: 12px; }
+}
+@media (max-width: 480px) {
+  .mid-row { flex-wrap: wrap; }
+  .mid-divider { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: color .2s, background .2s !important; }
+}
+
+/* fade in */
+.fade-up { opacity: 0; animation: fu .4s ease forwards; }
+.fade-up:nth-child(1){animation-delay:.05s} .fade-up:nth-child(2){animation-delay:.1s}
+.fade-up:nth-child(3){animation-delay:.15s} .fade-up:nth-child(4){animation-delay:.2s}
+.fade-up:nth-child(5){animation-delay:.25s} .fade-up:nth-child(6){animation-delay:.3s}
+@keyframes fu { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+
+/* modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(28,11,18,0.65); backdrop-filter: blur(6px);
+  z-index: 1000; display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+.modal-card {
+  background: var(--surface); border-radius: 24px; padding: 36px 32px;
+  max-width: 440px; width: 100%; box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  transform: scale(0.9) translateY(16px); transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-overlay.show .modal-card { transform: scale(1) translateY(0); }
+.modal-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; }
+.modal-sub { font-size: 0.82rem; color: var(--text-2); margin-bottom: 22px; }
+.modal-detail-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+.modal-detail-ico { color: var(--crimson); flex-shrink: 0; margin-top: 2px; }
+.modal-detail-text { font-size: 0.83rem; color: var(--text-2); line-height: 1.5; }
+.modal-detail-text strong { color: var(--text); font-weight: 700; display: block; }
+.modal-divider { height: 1px; background: var(--border); margin: 18px 0; }
+.modal-confirm-btn {
+  width: 100%; height: 46px; border-radius: 14px;
+  background: var(--rose); border: none; color: white;
+  font-size: 0.9rem; font-weight: 800; font-family: 'Inter', sans-serif;
+  cursor: pointer; transition: var(--tr); margin-bottom: 10px;
+  box-shadow: 0 4px 18px rgba(200,24,74,0.3);
+}
+.modal-confirm-btn:hover { background: var(--crimson); transform: translateY(-1px); }
+.modal-cancel-btn {
+  width: 100%; height: 40px; border-radius: 12px;
+  background: transparent; border: 1px solid var(--border); color: var(--text-2);
+  font-size: 0.83rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer;
+  transition: var(--tr);
+}
+.modal-cancel-btn:hover { background: var(--surface2); }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+
+<!-- FLOATING SOS -->
+<a href="#" class="sos-float" title="Emergency SOS">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1.34h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 9.09a16 16 0 006.82 6.82l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/>
+  </svg>
+  <span class="sos-float-lbl">SOS</span>
+</a>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal-card">
+    <div class="modal-title" id="modalDoctorName">Dr. Nusrat Jahan</div>
+    <div class="modal-sub">Confirm your appointment details</div>
+    <div class="modal-detail-row">
+      <svg class="modal-detail-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="modal-detail-text"><strong id="modalSlot">Monday · 10:00 AM</strong>Appointment slot</div>
+    </div>
+    <div class="modal-detail-row">
+      <svg class="modal-detail-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <div class="modal-detail-text"><strong id="modalHospital">Dhaka Medical College Hospital</strong>Location</div>
+    </div>
+    <div class="modal-detail-row">
+      <svg class="modal-detail-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <div class="modal-detail-text"><strong id="modalFee">৳ 800</strong>Consultation fee (pay at clinic)</div>
+    </div>
+    <div class="modal-divider"></div>
+    <button class="modal-confirm-btn" onclick="confirmBooking()">
+      Confirm Appointment
+    </button>
+    <button class="modal-cancel-btn" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ICON SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="s-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+  </div>
+  <nav class="s-nav">
+    <a href="#" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span class="tip">Dashboard</span>
+    </a>
+    <a href="#" class="s-item active">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span class="tip">Consultation</span>
+    </a>
+    <a href="#" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      <span class="tip">Nutrition</span>
+    </a>
+    <a href="#" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="17" cy="17" r="5"/><path d="M14.5 17h5"/><path d="M17 14.5v5"/></svg>
+      <span class="tip">Medicine</span>
+    </a>
+    <a href="#" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span class="tip">Calendar</span>
+    </a>
+    <div class="s-divider"></div>
+    <a href="#" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="9" cy="16" r="1" fill="currentColor"/><circle cx="15" cy="16" r="1" fill="currentColor"/></svg>
+      <span class="tip">AI Chat</span>
+    </a>
+    <a href="#" class="s-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="tip">Community</span>
+    </a>
+  </nav>
+  <div class="s-bottom">
+    <div class="s-divider"></div>
+    <a href="#" class="s-item" style="color:#C9184A;background:linear-gradient(135deg,rgba(255,77,109,0.15),rgba(201,24,74,0.15));">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1.34h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 9.09a16 16 0 006.82 6.82l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7a2 2 0 011.72 2.03z"/></svg>
+      <span class="tip" style="background:#c9184a;">🚨 Emergency SOS</span>
+    </a>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <span class="topbar-title">Find a Doctor</span>
+  <span class="topbar-sub">CONSULTATION BOOKING</span>
+  <div class="topbar-right">
+    <button class="tb-btn" onclick="toggleTheme()">
+      <svg id="themeIco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <span id="themeLabel">Dark</span>
+    </button>
+    <div class="tb-avatar" title="Profile">H</div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-head fade-up">
+    <div class="badge">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Coming Soon
+    </div>
+    <h1>Find Your Doctor</h1>
+    <p>Browse verified OB-GYN specialists across Bangladesh, India and the UK. Filter by location, hospital and schedule to book your consultation.</p>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar fade-up">
+    <div class="filter-group">
+      <label class="filter-label">
+        <svg style="display:inline;vertical-align:middle;margin-right:4px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        Country
+      </label>
+      <select class="filter-select" id="countryFilter" onchange="updateHospitals()">
+        <option value="">All Countries</option>
+        <option value="bd" selected>🇧🇩 Bangladesh</option>
+        <option value="in">🇮🇳 India</option>
+        <option value="uk">🇬🇧 United Kingdom</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">
+        <svg style="display:inline;vertical-align:middle;margin-right:4px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Hospital
+      </label>
+      <select class="filter-select" id="hospitalFilter">
+        <option value="">All Hospitals</option>
+        <option>Dhaka Medical College Hospital</option>
+        <option>BIRDEM General Hospital</option>
+        <option>Square Hospital</option>
+        <option>Evercare Hospital Dhaka</option>
+        <option>Ibn Sina Hospital</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">
+        <svg style="display:inline;vertical-align:middle;margin-right:4px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Availability
+      </label>
+      <select class="filter-select" id="availFilter">
+        <option value="">Any Day</option>
+        <option>Today</option>
+        <option>This Week</option>
+        <option>Weekend</option>
+      </select>
+    </div>
+    <div class="filter-search-wrap">
+      <label class="filter-label">
+        <svg style="display:inline;vertical-align:middle;margin-right:4px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search Doctor
+      </label>
+      <svg class="filter-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="filter-search" type="text" placeholder="e.g. Dr. Nusrat, Gynecologist…">
+    </div>
+    <button class="filter-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      Apply Filters
+    </button>
+  </div>
+
+  <!-- SPECIALTY PILLS -->
+  <div class="spec-pills fade-up">
+    <button class="spec-pill active" onclick="setSpec(this)">All Specialties</button>
+    <button class="spec-pill" onclick="setSpec(this)">Obstetrics & Gynecology</button>
+    <button class="spec-pill" onclick="setSpec(this)">Maternal-Fetal Medicine</button>
+    <button class="spec-pill" onclick="setSpec(this)">Neonatology</button>
+    <button class="spec-pill" onclick="setSpec(this)">High-Risk Pregnancy</button>
+    <button class="spec-pill" onclick="setSpec(this)">Reproductive Endocrinology</button>
+    <button class="spec-pill" onclick="setSpec(this)">Midwifery</button>
+  </div>
+
+  <!-- RESULTS META -->
+  <div class="results-meta fade-up">
+    <span class="results-count"><strong>8 doctors</strong> available in Bangladesh</span>
+    <div class="sort-row">
+      <span class="sort-label">Sort by</span>
+      <select class="sort-select">
+        <option>Earliest Available</option>
+        <option>Fee: Low to High</option>
+        <option>Fee: High to Low</option>
+        <option>Experience</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- DOCTOR GRID -->
+  <div class="doctor-grid">
+
+    <!-- DOCTOR 1 -->
+    <div class="doctor-card fade-up">
+      <div class="available-badge online"><span class="dot"></span> Available</div>
+      <div class="doctor-card-top">
+        <div class="doctor-avatar"><img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Dr. Nusrat Jahan" onerror="this.style.display='none'">N</div>
+        <div class="doctor-info">
+          <div class="doctor-name">Dr. Nusrat Jahan</div>
+          <div class="doctor-specialty">Obstetrics &amp; Gynecology</div>
+          <div class="doctor-degrees">MBBS (DMC) · FCPS (Obs &amp; Gyn)<br>MD Maternal-Fetal Medicine (BSMMU)<br>12 years experience</div>
+        </div>
+      </div>
+      <div class="doctor-card-mid">
+        <div class="mid-row">
+          <div class="mid-block">
+            <div class="mid-label">Consultation Fee</div>
+            <div class="mid-value fee-value">৳ 800</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Follow-up Fee</div>
+            <div class="mid-value">৳ 500</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Avg. Wait</div>
+            <div class="mid-value">~15 min</div>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-schedule">
+        <div class="schedule-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Available Slots (This Week)
+        </div>
+        <div class="slot-row">
+          <div class="slot" onclick="selectSlot(this,'Dr. Nusrat Jahan','Mon · 10:00 AM','Dhaka Medical College Hospital','৳ 800')">
+            <span class="slot-day">Mon</span><span class="slot-time">10:00</span>
+          </div>
+          <div class="slot taken"><span class="slot-day">Mon</span><span class="slot-time">11:00</span></div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Nusrat Jahan','Wed · 09:30 AM','Dhaka Medical College Hospital','৳ 800')">
+            <span class="slot-day">Wed</span><span class="slot-time">09:30</span>
+          </div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Nusrat Jahan','Thu · 04:00 PM','Dhaka Medical College Hospital','৳ 800')">
+            <span class="slot-day">Thu</span><span class="slot-time">16:00</span>
+          </div>
+          <div class="slot taken"><span class="slot-day">Fri</span><span class="slot-time">10:00</span></div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Nusrat Jahan','Sat · 11:00 AM','Dhaka Medical College Hospital','৳ 800')">
+            <span class="slot-day">Sat</span><span class="slot-time">11:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-footer">
+        <div class="hospital-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Dhaka Medical College Hospital</span>
+        </div>
+        <button class="book-btn" onclick="openBookModal('Dr. Nusrat Jahan','Dhaka Medical College Hospital','৳ 800')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book
+        </button>
+      </div>
+    </div>
+
+    <!-- DOCTOR 2 -->
+    <div class="doctor-card fade-up">
+      <div class="available-badge online"><span class="dot"></span> Available</div>
+      <div class="doctor-card-top">
+        <div class="doctor-avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Dr. Fatema Khatun" onerror="this.style.display='none'">F</div>
+        <div class="doctor-info">
+          <div class="doctor-name">Dr. Fatema Khatun</div>
+          <div class="doctor-specialty">Maternal-Fetal Medicine</div>
+          <div class="doctor-degrees">MBBS (SSMC) · MS (Obs &amp; Gyn)<br>Fellowship in Maternal-Fetal Medicine<br>18 years experience</div>
+        </div>
+      </div>
+      <div class="doctor-card-mid">
+        <div class="mid-row">
+          <div class="mid-block">
+            <div class="mid-label">Consultation Fee</div>
+            <div class="mid-value fee-value">৳ 1,200</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Follow-up Fee</div>
+            <div class="mid-value">৳ 700</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Avg. Wait</div>
+            <div class="mid-value">~20 min</div>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-schedule">
+        <div class="schedule-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Available Slots (This Week)
+        </div>
+        <div class="slot-row">
+          <div class="slot taken"><span class="slot-day">Mon</span><span class="slot-time">09:00</span></div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Fatema Khatun','Tue · 10:30 AM','BIRDEM General Hospital','৳ 1,200')">
+            <span class="slot-day">Tue</span><span class="slot-time">10:30</span>
+          </div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Fatema Khatun','Tue · 02:00 PM','BIRDEM General Hospital','৳ 1,200')">
+            <span class="slot-day">Tue</span><span class="slot-time">14:00</span>
+          </div>
+          <div class="slot taken"><span class="slot-day">Thu</span><span class="slot-time">11:00</span></div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Fatema Khatun','Sat · 09:00 AM','BIRDEM General Hospital','৳ 1,200')">
+            <span class="slot-day">Sat</span><span class="slot-time">09:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-footer">
+        <div class="hospital-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>BIRDEM General Hospital</span>
+        </div>
+        <button class="book-btn" onclick="openBookModal('Dr. Fatema Khatun','BIRDEM General Hospital','৳ 1,200')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book
+        </button>
+      </div>
+    </div>
+
+    <!-- DOCTOR 3 -->
+    <div class="doctor-card fade-up">
+      <div class="available-badge busy"><span class="dot"></span> Busy Today</div>
+      <div class="doctor-card-top">
+        <div class="doctor-avatar"><img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Dr. Rafiqul Islam" onerror="this.style.display='none'">R</div>
+        <div class="doctor-info">
+          <div class="doctor-name">Dr. Rafiqul Islam</div>
+          <div class="doctor-specialty">High-Risk Pregnancy</div>
+          <div class="doctor-degrees">MBBS · FCPS (Obs &amp; Gyn)<br>MRCOG (London) · MSc Perinatology<br>22 years experience</div>
+        </div>
+      </div>
+      <div class="doctor-card-mid">
+        <div class="mid-row">
+          <div class="mid-block">
+            <div class="mid-label">Consultation Fee</div>
+            <div class="mid-value fee-value">৳ 1,500</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Follow-up Fee</div>
+            <div class="mid-value">৳ 900</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Avg. Wait</div>
+            <div class="mid-value">~30 min</div>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-schedule">
+        <div class="schedule-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Available Slots (This Week)
+        </div>
+        <div class="slot-row">
+          <div class="slot taken"><span class="slot-day">Mon</span><span class="slot-time">10:00</span></div>
+          <div class="slot taken"><span class="slot-day">Tue</span><span class="slot-time">09:00</span></div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Rafiqul Islam','Wed · 03:30 PM','Square Hospital','৳ 1,500')">
+            <span class="slot-day">Wed</span><span class="slot-time">15:30</span>
+          </div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Rafiqul Islam','Fri · 10:00 AM','Square Hospital','৳ 1,500')">
+            <span class="slot-day">Fri</span><span class="slot-time">10:00</span>
+          </div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Rafiqul Islam','Sun · 09:00 AM','Square Hospital','৳ 1,500')">
+            <span class="slot-day">Sun</span><span class="slot-time">09:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-footer">
+        <div class="hospital-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Square Hospital</span>
+        </div>
+        <button class="book-btn" onclick="openBookModal('Dr. Rafiqul Islam','Square Hospital','৳ 1,500')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book
+        </button>
+      </div>
+    </div>
+
+    <!-- DOCTOR 4 -->
+    <div class="doctor-card fade-up">
+      <div class="available-badge online"><span class="dot"></span> Available</div>
+      <div class="doctor-card-top">
+        <div class="doctor-avatar"><img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Dr. Sharmin Akter" onerror="this.style.display='none'">S</div>
+        <div class="doctor-info">
+          <div class="doctor-name">Dr. Sharmin Akter</div>
+          <div class="doctor-specialty">Obstetrics &amp; Gynecology</div>
+          <div class="doctor-degrees">MBBS (CMCH) · FCPS (Obs &amp; Gyn)<br>Diploma in Ultrasound (BMUS)<br>9 years experience</div>
+        </div>
+      </div>
+      <div class="doctor-card-mid">
+        <div class="mid-row">
+          <div class="mid-block">
+            <div class="mid-label">Consultation Fee</div>
+            <div class="mid-value fee-value">৳ 600</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Follow-up Fee</div>
+            <div class="mid-value">৳ 400</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Avg. Wait</div>
+            <div class="mid-value">~10 min</div>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-schedule">
+        <div class="schedule-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Available Slots (This Week)
+        </div>
+        <div class="slot-row">
+          <div class="slot" onclick="selectSlot(this,'Dr. Sharmin Akter','Mon · 08:30 AM','Evercare Hospital Dhaka','৳ 600')">
+            <span class="slot-day">Mon</span><span class="slot-time">08:30</span>
+          </div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Sharmin Akter','Mon · 10:00 AM','Evercare Hospital Dhaka','৳ 600')">
+            <span class="slot-day">Mon</span><span class="slot-time">10:00</span>
+          </div>
+          <div class="slot taken"><span class="slot-day">Wed</span><span class="slot-time">09:00</span></div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Sharmin Akter','Thu · 02:00 PM','Evercare Hospital Dhaka','৳ 600')">
+            <span class="slot-day">Thu</span><span class="slot-time">14:00</span>
+          </div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Sharmin Akter','Sat · 10:30 AM','Evercare Hospital Dhaka','৳ 600')">
+            <span class="slot-day">Sat</span><span class="slot-time">10:30</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-footer">
+        <div class="hospital-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Evercare Hospital Dhaka</span>
+        </div>
+        <button class="book-btn" onclick="openBookModal('Dr. Sharmin Akter','Evercare Hospital Dhaka','৳ 600')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book
+        </button>
+      </div>
+    </div>
+
+    <!-- DOCTOR 5 -->
+    <div class="doctor-card fade-up">
+      <div class="available-badge online"><span class="dot"></span> Available</div>
+      <div class="doctor-card-top">
+        <div class="doctor-avatar"><img src="https://randomuser.me/api/portraits/women/73.jpg" alt="Dr. Priya Sharma" onerror="this.style.display='none'">P</div>
+        <div class="doctor-info">
+          <div class="doctor-name">Dr. Priya Sharma</div>
+          <div class="doctor-specialty">Reproductive Endocrinology</div>
+          <div class="doctor-degrees">MBBS (AIIMS Delhi) · MD (Obs &amp; Gyn)<br>DM Reproductive Medicine · FRCOG<br>15 years experience</div>
+        </div>
+      </div>
+      <div class="doctor-card-mid">
+        <div class="mid-row">
+          <div class="mid-block">
+            <div class="mid-label">Consultation Fee</div>
+            <div class="mid-value fee-value">₹ 1,500</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Follow-up Fee</div>
+            <div class="mid-value">₹ 800</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Country</div>
+            <div class="mid-value">🇮🇳 India</div>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-schedule">
+        <div class="schedule-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Available Slots (This Week)
+        </div>
+        <div class="slot-row">
+          <div class="slot" onclick="selectSlot(this,'Dr. Priya Sharma','Tue · 11:00 AM','Apollo Hospitals Delhi','₹ 1,500')">
+            <span class="slot-day">Tue</span><span class="slot-time">11:00</span>
+          </div>
+          <div class="slot taken"><span class="slot-day">Wed</span><span class="slot-time">10:00</span></div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Priya Sharma','Thu · 03:00 PM','Apollo Hospitals Delhi','₹ 1,500')">
+            <span class="slot-day">Thu</span><span class="slot-time">15:00</span>
+          </div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Priya Sharma','Sat · 10:00 AM','Apollo Hospitals Delhi','₹ 1,500')">
+            <span class="slot-day">Sat</span><span class="slot-time">10:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-footer">
+        <div class="hospital-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Apollo Hospitals Delhi</span>
+        </div>
+        <button class="book-btn" onclick="openBookModal('Dr. Priya Sharma','Apollo Hospitals Delhi','₹ 1,500')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book
+        </button>
+      </div>
+    </div>
+
+    <!-- DOCTOR 6 -->
+    <div class="doctor-card fade-up">
+      <div class="available-badge busy"><span class="dot"></span> Busy Today</div>
+      <div class="doctor-card-top">
+        <div class="doctor-avatar"><img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Dr. Eleanor Davies" onerror="this.style.display='none'">E</div>
+        <div class="doctor-info">
+          <div class="doctor-name">Dr. Eleanor Davies</div>
+          <div class="doctor-specialty">Neonatology &amp; Midwifery</div>
+          <div class="doctor-degrees">MBChB (University of Edinburgh)<br>MRCOG · PhD Neonatal Medicine<br>20 years experience</div>
+        </div>
+      </div>
+      <div class="doctor-card-mid">
+        <div class="mid-row">
+          <div class="mid-block">
+            <div class="mid-label">Consultation Fee</div>
+            <div class="mid-value fee-value">£ 180</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Follow-up Fee</div>
+            <div class="mid-value">£ 100</div>
+          </div>
+          <div class="mid-divider"></div>
+          <div class="mid-block">
+            <div class="mid-label">Country</div>
+            <div class="mid-value">🇬🇧 UK</div>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-schedule">
+        <div class="schedule-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Available Slots (This Week)
+        </div>
+        <div class="slot-row">
+          <div class="slot taken"><span class="slot-day">Mon</span><span class="slot-time">09:00</span></div>
+          <div class="slot taken"><span class="slot-day">Tue</span><span class="slot-time">10:00</span></div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Eleanor Davies','Wed · 02:00 PM','King\'s College Hospital London','£ 180')">
+            <span class="slot-day">Wed</span><span class="slot-time">14:00</span>
+          </div>
+          <div class="slot" onclick="selectSlot(this,'Dr. Eleanor Davies','Fri · 09:30 AM','King\'s College Hospital London','£ 180')">
+            <span class="slot-day">Fri</span><span class="slot-time">09:30</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card-footer">
+        <div class="hospital-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>King's College Hospital London</span>
+        </div>
+        <button class="book-btn" onclick="openBookModal('Dr. Eleanor Davies','King\'s College Hospital London','£ 180')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Book
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /doctor-grid -->
+
+</div><!-- /page -->
+</main>
+
+<script>
+// ── THEME ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeLabel').textContent = isDark ? 'Dark' : 'Light';
+  document.getElementById('themeIco').innerHTML = isDark
+    ? '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+}
+
+// ── SIDEBAR ──
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('on');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('on');
+}
+
+// ── SPECIALTY PILLS ──
+function setSpec(el) {
+  document.querySelectorAll('.spec-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── SLOT SELECTION ──
+let selectedSlotData = {};
+function selectSlot(el, doctor, slot, hospital, fee) {
+  // deselect siblings in same card
+  el.closest('.slot-row').querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSlotData = { doctor, slot, hospital, fee };
+}
+
+// ── BOOK MODAL ──
+function openBookModal(doctor, hospital, fee) {
+  document.getElementById('modalDoctorName').textContent = doctor;
+  document.getElementById('modalHospital').textContent = hospital;
+  document.getElementById('modalFee').textContent = fee;
+  const slot = selectedSlotData.doctor === doctor ? selectedSlotData.slot : 'Please select a slot above';
+  document.getElementById('modalSlot').textContent = slot;
+  document.getElementById('bookModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('bookModal').classList.remove('show');
+}
+function confirmBooking() {
+  closeModal();
+  // reset selected slots
+  document.querySelectorAll('.slot.selected').forEach(s => s.classList.remove('selected'));
+  selectedSlotData = {};
+  // brief success flash
+  const flash = document.createElement('div');
+  flash.textContent = '✓ Appointment confirmed! A reminder will be sent to your phone.';
+  Object.assign(flash.style, {
+    position:'fixed', bottom:'32px', left:'50%', transform:'translateX(-50%)',
+    background:'#2D8C4E', color:'white', padding:'14px 24px', borderRadius:'14px',
+    fontWeight:'700', fontSize:'0.85rem', zIndex:'9999',
+    boxShadow:'0 6px 24px rgba(45,140,78,0.35)', transition:'opacity .4s'
+  });
+  document.body.appendChild(flash);
+  setTimeout(() => { flash.style.opacity = '0'; setTimeout(() => flash.remove(), 500); }, 3000);
+}
+
+// ── HOSPITAL FILTER (country-aware) ──
+const hospitals = {
+  bd: ['Dhaka Medical College Hospital','BIRDEM General Hospital','Square Hospital','Evercare Hospital Dhaka','Ibn Sina Hospital'],
+  in: ['Apollo Hospitals Delhi','AIIMS New Delhi','Fortis Hospital Mumbai','Manipal Hospital Bangalore'],
+  uk: ["King's College Hospital London","St Thomas' Hospital London","John Radcliffe Hospital Oxford"],
+};
+function updateHospitals() {
+  const country = document.getElementById('countryFilter').value;
+  const sel = document.getElementById('hospitalFilter');
+  sel.innerHTML = '<option value="">All Hospitals</option>';
+  const list = country ? (hospitals[country] || []) : Object.values(hospitals).flat();
+  list.forEach(h => { const o = document.createElement('option'); o.textContent = h; sel.appendChild(o); });
+}
+
+// close modal on backdrop click
+document.getElementById('bookModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

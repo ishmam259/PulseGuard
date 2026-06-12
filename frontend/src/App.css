@@ -4168,6 +4168,113 @@ select.input option {
 .landing-how-step h3 { margin-top: 22px; font-family: var(--font-display); font-size: 19px; font-weight: 700; color: var(--color-text); }
 .landing-how-step p { margin-top: 10px; font-size: 13.5px; line-height: 1.6; color: var(--color-muted); }
 
+/* ── What's Upcoming ── */
+.landing-upcoming {
+  position: relative;
+  z-index: 10;
+  padding: 0 var(--spacing-5) 80px;
+}
+@media (min-width: 1024px) { .landing-upcoming { padding-bottom: 100px; } }
+.landing-upcoming-inner { max-width: 1200px; margin: 0 auto; }
+.landing-upcoming-head { margin-bottom: 48px; max-width: 580px; }
+.landing-upcoming-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+.landing-upcoming-head h2 {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+@media (min-width: 768px) { .landing-upcoming-head h2 { font-size: 38px; } }
+.landing-upcoming-head p {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+.landing-upcoming-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) { .landing-upcoming-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+.landing-upcoming-card {
+  border-radius: 20px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  transition: border-color 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), transform 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.landing-upcoming-card:hover {
+  border-color: var(--color-primary-dim);
+  box-shadow: 0 8px 32px color-mix(in oklab, var(--color-primary) 12%, transparent);
+  transform: translateY(-2px);
+}
+.landing-upcoming-card-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 28px 24px;
+  text-decoration: none;
+  color: inherit;
+}
+.landing-upcoming-card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+.landing-upcoming-card-body { flex: 1; min-width: 0; }
+.landing-upcoming-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+.landing-upcoming-card-body h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+.landing-upcoming-card-body p {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+.landing-upcoming-arrow {
+  color: var(--color-primary);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.2s, transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.landing-upcoming-card:hover .landing-upcoming-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 /* ── Final CTA ── */
 .landing-final {
   position: relative;

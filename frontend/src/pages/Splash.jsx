@@ -819,6 +819,68 @@ export default function Splash() {
         </div>
       </section>
 
+      {/* What's Upcoming? */}
+      <section className="landing-upcoming">
+        <div className="landing-upcoming-inner">
+          <Reveal className="landing-upcoming-head">
+            <span className="landing-upcoming-eyebrow">
+              {t('Coming Soon', 'শীঘ্রই আসছে')}
+            </span>
+            <h2>{t("What's Upcoming?", 'কী আসছে?')}</h2>
+            <p>
+              {t(
+                "Get a glimpse of the features we're building next for PulseGuard.",
+                'পালসগার্ডে আমরা পরবর্তীতে কী তৈরি করছি তা দেখুন।',
+              )}
+            </p>
+          </Reveal>
+
+          <div className="landing-upcoming-grid">
+            <Reveal className="landing-upcoming-card" delay={0.05}>
+              <a href="/b1.html" target="_blank" rel="noopener noreferrer" className="landing-upcoming-card-link">
+                <div className="landing-upcoming-card-icon">
+                  <Activity size={26} />
+                </div>
+                <div className="landing-upcoming-card-body">
+                  <span className="landing-upcoming-tag">{t('Dashboard', 'ড্যাশবোর্ড')}</span>
+                  <h3>{t('Prenatal & Postnatal Dashboard', 'প্রসব-পূর্ব ও প্রসব-পরবর্তী ড্যাশবোর্ড')}</h3>
+                  <p>
+                    {t(
+                      'A unified health command center — vitals, nutrition, scans, and AI alerts for every stage of your journey.',
+                      'একটি ইউনিফাইড হেলথ কমান্ড সেন্টার — প্রতিটি পর্যায়ে ভাইটাল, পুষ্টি, স্ক্যান ও এআই সতর্কতা।',
+                    )}
+                  </p>
+                </div>
+                <span className="landing-upcoming-arrow">
+                  <ArrowRight size={18} />
+                </span>
+              </a>
+            </Reveal>
+
+            <Reveal className="landing-upcoming-card" delay={0.12}>
+              <a href="/b2.html" target="_blank" rel="noopener noreferrer" className="landing-upcoming-card-link">
+                <div className="landing-upcoming-card-icon">
+                  <Stethoscope size={26} />
+                </div>
+                <div className="landing-upcoming-card-body">
+                  <span className="landing-upcoming-tag">{t('Consultation', 'পরামর্শ')}</span>
+                  <h3>{t('Find & Book a Specialist', 'বিশেষজ্ঞ খুঁজুন ও বুক করুন')}</h3>
+                  <p>
+                    {t(
+                      "Browse verified OB-GYN doctors by country, hospital, and availability. View fees, degrees, and schedule your appointment.",
+                      'দেশ, হাসপাতাল ও উপলব্ধতা অনুযায়ী যাচাইকৃত ডাক্তার খুঁজুন। ফি, ডিগ্রি দেখুন এবং অ্যাপয়েন্টমেন্ট নির্ধারণ করুন।',
+                    )}
+                  </p>
+                </div>
+                <span className="landing-upcoming-arrow">
+                  <ArrowRight size={18} />
+                </span>
+              </a>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="landing-final">
         <span className="landing-final-watermark" aria-hidden="true">

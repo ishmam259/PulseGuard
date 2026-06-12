@@ -227,21 +227,10 @@ export default function MedicineCheck() {
           setError(`No medicines found for "${query}". Try a different name.`)
         } else {
           setSafetyLoading(true)
-          const safetyResult = await api.medicineSafety(query.trim(), week, locale)
-          setSafety(safetyResult)
-          if (safetyResult && safetyResult.SAFETY) {
-            await api.logMedicine({
-              medicine_name: query.trim(),
-              safety_status: safetyResult.SAFETY,
-              safety_reason: safetyResult.REASON,
-              gestational_week: week,
-              source: 'search',
-              description: data.results[0]?.description || null,
-              week_note: safetyResult.WEEK_NOTE,
-              alternatives: safetyResult.ALTERNATIVES
-            })
-            loadLogs()
-          }
+          api.medicineSafety(query.trim(), week, locale)
+            .then(s => setSafety(s))
+            .catch(() => {})
+            .finally(() => setSafetyLoading(false))
         }
       }
     } catch {
@@ -268,18 +257,6 @@ export default function MedicineCheck() {
         setSafety(data.safety || null)
         if ((data.results || []).length === 0) {
           setError(`No medicines found for "${data.identified}". Try searching by name.`)
-        } else if (data.safety && data.safety.SAFETY) {
-          await api.logMedicine({
-            medicine_name: data.identified,
-            safety_status: data.safety.SAFETY,
-            safety_reason: data.safety.REASON,
-            gestational_week: week,
-            source: 'photo',
-            description: data.results[0]?.description || null,
-            week_note: data.safety.WEEK_NOTE,
-            alternatives: data.safety.ALTERNATIVES
-          })
-          loadLogs()
         }
       }
     } catch {
@@ -350,6 +327,15 @@ export default function MedicineCheck() {
       setSchedules(prev => prev.filter(s => s.id !== scheduleId))
     } catch (err) {
       console.error('Failed to delete schedule', err)
+    }
+  }
+
+  const handleDeleteLog = async (logId) => {
+    try {
+      await api.deleteMedicineLog(logId)
+      setLogs(prev => prev.filter(l => l.id !== logId))
+    } catch (err) {
+      console.error('Failed to delete log', err)
     }
   }
 
@@ -749,9 +735,19 @@ export default function MedicineCheck() {
                                   </span>
                                 </div>
                               </div>
-                              <span className={`med-safety-badge ${statusClass}`}>
-                                {getSafetyLabel(status, locale)}
-                              </span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span className={`med-safety-badge ${statusClass}`}>
+                                  {getSafetyLabel(status, locale)}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteLog(logItem.id)}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-muted)', padding: '2px', lineHeight: 1, flexShrink: 0 }}
+                                  title={t('Remove', 'মুছে ফেলুন')}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </div>
                           )
                         })}
