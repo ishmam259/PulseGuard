@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { HeartPulse } from 'lucide-react'
+import PulseGuardLogo from '../PulseGuardLogo'
 
 // Module-level flag: resets on every full page load, but not on in-app navigation.
 let _introShownThisLoad = false
@@ -64,7 +64,7 @@ export default function WelcomeIntro({ locale = 'en' }) {
                 </>
               )}
               <span className="welcome-intro__mark">
-                <HeartPulse strokeWidth={2.25} />
+                <PulseGuardLogo size={100} />
               </span>
             </motion.div>
 

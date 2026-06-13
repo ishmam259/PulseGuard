@@ -4394,16 +4394,16 @@ select.input option {
   border-left-color: oklch(0.86 0.1 350 / 0.2);
 }
 .welcome-intro__mark {
-  width: 84px;
-  height: 84px;
-  border-radius: 26px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  background: var(--gradient-primary);
+  background: transparent;
   color: #fff;
-  box-shadow: 0 30px 60px -12px oklch(0.68 0.24 5 / 0.5);
+  filter: drop-shadow(0 20px 40px oklch(0.68 0.24 5 / 0.45));
 }
-.welcome-intro__mark svg { width: 40px; height: 40px; }
+.welcome-intro__mark img { width: 100px; height: 100px; object-fit: contain; }
 .welcome-intro__eyebrow {
   font-size: 13px;
   font-weight: 600;

@@ -4,7 +4,8 @@ import { useGoogleLogin } from '@react-oauth/google'
 import { useApp } from '../context/AppContext'
 import $ from '../config/strings'
 import { ENABLE_GOOGLE_LOGIN } from '../config/flags'
-import { Mail, Lock, ArrowRight, Sun, Moon, HeartPulse, ShieldAlert } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Sun, Moon, ShieldAlert } from 'lucide-react'
+import PulseGuardLogo from '../components/PulseGuardLogo'
 
 const dashboardRoutes = {
   patient: '/patient/dashboard',
@@ -117,9 +118,7 @@ export default function Login() {
 
           {/* Logo */}
           <Link to="/" className="auth-page__logo">
-            <span className="auth-page__logo-icon">
-              <HeartPulse strokeWidth={2.5} style={{ height: 20, width: 20, color: 'var(--color-surface)' }} />
-            </span>
+            <PulseGuardLogo size={32} />
             <span className="auth-page__logo-text">PulseGuard</span>
           </Link>
 

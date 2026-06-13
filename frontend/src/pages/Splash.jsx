@@ -11,6 +11,7 @@ import Reveal from '../components/landing/Reveal';
 import showcaseDesktop from '../assets/showcase-desktop2.png';
 import { Pricing } from '../components/ui/pricing';
 import showcaseMobile from '../assets/showcase-mobile.png';
+import PulseGuardLogo from '../components/PulseGuardLogo';
 import {
   ArrowRight,
   ShieldAlert,
@@ -417,9 +418,7 @@ export default function Splash() {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             style={{ textDecoration: 'none' }}
           >
-            <span className="landing-brand-mark">
-              <HeartPulse className="h-5 w-5" strokeWidth={2.5} />
-            </span>
+            <PulseGuardLogo size={32} />
             <span className="landing-header-logo-text">PulseGuard</span>
           </Link>
 

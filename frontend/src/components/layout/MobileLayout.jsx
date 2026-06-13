@@ -3,6 +3,7 @@ import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
 import { Sun, Moon, Bell, HeartPulse, LogOut, PhoneCall, Menu, X } from 'lucide-react'
+import PulseGuardLogo from '../PulseGuardLogo'
 
 export default function MobileLayout({ title, status, banner, children, navItems, hideSubtitle }) {
   const { connectivity, currentUser, logout, notifications, locale, setLocale, theme, toggleTheme } = useApp()
@@ -53,9 +54,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
       {navItems && navItems.length > 0 && (
         <aside className="desktop-sidebar">
           <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem', padding: '0 8px' }}>
-            <span style={{ position: 'relative', display: 'grid', placeItems: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: 'var(--color-primary-foreground)', boxShadow: 'var(--shadow-glow-primary)', transition: 'transform 0.2s' }}>
-              <HeartPulse className="h-5 w-5" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
-            </span>
+            <PulseGuardLogo size={36} />
             <span className="logo-text" style={{ fontSize: '20px', fontWeight: '700', fontFamily: 'var(--font-sans)', color: 'var(--color-text)', letterSpacing: '-0.02em' }}>PulseGuard</span>
           </div>
 
@@ -109,9 +108,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
               </button>
             )}
             <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ display: 'grid', placeItems: 'center', width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'var(--color-primary)' }}>
-                <HeartPulse className="h-4 w-4" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
-              </span>
+              <PulseGuardLogo size={28} />
             </div>
           </div>
           <div className="top-center">{title}</div>
@@ -330,9 +327,7 @@ export default function MobileLayout({ title, status, banner, children, navItems
               {/* Header */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ display: 'grid', placeItems: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--color-primary)' }}>
-                    <HeartPulse className="h-5 w-5" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
-                  </span>
+                  <PulseGuardLogo size={32} />
                   <span style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)', letterSpacing: '-0.02em', fontFamily: 'var(--font-sans)' }}>PulseGuard</span>
                 </div>
                 <button

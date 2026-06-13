@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import $ from '../config/strings'
 import { ArrowLeft, ArrowRight, HeartPulse, Stethoscope, ShieldCheck, Sun, Moon } from 'lucide-react'
+import PulseGuardLogo from '../components/PulseGuardLogo'
 
 export default function RoleSelection() {
   const { theme, toggleTheme, locale, setLocale } = useApp()
@@ -38,9 +39,7 @@ export default function RoleSelection() {
       {/* Top bar controls */}
       <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-10" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
         <Link to="/" className="group flex items-center gap-2.5" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <span className="relative grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-glow)] transition-transform group-hover:scale-105" style={{ display: 'grid', placeItems: 'center', width: '36px', height: '36px', borderRadius: '12px', backgroundColor: 'var(--color-primary)' }}>
-            <HeartPulse className="h-5 w-5" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
-          </span>
+          <PulseGuardLogo size={36} />
           <span className="text-lg font-semibold tracking-tight" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--color-text)', fontFamily: 'var(--font-display)' }}>PulseGuard</span>
         </Link>
 

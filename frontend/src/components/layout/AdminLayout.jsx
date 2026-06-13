@@ -3,6 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
 import { Sun, Moon, Bell, HeartPulse, LogOut, LayoutDashboard, Users, Activity, FileText, Settings, ShoppingBag, Globe, Menu, X } from 'lucide-react'
+import PulseGuardLogo from '../PulseGuardLogo'
 
 const sidebarLinks = (locale) => [
   { label: $('ADMIN_NAV_DASHBOARD', locale), to: '/admin', Icon: LayoutDashboard },
@@ -38,9 +39,7 @@ export default function AdminLayout({ title, children }) {
   const SidebarContent = ({ onLinkClick }) => (
     <>
       <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-        <span style={{ display: 'grid', placeItems: 'center', width: '36px', height: '36px', borderRadius: '12px', backgroundColor: 'var(--color-primary)', color: 'var(--color-primary-foreground)', boxShadow: 'var(--shadow-glow-primary)' }}>
-          <HeartPulse className="h-5 w-5" strokeWidth={2.5} style={{ color: 'var(--color-surface)' }} />
-        </span>
+        <PulseGuardLogo size={36} />
         <span style={{ fontWeight: 700, fontSize: '16px', color: 'var(--color-text)' }}>PulseGuard</span>
       </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Moon, Sun } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import PulseGuardLogo from '../components/PulseGuardLogo'
 import Reveal from '../components/landing/Reveal'
 
 function GuidelinesNav() {
@@ -18,10 +19,7 @@ function GuidelinesNav() {
   return (
     <header className={`about-nav${scrolled ? ' about-nav--scrolled' : ''}`}>
       <Link to="/" className="about-nav-logo">
-        <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
-          <rect width="28" height="28" rx="8" fill="oklch(0.62 0.22 0)" />
-          <path d="M4 14h4l2.5-5 3 10 2.5-7L18 14h6" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <PulseGuardLogo size={28} />
         PulseGuard
       </Link>
       <div className="about-nav-actions">
