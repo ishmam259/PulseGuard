@@ -1620,6 +1620,55 @@ select.input option {
   border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
 }
 
+/* ── Sidebar Collapse Toggle ── */
+.admin-shell {
+  transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-shell.sidebar-collapsed {
+  grid-template-columns: 72px 1fr;
+}
+
+.sidebar {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.sidebar--collapsed {
+  padding: var(--spacing-6) var(--spacing-2);
+  align-items: center;
+}
+
+.sidebar--collapsed .sidebar-nav a {
+  padding: 12px;
+  justify-content: center;
+}
+
+.sidebar-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: color-mix(in oklab, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  color: var(--color-muted);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sidebar-collapse-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 12%, transparent);
+}
+
 .info-card {
   display: grid;
   gap: var(--spacing-2);
@@ -1791,6 +1840,10 @@ select.input option {
     height: auto;
     min-height: 100vh;
     overflow-x: clip;
+  }
+
+  .admin-shell.sidebar-collapsed {
+    grid-template-columns: 1fr;
   }
 
   /* desktop sidebar hidden on mobile — navigation via drawer instead */
@@ -2023,6 +2076,35 @@ select.input option {
 
   .desktop-sidebar-nav a.active::after {
     display: none;
+  }
+
+  .app-layout-shell {
+    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .app-layout-shell.sidebar-collapsed {
+    grid-template-columns: 72px 1fr;
+  }
+
+  .desktop-sidebar {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .desktop-sidebar--collapsed {
+    padding: var(--spacing-6) var(--spacing-2);
+    align-items: center;
+  }
+
+  .desktop-sidebar--collapsed .desktop-sidebar-nav a {
+    padding: 10px;
+    justify-content: center;
+  }
+
+  .desktop-sidebar--collapsed .mobile-layout-logout-btn {
+    padding: 10px;
+    justify-content: center;
   }
 
   .main-container {

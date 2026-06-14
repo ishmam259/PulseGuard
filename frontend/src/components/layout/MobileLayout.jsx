@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
-import { Sun, Moon, Bell, HeartPulse, LogOut, PhoneCall, Menu, X } from 'lucide-react'
+import { Sun, Moon, Bell, HeartPulse, LogOut, PhoneCall, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import PulseGuardLogo from '../PulseGuardLogo'
 
 export default function MobileLayout({ title, status, banner, children, navItems, hideSubtitle }) {
@@ -10,6 +10,17 @@ export default function MobileLayout({ title, status, banner, children, navItems
   const navigate = useNavigate()
   const [activeToast, setActiveToast] = useState(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try { return localStorage.getItem('sidebar-collapsed') === 'true' } catch { return false }
+  })
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(prev => {
+      const next = !prev
+      try { localStorage.setItem('sidebar-collapsed', String(next)) } catch {}
+      return next
+    })
+  }
 
   useEffect(() => {
     // Show active SOS alert toast only for workers and admins
@@ -45,17 +56,28 @@ export default function MobileLayout({ title, status, banner, children, navItems
   }
 
   return (
-    <div className="app-layout-shell" style={{ position: 'relative' }}>
+    <div className={`app-layout-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`} style={{ position: 'relative' }}>
       {/* ── Ambient Glow Blobs ── */}
       <div style={{ pointerEvents: 'none', position: 'absolute', top: '-150px', right: '-150px', height: '600px', width: '600px', borderRadius: '50%', background: 'radial-gradient(circle, color-mix(in oklab, var(--color-primary) 12%, transparent) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
       <div style={{ pointerEvents: 'none', position: 'absolute', top: '50%', left: '-150px', height: '500px', width: '500px', borderRadius: '50%', background: 'radial-gradient(circle, color-mix(in oklab, var(--color-bg-accent) 20%, transparent) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
 
       {/* ── Desktop Sidebar ── */}
       {navItems && navItems.length > 0 && (
-        <aside className="desktop-sidebar">
-          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem', padding: '0 8px' }}>
-            <PulseGuardLogo size={36} />
-            <span className="logo-text" style={{ fontSize: '20px', fontWeight: '700', fontFamily: 'var(--font-sans)', color: 'var(--color-text)', letterSpacing: '-0.02em' }}>PulseGuard</span>
+        <aside className={`desktop-sidebar${sidebarCollapsed ? ' desktop-sidebar--collapsed' : ''}`}>
+          <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '2rem', padding: '0 8px', justifyContent: sidebarCollapsed ? 'center' : 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {!sidebarCollapsed && <PulseGuardLogo size={36} />}
+              {!sidebarCollapsed && <span className="logo-text" style={{ fontSize: '20px', fontWeight: '700', fontFamily: 'var(--font-sans)', color: 'var(--color-text)', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>PulseGuard</span>}
+            </div>
+            <button
+              type="button"
+              className="sidebar-collapse-btn"
+              onClick={toggleSidebar}
+              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </button>
           </div>
 
           <nav className="desktop-sidebar-nav" style={{ marginTop: '8px' }}>
@@ -64,19 +86,22 @@ export default function MobileLayout({ title, status, banner, children, navItems
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) => (isActive ? 'active' : '')}
+                style={sidebarCollapsed ? { justifyContent: 'center' } : undefined}
+                title={sidebarCollapsed ? item.label : undefined}
               >
                 {item.Icon && <item.Icon style={{ height: '16px', width: '16px', flexShrink: 0 }} />}
-                <span>{item.label}</span>
+                {!sidebarCollapsed && <span>{item.label}</span>}
               </NavLink>
             ))}
             <button
               type="button"
               onClick={handleLogout}
               className="desktop-sidebar-logout-btn mobile-layout-logout-btn"
-              style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: sidebarCollapsed ? 'center' : 'flex-start' }}
+              title={sidebarCollapsed ? $('LAYOUT_LOGOUT_BTN', locale) : undefined}
             >
               <LogOut className="h-4 w-4" />
-              <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>
+              {!sidebarCollapsed && <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>}
             </button>
           </nav>
         </aside>

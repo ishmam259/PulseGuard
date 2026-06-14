@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import $ from '../../config/strings'
-import { Sun, Moon, Bell, HeartPulse, LogOut, LayoutDashboard, Users, Activity, FileText, Settings, ShoppingBag, Globe, Menu, X } from 'lucide-react'
+import { Sun, Moon, Bell, HeartPulse, LogOut, LayoutDashboard, Users, Activity, FileText, Settings, ShoppingBag, Globe, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import PulseGuardLogo from '../PulseGuardLogo'
 
 const sidebarLinks = (locale) => [
@@ -20,6 +20,17 @@ export default function AdminLayout({ title, children }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try { return localStorage.getItem('sidebar-collapsed') === 'true' } catch { return false }
+  })
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(prev => {
+      const next = !prev
+      try { localStorage.setItem('sidebar-collapsed', String(next)) } catch {}
+      return next
+    })
+  }
   const initials = currentUser ? currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AD'
 
   // close drawer on route change
@@ -36,11 +47,24 @@ export default function AdminLayout({ title, children }) {
     navigate('/')
   }
 
-  const SidebarContent = ({ onLinkClick }) => (
+  const SidebarContent = ({ onLinkClick, collapsed = false, showToggle = false }) => (
     <>
-      <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-        <PulseGuardLogo size={36} />
-        <span style={{ fontWeight: 700, fontSize: '16px', color: 'var(--color-text)' }}>PulseGuard</span>
+      <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, justifyContent: collapsed ? 'center' : 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {!collapsed && <PulseGuardLogo size={36} />}
+          {!collapsed && <span style={{ fontWeight: 700, fontSize: '16px', color: 'var(--color-text)', whiteSpace: 'nowrap' }}>PulseGuard</span>}
+        </div>
+        {showToggle && (
+          <button
+            type="button"
+            className="sidebar-collapse-btn"
+            onClick={toggleSidebar}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </button>
+        )}
       </div>
 
       <nav className="sidebar-nav">
@@ -50,11 +74,12 @@ export default function AdminLayout({ title, children }) {
             to={link.to}
             end={link.to === '/admin'}
             className={({ isActive }) => (isActive ? 'active' : '')}
-            style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: collapsed ? 'center' : 'flex-start' }}
             onClick={onLinkClick}
+            title={collapsed ? link.label : undefined}
           >
             {link.Icon && <link.Icon className="h-4 w-4" style={{ flexShrink: 0 }} />}
-            <span>{link.label}</span>
+            {!collapsed && <span>{link.label}</span>}
           </NavLink>
         ))}
       </nav>
@@ -63,23 +88,24 @@ export default function AdminLayout({ title, children }) {
         type="button"
         onClick={handleLogout}
         className="sidebar-logout-btn admin-sidebar"
-        style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: 'auto', flexShrink: 0 }}
+        style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: 'auto', flexShrink: 0, justifyContent: collapsed ? 'center' : 'flex-start' }}
+        title={collapsed ? $('LAYOUT_LOGOUT_BTN', locale) : undefined}
       >
         <LogOut className="h-4 w-4" />
-        <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>
+        {!collapsed && <span>{$('LAYOUT_LOGOUT_BTN', locale)}</span>}
       </button>
     </>
   )
 
   return (
-    <div className="admin-shell" style={{ position: 'relative' }}>
+    <div className={`admin-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`} style={{ position: 'relative' }}>
       {/* ── Ambient Glow Blobs ── */}
       <div style={{ pointerEvents: 'none', position: 'absolute', top: '-160px', right: '-160px', height: '500px', width: '500px', borderRadius: '50%', background: 'var(--color-primary)', opacity: 0.08, filter: 'blur(120px)', zIndex: 0 }} />
       <div style={{ pointerEvents: 'none', position: 'absolute', top: '50%', left: '-160px', height: '400px', width: '400px', borderRadius: '50%', background: 'var(--color-bg-accent)', opacity: 0.15, filter: 'blur(100px)', zIndex: 0 }} />
 
       {/* ── Desktop Sidebar ── */}
-      <aside className="sidebar" style={{ zIndex: 10 }}>
-        <SidebarContent onLinkClick={undefined} />
+      <aside className={`sidebar${sidebarCollapsed ? ' sidebar--collapsed' : ''}`} style={{ zIndex: 10 }}>
+        <SidebarContent onLinkClick={undefined} collapsed={sidebarCollapsed} showToggle={true} />
       </aside>
 
       {/* ── Mobile Drawer Backdrop ── */}
